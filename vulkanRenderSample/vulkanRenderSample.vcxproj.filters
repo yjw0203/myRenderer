@@ -1,0 +1,69 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="source">
+      <UniqueIdentifier>{c81dcf12-3043-4e9a-add9-bf90113a59b0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\delegate">
+      <UniqueIdentifier>{24aee213-715b-4839-a8b7-78f2b24210e9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\WindowsManager">
+      <UniqueIdentifier>{f22875f1-e2e9-4384-8bc7-8db3fc166cc0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\renderSystem">
+      <UniqueIdentifier>{e3e65a3d-d827-4a5c-9e2a-9906cccd311a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\VulkanRHI">
+      <UniqueIdentifier>{c54fc504-5811-45bc-85bb-91e346b2bd10}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\VulkanRHI\vulkanComponents">
+      <UniqueIdentifier>{6b866d8f-e8ce-491d-93f5-c4680e3eaaf7}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="source\main.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="source\delegate\yjw_delegate.cpp">
+      <Filter>source\delegate</Filter>
+    </ClCompile>
+    <ClCompile Include="source\yjw_global_delegate.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="source\WindowManager\yjw_windows_manager.cpp">
+      <Filter>source\WindowsManager</Filter>
+    </ClCompile>
+    <ClCompile Include="source\RenderSystem\yjw_render_system.cpp">
+      <Filter>source\renderSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="source\VulkanRHI\yjw_vulkan_rhi.cpp">
+      <Filter>source\VulkanRHI</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="source\yjw_global_delegate.h">
+      <Filter>source</Filter>
+    </ClInclude>
+    <ClInclude Include="source\delegate\yjw_delegate.h">
+      <Filter>source\delegate</Filter>
+    </ClInclude>
+    <ClInclude Include="source\WindowManager\yjw_windows_manager.h">
+      <Filter>source\WindowsManager</Filter>
+    </ClInclude>
+    <ClInclude Include="source\yjw_startup_helper.h">
+      <Filter>source</Filter>
+    </ClInclude>
+    <ClInclude Include="source\yjw_pre_register.h">
+      <Filter>source</Filter>
+    </ClInclude>
+    <ClInclude Include="source\yjw_application.h">
+      <Filter>source</Filter>
+    </ClInclude>
+    <ClInclude Include="source\RenderSystem\yjw_render_system.h">
+      <Filter>source\renderSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="source\VulkanRHI\yjw_vulkan_rhi.h">
+      <Filter>source\VulkanRHI</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
