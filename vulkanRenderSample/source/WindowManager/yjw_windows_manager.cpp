@@ -9,8 +9,6 @@ const int HEIGHT = 720;
 
 namespace yjw
 {
-    SimpleMulticastDelegate WindowsManager::OnInitializeComplete;
-
     void WindowsManager::initialize()
     {
         glfwInit();
@@ -19,8 +17,6 @@ namespace yjw
         glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
         window = glfwCreateWindow(WIDTH, HEIGHT, "WOW!", nullptr, nullptr);
-
-        OnInitializeComplete.Broadcast();
     }
     void WindowsManager::loop()
     {

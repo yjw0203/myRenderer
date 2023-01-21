@@ -4,12 +4,8 @@
 
 namespace yjw
 {
-    class CoreDelegate
-    {
-    public:
-        static SimpleMulticastDelegate OnApplicationInitialize;
-        static SimpleMulticastDelegate OnApplicationLoop;
-        static SimpleMulticastDelegate OnApplicationShutdown;
-    };
+    EXTERN_DELEGATE(OnApplicationInitializedDelegate);
+    EXTERN_DELEGATE(OnApplicationLoopDelegate);
+    EXTERN_DELEGATE(OnApplicationShutdownDelegate);
 }
-#define RegisterDelegate(Delegate,Func) DelegateRegister(Delegate,Func);
+

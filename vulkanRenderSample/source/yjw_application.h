@@ -1,7 +1,7 @@
 #pragma once
 
 #include "yjw_global_delegate.h"
-#include "yjw_pre_register.h"
+#include "yjw_module_interface.h"
 
 namespace yjw
 {
@@ -10,7 +10,6 @@ namespace yjw
     public:
         void run()
         {
-            yjw::PreRegisterHelper::get().executePreRegister();
             initialize();
             mainLoop();
             cleanup();
@@ -29,17 +28,17 @@ namespace yjw
     private:
         void initialize()
         {
-            CoreDelegate::OnApplicationInitialize.Broadcast();
+            BROADCAST_DELEGATE(OnApplicationInitializedDelegate)
         }
         void mainLoop()
         {
             while (!shouldShutdown) {
-                CoreDelegate::OnApplicationLoop.Broadcast();
+                BROADCAST_DELEGATE(OnApplicationLoopDelegate)
             }
         }
         void cleanup()
         {
-            CoreDelegate::OnApplicationShutdown.Broadcast();
+            BROADCAST_DELEGATE(OnApplicationShutdownDelegate)
         }
 
         bool shouldShutdown = false;

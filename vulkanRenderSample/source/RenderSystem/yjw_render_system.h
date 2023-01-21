@@ -1,12 +1,11 @@
 #pragma once
 
-#include "../yjw_startup_helper.h"
 #include "../yjw_global_delegate.h"
-
+#include "../yjw_module_interface.h"
 
 namespace yjw
 {
-    class RenderSystem
+    class RenderSystem : IModule
     {
     public:
         static RenderSystem& get()
@@ -14,18 +13,19 @@ namespace yjw
             static RenderSystem instance;
             return instance;
         }
-        void startup()
+
+        virtual void startup() override
         {
-            CoreDelegate::OnApplicationInitialize.Register([this] {this->initialize(); });
-            CoreDelegate::OnApplicationLoop.Register([this] {this->tick(); });
-            CoreDelegate::OnApplicationShutdown.Register([this] {this->shutdown(); });
+
         }
 
-    private:
         void initialize();
         void tick();
         void shutdown();
     };
 
-    HelpStartup(RenderSystem)
+    REGISTER_DELEGATE(OnApplicationInitializedDelegate, []() {RenderSystem::get().initialize(); })
+    REGISTER_DELEGATE(OnApplicationLoopDelegate, []() {RenderSystem::get().tick(); })
+    REGISTER_DELEGATE(OnApplicationShutdownDelegate, []() {RenderSystem::get().shutdown(); })
+
 }

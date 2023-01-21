@@ -3,7 +3,7 @@
 #include<vector>
 #include<functional>
 
-namespace yjw
+namespace rhi
 {
 #define _STR_CAT(x,y,z) (x##y##z)
 #define STR_CAT(x,y,z) _STR_CAT(x,y,z)
@@ -32,8 +32,8 @@ namespace yjw
     private:                                                    \
         std::vector<std::function<void(void)> > m_funcs;        \
     };                                                          \
-
-#define REGISTER_DELEGATE(NAME,Func) static int STR_CAT(NAME,__LINE__,DelegateRegister) = (NAME##Delegate::get().Register(Func), 0);
+    
+#define REGISTER_DELEGATE(NAME,Func) void Func(); static int STR_CAT(NAME,__LINE__,DelegateRegister) = (NAME##Delegate::get().Register(Func), 0);
 #define BROADCAST_DELEGATE(NAME) NAME##Delegate::get().Broadcast();
-}
 
+}
