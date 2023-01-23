@@ -17,10 +17,16 @@ namespace rhi
         vkWaitForFences(g_context.device, 1, &inFlightFence, VK_TRUE, UINT64_MAX);
         vkResetFences(g_context.device, 1, &inFlightFence);
         vkAcquireNextImageKHR(g_context.device, g_context.swapchain, UINT64_MAX, imageAvailableSemaphore, VK_NULL_HANDLE, &g_context.swapchainImageIndex);
+
+        VkCommandBufferBeginInfo beginInfo{};
+        beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+        vkBeginCommandBuffer(g_context.commandBuffer, &beginInfo);
     }
 
 	void rhiEndFrame()
 	{
+        vkEndCommandBuffer(g_context.commandBuffer);
+
         VkSubmitInfo submitInfo{};
         submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 
@@ -56,7 +62,7 @@ namespace rhi
         vkQueuePresentKHR(g_context.presentQueue, &presentInfo);
 	}
 
-    void initialize()
+    void initializeSwapchain()
     {
         VkSemaphoreCreateInfo semaphoreInfo{};
         semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
@@ -72,5 +78,5 @@ namespace rhi
         }
     }
 
-    REGISTER_DELEGATE(OnRHIInitializedDelegate,initialize)
+    REGISTER_DELEGATE(OnRHIInitializedDelegate, initializeSwapchain)
 }

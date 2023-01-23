@@ -10,7 +10,6 @@
 
 #include <stdexcept>
 #include <vector>
-#include <optional>
 #include <set>
 #include <algorithm>
 
@@ -24,15 +23,6 @@ namespace rhi
         VK_KHR_SWAPCHAIN_EXTENSION_NAME
     };
 
-    struct QueueFamilyIndices {
-        std::optional<uint32_t> graphicsFamily;
-        std::optional<uint32_t> presentFamily;
-
-        bool isComplete() {
-            return graphicsFamily.has_value() && presentFamily.has_value();
-        }
-    };
-
     QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device);
     void logSupportLayers();
     void createInstance();
@@ -40,6 +30,8 @@ namespace rhi
     void createPhysicalDevice();
     void createLogicalDeviceAndQueues();
     void createSwapchain();
+    void createCommandPool();
+    void createCommandBuffer();
     std::vector<const char*> getRequiredExtensions();
 
     CreateInfo global_info;
@@ -53,6 +45,9 @@ namespace rhi
         createPhysicalDevice();
         createLogicalDeviceAndQueues();
         createSwapchain();
+        createCommandPool();
+        createCommandBuffer();
+
         BROADCAST_DELEGATE(OnRHIInitializedDelegate)
 	}
 
@@ -110,15 +105,14 @@ namespace rhi
         std::vector<VkPhysicalDevice> gpuList(gpuDeviceCount);
         vkEnumeratePhysicalDevices(g_context.instance, &gpuDeviceCount, gpuList.data());
         g_context.gpu = gpuList[1];
+        g_context.queueFamilyIndices = findQueueFamilies(g_context.gpu);
     }
 
     void createLogicalDeviceAndQueues()
     {
         //create logical device and queue
-        QueueFamilyIndices indices = findQueueFamilies(g_context.gpu);
-
         std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
-        std::set<uint32_t> uniqueQueueFamilies = { indices.graphicsFamily.value(), indices.presentFamily.value() };
+        std::set<uint32_t> uniqueQueueFamilies = { g_context.queueFamilyIndices.graphicsFamily.value(), g_context.queueFamilyIndices.presentFamily.value() };
 
         float queuePriority = 1.0f;
         for (uint32_t queueFamily : uniqueQueueFamilies) {
@@ -156,8 +150,8 @@ namespace rhi
             throw std::runtime_error("failed to create logical device!");
         }
 
-        vkGetDeviceQueue(g_context.device, indices.graphicsFamily.value(), 0, &g_context.graphicsQueue);
-        vkGetDeviceQueue(g_context.device, indices.presentFamily.value(), 0, &g_context.presentQueue);
+        vkGetDeviceQueue(g_context.device, g_context.queueFamilyIndices.graphicsFamily.value(), 0, &g_context.graphicsQueue);
+        vkGetDeviceQueue(g_context.device, g_context.queueFamilyIndices.presentFamily.value(), 0, &g_context.presentQueue);
     }
 
     struct SwapChainSupportDetails {
@@ -268,10 +262,9 @@ namespace rhi
         createInfo.imageArrayLayers = 1;
         createInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 
-        QueueFamilyIndices indices = findQueueFamilies(g_context.gpu);
-        uint32_t queueFamilyIndices[] = { indices.graphicsFamily.value(), indices.presentFamily.value() };
+        uint32_t queueFamilyIndices[] = { g_context.queueFamilyIndices.graphicsFamily.value(), g_context.queueFamilyIndices.presentFamily.value() };
 
-        if (indices.graphicsFamily != indices.presentFamily) {
+        if (g_context.queueFamilyIndices.graphicsFamily != g_context.queueFamilyIndices.presentFamily) {
             createInfo.imageSharingMode = VK_SHARING_MODE_CONCURRENT;
             createInfo.queueFamilyIndexCount = 2;
             createInfo.pQueueFamilyIndices = queueFamilyIndices;
@@ -323,6 +316,29 @@ namespace rhi
             if (vkCreateImageView(g_context.device, &createInfo, nullptr, &g_context.swapchainImageViews[i]) != VK_SUCCESS) {
                 throw std::runtime_error("failed to create image views!");
             }
+        }
+    }
+
+    void createCommandPool() {
+        VkCommandPoolCreateInfo poolInfo{};
+        poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
+        poolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
+        poolInfo.queueFamilyIndex = g_context.queueFamilyIndices.graphicsFamily.value();
+
+        if (vkCreateCommandPool(g_context.device, &poolInfo, nullptr, &g_context.commandPool) != VK_SUCCESS) {
+            throw std::runtime_error("failed to create command pool!");
+        }
+    }
+
+    void createCommandBuffer() {
+        VkCommandBufferAllocateInfo allocInfo{};
+        allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+        allocInfo.commandPool = g_context.commandPool;
+        allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+        allocInfo.commandBufferCount = 1;
+
+        if (vkAllocateCommandBuffers(g_context.device, &allocInfo, &g_context.commandBuffer) != VK_SUCCESS) {
+            throw std::runtime_error("failed to allocate command buffers!");
         }
     }
 
