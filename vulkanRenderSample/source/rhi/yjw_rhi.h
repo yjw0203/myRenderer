@@ -16,9 +16,12 @@ namespace rhi
 		Rasterization_default
 	};
 
+	class BuildContext;
 	class DrawItem
 	{
 	public:
+		DrawItem();
+		~DrawItem();
 		void draw();
 		void setRasterizationState(RasterizationState state);
 
@@ -27,8 +30,7 @@ namespace rhi
 		int id = 0;
 		bool dirty = true;
 		void build();
-		DrawItem();
-		~DrawItem();
+		BuildContext* buildContext = nullptr;
 	};
 
 }

@@ -30,8 +30,6 @@ namespace rhi
     void createPhysicalDevice();
     void createLogicalDeviceAndQueues();
     void createSwapchain();
-    void createCommandPool();
-    void createCommandBuffer();
     std::vector<const char*> getRequiredExtensions();
 
     CreateInfo global_info;
@@ -45,8 +43,6 @@ namespace rhi
         createPhysicalDevice();
         createLogicalDeviceAndQueues();
         createSwapchain();
-        createCommandPool();
-        createCommandBuffer();
 
         BROADCAST_DELEGATE(OnRHIInitializedDelegate)
 	}
@@ -316,29 +312,6 @@ namespace rhi
             if (vkCreateImageView(g_context.device, &createInfo, nullptr, &g_context.swapchainImageViews[i]) != VK_SUCCESS) {
                 throw std::runtime_error("failed to create image views!");
             }
-        }
-    }
-
-    void createCommandPool() {
-        VkCommandPoolCreateInfo poolInfo{};
-        poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
-        poolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
-        poolInfo.queueFamilyIndex = g_context.queueFamilyIndices.graphicsFamily.value();
-
-        if (vkCreateCommandPool(g_context.device, &poolInfo, nullptr, &g_context.commandPool) != VK_SUCCESS) {
-            throw std::runtime_error("failed to create command pool!");
-        }
-    }
-
-    void createCommandBuffer() {
-        VkCommandBufferAllocateInfo allocInfo{};
-        allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-        allocInfo.commandPool = g_context.commandPool;
-        allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-        allocInfo.commandBufferCount = 1;
-
-        if (vkAllocateCommandBuffers(g_context.device, &allocInfo, &g_context.commandBuffer) != VK_SUCCESS) {
-            throw std::runtime_error("failed to allocate command buffers!");
         }
     }
 

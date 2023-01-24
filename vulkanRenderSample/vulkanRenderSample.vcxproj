@@ -107,7 +107,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>..\3rd\glfw-3.3.8.bin.WIN64\include;..\3rd\VulkanSDK\1.3.236.0\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\;..\3rd\glfw-3.3.8.bin.WIN64\include;..\3rd\VulkanSDK\1.3.236.0\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
@@ -139,7 +139,9 @@
     <ClCompile Include="source\RenderSystem\yjw_render_system.cpp" />
     <ClCompile Include="source\rhi\vulkan\yjw_vulkan_context.cpp" />
     <ClCompile Include="source\rhi\vulkan\yjw_vulkan_context.h" />
+    <ClCompile Include="source\rhi\vulkan\yjw_vulkan_drawItem.cpp" />
     <ClCompile Include="source\rhi\vulkan\yjw_vulkan_instance.cpp" />
+    <ClCompile Include="source\rhi\vulkan\yjw_vulkan_pipeline.cpp" />
     <ClCompile Include="source\rhi\vulkan\yjw_vulkan_swapchain.cpp" />
     <ClCompile Include="source\WindowManager\yjw_windows_manager.cpp" />
   </ItemGroup>

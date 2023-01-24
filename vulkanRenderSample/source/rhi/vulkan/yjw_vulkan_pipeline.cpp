@@ -74,6 +74,26 @@ namespace rhi
         return renderPass;
     }
 
+    VkFramebuffer createFramebuffer(VkRenderPass renderPass, VkImageView* attachments, int attachment_count, int width, int height)
+    {
+        VkFramebuffer frameBuffer;
+
+        VkFramebufferCreateInfo framebufferInfo{};
+        framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+        framebufferInfo.renderPass = renderPass;
+        framebufferInfo.attachmentCount = attachment_count;
+        framebufferInfo.pAttachments = attachments;
+        framebufferInfo.width = width;
+        framebufferInfo.height = height;
+        framebufferInfo.layers = 1;
+
+        if (vkCreateFramebuffer(g_context.device, &framebufferInfo, nullptr, &frameBuffer) != VK_SUCCESS) {
+            throw std::runtime_error("failed to create framebuffer!");
+        }
+
+        return frameBuffer;
+    }
+
     VkPipelineLayout createPipelineLayout()
     {
         VkPipelineLayout pipelineLayout;
@@ -94,8 +114,8 @@ namespace rhi
     {
         VkPipeline pipeline;
 
-        auto vertShaderCode = readFile("shaders/vert.spv");
-        auto fragShaderCode = readFile("shaders/frag.spv");
+        auto vertShaderCode = readFile("shaders/test_vert.spv");
+        auto fragShaderCode = readFile("shaders/test_frag.spv");
 
         VkShaderModule vertShaderModule = createShaderModule(vertShaderCode);
         VkShaderModule fragShaderModule = createShaderModule(fragShaderCode);

@@ -17,12 +17,12 @@ namespace yjw
         rhi_createinfo.window = WindowsManager::get().window;
         rhi::rhiInit(rhi_createinfo);
     }
+    rhi::DrawItem drawItem;
     void RenderSystem::tick()
     {
-        rhi::rhiBeginFrame();
         WindowsManager::get().loop();
-
-
+        rhi::rhiBeginFrame();
+        drawItem.draw();
         rhi::rhiEndFrame();
     }
     void RenderSystem::shutdown()

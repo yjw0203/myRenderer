@@ -27,8 +27,7 @@ namespace rhi
 		VkQueue presentQueue;
 
 		//command
-		VkCommandPool commandPool;
-		VkCommandBuffer commandBuffer;
+		std::vector<VkCommandBuffer> commandBufferList;
 
 		//swapchain
 		VkSwapchainKHR swapchain;
@@ -39,7 +38,7 @@ namespace rhi
 		uint32_t swapchainImageIndex;
 
 		//debug
-		bool isDebugMode = true;
+		bool isDebugMode = false;
 	};
 	extern GlobalContext g_context;
 

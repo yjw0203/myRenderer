@@ -18,14 +18,11 @@ namespace rhi
         vkResetFences(g_context.device, 1, &inFlightFence);
         vkAcquireNextImageKHR(g_context.device, g_context.swapchain, UINT64_MAX, imageAvailableSemaphore, VK_NULL_HANDLE, &g_context.swapchainImageIndex);
 
-        VkCommandBufferBeginInfo beginInfo{};
-        beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-        vkBeginCommandBuffer(g_context.commandBuffer, &beginInfo);
+        g_context.commandBufferList.clear();
     }
 
 	void rhiEndFrame()
 	{
-        vkEndCommandBuffer(g_context.commandBuffer);
 
         VkSubmitInfo submitInfo{};
         submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
@@ -36,8 +33,8 @@ namespace rhi
         submitInfo.pWaitSemaphores = waitSemaphores;
         submitInfo.pWaitDstStageMask = waitStages;
 
-        submitInfo.commandBufferCount = 0;//1;
-        submitInfo.pCommandBuffers = nullptr;//&commandBuffer;
+        submitInfo.commandBufferCount = g_context.commandBufferList.size();
+        submitInfo.pCommandBuffers = g_context.commandBufferList.data();
 
         VkSemaphore signalSemaphores[] = { renderFinishedSemaphore };
         submitInfo.signalSemaphoreCount = 1;
