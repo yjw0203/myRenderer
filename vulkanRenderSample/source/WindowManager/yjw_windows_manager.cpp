@@ -4,7 +4,7 @@
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 
-const int WIDTH = 1280;
+const int WIDTH = 720;
 const int HEIGHT = 720;
 
 namespace yjw
