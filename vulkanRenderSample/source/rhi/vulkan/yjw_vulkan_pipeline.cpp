@@ -110,7 +110,7 @@ namespace rhi
         return pipelineLayout;
     }
 
-    VkPipeline createPipeline(VkPipelineLayout &pipelineLayout, VkRenderPass &renderPass)
+    VkPipeline createPipeline(VkPipelineLayout &pipelineLayout, VkRenderPass &renderPass, RasterizationState rasterizationState)
     {
         VkPipeline pipeline;
 
@@ -149,16 +149,6 @@ namespace rhi
         viewportState.viewportCount = 1;
         viewportState.scissorCount = 1;
 
-        VkPipelineRasterizationStateCreateInfo rasterizer{};
-        rasterizer.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
-        rasterizer.depthClampEnable = VK_FALSE;
-        rasterizer.rasterizerDiscardEnable = VK_FALSE;
-        rasterizer.polygonMode = VK_POLYGON_MODE_FILL;
-        rasterizer.lineWidth = 1.0f;
-        rasterizer.cullMode = VK_CULL_MODE_BACK_BIT;
-        rasterizer.frontFace = VK_FRONT_FACE_CLOCKWISE;
-        rasterizer.depthBiasEnable = VK_FALSE;
-
         VkPipelineMultisampleStateCreateInfo multisampling{};
         multisampling.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
         multisampling.sampleShadingEnable = VK_FALSE;
@@ -195,7 +185,7 @@ namespace rhi
         pipelineInfo.pVertexInputState = &vertexInputInfo;
         pipelineInfo.pInputAssemblyState = &inputAssembly;
         pipelineInfo.pViewportState = &viewportState;
-        pipelineInfo.pRasterizationState = &rasterizer;
+        pipelineInfo.pRasterizationState = &g_pipelineStateTable.rasterizationState[rasterizationState];
         pipelineInfo.pMultisampleState = &multisampling;
         pipelineInfo.pColorBlendState = &colorBlending;
         pipelineInfo.pDynamicState = &dynamicState;

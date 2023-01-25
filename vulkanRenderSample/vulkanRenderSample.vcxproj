@@ -140,8 +140,10 @@
     <ClCompile Include="source\rhi\vulkan\yjw_vulkan_context.cpp" />
     <ClCompile Include="source\rhi\vulkan\yjw_vulkan_context.h" />
     <ClCompile Include="source\rhi\vulkan\yjw_vulkan_drawItem.cpp" />
+    <ClCompile Include="source\rhi\vulkan\yjw_vulkan_image.cpp" />
     <ClCompile Include="source\rhi\vulkan\yjw_vulkan_instance.cpp" />
     <ClCompile Include="source\rhi\vulkan\yjw_vulkan_pipeline.cpp" />
+    <ClCompile Include="source\rhi\vulkan\yjw_vulkan_rasterization_state_table.cpp" />
     <ClCompile Include="source\rhi\vulkan\yjw_vulkan_swapchain.cpp" />
     <ClCompile Include="source\WindowManager\yjw_windows_manager.cpp" />
   </ItemGroup>

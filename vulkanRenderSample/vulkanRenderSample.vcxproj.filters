@@ -51,6 +51,12 @@
     <ClCompile Include="source\rhi\vulkan\yjw_vulkan_drawItem.cpp">
       <Filter>source\rhi\vulkan</Filter>
     </ClCompile>
+    <ClCompile Include="source\rhi\vulkan\yjw_vulkan_rasterization_state_table.cpp">
+      <Filter>source\rhi\vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="source\rhi\vulkan\yjw_vulkan_image.cpp">
+      <Filter>source\rhi\vulkan</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\yjw_global_delegate.h">

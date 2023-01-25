@@ -13,7 +13,8 @@ namespace rhi
 
 	enum RasterizationState
 	{
-		Rasterization_default
+		Rasterization_default,
+		Rasterization_count
 	};
 
 	class BuildContext;
@@ -31,6 +32,21 @@ namespace rhi
 		bool dirty = true;
 		void build();
 		BuildContext* buildContext = nullptr;
+
+		friend class BuildContext;
 	};
 
+	class ImageContext;
+	class Image
+	{
+	public:
+		Image(int width,int height);
+		~Image();
+	private:
+		ImageContext* imageContext = nullptr;
+		int width;
+		int height;
+
+		friend class ImageContext;
+	};
 }

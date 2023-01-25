@@ -1,3 +1,6 @@
+#pragma once
+
+#include "../yjw_rhi.h"
 #include "vulkan/vulkan.h"
 #include "yjw_vulkan_delegate.h"
 #include <vector>
@@ -41,6 +44,14 @@ namespace rhi
 		bool isDebugMode = false;
 	};
 	extern GlobalContext g_context;
+
+	class PipelineStateTable
+	{
+	public:
+		VkPipelineRasterizationStateCreateInfo rasterizationState[RasterizationState::Rasterization_count];
+
+	};
+	extern PipelineStateTable g_pipelineStateTable;
 
 	EXTERN_DELEGATE(OnRHIInitializedDelegate)
 }

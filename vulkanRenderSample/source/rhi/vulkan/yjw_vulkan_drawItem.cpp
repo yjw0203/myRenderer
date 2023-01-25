@@ -53,7 +53,7 @@ namespace rhi
 
 			renderPass = createRenderPass();
 			pipelineLayout = createPipelineLayout();
-			pipeline = createPipeline(pipelineLayout, renderPass);
+			pipeline = createPipeline(pipelineLayout, renderPass, item->rasterizationState);
 			frameBuffer = createFramebuffer(renderPass, g_context.swapchainImageViews.data() + g_context.swapchainImageIndex, 1, g_context.swapchainExtent.width, g_context.swapchainExtent.height);
 		}
 
@@ -76,7 +76,6 @@ namespace rhi
 			renderPassInfo.clearValueCount = 1;
 			renderPassInfo.pClearValues = &clearColor;
 
-			vkCmdBeginRenderPass(commandBuffer[2], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
 			vkCmdBindPipeline(commandBuffer[2], VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
 
@@ -94,6 +93,7 @@ namespace rhi
 			scissor.extent = g_context.swapchainExtent;
 			vkCmdSetScissor(commandBuffer[2], 0, 1, &scissor);
 
+			vkCmdBeginRenderPass(commandBuffer[2], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 			vkCmdDraw(commandBuffer[2], 3, 1, 0, 0);
 			vkCmdEndRenderPass(commandBuffer[2]);
 
@@ -123,7 +123,7 @@ namespace rhi
 
 	void DrawItem::build()
 	{
-		//if (dirty)
+		if (dirty)
 		{
 			//prepare command buffer
 			delete buildContext;
