@@ -1,8 +1,8 @@
 #pragma once
 
 #include "yjw_render_system.h"
-#include "../rhi/yjw_rhi.h"
-#include "../WindowManager/yjw_windows_manager.h"
+#include "rhi/yjw_rhi.h"
+#include "client/WindowManager/yjw_windows_manager.h"
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 

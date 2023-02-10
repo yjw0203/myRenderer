@@ -1,4 +1,4 @@
-#include "../yjw_rhi.h"
+#include "rhi/yjw_rhi.h"
 #include "yjw_vulkan_context.h"
 
 namespace rhi
@@ -15,8 +15,8 @@ namespace rhi
         rasterizer.frontFace = VK_FRONT_FACE_CLOCKWISE;
         rasterizer.depthBiasEnable = VK_FALSE;
 
-		g_pipelineStateTable.rasterizationState[RasterizationState::Rasterization_default] = rasterizer;
-	}
+        g_pipelineStateTable.rasterizationState[RasterizationState::Rasterization_default] = rasterizer;
+    }
 
-	REGISTER_DELEGATE(OnRHIInitializedDelegate, initializeRasterizationState)
+    REGISTER_DELEGATE(OnRHIInitializedDelegate, initializeRasterizationState)
 }

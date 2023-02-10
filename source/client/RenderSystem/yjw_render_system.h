@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../yjw_global_delegate.h"
-#include "../yjw_module_interface.h"
+#include "client/yjw_global_delegate.h"
+#include "client/yjw_module_interface.h"
 
 namespace yjw
 {

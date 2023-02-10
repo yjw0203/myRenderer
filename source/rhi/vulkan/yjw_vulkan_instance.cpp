@@ -1,4 +1,4 @@
-#include "../yjw_rhi.h"
+#include "rhi/yjw_rhi.h"
 
 #include "yjw_vulkan_functions.h"
 #include "yjw_vulkan_context.h"
@@ -100,7 +100,7 @@ namespace rhi
         vkEnumeratePhysicalDevices(g_context.instance, &gpuDeviceCount, nullptr);
         std::vector<VkPhysicalDevice> gpuList(gpuDeviceCount);
         vkEnumeratePhysicalDevices(g_context.instance, &gpuDeviceCount, gpuList.data());
-        g_context.gpu = gpuList[1];
+        g_context.gpu = gpuList[0];
         g_context.queueFamilyIndices = findQueueFamilies(g_context.gpu);
     }
 

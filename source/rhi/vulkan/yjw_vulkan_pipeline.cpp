@@ -1,4 +1,4 @@
-#include "../yjw_rhi.h"
+#include "rhi/yjw_rhi.h"
 
 #include "yjw_vulkan_delegate.h"
 #include "yjw_vulkan_context.h"
@@ -8,6 +8,8 @@
 #include <fstream>
 
 #include "vulkan/vulkan.h"
+
+#include "generate/projectInfo.h"
 
 namespace rhi
 {
@@ -114,8 +116,8 @@ namespace rhi
     {
         VkPipeline pipeline;
 
-        auto vertShaderCode = readFile("shaders/test_vert.spv");
-        auto fragShaderCode = readFile("shaders/test_frag.spv");
+        auto vertShaderCode = readFile(SHADER_FILE(test_vert.spv));
+        auto fragShaderCode = readFile(SHADER_FILE(test_frag.spv));
 
         VkShaderModule vertShaderModule = createShaderModule(vertShaderCode);
         VkShaderModule fragShaderModule = createShaderModule(fragShaderCode);

@@ -1,5 +1,5 @@
 #include "yjw_windows_manager.h"
-#include "../yjw_application.h"
+#include "client/yjw_application.h"
 
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
