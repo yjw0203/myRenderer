@@ -10,7 +10,7 @@ message( STATUS "host system: ${CMAKE_HOST_SYSTEM_NAME} (${CMAKE_HOST_SYSTEM_VER
 project( "Renderer" VERSION 2023.1.31 LANGUAGES C CXX )
 
 ## language standard
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 
 ## 3rd party
 set(vulkan_include ${CMAKE_CURRENT_SOURCE_DIR}/3rd/VulkanSDK/1.3.231.1/Include)
