@@ -1,6 +1,7 @@
 #pragma once
 #include "vulkan/vulkan.h"
 #include "rhi/rhi/yjw_rhi_pipeline_state.h"
+#include "rhi/rhi/yjw_rhi_header.h"
 namespace rhi
 {
 
@@ -68,4 +69,35 @@ namespace rhi
         VkPipelineColorBlendStateCreateInfo colorBlendState[ColorBlendState::ColorBlend_count];
     };
 
+    struct VulkanPipelineDesc
+    {
+        std::vector<RHIResourceView*>* rtvs;
+        RHIResourceView* dsv;
+        RHIShaderView* vs;
+        RHIShaderView* ps;
+        RasterizationState rasterizationState;
+        ColorBlendState colorBlendState;
+
+
+    };
+
+    class VulkanPipelineStateObject
+    {
+    public:
+        void build(VulkanPipelineDesc& desc);
+        void clear();
+        VkPipeline& getVkPipeline();
+        VkFramebuffer& getVkFramebuffer();
+        VkRenderPass& getVkRenderPass();
+        VkPipelineLayout& getVkPipelineLayout();
+        std::vector<VkDescriptorSet>& getVkDescriptorSets();
+    private:
+        VkRenderPass renderPass;
+        std::vector<VkDescriptorSetLayout> descriptorSetLayouts;
+        std::vector<VkDescriptorSet> descriptorSets;
+        VkPipelineLayout pipelineLayout;
+        VkPipeline pipeline;
+        VkFramebuffer frameBuffer;
+        VkDescriptorPool descriptorPool;
+    };
 }

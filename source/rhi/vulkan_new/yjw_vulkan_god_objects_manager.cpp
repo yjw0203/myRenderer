@@ -15,6 +15,7 @@
 #include <vector>
 #include <set>
 #include <algorithm>
+#include <array>
 
 namespace rhi
 {
@@ -28,6 +29,7 @@ namespace rhi
     void createLogicalDeviceAndQueues();
     void createSwapchain();
     void initializeSwapchain();
+    void createDefaultSampler();
     std::vector<const char*> getRequiredExtensions();
 
     void VulkanGod::initialize(CreateInfo info)
@@ -41,6 +43,7 @@ namespace rhi
         VulkanCommandBufferAllocater::Get().initialize();
         createSwapchain();
         initializeSwapchain();
+        createDefaultSampler();
     }
 
     void VulkanGod::beginFrame()
@@ -48,8 +51,18 @@ namespace rhi
         vkWaitForFences(device, 1, &inFlightFence, VK_TRUE, UINT64_MAX);
         vkResetFences(device, 1, &inFlightFence);
         vkAcquireNextImageKHR(device, swapchain, UINT64_MAX, imageAvailableSemaphore, VK_NULL_HANDLE, &swapchainImageIndex);
-        VulkanCommandBufferAllocater::Get().resetOneTimeCommandBuffer();
-        commandBufferList.clear();
+        
+        static int x = 1;
+        if (x)
+        {
+            x = 0;
+        }
+        else
+        {
+            VulkanCommandBufferAllocater::Get().resetOneTimeCommandBuffer();
+            commandBufferList.clear();
+        }
+
 
         VkCommandBufferBeginInfo beginInfo{};
         beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
@@ -219,8 +232,8 @@ namespace rhi
             createInfo.enabledLayerCount = 0;
             createInfo.ppEnabledLayerNames = nullptr;
         }
-
-        if (vkCreateDevice(vulkanGod.gpu, &createInfo, nullptr, &vulkanGod.device) != VK_SUCCESS) {
+        VkResult re = vkCreateDevice(vulkanGod.gpu, &createInfo, nullptr, &vulkanGod.device);
+        if (re != VK_SUCCESS) {
             throw std::runtime_error("failed to create logical device!");
         }
 
@@ -459,6 +472,34 @@ namespace rhi
         }
     }
 
+    void createDefaultSampler()
+    {
+        VkPhysicalDeviceProperties properties{};
+        vkGetPhysicalDeviceProperties(vulkanGod.gpu, &properties);
+
+        VkSamplerCreateInfo samplerInfo{};
+        samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
+        samplerInfo.magFilter = VK_FILTER_LINEAR;
+        samplerInfo.minFilter = VK_FILTER_LINEAR;
+        samplerInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+        samplerInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+        samplerInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+        samplerInfo.anisotropyEnable = VK_FALSE;
+        samplerInfo.maxAnisotropy = properties.limits.maxSamplerAnisotropy;
+        samplerInfo.borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK;
+        samplerInfo.unnormalizedCoordinates = VK_FALSE;
+        samplerInfo.compareEnable = VK_FALSE;
+        samplerInfo.compareOp = VK_COMPARE_OP_ALWAYS;
+        samplerInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
+        samplerInfo.minLod = 0.0f;
+        samplerInfo.maxLod = 1.0f;
+        samplerInfo.mipLodBias = 0.0f;
+
+        if (vkCreateSampler(vulkanGod.device, &samplerInfo, nullptr, &vulkanGod.defaultSampler) != VK_SUCCESS) {
+            throw std::runtime_error("failed to create texture sampler!");
+        }
+    }
+
     VkRenderPass createRenderPass(std::vector<RHIResourceView*>& rtvs, RHIResourceView* dsv)
     {
         if (rtvs.size() == 0 && !dsv)
@@ -524,6 +565,135 @@ namespace rhi
         return renderPass;
     }
 
+    void createDescriptorLayoutSets(VkDescriptorPool& descriptorPool, std::vector<VkDescriptorSetLayout>& descriptorSetLayouts,std::vector<VkDescriptorSet>& descriptorSets , RHIShaderView* vs, RHIShaderView* ps)
+    {
+        struct ShaderInfo
+        {
+            RHIShaderView* shader;
+            VkShaderStageFlagBits stage;
+        };
+        std::vector<ShaderInfo> shaders = { {vs,VK_SHADER_STAGE_VERTEX_BIT},{ps,VK_SHADER_STAGE_FRAGMENT_BIT} };
+
+        int count_set = 0;
+        for (ShaderInfo& shader : shaders)
+        {
+            if (shader.shader)
+            {
+                const VulkanShaderReflectionData& reflect = ((VulkanShaderLocation*)shader.shader->getShader()->shaderLocation)->getReflectData();
+                count_set += reflect.setCount;
+            }
+        }
+
+        //layout
+        std::vector<std::vector<VkDescriptorSetLayoutBinding>> setLayoutBindings(count_set);
+        int current_set_offset = 0;
+        int count_sampler2D = 0;
+        for (ShaderInfo& shader : shaders)
+        {
+            if (shader.shader)
+            {
+                const VulkanShaderReflectionData& reflect = ((VulkanShaderLocation*)shader.shader->getShader()->shaderLocation)->getReflectData();
+                //sampler2D
+                for (uint32_t i = 0; i < reflect.sampler2Ds.size(); i++)
+                {
+                    VkDescriptorSetLayoutBinding layoutBinding = {};
+                    layoutBinding.binding = reflect.sampler2Ds[i].binding;
+                    layoutBinding.descriptorCount = 1;
+                    layoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+                    layoutBinding.pImmutableSamplers = nullptr;
+                    layoutBinding.stageFlags = shader.stage;
+                    setLayoutBindings[current_set_offset + reflect.sampler2Ds[i].set].push_back(layoutBinding);
+                    count_sampler2D++;
+                }
+
+                //uniform
+
+                current_set_offset += reflect.setCount;
+            }
+        }
+
+        descriptorSetLayouts.resize(count_set);
+        for (int i = 0; i < count_set; i++)
+        {
+            VkDescriptorSetLayoutCreateInfo layoutInfo = {};
+            layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+            layoutInfo.bindingCount = setLayoutBindings[i].size();
+            layoutInfo.pBindings = setLayoutBindings[i].data();
+
+            vkCreateDescriptorSetLayout(vulkanGod.device, &layoutInfo, nullptr, &descriptorSetLayouts[i]);
+        }
+
+
+        //poor
+        std::array<VkDescriptorPoolSize, 1> poolSizes{};
+        poolSizes[0].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+        poolSizes[0].descriptorCount = count_sampler2D;
+        //poolSizes[1].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+        //poolSizes[1].descriptorCount = 0;
+
+        VkDescriptorPoolCreateInfo poolInfo{};
+        poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
+        poolInfo.poolSizeCount = static_cast<uint32_t>(poolSizes.size());
+        poolInfo.pPoolSizes = poolSizes.data();
+        poolInfo.maxSets = count_set;
+
+        if (vkCreateDescriptorPool(vulkanGod.device, &poolInfo, nullptr, &descriptorPool) != VK_SUCCESS) {
+            throw std::runtime_error("failed to create descriptor pool!");
+        }
+
+        //set
+        descriptorSets.resize(count_set);
+        VkDescriptorSetAllocateInfo allocInfo{};
+        allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+        allocInfo.descriptorPool = descriptorPool;
+        allocInfo.descriptorSetCount = descriptorSets.size();
+        allocInfo.pSetLayouts = descriptorSetLayouts.data();
+
+        if (vkAllocateDescriptorSets(vulkanGod.device, &allocInfo, descriptorSets.data()) != VK_SUCCESS) {
+            throw std::runtime_error("failed to allocate descriptor sets!");
+        }
+
+        //descriptor write
+        current_set_offset = 0;
+        std::vector<VkWriteDescriptorSet> descriptorWrites;
+        for (ShaderInfo& shader : shaders)
+        {
+            if (shader.shader)
+            {
+                const VulkanShaderReflectionData& reflect = ((VulkanShaderLocation*)shader.shader->getShader()->shaderLocation)->getReflectData();
+
+                //sampler2D
+                for (uint32_t i = 0; i < reflect.sampler2Ds.size(); i++)
+                {
+                    if (!shader.shader->getData().texture2Ds.count(reflect.sampler2Ds[i].name))
+                    {
+                        continue;
+                    }
+
+                    VkDescriptorImageInfo imageInfo{};
+                    imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+                    imageInfo.imageView = *((VulkanResourceViewLocation*)shader.shader->getData().texture2Ds[reflect.sampler2Ds[i].name]->resourceViewLocation)->getVkImageView();
+                    imageInfo.sampler = vulkanGod.defaultSampler;
+                    
+                    VkWriteDescriptorSet write{};
+                    write.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+                    write.dstSet = descriptorSets[current_set_offset + reflect.sampler2Ds[i].set];
+                    write.dstBinding = reflect.sampler2Ds[i].binding;
+                    write.dstArrayElement = 0;
+                    write.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+                    write.descriptorCount = 1;
+                    write.pImageInfo = &imageInfo;
+                    descriptorWrites.push_back(write);
+                }
+
+                //uniform
+
+                current_set_offset += reflect.setCount;
+            }
+        }
+        vkUpdateDescriptorSets(vulkanGod.device, static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
+    }
+
     VkFramebuffer createFramebuffer(VkRenderPass renderPass, std::vector<RHIResourceView*>& rtvs, RHIResourceView* dsv, int width, int height)
     {
         VkFramebuffer frameBuffer;
@@ -553,13 +723,14 @@ namespace rhi
         return frameBuffer;
     }
 
-    VkPipelineLayout createPipelineLayout()
+    VkPipelineLayout createPipelineLayout(std::vector<VkDescriptorSetLayout>& descriptorSetLayouts)
     {
         VkPipelineLayout pipelineLayout;
 
         VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
         pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-        pipelineLayoutInfo.setLayoutCount = 0;
+        pipelineLayoutInfo.setLayoutCount = descriptorSetLayouts.size();
+        pipelineLayoutInfo.pSetLayouts = descriptorSetLayouts.data();
         pipelineLayoutInfo.pushConstantRangeCount = 0;
 
         if (vkCreatePipelineLayout(vulkanGod.device, &pipelineLayoutInfo, nullptr, &pipelineLayout) != VK_SUCCESS) {
@@ -629,14 +800,14 @@ namespace rhi
         return pipeline;
     }
 
-    VkPipelineShaderStageCreateInfo PipelineShaderStageCreateInfo(RHIShader* shader, VkShaderStageFlagBits stage)
+    VkPipelineShaderStageCreateInfo PipelineShaderStageCreateInfo(RHIShaderView* shaderView, VkShaderStageFlagBits stage)
     {
-        VulkanShaderLocation* vulkanShaderLocation = (VulkanShaderLocation*)shader->shaderLocation;
+        VulkanShaderLocation* vulkanShaderLocation = (VulkanShaderLocation*)shaderView->getShader()->shaderLocation;
         VkPipelineShaderStageCreateInfo info{};
         info.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
         info.stage = stage;
         info.module = vulkanShaderLocation->getShaderModule();
-        info.pName = shader->rhiShaderDesc.entry;
+        info.pName = shaderView->getEntry().c_str();
         return info;
     }
 

@@ -41,15 +41,15 @@ namespace rhi
         return this;
     }
 
-    DefaultDrawTemplate* DefaultDrawTemplate::setVertexShader(RHIShader* shader)
+    DefaultDrawTemplate* DefaultDrawTemplate::setVertexShaderView(RHIShaderView* shaderView)
     {
-        vertexShader = shader;
+        vertexShaderView = shaderView;
         return this;
     }
 
-    DefaultDrawTemplate* DefaultDrawTemplate::setPixelShader(RHIShader* shader)
+    DefaultDrawTemplate* DefaultDrawTemplate::setPixelShaderView(RHIShaderView* shaderView)
     {
-        pixelShader = shader;
+        pixelShaderView = shaderView;
         return this;
     }
 
@@ -75,14 +75,14 @@ namespace rhi
         return colorBlendState;
     }
 
-    RHIShader* DefaultDrawTemplate::getVertexShader()
+    RHIShaderView* DefaultDrawTemplate::getVertexShaderView()
     {
-        return vertexShader;
+        return vertexShaderView;
     }
 
-    RHIShader* DefaultDrawTemplate::getPixelShader()
+    RHIShaderView* DefaultDrawTemplate::getPixelShaderView()
     {
-        return pixelShader;
+        return pixelShaderView;
     }
 
     std::vector<RHIResourceView*>* DefaultDrawTemplate::getRenderTargetViews()

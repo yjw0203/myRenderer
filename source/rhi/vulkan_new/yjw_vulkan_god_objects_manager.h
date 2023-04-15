@@ -49,6 +49,9 @@ namespace rhi
         //debug
         bool isDebugMode = true;
 
+        //other
+        VkSampler defaultSampler;
+
         void initialize(CreateInfo info);
         void beginFrame();
         void endFrame(RHIResource* present_texture);
@@ -56,14 +59,15 @@ namespace rhi
     extern VulkanGod vulkanGod;
 
     VkRenderPass createRenderPass(std::vector<RHIResourceView*>& rtvs, RHIResourceView* dsv);
+    void createDescriptorLayoutSets(VkDescriptorPool& descriptorPool, std::vector<VkDescriptorSetLayout>& descriptorSetLayouts, std::vector<VkDescriptorSet>& descriptorSets, RHIShaderView* vs, RHIShaderView* ps);
     VkFramebuffer createFramebuffer(VkRenderPass renderPass, std::vector<RHIResourceView*>& rtvs, RHIResourceView* dsv, int width, int height);
-    VkPipelineLayout createPipelineLayout();
+    VkPipelineLayout createPipelineLayout(std::vector<VkDescriptorSetLayout>& descriptorSetLayouts);
     VkPipeline createPipeline(VkPipelineLayout& pipelineLayout,
         VkRenderPass& renderPass,
         RasterizationState rasterizationState,
         ColorBlendState colorBlendState,
         std::vector<VkPipelineShaderStageCreateInfo>& shaderStages);
-    VkPipelineShaderStageCreateInfo PipelineShaderStageCreateInfo(RHIShader* shader, VkShaderStageFlagBits stage);
+    VkPipelineShaderStageCreateInfo PipelineShaderStageCreateInfo(RHIShaderView* shader, VkShaderStageFlagBits stage);
     void transitionImageLayout(VkCommandBuffer& commandBuffer, VkImage image, VkImageLayout oldLayout, VkImageLayout newLayout);
 
 }

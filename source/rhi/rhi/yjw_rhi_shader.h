@@ -1,5 +1,7 @@
 #pragma once
 #include <string>
+#include <unordered_map>
+#include "yjw_rhi_resource_view.h"
 
 namespace rhi
 {
@@ -12,13 +14,9 @@ namespace rhi
 
     struct RHIShaderDesc
     {
-        RHIShaderType type;
-        char filePath[128];
-        char entry[32];
-        RHIShaderDesc(RHIShaderType in_type, const char* in_filePath, const char* in_entry) : type(in_type)
+        std::string filePath;
+        RHIShaderDesc(std::string in_filePath) : filePath(in_filePath)
         {
-            strcpy(filePath, in_filePath);
-            strcpy(entry, in_entry);
         }
     };
 
@@ -27,10 +25,34 @@ namespace rhi
     class RHIShader
     {
     public:
-        RHIShader(RHIShaderType type, const char* filePath, const char* entry);
+        RHIShader(std::string filePath);
         virtual ~RHIShader();
         const RHIShaderDesc rhiShaderDesc;
         RHIShaderLocation* shaderLocation = nullptr;
+    };
+
+    struct RHIShaderViewData
+    {
+        std::unordered_map<std::string, RHIResourceView*>texture2Ds;
+        //std::unordered_map<std::string, RHISampler*>sampler2Ds;
+    };
+
+    class RHIShaderView
+    {
+    public:
+        RHIShaderView(RHIShader* shader, RHIShaderType type, std::string entry);
+
+        RHIShader* getShader();
+        RHIShaderType getType();
+        std::string& getEntry();
+        RHIShaderViewData& getData();
+
+        void setDataTexture(std::string varName,RHIResourceView* view);
+    private:
+        RHIShader* shader = nullptr;
+        RHIShaderType type;
+        std::string entry;
+        RHIShaderViewData data;
     };
 
 }

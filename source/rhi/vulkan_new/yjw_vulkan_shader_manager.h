@@ -1,13 +1,13 @@
 #pragma once
 
 #include "rhi/rhi/yjw_rhi_shader.h"
+#include "yjw_vulkan_shader_reflection.h"
 #include "vulkan/vulkan.h"
 
 namespace rhi
 {
     struct VulkanShaderDesc
     {
-        RHIShaderType type;
     };
 
     class VulkanShaderLocation : public RHIShaderLocation
@@ -15,10 +15,12 @@ namespace rhi
         friend class VulkanShaderManager;
     public:
         const VulkanShaderDesc& getDesc();
+        const VulkanShaderReflectionData& getReflectData();
         VkShaderModule getShaderModule();
     private:
         VulkanShaderDesc desc;
         VkShaderModule shaderModule;
+        VulkanShaderReflectionData reflectData;
     };
 
     class VulkanShaderManager

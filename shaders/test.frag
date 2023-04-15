@@ -4,7 +4,7 @@ layout(location = 0) in vec4 pos;
 layout(location = 1) in vec4 color;
 
 layout(location = 0) out vec4 outColor;
-
+layout(set = 0,binding = 0) uniform sampler2D myTexture;
 void main() {
     float x=pos.x * 2.0;
     float y=-pos.y * 2.0;
@@ -15,6 +15,6 @@ void main() {
     }
     else
     {
-        outColor = vec4(0.0,0.0,0.0,1.0);
+        outColor = texture(myTexture,vec2(0.5,0.5));
     }
 }

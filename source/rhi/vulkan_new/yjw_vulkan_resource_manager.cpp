@@ -1,6 +1,7 @@
 #include "yjw_vulkan_resource_manager.h"
 #include "yjw_vulkan_type_conversion.h"
 #include "yjw_vulkan_god_objects_manager.h"
+#include "yjw_vulkan_command_buffer_manager.h"
 
 namespace rhi
 {
@@ -72,6 +73,19 @@ namespace rhi
             vkAllocateMemory(vulkanGod.device, &allocInfo, nullptr, &resource->memory);
 
             vkBindImageMemory(vulkanGod.device, resource->image, resource->memory, 0);
+            
+
+            {
+                //will be remove after resource barrier done
+                if (rhi_desc.usage == 0)
+                {
+                    VkCommandBuffer commandBuffer = VulkanCommandBufferAllocater::Get().beginOneTimeCommandBuffer();
+
+                    transitionImageLayout(commandBuffer, resource->image, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+
+                    VulkanCommandBufferAllocater::Get().endOneTimeCommandBuffer(commandBuffer);
+                }
+            }
         }
         else if (desc.type == RHIResourceType::texture3D)
         {

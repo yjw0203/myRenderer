@@ -17,12 +17,15 @@ namespace rhi
         // build objects
         VulkanCommandBufferAllocater::Get().allocate(buildCache->commandBuffer);
 
-        std::vector<VkPipelineShaderStageCreateInfo> shader_infos{ PipelineShaderStageCreateInfo(draw_template->getVertexShader(),VK_SHADER_STAGE_VERTEX_BIT),PipelineShaderStageCreateInfo(draw_template->getPixelShader(),VK_SHADER_STAGE_FRAGMENT_BIT)};
+        VulkanPipelineDesc pipelineDesc{};
+        pipelineDesc.rtvs = draw_template->getRenderTargetViews();
+        pipelineDesc.dsv = draw_template->getDepthStencilView();
+        pipelineDesc.rasterizationState = draw_template->getRasterizationState();
+        pipelineDesc.colorBlendState = draw_template->getColorBlendState();
+        pipelineDesc.vs = draw_template->getVertexShaderView();
+        pipelineDesc.ps = draw_template->getPixelShaderView();
 
-        buildCache->renderPass = createRenderPass(*draw_template->getRenderTargetViews(), draw_template->getDepthStencilView());
-        buildCache->pipelineLayout = createPipelineLayout();
-        buildCache->pipeline = createPipeline(buildCache->pipelineLayout, buildCache->renderPass, draw_template->getRasterizationState(), draw_template->getColorBlendState(), shader_infos);
-        buildCache->frameBuffer = createFramebuffer(buildCache->renderPass, *draw_template->getRenderTargetViews(), draw_template->getDepthStencilView(), vulkanGod.swapchainExtent.width, vulkanGod.swapchainExtent.height);
+        buildCache->pso.build(pipelineDesc);
 
         //record command buffer
 
@@ -32,8 +35,8 @@ namespace rhi
 
         VkRenderPassBeginInfo renderPassInfo{};
         renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-        renderPassInfo.renderPass = buildCache->renderPass;
-        renderPassInfo.framebuffer = buildCache->frameBuffer;
+        renderPassInfo.renderPass = buildCache->pso.getVkRenderPass();
+        renderPassInfo.framebuffer = buildCache->pso.getVkFramebuffer();
         renderPassInfo.renderArea.offset = { 0, 0 };
         renderPassInfo.renderArea.extent = vulkanGod.swapchainExtent;
 
@@ -42,7 +45,7 @@ namespace rhi
         renderPassInfo.pClearValues = &clearColor;
 
 
-        vkCmdBindPipeline(buildCache->commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, buildCache->pipeline);
+        vkCmdBindPipeline(buildCache->commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, buildCache->pso.getVkPipeline());
 
         VkViewport viewport{};
         viewport.x = 0.0f;
@@ -59,6 +62,7 @@ namespace rhi
         vkCmdSetScissor(buildCache->commandBuffer, 0, 1, &scissor);
 
         vkCmdBeginRenderPass(buildCache->commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+        vkCmdBindDescriptorSets(buildCache->commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, buildCache->pso.getVkPipelineLayout(), 0, buildCache->pso.getVkDescriptorSets().size(), buildCache->pso.getVkDescriptorSets().data(), 0, nullptr);
         vkCmdDraw(buildCache->commandBuffer, 3, 1, 0, 0);
         vkCmdEndRenderPass(buildCache->commandBuffer);
 
@@ -71,10 +75,7 @@ namespace rhi
         VulkanDefaultDrawTemplateBuildCache* vulkanBuildCache = (VulkanDefaultDrawTemplateBuildCache*)draw_template_cache;
 
         VulkanCommandBufferAllocater::Get().free(vulkanBuildCache->commandBuffer);
-        vkDestroyPipeline(vulkanGod.device, vulkanBuildCache->pipeline, nullptr);
-        vkDestroyPipelineLayout(vulkanGod.device, vulkanBuildCache->pipelineLayout, nullptr);
-        vkDestroyRenderPass(vulkanGod.device, vulkanBuildCache->renderPass, nullptr);
-        vkDestroyFramebuffer(vulkanGod.device, vulkanBuildCache->frameBuffer, nullptr);
+        vulkanBuildCache->pso.clear();
 
         delete draw_template_cache;
         draw_template_cache = nullptr;

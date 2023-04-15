@@ -45,6 +45,7 @@ namespace rhi
             allocInfo.commandBufferCount = 1;
             vkAllocateCommandBuffers(vulkanGod.device, &allocInfo, &commandBuffer);
             oneTimeCommandBuffers.push_back(commandBuffer);
+            currentUseOneTimeCommandBufferIndex++;
         }
 
         VkCommandBufferBeginInfo beginInfo{};
@@ -85,6 +86,7 @@ namespace rhi
             allocInfo.commandBufferCount = 1;
             vkAllocateCommandBuffers(vulkanGod.device, &allocInfo, &commandBuffer);
             oneTimeCommandBuffers.push_back(commandBuffer);
+            currentUseOneTimeCommandBufferIndex++;
         }
 
         VkCommandBufferBeginInfo beginInfo{};

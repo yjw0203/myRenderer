@@ -1,17 +1,14 @@
 #pragma once
 #include "rhi/rhi/yjw_rhi_draw_template.h"
 #include "vulkan/vulkan.h"
+#include "yjw_vulkan_pipeline_state.h"
 namespace rhi
 {
     class VulkanDefaultDrawTemplateBuildCache : public DefaultDrawTemplateBuildCache
     {
     public:
         VkCommandBuffer commandBuffer;
-        VkRenderPass renderPass;
-        VkPipelineLayout pipelineLayout;
-        VkPipeline pipeline;
-        VkFramebuffer frameBuffer;
-
+        VulkanPipelineStateObject pso;
     };
 
     class VulkanDefaultDrawTemplateBuilder

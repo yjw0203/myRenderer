@@ -19,23 +19,25 @@ namespace rhi
         DefaultDrawTemplateBuildCache* cache = nullptr;
         DefaultDrawTemplate* setRasterizationState(RasterizationState state);
         DefaultDrawTemplate* setColorBlendState(ColorBlendState state);
-        DefaultDrawTemplate* setVertexShader(RHIShader* shader);
-        DefaultDrawTemplate* setPixelShader(RHIShader* shader);
+        DefaultDrawTemplate* setVertexShaderView(RHIShaderView* shader);
+        DefaultDrawTemplate* setPixelShaderView(RHIShaderView* shader);
         DefaultDrawTemplate* setRenderTarget(int num_rtv, RHIResourceView* rtvs, RHIResourceView* dsv);
 
         RasterizationState getRasterizationState();
         ColorBlendState getColorBlendState();
-        RHIShader* getVertexShader();
-        RHIShader* getPixelShader();
+        RHIShaderView* getVertexShaderView();
+        RHIShaderView* getPixelShaderView();
         std::vector<RHIResourceView*>* getRenderTargetViews();
         RHIResourceView* getDepthStencilView();
     private:
         RasterizationState rasterizationState;
         ColorBlendState colorBlendState;
-        RHIShader* vertexShader = nullptr;
-        RHIShader* pixelShader = nullptr;
+        RHIShaderView* vertexShaderView = nullptr;
+        RHIShaderView* pixelShaderView = nullptr;
         std::vector<RHIResourceView*> rtvs;
         RHIResourceView* dsv = nullptr;
+
+
     };
 
 }

@@ -1,6 +1,6 @@
 #include "yjw_vulkan_shader_manager.h"
 #include "yjw_vulkan_god_objects_manager.h"
-
+#include "yjw_vulkan_shader_reflection.h"
 #include <vector>
 #include <string>
 #include <fstream>
@@ -26,9 +26,21 @@ namespace rhi
         return buffer;
     }
 
+    static std::vector<uint32_t> changeStreamFormat(std::vector<char>& stream)
+    {
+        std::vector<uint32_t> out((stream.size() * sizeof(char) + sizeof(uint32_t) - 1) / sizeof(uint32_t));
+        memcpy(out.data(), stream.data(), stream.size() * sizeof(char));
+        return out;
+    }
+
     const VulkanShaderDesc& VulkanShaderLocation::getDesc()
     {
         return desc;
+    }
+
+    const VulkanShaderReflectionData& VulkanShaderLocation::getReflectData()
+    {
+        return reflectData;
     }
 
     VkShaderModule VulkanShaderLocation::getShaderModule()
@@ -40,9 +52,8 @@ namespace rhi
     {
         VulkanShaderLocation* shader = new VulkanShaderLocation();
         VulkanShaderDesc& desc = shader->desc;
-        desc.type = rhi_desc.type;
 
-        auto code = readFile(rhi_desc.filePath);
+        auto code = readFile(rhi_desc.filePath.c_str());
 
         VkShaderModuleCreateInfo createInfo{};
         createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
@@ -53,6 +64,9 @@ namespace rhi
             throw std::runtime_error("failed to create shader module!");
         }
 
+        std::vector<uint32_t> out = changeStreamFormat(code);
+        VulkanShaderReflecter::reflect(out, shader->reflectData);
+        
         return shader;
     }
 
