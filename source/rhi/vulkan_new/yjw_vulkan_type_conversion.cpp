@@ -63,5 +63,21 @@ namespace rhi
             }
             return flag;
         }
+
+        VkImageLayout convertResourceState(RHIResourceState rhiResourceState)
+        {
+            switch (rhiResourceState)
+            {
+            case undefine:return VK_IMAGE_LAYOUT_UNDEFINED;
+            case render_target:return VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+            case depth_stencil_write:return VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+            case depth_stencil_read:return VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL;
+            case shader_resource_read:return VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+            case transfer_src:return VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
+            case transfer_dst:return VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
+            case present_src:return VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+            }
+            return VK_IMAGE_LAYOUT_UNDEFINED;
+        }
     }
 }

@@ -52,17 +52,8 @@ namespace rhi
         vkResetFences(device, 1, &inFlightFence);
         vkAcquireNextImageKHR(device, swapchain, UINT64_MAX, imageAvailableSemaphore, VK_NULL_HANDLE, &swapchainImageIndex);
         
-        static int x = 1;
-        if (x)
-        {
-            x = 0;
-        }
-        else
-        {
-            VulkanCommandBufferAllocater::Get().resetOneTimeCommandBuffer();
-            commandBufferList.clear();
-        }
-
+        VulkanCommandBufferAllocater::Get().resetOneTimeCommandBuffer();
+        commandBufferList.clear();
 
         VkCommandBufferBeginInfo beginInfo{};
         beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;

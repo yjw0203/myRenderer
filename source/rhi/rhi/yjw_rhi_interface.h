@@ -11,6 +11,8 @@ namespace rhi
     class DefaultDrawTemplateBuildCache;
     enum ResourceViewType;
     enum RHIFormat;
+    enum RHIResourceState;
+    class RHIResourceView;
 
     struct CreateInfo
     {
@@ -27,6 +29,11 @@ namespace rhi
         virtual void beginFrame() = 0;
         virtual void endFrame(RHIResource* present_texture) = 0;
 
+        virtual void resourceBarrier(RHIResourceView* view, RHIResourceState beforeState, RHIResourceState afterState) = 0;
+        
+        virtual void resourceBarrierImmidiately(RHIResourceView* view, RHIResourceState beforeState, RHIResourceState afterState) = 0;
+
+    //todo: will be move to unpublic.
         //resource
         virtual RHIResourceLocation* createResource(const RHIResourceDesc& desc) = 0;
         virtual void deleteResource(RHIResourceLocation*& location) = 0;

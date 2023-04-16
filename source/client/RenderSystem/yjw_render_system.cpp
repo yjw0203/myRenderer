@@ -40,6 +40,8 @@ namespace yjw
         srv_image = new RHITexture2D(720, 720, 1, RHIFormat::R8G8B8A8_unorm, RHIResourceUsageBits::none, RHIMemoryType::default_);
         srv_imageView = new RHIResourceView(ResourceViewType::srv, srv_image, RHIFormat::R8G8B8A8_unorm);
 
+        IRHI::Get()->resourceBarrierImmidiately(srv_imageView, RHIResourceState::undefine, RHIResourceState::shader_resource_read);
+
         ps_view->setDataTexture("myTexture", srv_imageView);
 
         draw_template = (new DefaultDrawTemplate())
@@ -56,22 +58,6 @@ namespace yjw
         IRHI::Get()->beginFrame();
         draw_template->draw();
         IRHI::Get()->endFrame(image);
-        /*
-        rhi::Image colorImage(720, 720, rhi::ImageUsage_color, rhi::RHI_FORMAT_R8G8B8A8_SRGB);
-        WindowsManager::get().loop();
-        rhi::rhiBeginFrame();
-        drawItem.setVertexShader(SHADER_FILE(test_vert.spv), "main");
-        drawItem.setPixelShader(SHADER_FILE(test_frag.spv), "main");
-        rhi::ImageView view = colorImage.viewAs(rhi::RHI_FORMAT_R8G8B8A8_SRGB);
-        drawItem.setRenderTargets(1, &view, false, nullptr);
-        drawItem.build();
-        drawItem.draw();
-        drawItem1.setVertexShader(SHADER_FILE(test1_vert.spv), "main");
-        drawItem1.setPixelShader(SHADER_FILE(test1_frag.spv), "main");
-        drawItem1.setRenderTargets(1, &view, false, nullptr);
-        drawItem1.build();
-        drawItem1.draw();
-        rhi::rhiEndFrame();*/
     }
     void RenderSystem::shutdown()
     {

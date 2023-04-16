@@ -1,4 +1,5 @@
 #pragma once
+
 #include "yjw_rhi_resource.h"
 namespace rhi
 {
@@ -11,18 +12,6 @@ namespace rhi
         dsv,
         srv,
         uav
-    };
-    
-    enum ResourceBarrierState
-    {
-        undefined,
-        render_target,
-        depth_stencil_read,
-        depth_stencil_write,
-        transfer_src,
-        transfer_dst,
-        shader_read,
-        present_src
     };
 
     class RHIResourceView

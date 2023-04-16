@@ -5,6 +5,8 @@
 #include "yjw_vulkan_resource_view_manager.h"
 #include "yjw_vulkan_god_objects_manager.h"
 #include "yjw_vulkan_draw_template_manager.h"
+#include "yjw_vulkan_command_buffer_manager.h" 
+#include "yjw_vulkan_type_conversion.h" 
 
 namespace rhi
 {
@@ -21,6 +23,20 @@ namespace rhi
     void IVulkanRHI::endFrame(RHIResource* present_texture)
     {
         vulkanGod.endFrame(present_texture);
+    }
+
+    void IVulkanRHI::resourceBarrier(RHIResourceView* view, RHIResourceState beforeState, RHIResourceState afterState)
+    {
+        VkCommandBuffer commandBuffer = VulkanCommandBufferAllocater::Get().beginOneTimeCommandBuffer();
+        transitionImageLayout(commandBuffer, *((VulkanResourceLocation*)view->resource->resourceLocation)->getVkImage(), VulkanConverter::convertResourceState(beforeState), VulkanConverter::convertResourceState(afterState));
+        VulkanCommandBufferAllocater::Get().endOneTimeCommandBuffer(commandBuffer);
+    }
+
+    void IVulkanRHI::resourceBarrierImmidiately(RHIResourceView* view, RHIResourceState beforeState, RHIResourceState afterState)
+    {
+        VkCommandBuffer commandBuffer = VulkanCommandBufferAllocater::Get().beginImmdiatelyCommandBuffer();
+        transitionImageLayout(commandBuffer, *((VulkanResourceLocation*)view->resource->resourceLocation)->getVkImage(), VulkanConverter::convertResourceState(beforeState), VulkanConverter::convertResourceState(afterState));
+        VulkanCommandBufferAllocater::Get().endImmdiatelyCommandBuffer(commandBuffer);
     }
 
     RHIResourceLocation* IVulkanRHI::createResource(const RHIResourceDesc& rhi_desc)

@@ -1,6 +1,6 @@
 #pragma once
 #include <vulkan/vulkan.h>
-#include "rhi/rhi/yjw_rhi_interface.h"
+#include "rhi/rhi/yjw_rhi_header.h"
 
 namespace rhi
 {
@@ -12,6 +12,9 @@ namespace rhi
 
         virtual void beginFrame() override;
         virtual void endFrame(RHIResource* present_texture) override;
+
+        virtual void resourceBarrier(RHIResourceView* view, RHIResourceState beforeState, RHIResourceState afterState) override;
+        virtual void resourceBarrierImmidiately(RHIResourceView* view, RHIResourceState beforeState, RHIResourceState afterState) override;
 
         //resource
         virtual RHIResourceLocation* createResource(const RHIResourceDesc& desc) override;

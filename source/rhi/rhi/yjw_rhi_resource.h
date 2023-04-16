@@ -33,6 +33,18 @@ namespace rhi
         readback = 3,
     };
 
+    enum RHIResourceState
+    {
+        undefine,
+        render_target,
+        depth_stencil_write,
+        depth_stencil_read,
+        shader_resource_read,
+        transfer_src,
+        transfer_dst,
+        present_src
+    };
+
     struct RHIResourceDesc
     {
         RHIResourceType type;
