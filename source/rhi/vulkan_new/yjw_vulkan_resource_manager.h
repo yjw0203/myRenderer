@@ -18,10 +18,16 @@ namespace rhi
         friend class VulkanResourceManager;
     public:
         const VulkanResourceDesc& getDesc();
+        const VkBuffer* getVkBuffer();
         const VkImage* getVkImage();
         const VkDeviceMemory* getVkDeviceMemory();
     private:
-        VkImage image;
+
+        union {
+            VkImage image;
+            VkBuffer buffer;
+        };
+
         VkDeviceMemory memory;
         VulkanResourceDesc desc;
     };
@@ -37,5 +43,21 @@ namespace rhi
 
         RHIResourceLocation* createResource(const RHIResourceDesc& desc);
         void deleteResource(RHIResourceLocation*& location);
+    };
+
+    class VulkanResourceCopyer
+    {
+    public:
+        static void copyResource(VkCommandBuffer commandBuffer, RHIResource* src, RHIResource* dst);
+    private:
+        static void copyBufferToTexture2D(VkCommandBuffer commandBuffer, RHIResource* src, RHIResource* dst);
+    };
+
+    class VulkanResourceWriter
+    {
+    public:
+        static void writeResourceImmidiately(RHIResource* resource, void* data, int size);
+    private:
+        static void writeBufferImmidiately(RHIResource* resource, void* data, int size);
     };
 }

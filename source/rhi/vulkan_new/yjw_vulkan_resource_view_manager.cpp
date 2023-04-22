@@ -10,20 +10,20 @@ namespace rhi
         return &view;
     }
 
-    RHIResourceViewLocation* VulkanResourceViewManager::createResourceView(ResourceViewType type, const RHIResource* resource, RHIFormat view_format)
+    RHIResourceViewLocation* VulkanResourceViewManager::createResourceView(ResourceViewType type, RHIResource* resource, RHIFormat view_format)
     {
         VulkanResourceLocation* vulkan_resource = (VulkanResourceLocation*)resource->resourceLocation;
         VulkanResourceViewLocation* vulkan_resource_view = new VulkanResourceViewLocation();
-        vulkan_resource_view->type = resource->rhiResourceDesc.type;
-        if (resource->rhiResourceDesc.type == RHIResourceType::buffer)
+        vulkan_resource_view->type = resource->getDesc().type;
+        if (resource->getDesc().type == RHIResourceType::buffer)
         {
 
         }
-        else if(resource->rhiResourceDesc.type == RHIResourceType::texture1D)
+        else if(resource->getDesc().type == RHIResourceType::texture1D)
         {
 
         }
-        else if (resource->rhiResourceDesc.type == RHIResourceType::texture2D)
+        else if (resource->getDesc().type == RHIResourceType::texture2D)
         {
             VkImageViewCreateInfo createInfo{};
             createInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
@@ -49,7 +49,7 @@ namespace rhi
 
             vkCreateImageView(vulkanGod.device, &createInfo, nullptr, &vulkan_resource_view->view);
         }
-        else if (resource->rhiResourceDesc.type == RHIResourceType::texture3D)
+        else if (resource->getDesc().type == RHIResourceType::texture3D)
         {
 
         }

@@ -12,11 +12,12 @@ namespace rhi
             {
             case RHIFormat::unknow: return VK_FORMAT_UNDEFINED;
             case RHIFormat::R8G8B8A8_unorm: return VK_FORMAT_R8G8B8A8_UNORM;
+            case RHIFormat::R8G8B8A8_srgb: return VK_FORMAT_R8G8B8A8_SRGB;
             }
             return VK_FORMAT_UNDEFINED;
         }
 
-        VkImageUsageFlags convertResourceUsage(RHIResourceUsage rhiUsage)
+        VkImageUsageFlags convertImageResourceUsage(RHIResourceUsage rhiUsage)
         {
             VkImageUsageFlags flag = 0;
             if (RHIResourceUsageBits::allow_render_target & rhiUsage)
@@ -46,6 +47,40 @@ namespace rhi
             return flag;
         }
 
+        VkBufferUsageFlags convertBufferResourceUsage(RHIResourceUsage rhiUsage)
+        {
+            VkBufferUsageFlags flag = 0;
+            if (RHIResourceUsageBits::allow_unordered_access & rhiUsage)
+            {
+                flag |= VK_BUFFER_USAGE_STORAGE_BUFFER_BIT;
+            }
+            if (!(RHIResourceUsageBits::deny_shader_resource & rhiUsage))
+            {
+                flag |= VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
+            }
+            if (RHIResourceUsageBits::allow_transfer_src & rhiUsage)
+            {
+                flag |= VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
+            }
+            if (RHIResourceUsageBits::allow_transfer_dst & rhiUsage)
+            {
+                flag |= VK_BUFFER_USAGE_TRANSFER_DST_BIT;
+            }
+            if (RHIResourceUsageBits::allow_vertex_buffer & rhiUsage)
+            {
+                flag |= VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
+            }
+            if (RHIResourceUsageBits::allow_index_buffer & rhiUsage)
+            {
+                flag |= VK_BUFFER_USAGE_INDEX_BUFFER_BIT;
+            }
+            if (RHIResourceUsageBits::allow_indirect_buffer & rhiUsage)
+            {
+                flag |= VK_BUFFER_USAGE_INDIRECT_BUFFER_BIT;
+            }
+            return flag;
+        }
+
         VkMemoryPropertyFlags convertMemoryProperty(RHIMemoryType rhiMemoryType)
         {
             VkMemoryPropertyFlags flag = 0;
@@ -59,7 +94,7 @@ namespace rhi
             }
             else if (rhiMemoryType == RHIMemoryType::upload)
             {
-                flag |= VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT;
+                flag |= VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
             }
             return flag;
         }

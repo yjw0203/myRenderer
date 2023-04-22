@@ -334,7 +334,7 @@ namespace rhi
         createInfo.surface = vulkanGod.surface;
 
         createInfo.minImageCount = imageCount;
-        createInfo.imageFormat = surfaceFormat.format;
+        createInfo.imageFormat = VK_FORMAT_R8G8B8A8_SRGB;//surfaceFormat.format;
         createInfo.imageColorSpace = surfaceFormat.colorSpace;
         createInfo.imageExtent = extent;
         createInfo.imageArrayLayers = 1;

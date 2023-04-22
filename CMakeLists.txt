@@ -21,4 +21,6 @@ set(vulkan_libs ${VULKAN_LIB_FILES} ${CMAKE_CURRENT_SOURCE_DIR}/3rd/VulkanSDK/1.
 set(glfw_include ${CMAKE_CURRENT_SOURCE_DIR}/3rd/glfw/include)
 set(glfw_lib ${CMAKE_CURRENT_SOURCE_DIR}/3rd/glfw/lib-vc2022/glfw3.lib)
 
+set(stb_include ${CMAKE_CURRENT_SOURCE_DIR}/3rd/stb/include)
+
 add_subdirectory(source)

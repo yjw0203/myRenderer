@@ -63,7 +63,7 @@ namespace rhi
 
         vkCmdBeginRenderPass(buildCache->commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
         vkCmdBindDescriptorSets(buildCache->commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, buildCache->pso.getVkPipelineLayout(), 0, buildCache->pso.getVkDescriptorSets().size(), buildCache->pso.getVkDescriptorSets().data(), 0, nullptr);
-        vkCmdDraw(buildCache->commandBuffer, 3, 1, 0, 0);
+        vkCmdDraw(buildCache->commandBuffer, 36, 1, 0, 0);
         vkCmdEndRenderPass(buildCache->commandBuffer);
 
         vkEndCommandBuffer(buildCache->commandBuffer);

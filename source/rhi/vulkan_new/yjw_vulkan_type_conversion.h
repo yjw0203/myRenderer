@@ -9,7 +9,9 @@ namespace rhi
     {
         VkFormat convertFormat(RHIFormat rhiFormat);
 
-        VkImageUsageFlags convertResourceUsage(RHIResourceUsage rhiUsage);
+        VkImageUsageFlags convertImageResourceUsage(RHIResourceUsage rhiUsage);
+
+        VkBufferUsageFlags convertBufferResourceUsage(RHIResourceUsage rhiUsage);
 
         VkMemoryPropertyFlags convertMemoryProperty(RHIMemoryType rhiMemoryType);
 

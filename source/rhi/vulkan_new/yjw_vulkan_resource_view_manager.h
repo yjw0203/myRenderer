@@ -23,7 +23,7 @@ namespace rhi
             return instance;
         }
 
-        RHIResourceViewLocation* createResourceView(ResourceViewType type, const RHIResource* resource, RHIFormat view_format);
+        RHIResourceViewLocation* createResourceView(ResourceViewType type, RHIResource* resource, RHIFormat view_format);
         void deleteResourceView(RHIResourceViewLocation*& location);
     };
 }

@@ -1,5 +1,6 @@
 #pragma once
 #include <d3d12.h>
+#include <string>
 namespace rhi
 {
     enum RHIResourceType
@@ -12,7 +13,8 @@ namespace rhi
     enum RHIFormat
     {
         unknow,
-        R8G8B8A8_unorm
+        R8G8B8A8_unorm,
+        R8G8B8A8_srgb,        
     };
     enum RHIResourceUsageBits
     {
@@ -23,6 +25,9 @@ namespace rhi
         deny_shader_resource = 0x8,
         allow_transfer_src = 0x10,
         allow_transfer_dst = 0x20,
+        allow_vertex_buffer = 0x40,//only for buffer
+        allow_index_buffer = 0x80,//only for buffer
+        allow_indirect_buffer = 0x100 //only for buffer
     };
     typedef int RHIResourceUsage;
 
@@ -62,10 +67,13 @@ namespace rhi
     class RHIResource
     {
     public:
+        RHIResource() {};
         RHIResource(RHIResourceType type, int width, int height, int depthOrArraySize, int miplevels, RHIFormat format, RHIResourceUsage usage, RHIMemoryType memoryType);
         virtual ~RHIResource();
-        const RHIResourceDesc rhiResourceDesc;
         RHIResourceLocation* resourceLocation = nullptr;
+        const RHIResourceDesc& getDesc() { return rhiResourceDesc; }
+    private:
+        RHIResourceDesc rhiResourceDesc;
     };
 
     class RHIBuffer : public RHIResource
@@ -78,6 +86,12 @@ namespace rhi
     {
     public:
         RHITexture2D(int width,int height, int miplevels, RHIFormat format, RHIResourceUsage usage, RHIMemoryType memoryType);
+    };
+
+    class RHITexture2DFromFile : public RHIResource
+    {
+    public:
+        RHITexture2DFromFile(std::string filePath);
     };
     
 }

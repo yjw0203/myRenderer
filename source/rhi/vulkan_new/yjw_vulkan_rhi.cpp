@@ -25,18 +25,30 @@ namespace rhi
         vulkanGod.endFrame(present_texture);
     }
 
-    void IVulkanRHI::resourceBarrier(RHIResourceView* view, RHIResourceState beforeState, RHIResourceState afterState)
+    void IVulkanRHI::resourceBarrier(RHIResource* resource, RHIResourceState beforeState, RHIResourceState afterState)
     {
         VkCommandBuffer commandBuffer = VulkanCommandBufferAllocater::Get().beginOneTimeCommandBuffer();
-        transitionImageLayout(commandBuffer, *((VulkanResourceLocation*)view->resource->resourceLocation)->getVkImage(), VulkanConverter::convertResourceState(beforeState), VulkanConverter::convertResourceState(afterState));
+        transitionImageLayout(commandBuffer, *((VulkanResourceLocation*)resource->resourceLocation)->getVkImage(), VulkanConverter::convertResourceState(beforeState), VulkanConverter::convertResourceState(afterState));
         VulkanCommandBufferAllocater::Get().endOneTimeCommandBuffer(commandBuffer);
     }
 
-    void IVulkanRHI::resourceBarrierImmidiately(RHIResourceView* view, RHIResourceState beforeState, RHIResourceState afterState)
+    void IVulkanRHI::resourceBarrierImmidiately(RHIResource* resource, RHIResourceState beforeState, RHIResourceState afterState)
     {
         VkCommandBuffer commandBuffer = VulkanCommandBufferAllocater::Get().beginImmdiatelyCommandBuffer();
-        transitionImageLayout(commandBuffer, *((VulkanResourceLocation*)view->resource->resourceLocation)->getVkImage(), VulkanConverter::convertResourceState(beforeState), VulkanConverter::convertResourceState(afterState));
+        transitionImageLayout(commandBuffer, *((VulkanResourceLocation*)resource->resourceLocation)->getVkImage(), VulkanConverter::convertResourceState(beforeState), VulkanConverter::convertResourceState(afterState));
         VulkanCommandBufferAllocater::Get().endImmdiatelyCommandBuffer(commandBuffer);
+    }
+
+    void IVulkanRHI::copyResourceImmidiately(RHIResource* src, RHIResource* dst)
+    {
+        VkCommandBuffer commandBuffer = VulkanCommandBufferAllocater::Get().beginImmdiatelyCommandBuffer();
+        VulkanResourceCopyer::copyResource(commandBuffer, src, dst);
+        VulkanCommandBufferAllocater::Get().endImmdiatelyCommandBuffer(commandBuffer);
+    }
+
+    void IVulkanRHI::writeResourceImmidiately(RHIResource* resource, void* data, int size)
+    {
+        VulkanResourceWriter::writeResourceImmidiately(resource, data, size);
     }
 
     RHIResourceLocation* IVulkanRHI::createResource(const RHIResourceDesc& rhi_desc)
@@ -49,7 +61,7 @@ namespace rhi
         VulkanResourceManager::Get().deleteResource(location);
     }
 
-    RHIResourceViewLocation* IVulkanRHI::createResourceView(ResourceViewType type, const RHIResource* resource, RHIFormat view_format)
+    RHIResourceViewLocation* IVulkanRHI::createResourceView(ResourceViewType type, RHIResource* resource, RHIFormat view_format)
     {
         return VulkanResourceViewManager::Get().createResourceView(type, resource, view_format);
     }

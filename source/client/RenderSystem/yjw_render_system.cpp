@@ -19,7 +19,7 @@ namespace yjw
     RHITexture2D* image = nullptr;
     RHIResourceView* imageView = nullptr;
 
-    RHITexture2D* srv_image = nullptr;
+    RHITexture2DFromFile* srv_image = nullptr;
     RHIResourceView* srv_imageView = nullptr;
     void RenderSystem::initialize()
     {
@@ -33,14 +33,12 @@ namespace yjw
 
         vs_view = new RHIShaderView(vs, RHIShaderType::vertex_shader, "main");
         ps_view = new RHIShaderView(ps, RHIShaderType::pixel_shader, "main");
-
+         
         image = new RHITexture2D(720, 720, 1, RHIFormat::R8G8B8A8_unorm, RHIResourceUsageBits::allow_render_target | RHIResourceUsageBits::allow_transfer_src, RHIMemoryType::default_);
         imageView = new RHIResourceView(ResourceViewType::rtv, image, RHIFormat::R8G8B8A8_unorm);
 
-        srv_image = new RHITexture2D(720, 720, 1, RHIFormat::R8G8B8A8_unorm, RHIResourceUsageBits::none, RHIMemoryType::default_);
-        srv_imageView = new RHIResourceView(ResourceViewType::srv, srv_image, RHIFormat::R8G8B8A8_unorm);
-
-        IRHI::Get()->resourceBarrierImmidiately(srv_imageView, RHIResourceState::undefine, RHIResourceState::shader_resource_read);
+        srv_image = new RHITexture2DFromFile(RESOURCE_FILE(sjy.png));
+        srv_imageView = new RHIResourceView(ResourceViewType::srv, srv_image, RHIFormat::R8G8B8A8_srgb);
 
         ps_view->setDataTexture("myTexture", srv_imageView);
 

@@ -29,9 +29,15 @@ namespace rhi
         virtual void beginFrame() = 0;
         virtual void endFrame(RHIResource* present_texture) = 0;
 
-        virtual void resourceBarrier(RHIResourceView* view, RHIResourceState beforeState, RHIResourceState afterState) = 0;
+        virtual void resourceBarrier(RHIResource* resource, RHIResourceState beforeState, RHIResourceState afterState) = 0;
         
-        virtual void resourceBarrierImmidiately(RHIResourceView* view, RHIResourceState beforeState, RHIResourceState afterState) = 0;
+        virtual void resourceBarrierImmidiately(RHIResource* resource, RHIResourceState beforeState, RHIResourceState afterState) = 0;
+
+        virtual void copyResourceImmidiately(RHIResource* src, RHIResource* dst) = 0;
+
+        virtual void writeResourceImmidiately(RHIResource* resource, void* data, int size) = 0;
+
+
 
     //todo: will be move to unpublic.
         //resource
@@ -39,7 +45,7 @@ namespace rhi
         virtual void deleteResource(RHIResourceLocation*& location) = 0;
 
         //resource_view
-        virtual RHIResourceViewLocation* createResourceView(ResourceViewType type, const RHIResource* resource, RHIFormat view_format) = 0;
+        virtual RHIResourceViewLocation* createResourceView(ResourceViewType type, RHIResource* resource, RHIFormat view_format) = 0;
         virtual void deleteResourceView(RHIResourceViewLocation*& location) = 0;
 
         //shader
