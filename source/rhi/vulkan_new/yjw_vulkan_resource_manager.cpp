@@ -5,17 +5,6 @@
 
 namespace rhi
 {
-    uint32_t findMemoryType_(uint32_t typeFilter, VkMemoryPropertyFlags properties) {
-        VkPhysicalDeviceMemoryProperties memProperties;
-        vkGetPhysicalDeviceMemoryProperties(vulkanGod.gpu, &memProperties);
-
-        for (uint32_t i = 0; i < memProperties.memoryTypeCount; i++) {
-            if ((typeFilter & (1 << i)) && (memProperties.memoryTypes[i].propertyFlags & properties) == properties) {
-                return i;
-            }
-        }
-        return 0;
-    }
 
     const VulkanResourceDesc& VulkanResourceLocation::getDesc()
     {
@@ -47,6 +36,10 @@ namespace rhi
             desc.bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
             desc.bufferInfo.flags = 0;
             desc.bufferInfo.usage = VulkanConverter::convertBufferResourceUsage(rhi_desc.usage);
+            if (rhi_desc.memoryType == RHIMemoryType::default_)
+            {
+                desc.bufferInfo.usage |= VK_BUFFER_USAGE_TRANSFER_DST_BIT;
+            }
             desc.bufferInfo.size = rhi_desc.width;
             desc.bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
             desc.bufferInfo.queueFamilyIndexCount = 0;
@@ -169,9 +162,33 @@ namespace rhi
 
     void VulkanResourceWriter::writeBufferImmidiately(RHIResource* resource, void* data, int size)
     {
-        void* buffer_map;
-        vkMapMemory(vulkanGod.device, *((VulkanResourceLocation*)resource->resourceLocation)->getVkDeviceMemory(), 0, size, 0, &buffer_map);
-        memcpy(buffer_map, data, static_cast<size_t>(size));
-        vkUnmapMemory(vulkanGod.device, *((VulkanResourceLocation*)resource->resourceLocation)->getVkDeviceMemory());
+        if (resource->getDesc().memoryType == RHIMemoryType::default_)
+        {
+            VkBuffer stagingBuffer;
+            VkDeviceMemory stagingBufferMemory;
+            createBuffer(size, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
+
+            void* map_data;
+            vkMapMemory(vulkanGod.device, stagingBufferMemory, 0, size, 0, &map_data);
+            memcpy(map_data, data, (size_t)size);
+            vkUnmapMemory(vulkanGod.device, stagingBufferMemory);
+
+            VkCommandBuffer commandBuffer = VulkanCommandBufferAllocater::Get().beginImmdiatelyCommandBuffer();
+            VkBufferCopy copyRegion{};
+            copyRegion.size = size;
+            vkCmdCopyBuffer(commandBuffer,stagingBuffer, *((VulkanResourceLocation*)resource->resourceLocation)->getVkBuffer(), 1, &copyRegion);
+            VulkanCommandBufferAllocater::Get().endImmdiatelyCommandBuffer(commandBuffer);
+
+            vkDestroyBuffer(vulkanGod.device, stagingBuffer, nullptr);
+            vkFreeMemory(vulkanGod.device, stagingBufferMemory, nullptr);
+        }
+        else
+        {
+            void* buffer_map;
+            vkMapMemory(vulkanGod.device, *((VulkanResourceLocation*)resource->resourceLocation)->getVkDeviceMemory(), 0, size, 0, &buffer_map);
+            memcpy(buffer_map, data, static_cast<size_t>(size));
+            vkUnmapMemory(vulkanGod.device, *((VulkanResourceLocation*)resource->resourceLocation)->getVkDeviceMemory());
+        }
     }
+
 }

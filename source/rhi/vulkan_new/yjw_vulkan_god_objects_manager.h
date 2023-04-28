@@ -63,11 +63,14 @@ namespace rhi
     VkFramebuffer createFramebuffer(VkRenderPass renderPass, std::vector<RHIResourceView*>& rtvs, RHIResourceView* dsv, int width, int height);
     VkPipelineLayout createPipelineLayout(std::vector<VkDescriptorSetLayout>& descriptorSetLayouts);
     VkPipeline createPipeline(VkPipelineLayout& pipelineLayout,
+        VertexLayout vertexLayout,
         VkRenderPass& renderPass,
         RasterizationState rasterizationState,
         ColorBlendState colorBlendState,
         std::vector<VkPipelineShaderStageCreateInfo>& shaderStages);
     VkPipelineShaderStageCreateInfo PipelineShaderStageCreateInfo(RHIShaderView* shader, VkShaderStageFlagBits stage);
     void transitionImageLayout(VkCommandBuffer& commandBuffer, VkImage image, VkImageLayout oldLayout, VkImageLayout newLayout);
+    uint32_t findMemoryType_(uint32_t typeFilter, VkMemoryPropertyFlags properties);
+    void createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory);
 
 }

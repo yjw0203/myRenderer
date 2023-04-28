@@ -1,6 +1,7 @@
 #pragma once
 #include <d3d12.h>
 #include <string>
+#include <vector>
 namespace rhi
 {
     enum RHIResourceType
@@ -12,9 +13,11 @@ namespace rhi
     };
     enum RHIFormat
     {
-        unknow,
+        unknow = 0,
         R8G8B8A8_unorm,
-        R8G8B8A8_srgb,        
+        R8G8B8A8_srgb,
+        R32G32B32_sfloat,
+        R32G32_sfloat
     };
     enum RHIResourceUsageBits
     {
@@ -80,6 +83,7 @@ namespace rhi
     {
     public:
         RHIBuffer(int size, RHIResourceUsage usage, RHIMemoryType memoryType);
+        RHIBuffer(int size, RHIResourceUsage usage, RHIMemoryType memoryType, void* data);
     };
 
     class RHITexture2D : public RHIResource
@@ -92,6 +96,33 @@ namespace rhi
     {
     public:
         RHITexture2DFromFile(std::string filePath);
+    };
+
+    int sizeofFormat(RHIFormat rhiFormat);
+
+    class VertexLayout
+    {
+    public:
+        int getTotalStride()
+        {
+            int sum = 0;
+            for (RHIFormat format : layouts)
+            {
+                sum += sizeofFormat(format);
+            }
+            return sum;
+        }
+        VertexLayout& reset()
+        {
+            layouts.clear();
+            return *this;
+        }
+        VertexLayout& push(RHIFormat format)
+        {
+            layouts.push_back(format);
+            return *this;
+        }
+        std::vector<RHIFormat> layouts;
     };
     
 }

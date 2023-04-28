@@ -9,6 +9,14 @@ namespace rhi
 {
     class DefaultDrawTemplateBuildCache{};
 
+    struct DrawOption
+    {
+        int vertexCount;
+        int instanceCount;
+        int firstVertex;
+        int firstInstance;
+    };
+
     class DefaultDrawTemplate
     {
     public:
@@ -22,6 +30,8 @@ namespace rhi
         DefaultDrawTemplate* setVertexShaderView(RHIShaderView* shader);
         DefaultDrawTemplate* setPixelShaderView(RHIShaderView* shader);
         DefaultDrawTemplate* setRenderTarget(int num_rtv, RHIResourceView* rtvs, RHIResourceView* dsv);
+        DefaultDrawTemplate* setVertexBuffer(RHIResource* buffer, VertexLayout layout);
+        DefaultDrawTemplate* setDraw(int vertexCount, int instanceCount, int firstVertex, int firstInstance);
 
         RasterizationState getRasterizationState();
         ColorBlendState getColorBlendState();
@@ -29,6 +39,9 @@ namespace rhi
         RHIShaderView* getPixelShaderView();
         std::vector<RHIResourceView*>* getRenderTargetViews();
         RHIResourceView* getDepthStencilView();
+        VertexLayout& getVertexLayout();
+        DrawOption& getDrawOption();
+        RHIResource* getVertexBuffer();
     private:
         RasterizationState rasterizationState;
         ColorBlendState colorBlendState;
@@ -36,6 +49,10 @@ namespace rhi
         RHIShaderView* pixelShaderView = nullptr;
         std::vector<RHIResourceView*> rtvs;
         RHIResourceView* dsv = nullptr;
+        RHIResource* vertexBuffer = nullptr;
+        VertexLayout vertexLayout;
+        DrawOption drawOption;
+
 
 
     };

@@ -65,6 +65,22 @@ namespace rhi
         return this;
     }
 
+    DefaultDrawTemplate* DefaultDrawTemplate::setVertexBuffer(RHIResource* buffer, VertexLayout layout)
+    {
+        vertexBuffer = buffer;
+        vertexLayout = layout;
+        return this;
+    }
+
+    DefaultDrawTemplate* DefaultDrawTemplate::setDraw(int vertexCount, int instanceCount, int firstVertex, int firstInstance)
+    {
+        drawOption.vertexCount = vertexCount;
+        drawOption.instanceCount = instanceCount;
+        drawOption.firstVertex = firstVertex;
+        drawOption.firstInstance = firstInstance;
+        return this;
+    }
+
     RasterizationState DefaultDrawTemplate::getRasterizationState()
     {
         return rasterizationState;
@@ -93,6 +109,21 @@ namespace rhi
     RHIResourceView* DefaultDrawTemplate::getDepthStencilView()
     {
         return dsv;
+    }
+
+    VertexLayout& DefaultDrawTemplate::getVertexLayout()
+    {
+        return vertexLayout;
+    }
+
+    DrawOption& DefaultDrawTemplate::getDrawOption()
+    {
+        return drawOption;
+    }
+
+    RHIResource* DefaultDrawTemplate::getVertexBuffer()
+    {
+        return vertexBuffer;
     }
 
 }

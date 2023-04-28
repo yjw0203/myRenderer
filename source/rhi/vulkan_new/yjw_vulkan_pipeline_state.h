@@ -77,6 +77,7 @@ namespace rhi
         RHIShaderView* ps;
         RasterizationState rasterizationState;
         ColorBlendState colorBlendState;
+        VertexLayout vertexLayout;
 
 
     };

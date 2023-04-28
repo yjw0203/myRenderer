@@ -10,7 +10,7 @@ namespace rhi
         renderPass = createRenderPass(*desc.rtvs, desc.dsv);
         createDescriptorLayoutSets(descriptorPool, descriptorSetLayouts, descriptorSets, desc.vs, desc.ps);
         pipelineLayout = createPipelineLayout(descriptorSetLayouts);
-        pipeline = createPipeline(pipelineLayout, renderPass, desc.rasterizationState, desc.colorBlendState, shader_infos);
+        pipeline = createPipeline(pipelineLayout, desc.vertexLayout , renderPass, desc.rasterizationState, desc.colorBlendState, shader_infos);
         frameBuffer = createFramebuffer(renderPass, *desc.rtvs, desc.dsv, vulkanGod.swapchainExtent.width, vulkanGod.swapchainExtent.height);
 
     }

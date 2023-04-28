@@ -66,4 +66,17 @@ namespace rhi
         IRHI::Get()->copyResourceImmidiately(&stageingBuffer, this);
         IRHI::Get()->resourceBarrierImmidiately(this, RHIResourceState::transfer_dst, RHIResourceState::shader_resource_read);
     }
+
+    int sizeofFormat(RHIFormat rhiFormat)
+    {
+        switch (rhiFormat)
+        {
+        case RHIFormat::unknow: return 0;
+        case RHIFormat::R8G8B8A8_unorm: return 4;
+        case RHIFormat::R8G8B8A8_srgb: return 4;
+        case RHIFormat::R32G32B32_sfloat: return 12;
+        case RHIFormat::R32G32_sfloat: return 8;
+        }
+        return 0;
+    }
 }

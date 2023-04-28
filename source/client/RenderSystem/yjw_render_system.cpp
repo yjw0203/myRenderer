@@ -21,6 +21,23 @@ namespace yjw
 
     RHITexture2DFromFile* srv_image = nullptr;
     RHIResourceView* srv_imageView = nullptr;
+
+    RHIBuffer* vertex_buffer = nullptr;
+
+    struct Vex
+    {
+        float pos[3];
+        float color[3];
+    };
+    Vex vex[6] = {
+        {{0.5,0.5,0.5},{1.0,0.0,0.0}},
+        {{-0.5,0.5,0.5},{0.0,1.0,0.0}},
+        {{0.5,-0.5,0.5},{0.0,0.0,1.0}},
+        {{1.0,0.3,0.5},{1.0,0.0,0.0}},
+        {{0.2,0.4,0.5},{1.0,0.0,0.0}},
+        {{0.5,-0.2,0.5},{0.0,0.0,0.0}},
+    };
+
     void RenderSystem::initialize()
     {
         WindowsManager::get().initialize();
@@ -40,6 +57,10 @@ namespace yjw
         srv_image = new RHITexture2DFromFile(RESOURCE_FILE(sjy.png));
         srv_imageView = new RHIResourceView(ResourceViewType::srv, srv_image, RHIFormat::R8G8B8A8_srgb);
 
+        vertex_buffer = new RHIBuffer(6 * sizeof(Vex), RHIResourceUsageBits::allow_vertex_buffer, RHIMemoryType::default_);
+
+        IRHI::Get()->writeResourceImmidiately(vertex_buffer, vex, 6 * sizeof(Vex));
+
         ps_view->setDataTexture("myTexture", srv_imageView);
 
         draw_template = (new DefaultDrawTemplate())
@@ -47,7 +68,10 @@ namespace yjw
             ->setColorBlendState(ColorBlend_default)
             ->setVertexShaderView(vs_view)
             ->setPixelShaderView(ps_view)
-            ->setRenderTarget(1, imageView, nullptr);
+            ->setRenderTarget(1, imageView, nullptr)
+            ->setVertexBuffer(vertex_buffer, VertexLayout().push(RHIFormat::R32G32B32_sfloat).push(RHIFormat::R32G32B32_sfloat))
+            ->setDraw(6, 1, 0, 0);
+
         draw_template->build();
     }
     

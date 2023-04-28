@@ -10,6 +10,7 @@
 #include "yjw_vulkan_shader_manager.h"
 #include "yjw_vulkan_command_buffer_manager.h"
 #include "yjw_vulkan_command_buffer_manager.h"
+#include "yjw_vulkan_type_conversion.h"
 
 #include <stdexcept>
 #include <vector>
@@ -732,6 +733,7 @@ namespace rhi
     }
 
     VkPipeline createPipeline(VkPipelineLayout& pipelineLayout,
+        VertexLayout vertexLayout,
         VkRenderPass& renderPass,
         RasterizationState rasterizationState,
         ColorBlendState colorBlendState,
@@ -739,10 +741,29 @@ namespace rhi
     {
         VkPipeline pipeline;
 
+        VkVertexInputBindingDescription vertexInputBindingDescriptor{};
+        vertexInputBindingDescriptor.binding = 0;
+        vertexInputBindingDescriptor.stride = vertexLayout.getTotalStride();
+        vertexInputBindingDescriptor.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
+
+        std::vector<VkVertexInputAttributeDescription> vertexInputAttributeDescriptions;
+        vertexInputAttributeDescriptions.resize(vertexLayout.layouts.size());
+        int attributeOffset = 0;
+        for (int i = 0; i < vertexLayout.layouts.size(); i++)
+        {
+            vertexInputAttributeDescriptions[i].binding = 0;
+            vertexInputAttributeDescriptions[i].format = VulkanConverter::convertFormat(vertexLayout.layouts[i]);
+            vertexInputAttributeDescriptions[i].location = i;
+            vertexInputAttributeDescriptions[i].offset = attributeOffset;
+            attributeOffset += sizeofFormat(vertexLayout.layouts[i]);
+        }
+
         VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
         vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-        vertexInputInfo.vertexBindingDescriptionCount = 0;
-        vertexInputInfo.vertexAttributeDescriptionCount = 0;
+        vertexInputInfo.vertexBindingDescriptionCount = 1;
+        vertexInputInfo.pVertexBindingDescriptions = &vertexInputBindingDescriptor;
+        vertexInputInfo.vertexAttributeDescriptionCount = vertexLayout.layouts.size();
+        vertexInputInfo.pVertexAttributeDescriptions = vertexInputAttributeDescriptions.data();
 
         VkPipelineInputAssemblyStateCreateInfo inputAssembly{};
         inputAssembly.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
@@ -849,5 +870,43 @@ namespace rhi
             1, &barrier
         );
 
+    }
+
+    uint32_t findMemoryType_(uint32_t typeFilter, VkMemoryPropertyFlags properties) {
+        VkPhysicalDeviceMemoryProperties memProperties;
+        vkGetPhysicalDeviceMemoryProperties(vulkanGod.gpu, &memProperties);
+
+        for (uint32_t i = 0; i < memProperties.memoryTypeCount; i++) {
+            if ((typeFilter & (1 << i)) && (memProperties.memoryTypes[i].propertyFlags & properties) == properties) {
+                return i;
+            }
+        }
+        return 0;
+    }
+
+    void createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory) {
+        VkBufferCreateInfo bufferInfo{};
+        bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
+        bufferInfo.size = size;
+        bufferInfo.usage = usage;
+        bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+
+        if (vkCreateBuffer(vulkanGod.device, &bufferInfo, nullptr, &buffer) != VK_SUCCESS) {
+            throw std::runtime_error("failed to create buffer!");
+        }
+
+        VkMemoryRequirements memRequirements;
+        vkGetBufferMemoryRequirements(vulkanGod.device, buffer, &memRequirements);
+
+        VkMemoryAllocateInfo allocInfo{};
+        allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+        allocInfo.allocationSize = memRequirements.size;
+        allocInfo.memoryTypeIndex = findMemoryType_(memRequirements.memoryTypeBits, properties);
+
+        if (vkAllocateMemory(vulkanGod.device, &allocInfo, nullptr, &bufferMemory) != VK_SUCCESS) {
+            throw std::runtime_error("failed to allocate buffer memory!");
+        }
+
+        vkBindBufferMemory(vulkanGod.device, buffer, bufferMemory, 0);
     }
 }

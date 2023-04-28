@@ -1,6 +1,7 @@
 #include "yjw_vulkan_draw_template_manager.h"
 #include "yjw_vulkan_god_objects_manager.h"
 #include "yjw_vulkan_command_buffer_manager.h"
+#include "yjw_vulkan_resource_manager.h"
 
 namespace rhi
 {
@@ -24,6 +25,7 @@ namespace rhi
         pipelineDesc.colorBlendState = draw_template->getColorBlendState();
         pipelineDesc.vs = draw_template->getVertexShaderView();
         pipelineDesc.ps = draw_template->getPixelShaderView();
+        pipelineDesc.vertexLayout = draw_template->getVertexLayout();
 
         buildCache->pso.build(pipelineDesc);
 
@@ -44,8 +46,10 @@ namespace rhi
         renderPassInfo.clearValueCount = 1;
         renderPassInfo.pClearValues = &clearColor;
 
-
         vkCmdBindPipeline(buildCache->commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, buildCache->pso.getVkPipeline());
+
+        VkDeviceSize offset = 0;
+        vkCmdBindVertexBuffers(buildCache->commandBuffer, 0, 1, ((VulkanResourceLocation*)draw_template->getVertexBuffer()->resourceLocation)->getVkBuffer(), &offset);
 
         VkViewport viewport{};
         viewport.x = 0.0f;
@@ -63,7 +67,9 @@ namespace rhi
 
         vkCmdBeginRenderPass(buildCache->commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
         vkCmdBindDescriptorSets(buildCache->commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, buildCache->pso.getVkPipelineLayout(), 0, buildCache->pso.getVkDescriptorSets().size(), buildCache->pso.getVkDescriptorSets().data(), 0, nullptr);
-        vkCmdDraw(buildCache->commandBuffer, 36, 1, 0, 0);
+        
+        DrawOption& drawOption = draw_template->getDrawOption();
+        vkCmdDraw(buildCache->commandBuffer, drawOption.vertexCount, drawOption.instanceCount, drawOption.firstVertex, drawOption.firstInstance);
         vkCmdEndRenderPass(buildCache->commandBuffer);
 
         vkEndCommandBuffer(buildCache->commandBuffer);

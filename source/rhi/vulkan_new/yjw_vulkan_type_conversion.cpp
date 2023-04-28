@@ -13,6 +13,8 @@ namespace rhi
             case RHIFormat::unknow: return VK_FORMAT_UNDEFINED;
             case RHIFormat::R8G8B8A8_unorm: return VK_FORMAT_R8G8B8A8_UNORM;
             case RHIFormat::R8G8B8A8_srgb: return VK_FORMAT_R8G8B8A8_SRGB;
+            case RHIFormat::R32G32B32_sfloat: return VK_FORMAT_R32G32B32_SFLOAT;
+            case RHIFormat::R32G32_sfloat: return VK_FORMAT_R32G32_SFLOAT;
             }
             return VK_FORMAT_UNDEFINED;
         }
