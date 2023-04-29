@@ -30,13 +30,15 @@ namespace yjw
         glm::vec2 uv;
     };
     Vex vex[4] = {
-        {glm::vec3(-0.5,-0.5,0.5),glm::vec2{0,0}},
-        {glm::vec3(-0.5,0.5,0.5),glm::vec2{0,1}},
-        {glm::vec3(0.5,-0.5,0.5),glm::vec2{1,0}},
-        {glm::vec3(0.5,0.5,0.5),glm::vec2{1,1}}
+        {glm::vec3(-0.1,-0.1,0.1),glm::vec2{1,0}},
+        {glm::vec3(0.1,-0.1,0.1),glm::vec2{0,0}},
+        {glm::vec3(0.1,0.1,0.1),glm::vec2{0,1}},
+        {glm::vec3(-0.1,0.1,0.1),glm::vec2{1,1}},
     };
 
-    uint32_t index[6] = { 0,1,2,1,3,2 };
+    Vex render_vex[4];
+
+    uint32_t index[6] = { 0,1,2,2,3,0 };
 
 
     void RenderSystem::initialize()
@@ -46,15 +48,15 @@ namespace yjw
         rhi_createinfo.window = WindowsManager::get().window;
         IRHI::Get()->initialize(rhi_createinfo);
 
-        RenderCamera camera;
-        camera.position = glm::vec3(0.6, 0.6, 0.6);
-        camera.direction = glm::vec3(0, 0, 0) - camera.position;
+        activeCamera.position = glm::vec3(-0.6, -0.6, -0.6);
+        activeCamera.direction = glm::vec3(0, 0, 0) - activeCamera.position;
 
-        glm::mat4x4 vp = camera.getViewProjectionMatrix();
+        glm::mat4x4 vp = activeCamera.getViewProjectionMatrix();
         for (int i = 0; i < 4; i++)
         {
-            glm::vec4 x = (vp * glm::vec4(vex[i].pos, 1.0f));
-            vex[i].pos = glm::vec3(x.x, x.y, x.z);
+            render_vex[i] = vex[i];
+            glm::vec4 x = (vp * glm::vec4(render_vex[i].pos, 1.0f));
+            render_vex[i].pos = glm::vec3(x.x / x.w, x.y / x.w, x.z / x.w);
         }
 
         vs = new RHIShader(SHADER_FILE(test_vert.spv));
@@ -69,10 +71,10 @@ namespace yjw
         srv_image = new RHITexture2DFromFile(RESOURCE_FILE(sjy.png));
         srv_imageView = new RHIResourceView(ResourceViewType::srv, srv_image, RHIFormat::R8G8B8A8_srgb);
 
-        vertex_buffer = new RHIBuffer(sizeof(vex), RHIResourceUsageBits::allow_vertex_buffer, RHIMemoryType::default_);
+        vertex_buffer = new RHIBuffer(sizeof(render_vex), RHIResourceUsageBits::allow_vertex_buffer, RHIMemoryType::default_);
         index_buffer = new RHIBuffer(sizeof(index), RHIResourceUsageBits::allow_index_buffer, RHIMemoryType::default_);
 
-        IRHI::Get()->writeResourceImmidiately(vertex_buffer, vex, sizeof(vex));
+        IRHI::Get()->writeResourceImmidiately(vertex_buffer, render_vex, sizeof(render_vex));
         IRHI::Get()->writeResourceImmidiately(index_buffer, index, sizeof(index));
 
         ps_view->setDataTexture("myTexture", srv_imageView);
@@ -92,9 +94,20 @@ namespace yjw
     
     void RenderSystem::tick()
     {
+        glm::mat4x4 vp = activeCamera.getViewProjectionMatrix();
+        for (int i = 0; i < 4; i++)
+        {
+            render_vex[i] = vex[i];
+            glm::vec4 x = (vp * glm::vec4(render_vex[i].pos, 1.0f));
+            render_vex[i].pos = glm::vec3(x.x / x.w, x.y / x.w, x.z /x.w);
+        }
+        IRHI::Get()->writeResourceImmidiately(vertex_buffer, render_vex, sizeof(render_vex));
+
         IRHI::Get()->beginFrame();
         draw_template->draw();
         IRHI::Get()->endFrame(image);
+
+        WindowsManager::get().loop();
     }
     void RenderSystem::shutdown()
     {
@@ -102,5 +115,7 @@ namespace yjw
 
     }
 
-
+    REGISTER_DELEGATE(OnApplicationInitializedDelegate, []() {RenderSystem::get().initialize(); })
+    REGISTER_DELEGATE(OnApplicationLoopDelegate, []() {RenderSystem::get().tick(); })
+    REGISTER_DELEGATE(OnApplicationShutdownDelegate, []() {RenderSystem::get().shutdown(); })
 }

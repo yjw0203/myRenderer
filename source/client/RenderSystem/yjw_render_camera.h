@@ -5,6 +5,11 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
+#define GLFW_INCLUDE_VULKAN
+#include <GLFW/glfw3.h>
+
+#include "client/WindowManager/yjw_windows_manager.h"
+
 namespace yjw
 {
     class RenderCamera
@@ -22,5 +27,20 @@ namespace yjw
         glm::mat4x4 getViewMatrix();
         glm::mat4x4 getProjectionMatrix();
         glm::mat4x4 getViewProjectionMatrix();
+    };
+
+    class RenderCameraInputDispatcher
+    {
+    public:
+        static void Register();
+
+    private:
+        static float speed;
+
+        static void W();
+        static void A();
+        static void S();
+        static void D();
+
     };
 }

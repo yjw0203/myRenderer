@@ -1,7 +1,8 @@
 #pragma once
 
 #include "../yjw_global_delegate.h"
-
+#include <map>
+#include <functional>
 class GLFWwindow;
 
 namespace yjw
@@ -20,5 +21,21 @@ namespace yjw
         void initialize();
         void loop();
         void shutdown();
+    };
+
+    class InputDispatcher
+    {
+    public:
+        static InputDispatcher& get()
+        {
+            static InputDispatcher instance;
+            return instance;
+        }
+        static void Register();
+        static void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
+        static void registerKeyEvent(int key, int action, int mods, std::function<void(void)> func);
+
+    private:
+        static std::map< long long, std::vector<std::function<void(void)>> > keyFunctions;
     };
 }
