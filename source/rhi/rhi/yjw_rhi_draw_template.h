@@ -9,12 +9,25 @@ namespace rhi
 {
     class DefaultDrawTemplateBuildCache{};
 
+    enum class DrawMode
+    {
+        none = 0,
+        draw,
+        draw_index,
+        draw_indirect,
+        draw_index_indirect
+    };
+
     struct DrawOption
     {
+        DrawMode drawMode;
         int vertexCount;
         int instanceCount;
         int firstVertex;
         int firstInstance;
+        int indexCount;
+        int firstIndex;
+        int vertexOffset;//only use when draw index
     };
 
     class DefaultDrawTemplate
@@ -31,7 +44,9 @@ namespace rhi
         DefaultDrawTemplate* setPixelShaderView(RHIShaderView* shader);
         DefaultDrawTemplate* setRenderTarget(int num_rtv, RHIResourceView* rtvs, RHIResourceView* dsv);
         DefaultDrawTemplate* setVertexBuffer(RHIResource* buffer, VertexLayout layout);
+        DefaultDrawTemplate* setIndexBuffer(RHIResource* buffer);
         DefaultDrawTemplate* setDraw(int vertexCount, int instanceCount, int firstVertex, int firstInstance);
+        DefaultDrawTemplate* setDrawIndex(int indexCount, int instanceCount, int firstIndex,int vertexOffset, int firstInstance);
 
         RasterizationState getRasterizationState();
         ColorBlendState getColorBlendState();
@@ -42,6 +57,7 @@ namespace rhi
         VertexLayout& getVertexLayout();
         DrawOption& getDrawOption();
         RHIResource* getVertexBuffer();
+        RHIResource* getIndexBuffer();
     private:
         RasterizationState rasterizationState;
         ColorBlendState colorBlendState;
@@ -50,6 +66,7 @@ namespace rhi
         std::vector<RHIResourceView*> rtvs;
         RHIResourceView* dsv = nullptr;
         RHIResource* vertexBuffer = nullptr;
+        RHIResource* indexBuffer = nullptr;
         VertexLayout vertexLayout;
         DrawOption drawOption;
 

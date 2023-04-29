@@ -23,4 +23,6 @@ set(glfw_lib ${CMAKE_CURRENT_SOURCE_DIR}/3rd/glfw/lib-vc2022/glfw3.lib)
 
 set(stb_include ${CMAKE_CURRENT_SOURCE_DIR}/3rd/stb/include)
 
+set(glm_include ${CMAKE_CURRENT_SOURCE_DIR}/3rd/glm-0.9.9.8)
+
 add_subdirectory(source)

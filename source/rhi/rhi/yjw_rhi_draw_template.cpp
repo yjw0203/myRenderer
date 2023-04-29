@@ -72,12 +72,30 @@ namespace rhi
         return this;
     }
 
+    DefaultDrawTemplate* DefaultDrawTemplate::setIndexBuffer(RHIResource* buffer)
+    {
+        indexBuffer = buffer;
+        return this;
+    }
+
     DefaultDrawTemplate* DefaultDrawTemplate::setDraw(int vertexCount, int instanceCount, int firstVertex, int firstInstance)
     {
+        drawOption.drawMode = DrawMode::draw;
         drawOption.vertexCount = vertexCount;
         drawOption.instanceCount = instanceCount;
         drawOption.firstVertex = firstVertex;
         drawOption.firstInstance = firstInstance;
+        return this;
+    }
+
+    DefaultDrawTemplate* DefaultDrawTemplate::setDrawIndex(int indexCount, int instanceCount, int firstIndex, int vertexOffset, int firstInstance)
+    {
+        drawOption.drawMode = DrawMode::draw_index;
+        drawOption.indexCount = indexCount;
+        drawOption.instanceCount = instanceCount;
+        drawOption.firstIndex = firstIndex;
+        drawOption.firstInstance = firstInstance;
+        drawOption.vertexOffset = vertexOffset;
         return this;
     }
 
@@ -124,6 +142,11 @@ namespace rhi
     RHIResource* DefaultDrawTemplate::getVertexBuffer()
     {
         return vertexBuffer;
+    }
+
+    RHIResource* DefaultDrawTemplate::getIndexBuffer()
+    {
+        return indexBuffer;
     }
 
 }

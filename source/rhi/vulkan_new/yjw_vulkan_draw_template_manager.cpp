@@ -3,6 +3,8 @@
 #include "yjw_vulkan_command_buffer_manager.h"
 #include "yjw_vulkan_resource_manager.h"
 
+#include <stdexcept>
+
 namespace rhi
 {
     void VulkanDefaultDrawTemplateBuilder::excuteDrawTemplate(const DefaultDrawTemplate* draw_template)
@@ -48,8 +50,16 @@ namespace rhi
 
         vkCmdBindPipeline(buildCache->commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, buildCache->pso.getVkPipeline());
 
-        VkDeviceSize offset = 0;
-        vkCmdBindVertexBuffers(buildCache->commandBuffer, 0, 1, ((VulkanResourceLocation*)draw_template->getVertexBuffer()->resourceLocation)->getVkBuffer(), &offset);
+        if ((VulkanResourceLocation*)draw_template->getVertexBuffer())
+        {
+            VkDeviceSize offset = 0;
+            vkCmdBindVertexBuffers(buildCache->commandBuffer, 0, 1, ((VulkanResourceLocation*)draw_template->getVertexBuffer()->resourceLocation)->getVkBuffer(), &offset);
+        }
+
+        if ((VulkanResourceLocation*)draw_template->getIndexBuffer())
+        {
+            vkCmdBindIndexBuffer(buildCache->commandBuffer, *((VulkanResourceLocation*)draw_template->getIndexBuffer()->resourceLocation)->getVkBuffer(), 0, VK_INDEX_TYPE_UINT32);
+        }
 
         VkViewport viewport{};
         viewport.x = 0.0f;
@@ -69,7 +79,21 @@ namespace rhi
         vkCmdBindDescriptorSets(buildCache->commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, buildCache->pso.getVkPipelineLayout(), 0, buildCache->pso.getVkDescriptorSets().size(), buildCache->pso.getVkDescriptorSets().data(), 0, nullptr);
         
         DrawOption& drawOption = draw_template->getDrawOption();
-        vkCmdDraw(buildCache->commandBuffer, drawOption.vertexCount, drawOption.instanceCount, drawOption.firstVertex, drawOption.firstInstance);
+        if (drawOption.drawMode == DrawMode::none)
+        {
+        }
+        else if (drawOption.drawMode == DrawMode::draw)
+        {
+            vkCmdDraw(buildCache->commandBuffer, drawOption.vertexCount, drawOption.instanceCount, drawOption.firstVertex, drawOption.firstInstance);
+        }
+        else if (drawOption.drawMode == DrawMode::draw_index)
+        {
+            vkCmdDrawIndexed(buildCache->commandBuffer, drawOption.indexCount, drawOption.instanceCount, drawOption.firstIndex, drawOption.vertexOffset, drawOption.firstInstance);
+        }
+        else
+        {
+            throw std::runtime_error("drawOption not support");
+        }
         vkCmdEndRenderPass(buildCache->commandBuffer);
 
         vkEndCommandBuffer(buildCache->commandBuffer);

@@ -1,12 +1,11 @@
 #pragma once
 
-#define GLFW_INCLUDE_VULKAN
-#include <GLFW/glfw3.h>
-
 #include "yjw_render_system.h"
 #include "rhi/rhi/yjw_rhi_header.h"
 #include "client/WindowManager/yjw_windows_manager.h"
 #include "generate/projectInfo.h"
+#include "glm/glm.hpp"
+#include "yjw_render_camera.h"
 
 namespace yjw
 {
@@ -23,20 +22,22 @@ namespace yjw
     RHIResourceView* srv_imageView = nullptr;
 
     RHIBuffer* vertex_buffer = nullptr;
+    RHIBuffer* index_buffer = nullptr;
 
     struct Vex
     {
-        float pos[3];
-        float color[3];
+        glm::vec3 pos;
+        glm::vec2 uv;
     };
-    Vex vex[6] = {
-        {{0.5,0.5,0.5},{1.0,0.0,0.0}},
-        {{-0.5,0.5,0.5},{0.0,1.0,0.0}},
-        {{0.5,-0.5,0.5},{0.0,0.0,1.0}},
-        {{1.0,0.3,0.5},{1.0,0.0,0.0}},
-        {{0.2,0.4,0.5},{1.0,0.0,0.0}},
-        {{0.5,-0.2,0.5},{0.0,0.0,0.0}},
+    Vex vex[4] = {
+        {glm::vec3(-0.5,-0.5,0.5),glm::vec2{0,0}},
+        {glm::vec3(-0.5,0.5,0.5),glm::vec2{0,1}},
+        {glm::vec3(0.5,-0.5,0.5),glm::vec2{1,0}},
+        {glm::vec3(0.5,0.5,0.5),glm::vec2{1,1}}
     };
+
+    uint32_t index[6] = { 0,1,2,1,3,2 };
+
 
     void RenderSystem::initialize()
     {
@@ -44,6 +45,17 @@ namespace yjw
         CreateInfo rhi_createinfo{};
         rhi_createinfo.window = WindowsManager::get().window;
         IRHI::Get()->initialize(rhi_createinfo);
+
+        RenderCamera camera;
+        camera.position = glm::vec3(0.6, 0.6, 0.6);
+        camera.direction = glm::vec3(0, 0, 0) - camera.position;
+
+        glm::mat4x4 vp = camera.getViewProjectionMatrix();
+        for (int i = 0; i < 4; i++)
+        {
+            glm::vec4 x = (vp * glm::vec4(vex[i].pos, 1.0f));
+            vex[i].pos = glm::vec3(x.x, x.y, x.z);
+        }
 
         vs = new RHIShader(SHADER_FILE(test_vert.spv));
         ps = new RHIShader(SHADER_FILE(test_frag.spv));
@@ -57,9 +69,11 @@ namespace yjw
         srv_image = new RHITexture2DFromFile(RESOURCE_FILE(sjy.png));
         srv_imageView = new RHIResourceView(ResourceViewType::srv, srv_image, RHIFormat::R8G8B8A8_srgb);
 
-        vertex_buffer = new RHIBuffer(6 * sizeof(Vex), RHIResourceUsageBits::allow_vertex_buffer, RHIMemoryType::default_);
+        vertex_buffer = new RHIBuffer(sizeof(vex), RHIResourceUsageBits::allow_vertex_buffer, RHIMemoryType::default_);
+        index_buffer = new RHIBuffer(sizeof(index), RHIResourceUsageBits::allow_index_buffer, RHIMemoryType::default_);
 
-        IRHI::Get()->writeResourceImmidiately(vertex_buffer, vex, 6 * sizeof(Vex));
+        IRHI::Get()->writeResourceImmidiately(vertex_buffer, vex, sizeof(vex));
+        IRHI::Get()->writeResourceImmidiately(index_buffer, index, sizeof(index));
 
         ps_view->setDataTexture("myTexture", srv_imageView);
 
@@ -69,8 +83,9 @@ namespace yjw
             ->setVertexShaderView(vs_view)
             ->setPixelShaderView(ps_view)
             ->setRenderTarget(1, imageView, nullptr)
-            ->setVertexBuffer(vertex_buffer, VertexLayout().push(RHIFormat::R32G32B32_sfloat).push(RHIFormat::R32G32B32_sfloat))
-            ->setDraw(6, 1, 0, 0);
+            ->setVertexBuffer(vertex_buffer, VertexLayout().push(RHIFormat::R32G32B32_sfloat).push(RHIFormat::R32G32_sfloat))
+            ->setIndexBuffer(index_buffer)
+            ->setDrawIndex(6, 1, 0, 0, 0);
 
         draw_template->build();
     }
