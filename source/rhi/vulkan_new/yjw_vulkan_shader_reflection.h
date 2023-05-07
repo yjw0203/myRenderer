@@ -20,6 +20,23 @@ namespace rhi
         Matrix4
     };
 
+    struct BlockBufferMember
+    {
+        BaseDataType type;
+        std::string name;
+        uint32_t size;
+        uint32_t offset;
+    };
+
+    struct BlockBuffer
+    {
+        std::string name;
+        std::vector<BlockBufferMember> members;
+        uint32_t size;
+        uint32_t set;
+        uint32_t binding;
+    };
+
     struct Sampler2D
     {
         std::string name;
@@ -30,6 +47,7 @@ namespace rhi
     struct VulkanShaderReflectionData
     {
         std::vector<Sampler2D> sampler2Ds;
+        std::vector<BlockBuffer> blockBuffers;
         uint32_t setCount;
     };
  

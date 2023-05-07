@@ -23,6 +23,8 @@ namespace yjw
 
     RHIBuffer* vertex_buffer = nullptr;
     RHIBuffer* index_buffer = nullptr;
+    RHIBuffer* camera_uniform_buffer = nullptr;
+    RHIResourceView* camera_uniform_buffer_view = nullptr;
 
     struct Vex
     {
@@ -35,8 +37,6 @@ namespace yjw
         {glm::vec3(0.1,0.1,0.1),glm::vec2{0,1}},
         {glm::vec3(-0.1,0.1,0.1),glm::vec2{1,1}},
     };
-
-    Vex render_vex[4];
 
     uint32_t index[6] = { 0,1,2,2,3,0 };
 
@@ -51,14 +51,6 @@ namespace yjw
         activeCamera.position = glm::vec3(-0.6, -0.6, -0.6);
         activeCamera.direction = glm::vec3(0, 0, 0) - activeCamera.position;
 
-        glm::mat4x4 vp = activeCamera.getViewProjectionMatrix();
-        for (int i = 0; i < 4; i++)
-        {
-            render_vex[i] = vex[i];
-            glm::vec4 x = (vp * glm::vec4(render_vex[i].pos, 1.0f));
-            render_vex[i].pos = glm::vec3(x.x / x.w, x.y / x.w, x.z / x.w);
-        }
-
         vs = new RHIShader(SHADER_FILE(test_vert.spv));
         ps = new RHIShader(SHADER_FILE(test_frag.spv));
 
@@ -71,12 +63,15 @@ namespace yjw
         srv_image = new RHITexture2DFromFile(RESOURCE_FILE(sjy.png));
         srv_imageView = new RHIResourceView(ResourceViewType::srv, srv_image, RHIFormat::R8G8B8A8_srgb);
 
-        vertex_buffer = new RHIBuffer(sizeof(render_vex), RHIResourceUsageBits::allow_vertex_buffer, RHIMemoryType::default_);
+        vertex_buffer = new RHIBuffer(sizeof(vex), RHIResourceUsageBits::allow_vertex_buffer, RHIMemoryType::default_);
         index_buffer = new RHIBuffer(sizeof(index), RHIResourceUsageBits::allow_index_buffer, RHIMemoryType::default_);
+        camera_uniform_buffer = new RHIBuffer(128 , RHIResourceUsageBits::none, RHIMemoryType::upload);
+        camera_uniform_buffer_view = new RHIResourceView(ResourceViewType::buffer, camera_uniform_buffer, RHIFormat::unknow);
 
-        IRHI::Get()->writeResourceImmidiately(vertex_buffer, render_vex, sizeof(render_vex));
+        IRHI::Get()->writeResourceImmidiately(vertex_buffer, vex, sizeof(vex));
         IRHI::Get()->writeResourceImmidiately(index_buffer, index, sizeof(index));
 
+        vs_view->setDataBuffer("camera", camera_uniform_buffer_view);
         ps_view->setDataTexture("myTexture", srv_imageView);
 
         draw_template = (new DefaultDrawTemplate())
@@ -90,18 +85,25 @@ namespace yjw
             ->setDrawIndex(6, 1, 0, 0, 0);
 
         draw_template->build();
+
     }
     
     void RenderSystem::tick()
     {
-        glm::mat4x4 vp = activeCamera.getViewProjectionMatrix();
-        for (int i = 0; i < 4; i++)
+        struct Data
         {
-            render_vex[i] = vex[i];
-            glm::vec4 x = (vp * glm::vec4(render_vex[i].pos, 1.0f));
-            render_vex[i].pos = glm::vec3(x.x / x.w, x.y / x.w, x.z /x.w);
-        }
-        IRHI::Get()->writeResourceImmidiately(vertex_buffer, render_vex, sizeof(render_vex));
+            glm::mat4x4 view;
+            glm::mat4x4 project;
+        }data;
+
+        data.view = activeCamera.getViewMatrix();
+        printf("position:\n%.2f,%.2f,%.2f\n", activeCamera.position.x, activeCamera.position.y, activeCamera.position.z);
+        printf("data:\n%.2f,%.2f,%.2f,%.2f\n", data.view[0][0], data.view[0][1], data.view[0][2], data.view[0][3]);
+        printf("%.2f,%.2f,%.2f,%.2f\n", data.view[1][0], data.view[1][1], data.view[1][2], data.view[1][3]);
+        printf("%.2f,%.2f,%.2f,%.2f\n", data.view[2][0], data.view[2][1], data.view[2][2], data.view[2][3]);
+        printf("%.2f,%.2f,%.2f,%.2f\n", data.view[3][0], data.view[3][1], data.view[3][2], data.view[3][3]);
+        data.project = activeCamera.getProjectionMatrix();
+        IRHI::Get()->writeResourceImmidiately(camera_uniform_buffer, &data, sizeof(data));
 
         IRHI::Get()->beginFrame();
         draw_template->draw();

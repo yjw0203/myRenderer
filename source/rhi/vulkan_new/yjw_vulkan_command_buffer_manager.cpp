@@ -41,7 +41,7 @@ namespace rhi
             VkCommandBufferAllocateInfo allocInfo{};
             allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
             allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-            allocInfo.commandPool = primaryCommandPool;
+            allocInfo.commandPool = oneTimeCommandBufferPool;
             allocInfo.commandBufferCount = 1;
             vkAllocateCommandBuffers(vulkanGod.device, &allocInfo, &commandBuffer);
             oneTimeCommandBuffers.push_back(commandBuffer);
@@ -82,7 +82,7 @@ namespace rhi
             VkCommandBufferAllocateInfo allocInfo{};
             allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
             allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-            allocInfo.commandPool = primaryCommandPool;
+            allocInfo.commandPool = oneTimeCommandBufferPool;
             allocInfo.commandBufferCount = 1;
             vkAllocateCommandBuffers(vulkanGod.device, &allocInfo, &commandBuffer);
             oneTimeCommandBuffers.push_back(commandBuffer);

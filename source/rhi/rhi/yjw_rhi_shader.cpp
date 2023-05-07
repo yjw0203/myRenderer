@@ -40,4 +40,8 @@ namespace rhi
     {
         data.texture2Ds[varName] = view;
     }
+    void RHIShaderView::setDataBuffer(std::string varName, RHIResourceView* view)
+    {
+        data.uniformBuffers[varName] = view;
+    }
 }

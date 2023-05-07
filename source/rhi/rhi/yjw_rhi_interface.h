@@ -9,7 +9,7 @@ namespace rhi
     class RHIShaderLocation;
     class DefaultDrawTemplate;
     class DefaultDrawTemplateBuildCache;
-    enum ResourceViewType;
+    enum class ResourceViewType;
     enum RHIFormat;
     enum RHIResourceState;
     class RHIResourceView;

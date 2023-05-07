@@ -6,8 +6,9 @@ namespace rhi
 
     class RHIResourceViewLocation {};
 
-    enum ResourceViewType
+    enum class ResourceViewType
     {
+        buffer,
         rtv,
         dsv,
         srv,

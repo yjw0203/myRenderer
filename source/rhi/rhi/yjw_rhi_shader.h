@@ -34,6 +34,7 @@ namespace rhi
     struct RHIShaderViewData
     {
         std::unordered_map<std::string, RHIResourceView*>texture2Ds;
+        std::unordered_map<std::string, RHIResourceView*>uniformBuffers;
         //std::unordered_map<std::string, RHISampler*>sampler2Ds;
     };
 
@@ -48,6 +49,7 @@ namespace rhi
         RHIShaderViewData& getData();
 
         void setDataTexture(std::string varName,RHIResourceView* view);
+        void setDataBuffer(std::string varName,RHIResourceView* view);
     private:
         RHIShader* shader = nullptr;
         RHIShaderType type;

@@ -52,7 +52,7 @@ namespace rhi
         vkWaitForFences(device, 1, &inFlightFence, VK_TRUE, UINT64_MAX);
         vkResetFences(device, 1, &inFlightFence);
         vkAcquireNextImageKHR(device, swapchain, UINT64_MAX, imageAvailableSemaphore, VK_NULL_HANDLE, &swapchainImageIndex);
-        
+
         VulkanCommandBufferAllocater::Get().resetOneTimeCommandBuffer();
         commandBufferList.clear();
 
@@ -106,6 +106,7 @@ namespace rhi
         if (vkQueueSubmit(graphicsQueue, 1, &submitInfo, inFlightFence) != VK_SUCCESS) {
             throw std::runtime_error("failed to submit draw command buffer!");
         }
+        vkQueueWaitIdle(vulkanGod.graphicsQueue);
 
         VkPresentInfoKHR presentInfo{};
         presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
@@ -336,6 +337,7 @@ namespace rhi
 
         createInfo.minImageCount = imageCount;
         createInfo.imageFormat = VK_FORMAT_R8G8B8A8_SRGB;//surfaceFormat.format;
+        //createInfo.imageFormat = VK_FORMAT_B8G8R8A8_SRGB;//surfaceFormat.format;
         createInfo.imageColorSpace = surfaceFormat.colorSpace;
         createInfo.imageExtent = extent;
         createInfo.imageArrayLayers = 1;
@@ -572,14 +574,14 @@ namespace rhi
             if (shader.shader)
             {
                 const VulkanShaderReflectionData& reflect = ((VulkanShaderLocation*)shader.shader->getShader()->shaderLocation)->getReflectData();
-                count_set += reflect.setCount;
+                if(count_set<reflect.setCount)count_set = reflect.setCount;
             }
         }
 
         //layout
         std::vector<std::vector<VkDescriptorSetLayoutBinding>> setLayoutBindings(count_set);
-        int current_set_offset = 0;
         int count_sampler2D = 0;
+        int count_unformBuffer = 0;
         for (ShaderInfo& shader : shaders)
         {
             if (shader.shader)
@@ -594,13 +596,22 @@ namespace rhi
                     layoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
                     layoutBinding.pImmutableSamplers = nullptr;
                     layoutBinding.stageFlags = shader.stage;
-                    setLayoutBindings[current_set_offset + reflect.sampler2Ds[i].set].push_back(layoutBinding);
+                    setLayoutBindings[reflect.sampler2Ds[i].set].push_back(layoutBinding);
                     count_sampler2D++;
                 }
 
                 //uniform
-
-                current_set_offset += reflect.setCount;
+                for (uint32_t i = 0; i < reflect.blockBuffers.size(); i++)
+                {
+                    VkDescriptorSetLayoutBinding layoutBinding = {};
+                    layoutBinding.binding = reflect.blockBuffers[i].binding;
+                    layoutBinding.descriptorCount = 1;
+                    layoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+                    layoutBinding.pImmutableSamplers = nullptr;
+                    layoutBinding.stageFlags = shader.stage;
+                    setLayoutBindings[reflect.blockBuffers[i].set].push_back(layoutBinding);
+                    count_unformBuffer++;
+                }
             }
         }
 
@@ -617,11 +628,11 @@ namespace rhi
 
 
         //poor
-        std::array<VkDescriptorPoolSize, 1> poolSizes{};
+        std::array<VkDescriptorPoolSize, 2> poolSizes{};
         poolSizes[0].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
         poolSizes[0].descriptorCount = count_sampler2D;
-        //poolSizes[1].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-        //poolSizes[1].descriptorCount = 0;
+        poolSizes[1].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+        poolSizes[1].descriptorCount = count_unformBuffer;
 
         VkDescriptorPoolCreateInfo poolInfo{};
         poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
@@ -646,7 +657,8 @@ namespace rhi
         }
 
         //descriptor write
-        current_set_offset = 0;
+        std::vector<VkDescriptorImageInfo> imageInfos;
+        std::vector<VkDescriptorBufferInfo> bufferInfos;
         std::vector<VkWriteDescriptorSet> descriptorWrites;
         for (ShaderInfo& shader : shaders)
         {
@@ -666,21 +678,43 @@ namespace rhi
                     imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
                     imageInfo.imageView = *((VulkanResourceViewLocation*)shader.shader->getData().texture2Ds[reflect.sampler2Ds[i].name]->resourceViewLocation)->getVkImageView();
                     imageInfo.sampler = vulkanGod.defaultSampler;
-                    
+                    imageInfos.push_back(imageInfo);
+
                     VkWriteDescriptorSet write{};
                     write.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-                    write.dstSet = descriptorSets[current_set_offset + reflect.sampler2Ds[i].set];
+                    write.dstSet = descriptorSets[reflect.sampler2Ds[i].set];
                     write.dstBinding = reflect.sampler2Ds[i].binding;
                     write.dstArrayElement = 0;
                     write.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
                     write.descriptorCount = 1;
-                    write.pImageInfo = &imageInfo;
+                    write.pImageInfo = &imageInfos.back();
                     descriptorWrites.push_back(write);
                 }
 
                 //uniform
+                for (uint32_t i = 0; i < reflect.blockBuffers.size(); i++)
+                {
+                    if (!shader.shader->getData().uniformBuffers.count(reflect.blockBuffers[i].name))
+                    {
+                        continue;
+                    }
 
-                current_set_offset += reflect.setCount;
+                    VkDescriptorBufferInfo bufferInfo{};
+                    bufferInfo.buffer = *((VulkanResourceLocation*)(shader.shader->getData().uniformBuffers[reflect.blockBuffers[i].name]->resource->resourceLocation))->getVkBuffer();
+                    bufferInfo.offset = 0;
+                    bufferInfo.range = reflect.blockBuffers[i].size;
+                    bufferInfos.push_back(bufferInfo);
+
+                    VkWriteDescriptorSet write{};
+                    write.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+                    write.dstSet = descriptorSets[reflect.blockBuffers[i].set];
+                    write.dstBinding = reflect.blockBuffers[i].binding;
+                    write.dstArrayElement = 0;
+                    write.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+                    write.descriptorCount = 1;
+                    write.pBufferInfo = &bufferInfos.back();
+                    descriptorWrites.push_back(write);
+                }
             }
         }
         vkUpdateDescriptorSets(vulkanGod.device, static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);

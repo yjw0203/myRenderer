@@ -40,10 +40,10 @@ namespace rhi
             createInfo.subresourceRange.layerCount = 1;
             switch (type)
             {
-            case rtv:createInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT; break;
-            case dsv:createInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT | VK_IMAGE_ASPECT_STENCIL_BIT; break;
-            case srv:createInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT; break;
-            case uav:createInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT; break;
+            case ResourceViewType::rtv:createInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT; break;
+            case ResourceViewType::dsv:createInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT | VK_IMAGE_ASPECT_STENCIL_BIT; break;
+            case ResourceViewType::srv:createInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT; break;
+            case ResourceViewType::uav:createInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT; break;
             default:createInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT; break;
             }
 
