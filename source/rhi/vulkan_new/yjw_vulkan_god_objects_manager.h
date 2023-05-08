@@ -66,6 +66,7 @@ namespace rhi
         VertexLayout vertexLayout,
         VkRenderPass& renderPass,
         RasterizationState rasterizationState,
+        DepthStencilState depthStencilState,
         ColorBlendState colorBlendState,
         std::vector<VkPipelineShaderStageCreateInfo>& shaderStages);
     VkPipelineShaderStageCreateInfo PipelineShaderStageCreateInfo(RHIShaderView* shader, VkShaderStageFlagBits stage);

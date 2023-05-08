@@ -24,6 +24,7 @@ namespace rhi
         pipelineDesc.rtvs = draw_template->getRenderTargetViews();
         pipelineDesc.dsv = draw_template->getDepthStencilView();
         pipelineDesc.rasterizationState = draw_template->getRasterizationState();
+        pipelineDesc.depthStencilState = draw_template->getDepthStencilState();
         pipelineDesc.colorBlendState = draw_template->getColorBlendState();
         pipelineDesc.vs = draw_template->getVertexShaderView();
         pipelineDesc.ps = draw_template->getPixelShaderView();
@@ -44,9 +45,11 @@ namespace rhi
         renderPassInfo.renderArea.offset = { 0, 0 };
         renderPassInfo.renderArea.extent = vulkanGod.swapchainExtent;
 
-        VkClearValue clearColor = { {{0.0f, 0.0f, 0.0f, 1.0f}} };
-        renderPassInfo.clearValueCount = 1;
-        renderPassInfo.pClearValues = &clearColor;
+        VkClearValue clearColor[2] = { {{0.0f, 0.0f, 0.0f, 1.0f}} };
+        clearColor[1].depthStencil.depth = 1.0f;
+        clearColor[1].depthStencil.stencil = 0;
+        renderPassInfo.clearValueCount = 2;
+        renderPassInfo.pClearValues = clearColor;
 
         vkCmdBindPipeline(buildCache->commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, buildCache->pso.getVkPipeline());
 

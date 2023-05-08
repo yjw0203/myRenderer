@@ -35,6 +35,12 @@ namespace rhi
         return this;
     }
 
+    DefaultDrawTemplate* DefaultDrawTemplate::setDepthStencilState(DepthStencilState state)
+    {
+        depthStencilState = state;
+        return this;
+    }
+
     DefaultDrawTemplate* DefaultDrawTemplate::setColorBlendState(ColorBlendState state)
     {
         colorBlendState = state;
@@ -102,6 +108,11 @@ namespace rhi
     RasterizationState DefaultDrawTemplate::getRasterizationState()
     {
         return rasterizationState;
+    }
+
+    DepthStencilState DefaultDrawTemplate::getDepthStencilState()
+    {
+        return depthStencilState;
     }
 
     ColorBlendState DefaultDrawTemplate::getColorBlendState()

@@ -41,6 +41,8 @@ namespace yjw
         static void A();
         static void S();
         static void D();
+        static void Q();
+        static void E();
 
     };
 }

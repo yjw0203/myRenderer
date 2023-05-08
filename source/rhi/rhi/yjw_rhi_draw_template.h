@@ -39,6 +39,7 @@ namespace rhi
         void draw();
         DefaultDrawTemplateBuildCache* cache = nullptr;
         DefaultDrawTemplate* setRasterizationState(RasterizationState state);
+        DefaultDrawTemplate* setDepthStencilState(DepthStencilState state);
         DefaultDrawTemplate* setColorBlendState(ColorBlendState state);
         DefaultDrawTemplate* setVertexShaderView(RHIShaderView* shader);
         DefaultDrawTemplate* setPixelShaderView(RHIShaderView* shader);
@@ -49,6 +50,7 @@ namespace rhi
         DefaultDrawTemplate* setDrawIndex(int indexCount, int instanceCount, int firstIndex,int vertexOffset, int firstInstance);
 
         RasterizationState getRasterizationState();
+        DepthStencilState getDepthStencilState();
         ColorBlendState getColorBlendState();
         RHIShaderView* getVertexShaderView();
         RHIShaderView* getPixelShaderView();
@@ -60,6 +62,7 @@ namespace rhi
         RHIResource* getIndexBuffer();
     private:
         RasterizationState rasterizationState;
+        DepthStencilState depthStencilState;
         ColorBlendState colorBlendState;
         RHIShaderView* vertexShaderView = nullptr;
         RHIShaderView* pixelShaderView = nullptr;

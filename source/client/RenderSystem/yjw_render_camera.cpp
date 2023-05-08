@@ -18,7 +18,7 @@ namespace yjw
         return getProjectionMatrix() * getViewMatrix();
     }
 
-    float RenderCameraInputDispatcher::speed = 0.005;
+    float RenderCameraInputDispatcher::speed = 0.05;
 
     void RenderCameraInputDispatcher::Register()
     {
@@ -33,6 +33,12 @@ namespace yjw
 
         InputDispatcher::get().registerKeyEvent(GLFW_KEY_D, GLFW_PRESS, 0, D);
         InputDispatcher::get().registerKeyEvent(GLFW_KEY_D, GLFW_REPEAT, 0, D);
+
+        InputDispatcher::get().registerKeyEvent(GLFW_KEY_Q, GLFW_PRESS, 0, Q);
+        InputDispatcher::get().registerKeyEvent(GLFW_KEY_Q, GLFW_REPEAT, 0, Q);
+
+        InputDispatcher::get().registerKeyEvent(GLFW_KEY_E, GLFW_PRESS, 0, E);
+        InputDispatcher::get().registerKeyEvent(GLFW_KEY_E, GLFW_REPEAT, 0, E);
     }
 
     void RenderCameraInputDispatcher::W()
@@ -59,6 +65,18 @@ namespace yjw
         RenderCamera& camera = RenderSystem::get().activeCamera;
         glm::vec3 right = glm::normalize(glm::cross(camera.direction, camera.up));
         camera.position += right * speed;
+    }
+
+    void RenderCameraInputDispatcher::Q()
+    {
+        RenderCamera& camera = RenderSystem::get().activeCamera;
+        camera.position += glm::normalize(camera.up) * speed * -1.0f;
+    }
+
+    void RenderCameraInputDispatcher::E()
+    {
+        RenderCamera& camera = RenderSystem::get().activeCamera;
+        camera.position += glm::normalize(camera.up) * speed;
     }
 
 }

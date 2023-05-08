@@ -15,6 +15,7 @@ namespace rhi
             if (!initialized)
             {
                 instance.initializeRasterizationState();
+                instance.initializeDepthStencilState();
                 instance.initializeColorBlendState();
                 initialized = true;
             }
@@ -23,6 +24,11 @@ namespace rhi
         VkPipelineRasterizationStateCreateInfo& getRasterizationState(RasterizationState state)
         {
             return rasterizationState[state];
+        }
+
+        VkPipelineDepthStencilStateCreateInfo& getDepthStencilState(DepthStencilState state)
+        {
+            return depthStencilState[state];
         }
 
         VkPipelineColorBlendStateCreateInfo& getColorBlendState(ColorBlendState state)
@@ -45,6 +51,20 @@ namespace rhi
 
             rasterizationState[RasterizationState::Rasterization_default] = rasterizer;
         }
+
+        void initializeDepthStencilState()
+        {
+            VkPipelineDepthStencilStateCreateInfo depthStencil{};
+            depthStencil.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
+            depthStencil.depthTestEnable = VK_TRUE;
+            depthStencil.depthWriteEnable = VK_TRUE;
+            depthStencil.depthCompareOp = VK_COMPARE_OP_LESS;
+            depthStencil.depthBoundsTestEnable = VK_FALSE;
+            depthStencil.stencilTestEnable = VK_FALSE;
+
+            depthStencilState[DepthStencilState::DepthStencil_default] = depthStencil;
+        }
+
         void initializeColorBlendState()
         {
             static VkPipelineColorBlendAttachmentState colorBlendAttachments[1];
@@ -66,6 +86,7 @@ namespace rhi
         }
 
         VkPipelineRasterizationStateCreateInfo rasterizationState[RasterizationState::Rasterization_count];
+        VkPipelineDepthStencilStateCreateInfo depthStencilState[DepthStencilState::DepthStencil_count];
         VkPipelineColorBlendStateCreateInfo colorBlendState[ColorBlendState::ColorBlend_count];
     };
 
@@ -76,6 +97,7 @@ namespace rhi
         RHIShaderView* vs;
         RHIShaderView* ps;
         RasterizationState rasterizationState;
+        DepthStencilState depthStencilState;
         ColorBlendState colorBlendState;
         VertexLayout vertexLayout;
 

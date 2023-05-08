@@ -8,6 +8,12 @@ namespace rhi
         Rasterization_count
     };
 
+    enum DepthStencilState
+    {
+        DepthStencil_default,
+        DepthStencil_count
+    };
+
     enum ColorBlendState
     {
         ColorBlend_default,

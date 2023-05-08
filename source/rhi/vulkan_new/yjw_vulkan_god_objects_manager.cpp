@@ -526,14 +526,26 @@ namespace rhi
             attachments.back().finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
         }
 
-        VkAttachmentReference colorAttachmentRef{};
-        colorAttachmentRef.attachment = 0;
-        colorAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+        std::vector<VkAttachmentReference>attachmentRefs(rtvs.size() + (dsv != nullptr));
+        for (int i = 0; i < rtvs.size(); i++)
+        {
+            attachmentRefs[i].attachment = i;
+            attachmentRefs[i].layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+        }
+        if (dsv)
+        {
+            attachmentRefs.back().attachment = (int)attachmentRefs.size() - 1;
+            attachmentRefs.back().layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+        }
 
         VkSubpassDescription subpass{};
         subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
-        subpass.colorAttachmentCount = 1;
-        subpass.pColorAttachments = &colorAttachmentRef;
+        subpass.colorAttachmentCount = rtvs.size();
+        subpass.pColorAttachments = attachmentRefs.data();
+        if (dsv)
+        {
+            subpass.pDepthStencilAttachment = &attachmentRefs.back();
+        }
 
         VkSubpassDependency dependency{};
         dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
@@ -770,6 +782,7 @@ namespace rhi
         VertexLayout vertexLayout,
         VkRenderPass& renderPass,
         RasterizationState rasterizationState,
+        DepthStencilState depthStencilState,
         ColorBlendState colorBlendState,
         std::vector<VkPipelineShaderStageCreateInfo>& shaderStages)
     {
@@ -831,6 +844,7 @@ namespace rhi
         pipelineInfo.pInputAssemblyState = &inputAssembly;
         pipelineInfo.pViewportState = &viewportState;
         pipelineInfo.pRasterizationState = &VulkanPilelineStateManager::Get().getRasterizationState(rasterizationState);
+        pipelineInfo.pDepthStencilState = &VulkanPilelineStateManager::Get().getDepthStencilState(depthStencilState);
         pipelineInfo.pMultisampleState = &multisampling;
         pipelineInfo.pColorBlendState = &VulkanPilelineStateManager::Get().getColorBlendState(colorBlendState);
         pipelineInfo.pDynamicState = &dynamicState;
