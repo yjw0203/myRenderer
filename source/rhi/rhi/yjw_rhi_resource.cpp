@@ -41,10 +41,10 @@ namespace rhi
 
     }
 
-    RHITexture2DFromFile::RHITexture2DFromFile(std::string filePath)
+    RHITexture2DFromFile::RHITexture2DFromFile(const char* filePath)
     {
         int texWidth, texHeight, texChannels;
-        stbi_uc* pixels = stbi_load(filePath.c_str(), &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
+        stbi_uc* pixels = stbi_load(filePath, &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
         this->RHIResource::RHIResource(RHIResourceType::texture2D,
             texWidth,
             texHeight,

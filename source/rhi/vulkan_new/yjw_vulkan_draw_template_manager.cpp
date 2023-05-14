@@ -45,11 +45,11 @@ namespace rhi
         renderPassInfo.renderArea.offset = { 0, 0 };
         renderPassInfo.renderArea.extent = vulkanGod.swapchainExtent;
 
-        VkClearValue clearColor[2] = { {{0.0f, 0.0f, 0.0f, 1.0f}} };
+        /*VkClearValue clearColor[2] = {{{0.0f, 0.0f, 0.0f, 1.0f}}};
         clearColor[1].depthStencil.depth = 1.0f;
         clearColor[1].depthStencil.stencil = 0;
-        renderPassInfo.clearValueCount = 2;
-        renderPassInfo.pClearValues = clearColor;
+        renderPassInfo.clearValueCount = 2;*/
+        renderPassInfo.pClearValues = nullptr;
 
         vkCmdBindPipeline(buildCache->commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, buildCache->pso.getVkPipeline());
 
@@ -78,8 +78,8 @@ namespace rhi
         scissor.extent = vulkanGod.swapchainExtent;
         vkCmdSetScissor(buildCache->commandBuffer, 0, 1, &scissor);
 
-        vkCmdBeginRenderPass(buildCache->commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
         vkCmdBindDescriptorSets(buildCache->commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, buildCache->pso.getVkPipelineLayout(), 0, buildCache->pso.getVkDescriptorSets().size(), buildCache->pso.getVkDescriptorSets().data(), 0, nullptr);
+        vkCmdBeginRenderPass(buildCache->commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
         
         DrawOption& drawOption = draw_template->getDrawOption();
         if (drawOption.drawMode == DrawMode::none)

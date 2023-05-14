@@ -25,11 +25,11 @@ namespace rhi
             VkImageUsageFlags flag = 0;
             if (RHIResourceUsageBits::allow_render_target & rhiUsage)
             {
-                flag |= VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
+                flag |= VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT;
             }
             if (RHIResourceUsageBits::allow_depth_stencil & rhiUsage)
             {
-                flag |= VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
+                flag |= VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT;
             }
             if (RHIResourceUsageBits::allow_unordered_access & rhiUsage)
             {

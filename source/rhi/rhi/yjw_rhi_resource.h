@@ -96,7 +96,7 @@ namespace rhi
     class RHITexture2DFromFile : public RHIResource
     {
     public:
-        RHITexture2DFromFile(std::string filePath);
+        RHITexture2DFromFile(const char* filePath);
     };
 
     int sizeofFormat(RHIFormat rhiFormat);

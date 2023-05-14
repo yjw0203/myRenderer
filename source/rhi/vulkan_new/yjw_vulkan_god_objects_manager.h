@@ -70,7 +70,7 @@ namespace rhi
         ColorBlendState colorBlendState,
         std::vector<VkPipelineShaderStageCreateInfo>& shaderStages);
     VkPipelineShaderStageCreateInfo PipelineShaderStageCreateInfo(RHIShaderView* shader, VkShaderStageFlagBits stage);
-    void transitionImageLayout(VkCommandBuffer& commandBuffer, VkImage image, VkImageLayout oldLayout, VkImageLayout newLayout);
+    void transitionImageLayout(VkCommandBuffer& commandBuffer, VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout);
     uint32_t findMemoryType_(uint32_t typeFilter, VkMemoryPropertyFlags properties);
     void createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory);
 

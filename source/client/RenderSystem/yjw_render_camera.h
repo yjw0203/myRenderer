@@ -36,6 +36,9 @@ namespace yjw
 
     private:
         static float speed;
+        static float lastMouseX;
+        static float lastMouseY;
+        static bool isRightMouseButton;
 
         static void W();
         static void A();
@@ -43,6 +46,10 @@ namespace yjw
         static void D();
         static void Q();
         static void E();
+        static void RightMouseDown();
+        static void MouseMove(float x, float y);
+        static void RightMouseRelease();
+        static void MouseScroll(float x, float y);
 
     };
 }

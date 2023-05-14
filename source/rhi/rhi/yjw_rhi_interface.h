@@ -37,6 +37,7 @@ namespace rhi
 
         virtual void writeResourceImmidiately(RHIResource* resource, void* data, int size) = 0;
 
+        virtual void clearImageResource(RHIResource* resource) = 0;
 
 
     //todo: will be move to unpublic.

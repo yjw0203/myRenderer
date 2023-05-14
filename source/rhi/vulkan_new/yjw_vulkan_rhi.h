@@ -20,6 +20,8 @@ namespace rhi
 
         virtual void writeResourceImmidiately(RHIResource* resource, void* data, int size) override;
 
+        virtual void clearImageResource(RHIResource* resource) override;
+
         //resource
         virtual RHIResourceLocation* createResource(const RHIResourceDesc& desc) override;
         virtual void deleteResource(RHIResourceLocation*& location) override;

@@ -25,6 +25,8 @@ namespace yjw
         void tick();
         void shutdown();
 
+        float deltaTime = 0.f;
+
         class RenderCamera activeCamera;
     };
 

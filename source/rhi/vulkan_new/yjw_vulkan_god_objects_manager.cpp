@@ -60,7 +60,7 @@ namespace rhi
         beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 
         VkCommandBuffer commandBuffer = VulkanCommandBufferAllocater::Get().beginOneTimeCommandBuffer();
-        transitionImageLayout(commandBuffer, vulkanGod.swapchainImages[swapchainImageIndex], VK_IMAGE_LAYOUT_PRESENT_SRC_KHR, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+        transitionImageLayout(commandBuffer, vulkanGod.swapchainImages[swapchainImageIndex], VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
         VulkanCommandBufferAllocater::Get().endOneTimeCommandBuffer(commandBuffer);
     }
 
@@ -79,11 +79,11 @@ namespace rhi
             imageCopyRegion.extent.width = vulkanGod.swapchainExtent.width;
             imageCopyRegion.extent.height = vulkanGod.swapchainExtent.height;
             imageCopyRegion.extent.depth = 1;
-            transitionImageLayout(commandBuffer, present_image, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
+            transitionImageLayout(commandBuffer, present_image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
             vkCmdCopyImage(commandBuffer, present_image, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, vulkanGod.swapchainImages[swapchainImageIndex], VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &imageCopyRegion);
-            transitionImageLayout(commandBuffer, present_image, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
+            transitionImageLayout(commandBuffer, present_image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
         }
-        transitionImageLayout(commandBuffer, vulkanGod.swapchainImages[swapchainImageIndex], VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
+        transitionImageLayout(commandBuffer, vulkanGod.swapchainImages[swapchainImageIndex], VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
         
         VulkanCommandBufferAllocater::Get().endOneTimeCommandBuffer(commandBuffer);
 
@@ -402,7 +402,7 @@ namespace rhi
         VkCommandBuffer commandBuffer = VulkanCommandBufferAllocater::Get().beginImmdiatelyCommandBuffer();
         for (size_t i = 0; i < vulkanGod.swapchainImages.size(); i++)
         {
-            transitionImageLayout(commandBuffer, vulkanGod.swapchainImages[i], VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
+            transitionImageLayout(commandBuffer, vulkanGod.swapchainImages[i], VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
         }
         VulkanCommandBufferAllocater::Get().endImmdiatelyCommandBuffer(commandBuffer);
 
@@ -507,7 +507,7 @@ namespace rhi
         {
             attachments[i].format = VulkanConverter::convertFormat(rtvs[i]->format);
             attachments[i].samples = VK_SAMPLE_COUNT_1_BIT;
-            attachments[i].loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+            attachments[i].loadOp = VK_ATTACHMENT_LOAD_OP_LOAD;
             attachments[i].storeOp = VK_ATTACHMENT_STORE_OP_STORE;
             attachments[i].stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
             attachments[i].stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
@@ -518,7 +518,7 @@ namespace rhi
         {
             attachments.back().format = VulkanConverter::convertFormat(dsv->format);
             attachments.back().samples = VK_SAMPLE_COUNT_1_BIT;
-            attachments.back().loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+            attachments.back().loadOp = VK_ATTACHMENT_LOAD_OP_LOAD;
             attachments.back().storeOp = VK_ATTACHMENT_STORE_OP_STORE;
             attachments.back().stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
             attachments.back().stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
@@ -670,7 +670,9 @@ namespace rhi
 
         //descriptor write
         std::vector<VkDescriptorImageInfo> imageInfos;
+        imageInfos.reserve(count_sampler2D);
         std::vector<VkDescriptorBufferInfo> bufferInfos;
+        bufferInfos.reserve(count_unformBuffer);
         std::vector<VkWriteDescriptorSet> descriptorWrites;
         for (ShaderInfo& shader : shaders)
         {
@@ -871,7 +873,7 @@ namespace rhi
         return info;
     }
 
-    void transitionImageLayout(VkCommandBuffer& commandBuffer,VkImage image, VkImageLayout oldLayout, VkImageLayout newLayout)
+    void transitionImageLayout(VkCommandBuffer& commandBuffer, VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout)
     {
         VkImageMemoryBarrier barrier{};
         barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
@@ -881,6 +883,11 @@ namespace rhi
         barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
         barrier.image = image;
         barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+        if (format == VK_FORMAT_D24_UNORM_S8_UINT)
+        {
+            barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT | VK_IMAGE_ASPECT_STENCIL_BIT;
+        }
+
         barrier.subresourceRange.baseMipLevel = 0;
         barrier.subresourceRange.levelCount = 1;
         barrier.subresourceRange.baseArrayLayer = 0;

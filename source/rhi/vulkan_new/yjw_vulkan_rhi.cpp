@@ -28,14 +28,14 @@ namespace rhi
     void IVulkanRHI::resourceBarrier(RHIResource* resource, RHIResourceState beforeState, RHIResourceState afterState)
     {
         VkCommandBuffer commandBuffer = VulkanCommandBufferAllocater::Get().beginOneTimeCommandBuffer();
-        transitionImageLayout(commandBuffer, *((VulkanResourceLocation*)resource->resourceLocation)->getVkImage(), VulkanConverter::convertResourceState(beforeState), VulkanConverter::convertResourceState(afterState));
+        transitionImageLayout(commandBuffer, *((VulkanResourceLocation*)resource->resourceLocation)->getVkImage(), ((VulkanResourceLocation*)resource->resourceLocation)->getDesc().imageInfo.format, VulkanConverter::convertResourceState(beforeState), VulkanConverter::convertResourceState(afterState));
         VulkanCommandBufferAllocater::Get().endOneTimeCommandBuffer(commandBuffer);
     }
 
     void IVulkanRHI::resourceBarrierImmidiately(RHIResource* resource, RHIResourceState beforeState, RHIResourceState afterState)
     {
         VkCommandBuffer commandBuffer = VulkanCommandBufferAllocater::Get().beginImmdiatelyCommandBuffer();
-        transitionImageLayout(commandBuffer, *((VulkanResourceLocation*)resource->resourceLocation)->getVkImage(), VulkanConverter::convertResourceState(beforeState), VulkanConverter::convertResourceState(afterState));
+        transitionImageLayout(commandBuffer, *((VulkanResourceLocation*)resource->resourceLocation)->getVkImage(), ((VulkanResourceLocation*)resource->resourceLocation)->getDesc().imageInfo.format, VulkanConverter::convertResourceState(beforeState), VulkanConverter::convertResourceState(afterState));
         VulkanCommandBufferAllocater::Get().endImmdiatelyCommandBuffer(commandBuffer);
     }
 
@@ -49,6 +49,36 @@ namespace rhi
     void IVulkanRHI::writeResourceImmidiately(RHIResource* resource, void* data, int size)
     {
         VulkanResourceWriter::writeResourceImmidiately(resource, data, size);
+    }
+
+    void IVulkanRHI::clearImageResource(RHIResource* resource)
+    {
+        VkCommandBuffer commandBuffer = VulkanCommandBufferAllocater::Get().beginOneTimeCommandBuffer();
+        if (resource->getDesc().format == D24_unorm_S8_uint)
+        {
+            VkClearDepthStencilValue value{};
+            value.depth = 1.0f;
+            value.stencil = 0;
+            VkImageSubresourceRange range{};
+            range.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT | VK_IMAGE_ASPECT_STENCIL_BIT;
+            range.baseArrayLayer = 0;
+            range.baseMipLevel = 0;
+            range.layerCount = 1;
+            range.levelCount = 1;
+            vkCmdClearDepthStencilImage(commandBuffer, *((VulkanResourceLocation*)resource->resourceLocation)->getVkImage(), VkImageLayout::VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, &value, 1, &range);
+        }
+        else
+        {
+            VkClearColorValue value{ { 0,0,0,0 } };
+            VkImageSubresourceRange range{};
+            range.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+            range.baseArrayLayer = 0;
+            range.baseMipLevel = 0;
+            range.layerCount = 1;
+            range.levelCount = 1;
+            vkCmdClearColorImage(commandBuffer, *((VulkanResourceLocation*)resource->resourceLocation)->getVkImage(), VkImageLayout::VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, &value, 1, &range);
+        }
+        VulkanCommandBufferAllocater::Get().endOneTimeCommandBuffer(commandBuffer);
     }
 
     RHIResourceLocation* IVulkanRHI::createResource(const RHIResourceDesc& rhi_desc)
