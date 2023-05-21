@@ -56,8 +56,8 @@ namespace rhi
     class VulkanResourceWriter
     {
     public:
-        static void writeResourceImmidiately(RHIResource* resource, void* data, int size);
+        static void writeResourceImmidiately(RHIResource* resource, void* data, int size, int offset);
     private:
-        static void writeBufferImmidiately(RHIResource* resource, void* data, int size);
+        static void writeBufferImmidiately(RHIResource* resource, void* data, int size, int offset);
     };
 }

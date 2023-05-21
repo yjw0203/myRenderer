@@ -6,39 +6,30 @@
 #include "generate/projectInfo.h"
 #include "glm/glm.hpp"
 #include "yjw_render_camera.h"
-#include "yjw_mesh.h"
+#include "yjw_scene.h"
 #include <chrono>
 #include <ctime>
 
 namespace yjw
 {
     using namespace rhi;
-    std::vector<DefaultDrawTemplate*> draw_templates;
-    std::vector<RHIShaderView*> vs_views;
-    std::vector<RHIShaderView*> ps_views;
-    RHIShader* vs = nullptr;
-    RHIShader* ps = nullptr;
+
+    std::shared_ptr<RHIShader> vs = nullptr;
+    std::shared_ptr<RHIShader> ps = nullptr;
+
     RHITexture2D* image = nullptr;
-    RHIResourceView* imageView = nullptr;
-
     RHITexture2D* depthImage = nullptr;
-    RHIResourceView* depthImageView = nullptr;
+    std::shared_ptr<RHIColorAttachment> color_attachment;
+    std::shared_ptr<RHIDepthStencilAttachment> depth_attachment;
+    std::vector<std::shared_ptr<RHIDescriptorsSet>> descriptors_sets;
 
-    RHITexture2DFromFile* srv_image = nullptr;
-    RHIResourceView* srv_imageView = nullptr;
+    std::shared_ptr<RHIUniformBuffer> camera_uniform;
+    std::shared_ptr<RHIUniformBuffer> camera_pos_uniform;
+    std::shared_ptr<RHIUniformBuffer> light_uniform;
 
-    RHIBuffer* vertex_buffer = nullptr;
-    RHIBuffer* index_buffer = nullptr;
-    RHIBuffer* camera_uniform_buffer = nullptr;
-    RHIResourceView* camera_uniform_buffer_view = nullptr;
-    RHIBuffer* camera_uniform_pos_buffer = nullptr;
-    RHIResourceView* camera_uniform_pos_buffer_view = nullptr;
-    RHIBuffer* light_uniform_buffer = nullptr;
-    RHIResourceView* light_uniform_buffer_view = nullptr;
-
-    Mesh naxita_mesh;
-    Mesh heita_mesh;
-    Mesh hutao_mesh;
+    std::shared_ptr<Model> naxita;
+    std::shared_ptr<Model> heita;
+    std::shared_ptr<Model> hutao;
 
     struct Vex
     {
@@ -54,6 +45,9 @@ namespace yjw
 
     uint32_t index[6] = { 0,1,2,2,3,0 };
 
+    std::shared_ptr<RHIPipeline> pipeline;
+    std::shared_ptr<RHIAttachmentsSet> attachementSet;
+    std::shared_ptr<RHIDescriptorsSet> descriptorSet;
 
     void RenderSystem::initialize()
     {
@@ -62,64 +56,66 @@ namespace yjw
         rhi_createinfo.window = WindowsManager::get().window;
         IRHI::Get()->initialize(rhi_createinfo);
 
-        naxita_mesh = *Mesh::load(RESOURCE_FILE(cao),"纳西妲.pmx");
-        heita_mesh = *Mesh::load(RESOURCE_FILE(heita),"黑塔.pmx");
-        hutao_mesh = *Mesh::load(RESOURCE_FILE(hutao),"胡桃.pmx");
+        naxita = *Model::load(RESOURCE_FILE(cao),"纳西妲.pmx");
+        heita = *Model::load(RESOURCE_FILE(heita),"黑塔.pmx");
+        hutao = *Model::load(RESOURCE_FILE(hutao),"胡桃.pmx");
+
+        scene.models.push_back(naxita);
+        scene.models.push_back(heita);
+        scene.models.push_back(hutao);
+
         activeCamera.position = glm::vec3(9, -10, 0);
         //activeCamera.direction = glm::vec3(0, 0, 0) - activeCamera.position;
         activeCamera.direction = glm::vec3(0, 0, 1);
         activeCamera.up = glm::vec3(0, -1, 0);
 
-        vs = new RHIShader(SHADER_FILE(test_vert.spv));
-        ps = new RHIShader(SHADER_FILE(test_frag.spv));
+        vs = std::make_shared<RHIShader>(SHADER_FILE(test_vert.spv));
+        ps = std::make_shared<RHIShader>(SHADER_FILE(test_frag.spv));
 
         image = new RHITexture2D(720, 720, 1, RHIFormat::R8G8B8A8_unorm, RHIResourceUsageBits::allow_render_target | RHIResourceUsageBits::allow_transfer_src, RHIMemoryType::default_);
-        imageView = new RHIResourceView(ResourceViewType::rtv, image, RHIFormat::R8G8B8A8_unorm);
         IRHI::Get()->resourceBarrierImmidiately(image, RHIResourceState::undefine, RHIResourceState::render_target);
-
+        
         depthImage = new RHITexture2D(720, 720, 1, RHIFormat::D24_unorm_S8_uint, RHIResourceUsageBits::allow_depth_stencil, RHIMemoryType::default_);
-        depthImageView = new RHIResourceView(ResourceViewType::dsv, depthImage, RHIFormat::D24_unorm_S8_uint);
         IRHI::Get()->resourceBarrierImmidiately(depthImage, RHIResourceState::undefine, RHIResourceState::depth_stencil_write);
 
-        Mesh& mesh = heita_mesh;
-        vertex_buffer = new RHIBuffer(sizeof(MeshVertex)*mesh.vertices.size(), RHIResourceUsageBits::allow_vertex_buffer, RHIMemoryType::default_);
-        index_buffer = new RHIBuffer(sizeof(int)*mesh.indices.size(), RHIResourceUsageBits::allow_index_buffer, RHIMemoryType::default_);
-        camera_uniform_buffer = new RHIBuffer(128 , RHIResourceUsageBits::none, RHIMemoryType::upload);
-        camera_uniform_buffer_view = new RHIResourceView(ResourceViewType::buffer, camera_uniform_buffer, RHIFormat::unknow);
-        camera_uniform_pos_buffer = new RHIBuffer(64, RHIResourceUsageBits::none, RHIMemoryType::upload);
-        camera_uniform_pos_buffer_view = new RHIResourceView(ResourceViewType::buffer, camera_uniform_pos_buffer, RHIFormat::unknow);
-        light_uniform_buffer = new RHIBuffer(128, RHIResourceUsageBits::none, RHIMemoryType::upload);
-        light_uniform_buffer_view = new RHIResourceView(ResourceViewType::buffer, light_uniform_buffer, RHIFormat::unknow);
+        color_attachment = std::make_shared<RHIColorAttachment>(image, RHIFormat::R8G8B8A8_unorm);
+        depth_attachment = std::make_shared<RHIDepthStencilAttachment>(depthImage, RHIFormat::D24_unorm_S8_uint);
 
-        IRHI::Get()->writeResourceImmidiately(vertex_buffer,  mesh.vertices.data(), sizeof(MeshVertex) * mesh.vertices.size());
-        IRHI::Get()->writeResourceImmidiately(index_buffer, mesh.indices.data(), sizeof(int) * mesh.indices.size());
+        camera_uniform = std::make_shared<RHIUniformBuffer>(128);
+        light_uniform = std::make_shared<RHIUniformBuffer>(32);
+        camera_pos_uniform = std::make_shared<RHIUniformBuffer>(16);
 
-        //vs_view->setDataBuffer("camera", camera_uniform_buffer_view);
-        //ps_view->setDataTexture("myTexture", srv_imageView);
+        pipeline = RHIPipeline::NewGraphicsPipline()
+            .VS(vs, "main")
+            .PS(ps, "main")
+            .RASTERIZATION_STATE(Rasterization_default)
+            .COLOR_BLEND_STATE(ColorBlend_default)
+            .DEPTH_STENCIL_STATE(DepthStencil_default)
+            .VERTEX_BINDING<0, 0>(R32G32B32_sfloat)
+            .VERTEX_BINDING<0, 1>(R32G32B32_sfloat)
+            .VERTEX_BINDING<0, 2>(R32G32_sfloat)
+            .COLOR_ATTACHMENT<0>(R8G8B8A8_unorm)
+            .DEETH_STENCIL_ATTACHMENT(D24_unorm_S8_uint)
+            .UNIFORM_BUFFER<RHIShaderType::vertex_shader, 0, 0>(128)
+            .UNIFORM_BUFFER<RHIShaderType::pixel_shader, 0, 1>(32)
+            .UNIFORM_BUFFER<RHIShaderType::pixel_shader, 0, 2>(16)
+            .TEXTURE_SRV<RHIShaderType::pixel_shader, 1, 0>();
 
-        draw_templates.resize(mesh.materials.size());
-        vs_views.resize(mesh.materials.size());
-        ps_views.resize(mesh.materials.size());
-        for (int i = 0; i < draw_templates.size(); i++)
+        attachementSet = RHIAttachmentsSet::New(pipeline, 720, 720)
+            .COLOR_ATTACHMENT<0>(color_attachment)
+            .DEPTH_STENCIL_ATTACHMENT(depth_attachment);
+
+
+        auto entitys = scene.buildEntitys();
+
+        descriptors_sets.resize(entitys.size());
+        for (int i = 0; i < entitys.size(); i++)
         {
-            vs_views[i] = new RHIShaderView(vs, RHIShaderType::vertex_shader, "main");;
-            ps_views[i] = new RHIShaderView(ps, RHIShaderType::pixel_shader, "main");
-            vs_views[i]->setDataBuffer("camera", camera_uniform_buffer_view);
-            ps_views[i]->setDataTexture("myTexture", mesh.materials[i].textureView);
-            ps_views[i]->setDataBuffer("camerapos", camera_uniform_pos_buffer_view);
-            ps_views[i]->setDataBuffer("light", light_uniform_buffer_view);
-
-            draw_templates[i] = (new DefaultDrawTemplate())
-                ->setRasterizationState(Rasterization_default)
-                ->setColorBlendState(ColorBlend_default)
-                ->setDepthStencilState(DepthStencil_default)
-                ->setVertexShaderView(vs_views[i])
-                ->setPixelShaderView(ps_views[i])
-                ->setRenderTarget(1, imageView, depthImageView)
-                ->setVertexBuffer(vertex_buffer, VertexLayout().push(RHIFormat::R32G32B32_sfloat).push(RHIFormat::R32G32B32_sfloat).push(RHIFormat::R32G32_sfloat))
-                ->setIndexBuffer(index_buffer)
-                ->setDrawIndex(mesh.materials[i].size, 1, mesh.materials[i].offset, 0, 0);
-            draw_templates[i]->build();
+            descriptors_sets[i] = RHIDescriptorsSet::New(pipeline)
+                .DESCRIPTOR<0, 0>(camera_uniform)
+                .DESCRIPTOR<0, 1>(light_uniform)
+                .DESCRIPTOR<0, 2>(camera_pos_uniform)
+                .DESCRIPTOR<1, 0>(entitys[i].material->textureShaderResource);
         }
 
     }
@@ -143,8 +139,8 @@ namespace yjw
 
         data.view = activeCamera.getViewMatrix();
         data.project = activeCamera.getProjectionMatrix();
-        IRHI::Get()->writeResourceImmidiately(camera_uniform_buffer, &data, sizeof(data));
-        IRHI::Get()->writeResourceImmidiately(camera_uniform_pos_buffer, &activeCamera.position, sizeof(activeCamera.position));
+        camera_uniform->update(&data, sizeof(data), 0);
+        camera_pos_uniform->update(&activeCamera.position, sizeof(activeCamera.position), 0);
 
         struct Light
         {
@@ -154,7 +150,7 @@ namespace yjw
         Light light;
         light.pos = glm::vec3(-3, 15, -8);
         light.color = glm::vec3(1, 1, 1);
-        IRHI::Get()->writeResourceImmidiately(light_uniform_buffer, &light, sizeof(light));
+        light_uniform->update(&light, sizeof(light), 0);
 
         IRHI::Get()->beginFrame();
         IRHI::Get()->resourceBarrier(image, RHIResourceState::render_target, RHIResourceState::transfer_dst);
@@ -164,10 +160,18 @@ namespace yjw
         IRHI::Get()->resourceBarrier(image, RHIResourceState::transfer_dst, RHIResourceState::render_target);
         IRHI::Get()->resourceBarrier(depthImage, RHIResourceState::transfer_dst, RHIResourceState::depth_stencil_write);
 
-        for (auto draw_template : draw_templates)
+        RHIExecutor executor(pipeline, attachementSet);
+        executor.beginPass();
+        auto entitys = scene.buildEntitys();
+        for (int i = 0; i < entitys.size(); i++)
         {
-            draw_template->draw();
+            executor.bindDescriptorSet(descriptors_sets[i].get());
+            executor.bindVertexBuffer(entitys[i].mesh->vertex_buffer.get());
+            executor.bindIndexBuffer(entitys[i].mesh->index_buffer.get());
+            executor.drawIndex(entitys[i].mesh->subMeshes[entitys[i].subMeshId].size, 1, entitys[i].mesh->subMeshes[entitys[i].subMeshId].offset, 0, 0);
         }
+        executor.endPass();
+
         IRHI::Get()->endFrame(image);
 
         WindowsManager::get().loop();

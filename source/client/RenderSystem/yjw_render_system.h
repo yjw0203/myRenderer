@@ -3,6 +3,7 @@
 #include "client/yjw_global_delegate.h"
 #include "client/yjw_module_interface.h"
 #include "yjw_render_camera.h"
+#include "yjw_scene.h"
 
 namespace yjw
 {
@@ -28,6 +29,8 @@ namespace yjw
         float deltaTime = 0.f;
 
         class RenderCamera activeCamera;
+
+        Scene scene;
     };
 
 }

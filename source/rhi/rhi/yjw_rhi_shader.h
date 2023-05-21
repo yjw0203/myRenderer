@@ -9,7 +9,8 @@ namespace rhi
     {
         vertex_shader,
         pixel_shader,
-        compute_shader
+        compute_shader,
+        shader_type_count
     };
 
     struct RHIShaderDesc

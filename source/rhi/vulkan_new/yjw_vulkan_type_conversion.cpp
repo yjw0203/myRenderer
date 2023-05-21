@@ -20,6 +20,17 @@ namespace rhi
             return VK_FORMAT_UNDEFINED;
         }
 
+        VkShaderStageFlags convertShaderStageFlag(RHIShaderType stage)
+        {
+            switch (stage)
+            {
+            case RHIShaderType::vertex_shader: return VK_SHADER_STAGE_VERTEX_BIT;
+            case RHIShaderType::pixel_shader: return VK_SHADER_STAGE_FRAGMENT_BIT;
+            case RHIShaderType::compute_shader: return VK_SHADER_STAGE_COMPUTE_BIT;
+            }
+            return VK_SHADER_STAGE_ALL;
+        }
+
         VkImageUsageFlags convertImageResourceUsage(RHIResourceUsage rhiUsage)
         {
             VkImageUsageFlags flag = 0;

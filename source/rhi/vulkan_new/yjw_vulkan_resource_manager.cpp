@@ -156,15 +156,15 @@ namespace rhi
         vkCmdCopyBufferToImage(commandBuffer, *((VulkanResourceLocation*)src->resourceLocation)->getVkBuffer(), *((VulkanResourceLocation*)dst->resourceLocation)->getVkImage(), VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
     }
 
-    void VulkanResourceWriter::writeResourceImmidiately(RHIResource* resource, void* data, int size)
+    void VulkanResourceWriter::writeResourceImmidiately(RHIResource* resource, void* data, int size, int offset)
     {
         if (resource->getDesc().type == RHIResourceType::buffer)
         {
-            writeBufferImmidiately(resource, data, size);
+            writeBufferImmidiately(resource, data, size, offset);
         }
     }
 
-    void VulkanResourceWriter::writeBufferImmidiately(RHIResource* resource, void* data, int size)
+    void VulkanResourceWriter::writeBufferImmidiately(RHIResource* resource, void* data, int size, int offset)
     {
         if (resource->getDesc().memoryType == RHIMemoryType::default_)
         {
@@ -179,6 +179,7 @@ namespace rhi
 
             VkCommandBuffer commandBuffer = VulkanCommandBufferAllocater::Get().beginImmdiatelyCommandBuffer();
             VkBufferCopy copyRegion{};
+            copyRegion.dstOffset = offset;
             copyRegion.size = size;
             vkCmdCopyBuffer(commandBuffer,stagingBuffer, *((VulkanResourceLocation*)resource->resourceLocation)->getVkBuffer(), 1, &copyRegion);
             VulkanCommandBufferAllocater::Get().endImmdiatelyCommandBuffer(commandBuffer);
@@ -189,7 +190,7 @@ namespace rhi
         else
         {
             void* buffer_map;
-            vkMapMemory(vulkanGod.device, *((VulkanResourceLocation*)resource->resourceLocation)->getVkDeviceMemory(), 0, size, 0, &buffer_map);
+            vkMapMemory(vulkanGod.device, *((VulkanResourceLocation*)resource->resourceLocation)->getVkDeviceMemory(), offset, size, 0, &buffer_map);
             memcpy(buffer_map, data, static_cast<size_t>(size));
             vkUnmapMemory(vulkanGod.device, *((VulkanResourceLocation*)resource->resourceLocation)->getVkDeviceMemory());
         }

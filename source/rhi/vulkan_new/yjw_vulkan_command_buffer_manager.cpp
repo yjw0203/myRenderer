@@ -12,6 +12,10 @@ namespace rhi
 
         vkCreateCommandPool(vulkanGod.device, &poolInfo, nullptr, &oneTimeCommandBufferPool);
 
+        allocate(currentCommandBuffer);
+        VkCommandBufferBeginInfo beginInfo{};
+        beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+        vkBeginCommandBuffer(currentCommandBuffer, &beginInfo);
     }
 
     void VulkanCommandBufferAllocater::allocate(VkCommandBuffer& commandBuffer)
@@ -70,43 +74,20 @@ namespace rhi
         vkQueueWaitIdle(vulkanGod.graphicsQueue);
     }
 
-    VkCommandBuffer VulkanCommandBufferAllocater::beginOneTimeCommandBuffer()
+    VkCommandBuffer& VulkanCommandBufferAllocater::getCurrentCommandBuffer()
     {
-        VkCommandBuffer commandBuffer;
-        if (currentUseOneTimeCommandBufferIndex < oneTimeCommandBuffers.size())
-        {
-            commandBuffer = oneTimeCommandBuffers[currentUseOneTimeCommandBufferIndex++];
-        }
-        else
-        {
-            VkCommandBufferAllocateInfo allocInfo{};
-            allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-            allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-            allocInfo.commandPool = oneTimeCommandBufferPool;
-            allocInfo.commandBufferCount = 1;
-            vkAllocateCommandBuffers(vulkanGod.device, &allocInfo, &commandBuffer);
-            oneTimeCommandBuffers.push_back(commandBuffer);
-            currentUseOneTimeCommandBufferIndex++;
-        }
-
-        VkCommandBufferBeginInfo beginInfo{};
-        beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-        beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
-
-        vkBeginCommandBuffer(commandBuffer, &beginInfo);
-        return commandBuffer;
+        return currentCommandBuffer;
     }
 
-    void VulkanCommandBufferAllocater::endOneTimeCommandBuffer(VkCommandBuffer& commandBuffer)
-    {
-        vkEndCommandBuffer(commandBuffer);
-        vulkanGod.commandBufferList.push_back(commandBuffer);
-    }
-
-    void VulkanCommandBufferAllocater::resetOneTimeCommandBuffer()
+    void VulkanCommandBufferAllocater::reset()
     {
         vkResetCommandPool(vulkanGod.device, oneTimeCommandBufferPool, VK_COMMAND_POOL_RESET_RELEASE_RESOURCES_BIT);
         currentUseOneTimeCommandBufferIndex = 0;
+        
+        vkResetCommandBuffer(currentCommandBuffer, VK_COMMAND_BUFFER_RESET_RELEASE_RESOURCES_BIT);
+        VkCommandBufferBeginInfo beginInfo{};
+        beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+        vkBeginCommandBuffer(currentCommandBuffer, &beginInfo);
     }
 
 }

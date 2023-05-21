@@ -58,7 +58,7 @@ namespace rhi
 
         RHIBuffer stageingBuffer(imageSize, allow_transfer_src | deny_shader_resource, RHIMemoryType::upload);
 
-        IRHI::Get()->writeResourceImmidiately(&stageingBuffer, pixels, imageSize);
+        IRHI::Get()->writeResourceImmidiately(&stageingBuffer, pixels, imageSize,0);
 
         stbi_image_free(pixels);
         

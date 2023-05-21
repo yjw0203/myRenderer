@@ -20,12 +20,12 @@ namespace rhi
         VkCommandBuffer beginImmdiatelyCommandBuffer();
         void endImmdiatelyCommandBuffer(VkCommandBuffer& commandBuffer);
 
-        VkCommandBuffer beginOneTimeCommandBuffer();
-        void endOneTimeCommandBuffer(VkCommandBuffer& commandBuffer);
-        void resetOneTimeCommandBuffer();
+        VkCommandBuffer& getCurrentCommandBuffer();
+        void reset();
         
     private:
         VkCommandPool primaryCommandPool;
+        VkCommandBuffer currentCommandBuffer;
 
         VkCommandPool oneTimeCommandBufferPool;
         int currentUseOneTimeCommandBufferIndex = 0;

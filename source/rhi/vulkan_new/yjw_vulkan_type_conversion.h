@@ -9,6 +9,8 @@ namespace rhi
     {
         VkFormat convertFormat(RHIFormat rhiFormat);
 
+        VkShaderStageFlags convertShaderStageFlag(RHIShaderType stage);
+
         VkImageUsageFlags convertImageResourceUsage(RHIResourceUsage rhiUsage);
 
         VkBufferUsageFlags convertBufferResourceUsage(RHIResourceUsage rhiUsage);
