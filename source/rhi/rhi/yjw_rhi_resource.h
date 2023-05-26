@@ -15,6 +15,7 @@ namespace rhi
     {
         unknow = 0,
         R8G8B8A8_unorm,
+        R8G8B8A8_snorm,
         R8G8B8A8_srgb,
         R32G32B32_sfloat,
         R32G32_sfloat,

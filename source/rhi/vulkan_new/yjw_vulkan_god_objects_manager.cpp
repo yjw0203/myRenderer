@@ -50,8 +50,8 @@ namespace rhi
     void VulkanGod::beginFrame()
     {
         vkWaitForFences(device, 1, &inFlightFence, VK_TRUE, UINT64_MAX);
-        vkResetFences(device, 1, &inFlightFence);
         vkAcquireNextImageKHR(device, swapchain, UINT64_MAX, imageAvailableSemaphore, VK_NULL_HANDLE, &swapchainImageIndex);
+        vkResetFences(device, 1, &inFlightFence);
 
         VulkanCommandBufferAllocater::Get().reset();
         commandBufferList.clear();

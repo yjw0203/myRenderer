@@ -15,12 +15,10 @@ namespace rhi
         friend class VulkanShaderManager;
     public:
         const VulkanShaderDesc& getDesc();
-        const VulkanShaderReflectionData& getReflectData();
         VkShaderModule getShaderModule();
     private:
         VulkanShaderDesc desc;
         VkShaderModule shaderModule;
-        VulkanShaderReflectionData reflectData;
     };
 
     class VulkanShaderManager

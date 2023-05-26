@@ -38,13 +38,17 @@ namespace rhi
             createInfo.subresourceRange.levelCount = 1;
             createInfo.subresourceRange.baseArrayLayer = 0;
             createInfo.subresourceRange.layerCount = 1;
-            switch (type)
+            if (view_format == D24_unorm_S8_uint)
             {
-            case ResourceViewType::rtv:createInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT; break;
-            case ResourceViewType::dsv:createInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT | VK_IMAGE_ASPECT_STENCIL_BIT; break;
-            case ResourceViewType::srv:createInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT; break;
-            case ResourceViewType::uav:createInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT; break;
-            default:createInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT; break;
+                createInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT | VK_IMAGE_ASPECT_STENCIL_BIT;
+                if (type == ResourceViewType::srv)
+                {
+                    createInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT;//hack
+                }
+            }
+            else
+            {
+                createInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
             }
 
             vkCreateImageView(vulkanGod.device, &createInfo, nullptr, &vulkan_resource_view->view);

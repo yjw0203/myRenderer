@@ -250,6 +250,8 @@ namespace rhi
         dynamicState.dynamicStateCount = static_cast<uint32_t>(dynamicStates.size());
         dynamicState.pDynamicStates = dynamicStates.data();
 
+        VkPipelineColorBlendStateCreateInfo colorBlendState = VulkanPilelineStateManager::Get().getColorBlendState(pipeline->colorBlendState);
+        colorBlendState.attachmentCount = pipeline->num_color_attachment;
 
         VkGraphicsPipelineCreateInfo pipelineInfo{};
         pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
@@ -261,7 +263,7 @@ namespace rhi
         pipelineInfo.pRasterizationState = &VulkanPilelineStateManager::Get().getRasterizationState(pipeline->rasterizationState);
         pipelineInfo.pDepthStencilState = &VulkanPilelineStateManager::Get().getDepthStencilState(pipeline->depthStencilState);
         pipelineInfo.pMultisampleState = &multisampling;
-        pipelineInfo.pColorBlendState = &VulkanPilelineStateManager::Get().getColorBlendState(pipeline->colorBlendState);
+        pipelineInfo.pColorBlendState = &colorBlendState;
         pipelineInfo.pDynamicState = &dynamicState;
         pipelineInfo.layout = vulkanLocation->pipelineLayout;
         pipelineInfo.renderPass = vulkanLocation->renderPass;

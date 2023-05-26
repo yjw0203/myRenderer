@@ -86,6 +86,7 @@ namespace rhi
     {
     public:
         static RHIAttachmentsSetCreator New(std::shared_ptr<RHIPipeline> pipeline, int width, int height);
+        ~RHIAttachmentsSet();
         std::unordered_map<int, std::shared_ptr<RHIColorAttachment> > color_attachments;
         std::shared_ptr<RHIDepthStencilAttachment> depth_stencil_attachments;
         std::shared_ptr<RHIAttachmentsSetLocation> location;
@@ -137,6 +138,7 @@ namespace rhi
         };
     public:
         static RHIDescriptorsSetCreator New(std::shared_ptr<RHIPipeline> pipeline);
+        ~RHIDescriptorsSet();
         int num_set = 0;
         std::unordered_map<std::pair<int, int>,std::shared_ptr<RHIDescriptor>, SimplePairHash > decriptors;
         std::shared_ptr<RHIDescriptorsSetLocation> location;

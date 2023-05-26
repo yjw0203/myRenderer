@@ -38,10 +38,6 @@ namespace rhi
         return desc;
     }
 
-    const VulkanShaderReflectionData& VulkanShaderLocation::getReflectData()
-    {
-        return reflectData;
-    }
 
     VkShaderModule VulkanShaderLocation::getShaderModule()
     {
@@ -63,9 +59,6 @@ namespace rhi
         if (vkCreateShaderModule(vulkanGod.device, &createInfo, nullptr, &shader->shaderModule) != VK_SUCCESS) {
             throw std::runtime_error("failed to create shader module!");
         }
-
-        std::vector<uint32_t> out = changeStreamFormat(code);
-        VulkanShaderReflecter::reflect(out, shader->reflectData);
         
         return shader;
     }

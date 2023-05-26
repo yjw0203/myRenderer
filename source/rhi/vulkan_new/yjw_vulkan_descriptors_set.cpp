@@ -50,7 +50,8 @@ namespace rhi
         allocInfo.descriptorSetCount = location->descriptorSets.size();
         allocInfo.pSetLayouts = ((VulkanPipelineLocation*)descriptorsSet->pipeline->location.get())->descriptorSetLayouts.data();
 
-        if (vkAllocateDescriptorSets(vulkanGod.device, &allocInfo, location->descriptorSets.data()) != VK_SUCCESS) {
+        VkResult hr;
+        if ((hr = vkAllocateDescriptorSets(vulkanGod.device, &allocInfo, location->descriptorSets.data())) != VK_SUCCESS) {
             throw std::runtime_error("failed to allocate descriptor sets!");
         }
 

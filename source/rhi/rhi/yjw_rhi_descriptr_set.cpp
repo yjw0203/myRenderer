@@ -7,8 +7,12 @@ namespace rhi
         return RHIAttachmentsSetCreator(pipeline, width, height);
     }
 
+    RHIAttachmentsSet::~RHIAttachmentsSet() { RHIAttachmentSetDestoryer destory(this); };
+
     RHIDescriptorsSetCreator RHIDescriptorsSet::New(std::shared_ptr<RHIPipeline> pipeline)
     {
         return RHIDescriptorsSetCreator(pipeline);
     }
+
+    RHIDescriptorsSet::~RHIDescriptorsSet() { RHIDescriptorsSetDestoryer destory(this); }
 }
