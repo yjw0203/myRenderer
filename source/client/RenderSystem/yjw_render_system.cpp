@@ -11,26 +11,14 @@
 #include <ctime>
 #include "pass/yjw_pass_gbuffer.h"
 #include "pass/yjw_pass_deferred_shading.h"
+#include "yjw_resource.h"
+#include "pipeline/yjw_default_pipeline.h"
 
 namespace yjw
 {
     using namespace rhi;
 
-    std::shared_ptr<GBufferPass> gbuffer_pass;
-    std::shared_ptr<DeferredShadingPass> deferred_shading_pass;
-
-    RHITexture2D* albedo_image = nullptr;
-    RHITexture2D* normal_image = nullptr;
-    RHITexture2D* depthImage = nullptr;
-    RHITexture2D* colorImage = nullptr;
-    std::shared_ptr<RHIColorAttachment> albedo_attachment;
-    std::shared_ptr<RHIColorAttachment> normal_attachment;
-    std::shared_ptr<RHIColorAttachment> color_attachment;
-    std::shared_ptr<RHIDepthStencilAttachment> depth_attachment;
-
-    std::shared_ptr<RHIShaderResourceTexture> albedo_shader_resource;
-    std::shared_ptr<RHIShaderResourceTexture> normal_shader_resource;
-    std::shared_ptr<RHIShaderResourceTexture> depth_shader_resource;
+    DefaultPipeline pipeline;
 
     std::shared_ptr<Model> naxita;
     std::shared_ptr<Model> heita;
@@ -43,48 +31,23 @@ namespace yjw
         rhi_createinfo.window = WindowsManager::get().window;
         IRHI::Get()->initialize(rhi_createinfo);
 
+        g_resource_store.initializeResource();
+
         naxita = *Model::load(RESOURCE_FILE(cao),"纳西妲.pmx");
         heita = *Model::load(RESOURCE_FILE(heita),"黑塔.pmx");
         hutao = *Model::load(RESOURCE_FILE(hutao),"胡桃.pmx");
 
-        scene.models.push_back(naxita);
+        //scene.models.push_back(naxita);
         //scene.models.push_back(heita);
-        //scene.models.push_back(hutao);
+        scene.models.push_back(hutao);
 
         activeCamera.position = glm::vec3(1, 12, -16);
         //activeCamera.direction = glm::vec3(0, 0, 0) - activeCamera.position;
         activeCamera.direction = glm::vec3(0, -0.2,1);
         activeCamera.up = glm::vec3(0, -1, -0.2);
 
-        albedo_image = new RHITexture2D(720, 720, 1, RHIFormat::R8G8B8A8_snorm, RHIResourceUsageBits::allow_render_target | RHIResourceUsageBits::allow_transfer_src, RHIMemoryType::default_);
-        IRHI::Get()->resourceBarrierImmidiately(albedo_image, RHIResourceState::undefine, RHIResourceState::render_target);
-
-        normal_image = new RHITexture2D(720, 720, 1, RHIFormat::R8G8B8A8_snorm, RHIResourceUsageBits::allow_render_target | RHIResourceUsageBits::allow_transfer_src, RHIMemoryType::default_);
-        IRHI::Get()->resourceBarrierImmidiately(normal_image, RHIResourceState::undefine, RHIResourceState::render_target);
-        
-        depthImage = new RHITexture2D(720, 720, 1, RHIFormat::D24_unorm_S8_uint, RHIResourceUsageBits::allow_depth_stencil, RHIMemoryType::default_);
-        IRHI::Get()->resourceBarrierImmidiately(depthImage, RHIResourceState::undefine, RHIResourceState::depth_stencil_write);
-
-        colorImage = new RHITexture2D(720, 720, 1, RHIFormat::R8G8B8A8_unorm, RHIResourceUsageBits::allow_render_target | RHIResourceUsageBits::allow_transfer_src, RHIMemoryType::default_);
-        IRHI::Get()->resourceBarrierImmidiately(colorImage, RHIResourceState::undefine, RHIResourceState::render_target);
-
-        albedo_attachment = std::make_shared<RHIColorAttachment>(albedo_image, RHIFormat::R8G8B8A8_snorm);
-        normal_attachment = std::make_shared<RHIColorAttachment>(normal_image, RHIFormat::R8G8B8A8_snorm);
-        depth_attachment = std::make_shared<RHIDepthStencilAttachment>(depthImage, RHIFormat::D24_unorm_S8_uint);
-        color_attachment = std::make_shared<RHIColorAttachment>(colorImage, RHIFormat::R8G8B8A8_unorm);
-
-        albedo_shader_resource = std::make_shared<RHIShaderResourceTexture>(albedo_image, RHIFormat::R8G8B8A8_snorm);
-        normal_shader_resource = std::make_shared<RHIShaderResourceTexture>(normal_image, RHIFormat::R8G8B8A8_snorm);
-        depth_shader_resource = std::make_shared<RHIShaderResourceTexture>(depthImage, RHIFormat::D24_unorm_S8_uint);
-
-
-        gbuffer_pass = std::make_shared<GBufferPass>();
-        deferred_shading_pass = std::make_shared<DeferredShadingPass>();
-        deferred_shading_pass->buildPSO();
-        gbuffer_pass->buildPSO();
-
-        gbuffer_pass->registerTexture(albedo_attachment, normal_attachment, depth_attachment);
-        deferred_shading_pass->registerTexture(albedo_shader_resource, normal_shader_resource, depth_shader_resource, color_attachment);
+        pipeline.initializeResource();
+        pipeline.config();
 
     }
     
@@ -99,33 +62,13 @@ namespace yjw
         deltaTime = (time - currentTime) / 1000000.0f;
         currentTime = time;
 
-        gbuffer_pass->setupData();
-        deferred_shading_pass->setupData();
+        g_resource_store.updateCameraData();
+        g_resource_store.updateLightData();
 
         IRHI::Get()->beginFrame();
-        IRHI::Get()->resourceBarrier(albedo_image, RHIResourceState::render_target, RHIResourceState::transfer_dst);
-        IRHI::Get()->resourceBarrier(normal_image, RHIResourceState::render_target, RHIResourceState::transfer_dst);
-        IRHI::Get()->resourceBarrier(depthImage, RHIResourceState::depth_stencil_write, RHIResourceState::transfer_dst);
-        IRHI::Get()->resourceBarrier(colorImage, RHIResourceState::render_target, RHIResourceState::transfer_dst);
-        IRHI::Get()->clearImageResource(albedo_image);
-        IRHI::Get()->clearImageResource(normal_image);
-        IRHI::Get()->clearImageResource(depthImage);
-        IRHI::Get()->clearImageResource(colorImage);
-        IRHI::Get()->resourceBarrier(albedo_image, RHIResourceState::transfer_dst, RHIResourceState::render_target);
-        IRHI::Get()->resourceBarrier(normal_image, RHIResourceState::transfer_dst, RHIResourceState::render_target);
-        IRHI::Get()->resourceBarrier(depthImage, RHIResourceState::transfer_dst, RHIResourceState::depth_stencil_write);
-        IRHI::Get()->resourceBarrier(colorImage, RHIResourceState::transfer_dst, RHIResourceState::render_target);
+        pipeline.render();
 
-        gbuffer_pass->recordCommand();
-        IRHI::Get()->resourceBarrier(depthImage, RHIResourceState::depth_stencil_write, RHIResourceState::shader_resource_read);
-        IRHI::Get()->resourceBarrier(albedo_image, RHIResourceState::render_target, RHIResourceState::shader_resource_read);
-        IRHI::Get()->resourceBarrier(normal_image, RHIResourceState::render_target, RHIResourceState::shader_resource_read);
-        deferred_shading_pass->recordCommand();
-        IRHI::Get()->resourceBarrier(depthImage, RHIResourceState::shader_resource_read, RHIResourceState::depth_stencil_write);
-        IRHI::Get()->resourceBarrier(albedo_image, RHIResourceState::shader_resource_read, RHIResourceState::render_target);
-        IRHI::Get()->resourceBarrier(normal_image, RHIResourceState::shader_resource_read, RHIResourceState::render_target);
-
-        IRHI::Get()->endFrame(colorImage);
+        IRHI::Get()->endFrame(pipeline.output.get());
 
         WindowsManager::get().loop();
     }

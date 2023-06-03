@@ -74,8 +74,11 @@ namespace rhi
         case RHIFormat::unknow: return 0;
         case RHIFormat::R8G8B8A8_unorm: return 4;
         case RHIFormat::R8G8B8A8_srgb: return 4;
+        case RHIFormat::R8G8B8A8_snorm: return 4;
         case RHIFormat::R32G32B32_sfloat: return 12;
+        case RHIFormat::R32G32B32A32_sfloat: return 16;
         case RHIFormat::R32G32_sfloat: return 8;
+        case RHIFormat::D24_unorm_S8_uint: return 4;
         }
         return 0;
     }

@@ -17,7 +17,9 @@ namespace rhi
         R8G8B8A8_unorm,
         R8G8B8A8_snorm,
         R8G8B8A8_srgb,
+        R8G8B8A8_sfloat,
         R32G32B32_sfloat,
+        R32G32B32A32_sfloat,
         R32G32_sfloat,
         D24_unorm_S8_uint
     };
@@ -77,6 +79,7 @@ namespace rhi
         virtual ~RHIResource();
         RHIResourceLocation* resourceLocation = nullptr;
         const RHIResourceDesc& getDesc() { return rhiResourceDesc; }
+        RHIResourceState state = RHIResourceState::undefine;
     private:
         RHIResourceDesc rhiResourceDesc;
     };

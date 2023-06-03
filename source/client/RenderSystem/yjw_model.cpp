@@ -48,6 +48,10 @@ namespace yjw
             std::string texPath8 = filePath + "/" + pmxModel.m_textures[pmxModel.m_materials[i].m_textureIndex].m_textureName;
             model->materials[i]->texture = new rhi::RHITexture2DFromFile(texPath8.c_str());
             model->materials[i]->textureShaderResource = std::make_shared<rhi::RHIShaderResourceTexture>(model->materials[i]->texture, rhi::RHIFormat::R8G8B8A8_srgb);
+            model->materials[i]->diffuse = pmxModel.m_materials[i].m_diffuse;
+            model->materials[i]->specular = pmxModel.m_materials[i].m_specular;
+            model->materials[i]->specularPower = pmxModel.m_materials[i].m_specularPower;
+            model->materials[i]->ambient = pmxModel.m_materials[i].m_ambient;
 
             model->entitys.push_back(Entity{ model->mesh ,(uint32_t)i,model->materials[i] });
             currentOffset += pmxModel.m_materials[i].m_numFaceVertices;

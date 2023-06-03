@@ -35,6 +35,10 @@ namespace yjw
     public:
         rhi::RHITexture2DFromFile* texture;
         std::shared_ptr<rhi::RHIShaderResourceTexture> textureShaderResource;
+        glm::vec4    diffuse;
+        glm::vec3    specular;
+        float        specularPower;
+        glm::vec3    ambient;
     };
 
 

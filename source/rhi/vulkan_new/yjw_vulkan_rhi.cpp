@@ -31,6 +31,7 @@ namespace rhi
     {
         VkCommandBuffer commandBuffer = VulkanCommandBufferAllocater::Get().getCurrentCommandBuffer();
         transitionImageLayout(commandBuffer, *((VulkanResourceLocation*)resource->resourceLocation)->getVkImage(), ((VulkanResourceLocation*)resource->resourceLocation)->getDesc().imageInfo.format, VulkanConverter::convertResourceState(beforeState), VulkanConverter::convertResourceState(afterState));
+        resource->state = afterState;
     }
 
     void IVulkanRHI::resourceBarrierImmidiately(RHIResource* resource, RHIResourceState beforeState, RHIResourceState afterState)
@@ -38,6 +39,7 @@ namespace rhi
         VkCommandBuffer commandBuffer = VulkanCommandBufferAllocater::Get().beginImmdiatelyCommandBuffer();
         transitionImageLayout(commandBuffer, *((VulkanResourceLocation*)resource->resourceLocation)->getVkImage(), ((VulkanResourceLocation*)resource->resourceLocation)->getDesc().imageInfo.format, VulkanConverter::convertResourceState(beforeState), VulkanConverter::convertResourceState(afterState));
         VulkanCommandBufferAllocater::Get().endImmdiatelyCommandBuffer(commandBuffer);
+        resource->state = afterState;
     }
 
     void IVulkanRHI::copyResourceImmidiately(RHIResource* src, RHIResource* dst)

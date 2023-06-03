@@ -6,6 +6,7 @@
 #include <memory>
 namespace rhi
 {
+
     class RHIColorAttachment
     {
     public:
@@ -172,4 +173,11 @@ namespace rhi
     private:
         RHIDescriptorsSet* descriptorsSet;
     };
+
+    std::shared_ptr<RHIColorAttachment> COLOR_ATTACHMENT(RHIResource* resource, RHIFormat format);
+
+    std::shared_ptr<RHIDepthStencilAttachment> DEPTH_STENCIL_ATTACHMENT(RHIResource* resource, RHIFormat format);
+
+    std::shared_ptr<RHIShaderResourceTexture> SHADER_RESOURCE_TEXTURE(RHIResource* resource, RHIFormat format);
+
 }

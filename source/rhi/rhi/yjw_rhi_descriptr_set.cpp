@@ -15,4 +15,19 @@ namespace rhi
     }
 
     RHIDescriptorsSet::~RHIDescriptorsSet() { RHIDescriptorsSetDestoryer destory(this); }
+
+    std::shared_ptr<RHIColorAttachment> COLOR_ATTACHMENT(RHIResource* resource, RHIFormat format)
+    {
+        return std::make_shared<RHIColorAttachment>(resource, format);
+    }
+
+    std::shared_ptr<RHIDepthStencilAttachment> DEPTH_STENCIL_ATTACHMENT(RHIResource* resource, RHIFormat format)
+    {
+        return std::make_shared<RHIDepthStencilAttachment>(resource, format);
+    }
+
+    std::shared_ptr<RHIShaderResourceTexture> SHADER_RESOURCE_TEXTURE(RHIResource* resource, RHIFormat format)
+    {
+        return std::make_shared<RHIShaderResourceTexture>(resource, format);
+    }
 }

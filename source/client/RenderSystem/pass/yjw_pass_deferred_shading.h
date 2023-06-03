@@ -13,7 +13,14 @@ namespace yjw
         virtual void setupData() override;
         virtual void recordCommand() override;
         virtual void submit() override;
-        void registerTexture(std::shared_ptr<RHIShaderResourceTexture> in_abeldo, std::shared_ptr<RHIShaderResourceTexture> in_normal, std::shared_ptr<RHIShaderResourceTexture> in_depth, std::shared_ptr<RHIColorAttachment> out_color);
+        void registerTexture(
+            std::shared_ptr<RHIResource> in_abeldo,
+            std::shared_ptr<RHIResource> in_normal,
+            std::shared_ptr<RHIResource> in_diffuse,
+            std::shared_ptr<RHIResource> in_specular,
+            std::shared_ptr<RHIResource> in_ambient,
+            std::shared_ptr<RHIResource> in_depth,
+            std::shared_ptr<RHIResource> out_color);
 
     private:
         std::shared_ptr<RHIAttachmentsSet> attachementSet;
@@ -21,16 +28,14 @@ namespace yjw
         std::shared_ptr<RHIShader> vs;
         std::shared_ptr<RHIShader> ps;
 
-        std::shared_ptr<RHIUniformBuffer> camera_uniform;
-        std::shared_ptr<RHIUniformBuffer> light_uniform;
-        std::shared_ptr<RHIUniformBuffer> camera_pos_uniform;
-        std::shared_ptr<RHIUniformBuffer> screen_uniform;
-
         std::shared_ptr<RHIDescriptorsSet> descriptors_set;
 
         std::shared_ptr<RHIShaderResourceTexture> in_abeldo;
         std::shared_ptr<RHIShaderResourceTexture> in_normal;
         std::shared_ptr<RHIShaderResourceTexture> in_depth;
+        std::shared_ptr<RHIShaderResourceTexture> in_diffuse;
+        std::shared_ptr<RHIShaderResourceTexture> in_specular;
+        std::shared_ptr<RHIShaderResourceTexture> in_ambient;
 
         std::unique_ptr<RHIBuffer> vertex_buffer;
 

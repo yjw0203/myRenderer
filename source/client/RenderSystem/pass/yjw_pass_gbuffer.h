@@ -13,17 +13,19 @@ namespace yjw
         virtual void setupData() override;
         virtual void recordCommand() override;
         virtual void submit() override;
-        void registerTexture(std::shared_ptr<RHIColorAttachment> out_abedlo, std::shared_ptr<RHIColorAttachment> out_normal, std::shared_ptr<RHIDepthStencilAttachment> depth);
+        void registerTexture(
+            std::shared_ptr<RHIResource> out_abedlo,
+            std::shared_ptr<RHIResource> out_normal,
+            std::shared_ptr<RHIResource> out_diffuse,
+            std::shared_ptr<RHIResource> out_specular,
+            std::shared_ptr<RHIResource> out_ambient,
+            std::shared_ptr<RHIResource> depth);
 
     private:
         std::shared_ptr<RHIAttachmentsSet> attachementSet;
         std::shared_ptr<RHIPipeline> pipeline;
         std::shared_ptr<RHIShader> vs;
         std::shared_ptr<RHIShader> ps;
-
-        std::shared_ptr<RHIUniformBuffer> camera_uniform;
-        std::shared_ptr<RHIUniformBuffer> camera_pos_uniform;
-        std::shared_ptr<RHIUniformBuffer> light_uniform;
 
         std::vector<std::shared_ptr<RHIDescriptorsSet>> descriptors_sets;
         std::vector<Entity> entitys;
