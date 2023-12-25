@@ -32,7 +32,7 @@ namespace yjw
         IRHI::Get()->initialize(rhi_createinfo);
 
         g_resource_store.initializeResource();
-
+        
         naxita = *Model::load(RESOURCE_FILE(cao),"纳西妲.pmx");
         heita = *Model::load(RESOURCE_FILE(heita),"黑塔.pmx");
         hutao = *Model::load(RESOURCE_FILE(hutao),"胡桃.pmx");

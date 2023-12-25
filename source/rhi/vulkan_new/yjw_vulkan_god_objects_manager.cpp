@@ -151,7 +151,7 @@ namespace rhi
         createInfo.ppEnabledExtensionNames = extensions.data();
 
         //debug layer
-        if (vulkanGod.isDebugMode)
+        if (false && vulkanGod.isDebugMode)
         {
             VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo{};
             createInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
