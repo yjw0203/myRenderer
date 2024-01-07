@@ -3,8 +3,4 @@
 
 namespace rhi
 {
-	void init(InitConfig initConfig)
-	{
-		vulkan::init(initConfig);
-	}
 }

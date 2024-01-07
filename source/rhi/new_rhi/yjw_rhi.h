@@ -1,9 +1,16 @@
 #pragma once
 #include "yjw_rhi_define.h"
+#include "yjw_rhi_resource.h"
 
 namespace rhi
 {
-	void init(InitConfig initConfig);
+	class RHI
+	{
+		virtual void init(InitConfig initConfig) = 0;
+		virtual void createResource(const ResourceInitConfig& initConfig, Resource* resource) = 0;
+		virtual void destoryResource(Resource* resource) = 0;
+	};
+
 
 	class PSO
 	{

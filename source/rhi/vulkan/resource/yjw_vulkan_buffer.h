@@ -1,5 +1,6 @@
 #pragma once
 #include "vulkan/vulkan.h"
+#include "rhi/vulkan/yjw_vulkan_global.h"
 
 namespace vulkan
 {
@@ -14,16 +15,21 @@ namespace vulkan
 	{
 		friend class BufferPool;
 	public:
-		VkBuffer getNative() { return buffer; }
+		operator VkBuffer() { return buffer; }
+		operator VkDeviceMemory() { return memory; }
 	private:
-		VkBuffer buffer;
-		VkDeviceMemory memory;
+		Buffer(const BufferInitConfig& inInitConfig) : initConfig(inInitConfig) {}
+		const BufferInitConfig initConfig;
+		VkBuffer buffer{};
+		VkDeviceMemory memory{};
 	};
 	
 	class BufferPool
 	{
 	public:
-		void allocateBuffer(const BufferInitConfig* initConfig, Buffer* buffer);
+		void allocateBuffer(const BufferInitConfig& initConfig, Buffer* buffer);
 		void deallocateBuffer(Buffer* buffer);
 	};
+
+	EXTERN_GLOBAL_REF(BufferPool);
 }

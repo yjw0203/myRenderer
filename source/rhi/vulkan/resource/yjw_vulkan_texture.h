@@ -20,16 +20,22 @@ namespace vulkan
 	class Texture
 	{
 		friend class TexturePool;
-
+	public:
+		operator VkImage&() { return texture; }
+		operator VkDeviceMemory&() { return memory; }
 	private:
-		VkImage texture;
-		VkDeviceMemory memory;
+		Texture(const TextureInitConfig& inInitConfig) : initConfig(inInitConfig) {}
+		const TextureInitConfig initConfig;
+		VkImage texture{};
+		VkDeviceMemory memory{};
 	};
 
 	class TexturePool
 	{
 	public:
-		void createTexture(const TextureInitConfig* initConfig, Texture* texture);
+		void createTexture(const TextureInitConfig& initConfig, Texture* texture);
 		void destroyTexture(Texture* texture);
 	};
+
+	EXTERN_GLOBAL_REF(TexturePool);
 }

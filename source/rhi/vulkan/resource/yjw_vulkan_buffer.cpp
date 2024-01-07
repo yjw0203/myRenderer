@@ -15,15 +15,17 @@ namespace vulkan
         return 0;
     }
 
-	void BufferPool::allocateBuffer(const BufferInitConfig* initConfig, Buffer* buffer)
+	void BufferPool::allocateBuffer(const BufferInitConfig& initConfig, Buffer* buffer)
 	{
+        buffer = new Buffer(initConfig);
+
         VkBufferCreateInfo desc{};
 
         desc.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
         desc.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
         desc.pNext = nullptr;
-        desc.usage = initConfig->usage;
-        desc.size = initConfig->size;
+        desc.usage = initConfig.usage;
+        desc.size = initConfig.size;
         desc.flags = 0;
         desc.queueFamilyIndexCount = 0;
         vkCreateBuffer(VK_G(VkDevice), &desc, nullptr, &buffer->buffer);
@@ -34,7 +36,7 @@ namespace vulkan
         VkMemoryAllocateInfo allocInfo{};
         allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
         allocInfo.allocationSize = memRequirements.size;
-        allocInfo.memoryTypeIndex = findMemoryType_(memRequirements.memoryTypeBits, initConfig->memoryType);
+        allocInfo.memoryTypeIndex = findMemoryType_(memRequirements.memoryTypeBits, initConfig.memoryType);
 
         vkAllocateMemory(VK_G(VkDevice), &allocInfo, nullptr, &buffer->memory);
 
@@ -45,5 +47,6 @@ namespace vulkan
 	{
         vkDestroyBuffer(VK_G(VkDevice), buffer->buffer, nullptr);
         vkFreeMemory(VK_G(VkDevice), buffer->memory, nullptr);
+        delete buffer;
 	}
 }
