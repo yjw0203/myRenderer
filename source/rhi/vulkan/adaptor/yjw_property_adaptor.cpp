@@ -101,4 +101,37 @@ namespace vulkan
         }
         return flag;
     }
+
+    PolygonModeAdptor::operator VkPolygonMode()
+    {
+        switch (payload)
+        {
+        case rhi::PolygonMode::fill: return VkPolygonMode::VK_POLYGON_MODE_FILL;
+        case rhi::PolygonMode::line: return VkPolygonMode::VK_POLYGON_MODE_LINE;
+        case rhi::PolygonMode::point: return VkPolygonMode::VK_POLYGON_MODE_POINT;
+        }
+        assert(0);
+    }
+
+    CullModeAdptor::operator VkCullModeFlags()
+    {
+        switch (payload)
+        {
+        case rhi::CullMode::none: return VK_CULL_MODE_NONE;
+        case rhi::CullMode::back: return VK_CULL_MODE_BACK_BIT;
+        case rhi::CullMode::front: return VK_CULL_MODE_FRONT_BIT;
+        case rhi::CullMode::front_and_back: return VK_CULL_MODE_FRONT_AND_BACK;
+        }
+        assert(0);
+    }
+
+    FrontFaceAdptor::operator VkFrontFace()
+    {
+        switch (payload)
+        {
+        case rhi::FrontFace::counter_clockwise: return VK_FRONT_FACE_COUNTER_CLOCKWISE;
+        case rhi::FrontFace::clockwise: return VK_FRONT_FACE_CLOCKWISE;
+        }
+        assert(0);
+    }
 }

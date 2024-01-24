@@ -33,7 +33,7 @@ namespace vulkan
 	class TexturePool
 	{
 	public:
-		void createTexture(const TextureInitConfig& initConfig, Texture* texture);
+		void createTexture(const TextureInitConfig& initConfig, Texture*& texture);
 		void destroyTexture(Texture* texture);
 	};
 

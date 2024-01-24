@@ -14,7 +14,7 @@ namespace vulkan
         return 0;
     }
 
-	void TexturePool::createTexture(const TextureInitConfig& initConfig, Texture* texture)
+	void TexturePool::createTexture(const TextureInitConfig& initConfig, Texture*& texture)
 	{
         texture = new Texture(initConfig);
 

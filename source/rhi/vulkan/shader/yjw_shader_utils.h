@@ -2,10 +2,14 @@
 #include <vector>
 #include "yjw_shader_define.h"
 
-namespace vulkan{
-namespace shader{
-namespace utils
+namespace vulkan
 {
-	void loadFromSpirvFile(const char* fileName, Shader* shader);
-	void getReflectFromSpirv(const char* spirvPointer, int spirvSize, std::unordered_map<std::string, ShaderReflect>& refects);
-}}}
+	class ShaderPool
+	{
+	public:
+		void createShaderFromFile(const char* fileName, Shader*& shader);
+		void destoryShader(Shader*& shader);
+	};
+
+	EXTERN_GLOBAL_REF(ShaderPool);
+}

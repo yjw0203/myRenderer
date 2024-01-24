@@ -27,7 +27,7 @@ namespace vulkan
 	class BufferPool
 	{
 	public:
-		void allocateBuffer(const BufferInitConfig& initConfig, Buffer* buffer);
+		void allocateBuffer(const BufferInitConfig& initConfig, Buffer*& buffer);
 		void deallocateBuffer(Buffer* buffer);
 	};
 

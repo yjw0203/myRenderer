@@ -6,7 +6,7 @@ namespace vulkan
     class BufferAdaptor
     {
     public:
-        BufferAdaptor(const rhi::Resource& resource) : payload((Buffer*)resource.payload) {}
+        BufferAdaptor(const rhi::Resource& resource) : payload((Buffer*)(resource.getPayload())) {}
         BufferAdaptor(Buffer& buffer) : payload(&buffer) {}
         operator rhi::Buffer() { return rhi::Buffer{ payload }; }
         operator Buffer& () { return *payload; }
@@ -17,7 +17,7 @@ namespace vulkan
     class TextureAdaptor
     {
     public:
-        TextureAdaptor(const rhi::Resource& resource) : payload((Texture*)resource.payload) {}
+        TextureAdaptor(const rhi::Resource& resource) : payload((Texture*)(resource.getPayload())) {}
         TextureAdaptor(Texture& texture) : payload(&texture) {}
         operator rhi::Texture() { return rhi::Texture{ payload }; }
         operator Texture& () { return *payload; }

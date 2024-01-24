@@ -39,4 +39,31 @@ namespace vulkan
     private:
         rhi::MemoryType payload;
     };
+
+    class PolygonModeAdptor
+    {
+    public:
+        PolygonModeAdptor(rhi::PolygonMode polygonMode) :payload(polygonMode) {}
+        operator VkPolygonMode();
+    private:
+        rhi::PolygonMode payload;
+    };
+
+    class CullModeAdptor
+    {
+    public:
+        CullModeAdptor(rhi::CullMode cullMode) :payload(cullMode) {}
+        operator VkCullModeFlags();
+    private:
+        rhi::CullMode payload;
+    };
+
+    class FrontFaceAdptor
+    {
+    public:
+        FrontFaceAdptor(rhi::FrontFace frontFace) :payload(frontFace) {}
+        operator VkFrontFace();
+    private:
+        rhi::FrontFace payload;
+    };
 }

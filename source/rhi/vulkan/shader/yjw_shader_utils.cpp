@@ -2,11 +2,21 @@
 #include <fstream>
 #include "spirv_cross/spirv_reflect.hpp"
 #include "rhi/vulkan/yjw_vulkan_global.h"
+#include <vector>
 
-namespace vulkan {
-namespace shader {
-namespace utils
+namespace vulkan 
 {
+    void loadFromSpirvFile(const char* fileName, Shader* shader);
+    void ShaderPool::createShaderFromFile(const char* fileName, Shader*& shader)
+    {
+        shader = new Shader();
+        loadFromSpirvFile(fileName, shader);
+    }
+    void ShaderPool::destoryShader(Shader*& shader)
+    {
+        vkDestroyShaderModule(VK_G(VkDevice), shader->shaderModule, nullptr);
+        delete shader;
+    }
 
 void readFile(const char* filename, std::vector<char>& result)
 {
@@ -141,6 +151,4 @@ void getReflectFromSpirv(const char* spirvPointer, int spirvSize, std::unordered
     }
 }
 
-}
-}
 }

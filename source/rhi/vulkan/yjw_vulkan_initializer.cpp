@@ -1,5 +1,6 @@
 #include "yjw_vulkan.h"
 #include "yjw_vulkan_global.h"
+#include "command/yjw_vulkan_command_buffer.h"
 
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
@@ -349,5 +350,7 @@ namespace vulkan
         createPhysicalDevice();
         createLogicalDeviceAndQueues();
         createSwapchain();
+
+        VK_G(CommandBufferPool).initialize();
 	}
 }

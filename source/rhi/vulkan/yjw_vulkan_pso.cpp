@@ -8,10 +8,10 @@ namespace vulkan
         return 0;
     }
 
-    void PSOFactory::bindShader(shader::Shader* shader, const char* entryName)
+    void PSOFactory::bind(PSOShaderBinding* bind)
     {
-        std::string entry(entryName);
-        VkShaderStageFlagBits stage = shader->reflects[entry].stage;
+        std::string entry(bind->entryName);
+        VkShaderStageFlagBits stage = bind->shader->reflects[entry].stage;
         if (!stage)
         {
             throw std::runtime_error("can not find entry:" + entry + "in shader");
@@ -21,7 +21,7 @@ namespace vulkan
             if (i == stageCount || shaderInfo[i].stage == stage)
             {
                 shaderInfo[i].stage = stage;
-                shaderInfo[i].module = shader->shaderModule;
+                shaderInfo[i].module = bind->shader->shaderModule;
                 shaderInfo[i].entryName = entry;
                 if (i == stageCount)
                 {
@@ -32,9 +32,11 @@ namespace vulkan
         }
     }
 
-    void PSOFactory::bindVertexLayout(VertexBinding* bindings, int binding_count)
+    void PSOFactory::bind(PSOVertexBinding* bind)
     {
         int location_count = 0;
+
+        int binding_count = bind->locations.size();
 
         vertexLayout_bindings.resize(binding_count);
         for (int iter = 0; iter < binding_count; iter++)
@@ -42,20 +44,20 @@ namespace vulkan
             vertexLayout_bindings[iter].binding = iter;
             vertexLayout_bindings[iter].stride = 0;
             vertexLayout_bindings[iter].inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
-            location_count += bindings[iter].locations.size();
+            location_count += bind->locations[iter].size();
         }
 
         vertexLayout_attributes.resize(location_count);
         int current_iter = 0;
         for (int binding_itr = 0; binding_itr < binding_count; binding_itr++)
         {
-            VertexBinding& binding = bindings[binding_itr];
+            std::vector<VertexLocation>& binding = bind->locations[binding_itr];
             int current_offset = 0;
-            for (int location_itr = 0; location_itr < binding.locations.size(); location_itr++)
+            for (int location_itr = 0; location_itr < binding.size(); location_itr++)
             {
                 vertexLayout_attributes[current_iter].binding = binding_itr;
-                vertexLayout_attributes[current_iter].format = binding.locations[location_itr].format;
-                vertexLayout_attributes[current_iter].location = binding.locations[location_itr].location;
+                vertexLayout_attributes[current_iter].format = binding[location_itr].format;
+                vertexLayout_attributes[current_iter].location = binding[location_itr].location;
                 vertexLayout_attributes[current_iter].offset = current_offset;
                 current_offset += formatToSize(vertexLayout_attributes[current_iter].format);
                 current_iter++;
@@ -69,24 +71,24 @@ namespace vulkan
         pVertexInputState.pVertexAttributeDescriptions = vertexLayout_attributes.data();
     }
 
-    void PSOFactory::bindRasterizationState(VkPolygonMode polygonMode, VkCullModeFlags cullMode, VkFrontFace frontFace,float lineWidth)
+    void PSOFactory::bind(PSORasterizationStateBinding* bind)
     {
         pRasterizationState.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
-        pRasterizationState.polygonMode = polygonMode;
-        pRasterizationState.lineWidth = lineWidth;
-        pRasterizationState.cullMode = cullMode;
-        pRasterizationState.frontFace = frontFace;
+        pRasterizationState.polygonMode = bind->polygonMode;
+        pRasterizationState.lineWidth = bind->lineWidth;
+        pRasterizationState.cullMode = bind->cullMode;
+        pRasterizationState.frontFace = bind->frontFace;
         pRasterizationState.depthBiasEnable = VK_FALSE;
         pRasterizationState.depthClampEnable = VK_FALSE;
         pRasterizationState.rasterizerDiscardEnable = VK_FALSE;
     }
 
-    void PSOFactory::bindAttachments(AttachmentBinding* color_attachments, int color_attachments_count, AttachmentBinding* depth_stencil_attachment)
+    void PSOFactory::bind(PSOAttachmentBinding* bind)
     {
-        renderPass_attachments.resize(color_attachments_count + (depth_stencil_attachment != nullptr));
-        for (int index = 0; index < color_attachments_count; index++)
+        renderPass_attachments.resize(bind->color_attachments_count + (bind->depth_stencil_attachment != nullptr));
+        for (int index = 0; index < bind->color_attachments_count; index++)
         {
-            renderPass_attachments[index].format = color_attachments[index].format;
+            renderPass_attachments[index].format = bind->color_attachments[index].format;
             renderPass_attachments[index].samples = VK_SAMPLE_COUNT_1_BIT;
             renderPass_attachments[index].loadOp = VK_ATTACHMENT_LOAD_OP_LOAD;
             renderPass_attachments[index].storeOp = VK_ATTACHMENT_STORE_OP_STORE;
@@ -96,9 +98,9 @@ namespace vulkan
             renderPass_attachments[index].finalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
         }
 
-        if (depth_stencil_attachment)
+        if (bind->depth_stencil_attachment)
         {
-            renderPass_attachments.back().format = (*depth_stencil_attachment).format;
+            renderPass_attachments.back().format = (*bind->depth_stencil_attachment).format;
             renderPass_attachments.back().samples = VK_SAMPLE_COUNT_1_BIT;
             renderPass_attachments.back().loadOp = VK_ATTACHMENT_LOAD_OP_LOAD;
             renderPass_attachments.back().storeOp = VK_ATTACHMENT_STORE_OP_STORE;
@@ -108,22 +110,22 @@ namespace vulkan
             renderPass_attachments.back().finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
         }
 
-        renderPass_attachmentRefs.resize(color_attachments_count + (depth_stencil_attachment != nullptr));
-        for (int index = 0; index < color_attachments_count; index++)
+        renderPass_attachmentRefs.resize(bind->color_attachments_count + (bind->depth_stencil_attachment != nullptr));
+        for (int index = 0; index < bind->color_attachments_count; index++)
         {
             renderPass_attachmentRefs[index].attachment = index;
             renderPass_attachmentRefs[index].layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
         }
-        if (depth_stencil_attachment)
+        if (bind->depth_stencil_attachment)
         {
             renderPass_attachmentRefs.back().attachment = (int)renderPass_attachmentRefs.size() - 1;
             renderPass_attachmentRefs.back().layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
         }
         
         renderPass_subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
-        renderPass_subpass.colorAttachmentCount = color_attachments_count;
+        renderPass_subpass.colorAttachmentCount = bind->color_attachments_count;
         renderPass_subpass.pColorAttachments = renderPass_attachmentRefs.data();
-        if (depth_stencil_attachment)
+        if (bind->depth_stencil_attachment)
         {
             renderPass_subpass.pDepthStencilAttachment = &renderPass_attachmentRefs.back();
         }
@@ -144,18 +146,20 @@ namespace vulkan
         renderPass_create_info.pDependencies = &renderPass_dependency;
     }
 
-    void PSOFactory::bindDescriptorSetLayouts(DescriptorSetLayout* descriptor_set_layouts, int set_count)
+    void PSOFactory::bind(PSODescriptorLayoutBinding* bind)
     {
+        int set_count = bind->bindings.size();
+
         setLayout_bindings.resize(set_count);
         for (int set_index = 0; set_index < set_count; set_index++)
         {
-            setLayout_bindings[set_index].resize(descriptor_set_layouts[set_index].bindings.size());
-            for (int binding_index = 0; binding_index < descriptor_set_layouts[set_index].bindings.size(); binding_index++)
+            setLayout_bindings[set_index].resize(bind->bindings[set_index].size());
+            for (int binding_index = 0; binding_index < bind->bindings[set_index].size(); binding_index++)
             {
                 VkDescriptorSetLayoutBinding& layoutBinding = setLayout_bindings[set_index][binding_index];
-                layoutBinding.binding = descriptor_set_layouts[set_index].bindings[binding_index].slot;
-                layoutBinding.descriptorType = descriptor_set_layouts[set_index].bindings[binding_index].type;
-                layoutBinding.stageFlags = descriptor_set_layouts[set_index].bindings[binding_index].shaderStage;
+                layoutBinding.binding = bind->bindings[set_index][binding_index].slot;
+                layoutBinding.descriptorType = bind->bindings[set_index][binding_index].type;
+                layoutBinding.stageFlags = bind->bindings[set_index][binding_index].shaderStage;
                 layoutBinding.descriptorCount = 1;
                 layoutBinding.pImmutableSamplers = nullptr;
             }
@@ -171,27 +175,27 @@ namespace vulkan
 
     }
 
-	PSO PSOFactory::createGraphicsPSO()
+	PSO* PSOFactory::createGraphicsPSO()
 	{
-        PSO pso;
+        PSO* pso = new PSO();
 
-        if (vkCreateRenderPass(VK_G(VkDevice), &renderPass_create_info, nullptr, &pso.renderPass) != VK_SUCCESS) {
+        if (vkCreateRenderPass(VK_G(VkDevice), &renderPass_create_info, nullptr, &pso->renderPass) != VK_SUCCESS) {
             throw std::runtime_error("failed to create render pass!");
         }
 
-        pso.descriptorSetLayouts.resize(sertLayout_createInfos.size());
+        pso->descriptorSetLayouts.resize(sertLayout_createInfos.size());
         for (int i = 0; i < sertLayout_createInfos.size(); i++)
         {
-            vkCreateDescriptorSetLayout(VK_G(VkDevice), &sertLayout_createInfos[i], nullptr, &pso.descriptorSetLayouts[i]);
+            vkCreateDescriptorSetLayout(VK_G(VkDevice), &sertLayout_createInfos[i], nullptr, &pso->descriptorSetLayouts[i]);
         }
 
         VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
         pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-        pipelineLayoutInfo.setLayoutCount = pso.descriptorSetLayouts.size();
-        pipelineLayoutInfo.pSetLayouts = pso.descriptorSetLayouts.data();
+        pipelineLayoutInfo.setLayoutCount = pso->descriptorSetLayouts.size();
+        pipelineLayoutInfo.pSetLayouts = pso->descriptorSetLayouts.data();
         pipelineLayoutInfo.pushConstantRangeCount = 0;
 
-        if (vkCreatePipelineLayout(VK_G(VkDevice), &pipelineLayoutInfo, nullptr, &pso.pipelineLayout) != VK_SUCCESS) {
+        if (vkCreatePipelineLayout(VK_G(VkDevice), &pipelineLayoutInfo, nullptr, &pso->pipelineLayout) != VK_SUCCESS) {
             throw std::runtime_error("failed to create pipeline layout!");
         }
 
@@ -218,12 +222,12 @@ namespace vulkan
         pipelineInfo.pMultisampleState = &pMultisampleState;
         pipelineInfo.pColorBlendState = &pColorBlendState;
         pipelineInfo.pDynamicState = &pDynamicState;
-        pipelineInfo.layout = pso.pipelineLayout;
-        pipelineInfo.renderPass = pso.renderPass;
+        pipelineInfo.layout = pso->pipelineLayout;
+        pipelineInfo.renderPass = pso->renderPass;
         pipelineInfo.subpass = 0;
         pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
 
-        if (vkCreateGraphicsPipelines(VK_G(VkDevice), VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &pso.pso) != VK_SUCCESS) {
+        if (vkCreateGraphicsPipelines(VK_G(VkDevice), VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &pso->pso) != VK_SUCCESS) {
             throw std::runtime_error("failed to create graphics pipeline!");
         }
         return pso;

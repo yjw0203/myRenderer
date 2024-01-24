@@ -15,7 +15,7 @@ namespace vulkan
         return 0;
     }
 
-	void BufferPool::allocateBuffer(const BufferInitConfig& initConfig, Buffer* buffer)
+	void BufferPool::allocateBuffer(const BufferInitConfig& initConfig, Buffer*& buffer)
 	{
         buffer = new Buffer(initConfig);
 

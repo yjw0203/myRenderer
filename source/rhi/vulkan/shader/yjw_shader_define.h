@@ -6,20 +6,11 @@
 #include "rhi/vulkan/yjw_vulkan_global.h"
 
 namespace vulkan {
-namespace shader {
-	
 	class Shader
 	{
 	public:
         std::unordered_map<std::string, struct ShaderReflect>reflects;
         VkShaderModule shaderModule{};
-        ~Shader()
-        {
-            if (shaderModule)
-            {
-                vkDestroyShaderModule(VK_G(VkDevice), shaderModule, nullptr);
-            }
-        }
 	};
 
     enum BaseDataType
@@ -71,5 +62,4 @@ namespace shader {
         uint32_t setCount;
 	};
 
-}
 }

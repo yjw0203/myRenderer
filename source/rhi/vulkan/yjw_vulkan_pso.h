@@ -6,6 +6,13 @@
 
 namespace vulkan
 {
+    class VertexLocation
+    {
+    public:
+        int location{};
+        VkFormat format{};
+    };
+
     class AttachmentBinding
     {
     public:
@@ -15,31 +22,45 @@ namespace vulkan
     class DescriptorSetLayoutBinding
     {
     public:
-        DescriptorSetLayoutBinding(int in_slot, VkDescriptorType in_type,VkShaderStageFlags in_shaderStage):slot(in_slot),type(in_type),shaderStage(in_shaderStage)
+        DescriptorSetLayoutBinding(int in_slot, VkDescriptorType in_type, VkShaderStageFlags in_shaderStage) :slot(in_slot), type(in_type), shaderStage(in_shaderStage)
         {}
+        VkShaderStageFlags shaderStage{};
         int slot{};
         VkDescriptorType type{};
-        VkShaderStageFlags shaderStage{};
     };
 
-    class DescriptorSetLayout
+    // pso bindings
+    struct PSOShaderBinding
     {
-    public:
-        std::vector<DescriptorSetLayoutBinding> bindings;
+        Shader* shader;
+        std::string entryName;
     };
 
-    class VertexLocation
+    struct PSOVertexBinding
     {
-    public:
-        int location{};
-        VkFormat format{};
+        std::vector<std::vector<VertexLocation>> locations;
     };
 
-    class VertexBinding
+    struct PSORasterizationStateBinding
     {
-    public:
-        std::vector<VertexLocation> locations;
+        VkPolygonMode polygonMode;
+        VkCullModeFlags cullMode;
+        VkFrontFace frontFace;
+        float lineWidth;
     };
+
+    struct PSOAttachmentBinding
+    {
+        AttachmentBinding* color_attachments;
+        int color_attachments_count;
+        AttachmentBinding* depth_stencil_attachment;
+    };
+
+    struct PSODescriptorLayoutBinding
+    {
+        std::vector<std::vector<DescriptorSetLayoutBinding>> bindings;
+    };
+
 
     class ShaderCreateInfo
     {
@@ -62,12 +83,12 @@ namespace vulkan
 	class PSOFactory
 	{
 	public:
-        void bindShader(shader::Shader* shader, const char* entryName);
-		void bindVertexLayout(VertexBinding* bindings,int binding_count);
-		void bindRasterizationState(VkPolygonMode polygonMode, VkCullModeFlags cullMode, VkFrontFace frontFace, float lineWidth);
-        void bindAttachments(AttachmentBinding* color_attachments, int color_attachments_count, AttachmentBinding* depth_stencil_attachment);
-        void bindDescriptorSetLayouts(DescriptorSetLayout* descriptor_set_layouts, int descriptor_set_layouts_count);
-        PSO createGraphicsPSO();
+        void bind(PSOShaderBinding* bind);
+		void bind(PSOVertexBinding* bind);
+		void bind(PSORasterizationStateBinding* bind);
+        void bind(PSOAttachmentBinding* bind);
+        void bind(PSODescriptorLayoutBinding* bind);
+        PSO* createGraphicsPSO();
 	private:
         VkPipelineCreateFlags                            flags{};
         VkPipelineRasterizationStateCreateInfo           pRasterizationState = DefaultPipelineRasterizationState();
