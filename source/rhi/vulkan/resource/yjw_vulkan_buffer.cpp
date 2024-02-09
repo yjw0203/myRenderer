@@ -15,17 +15,16 @@ namespace vulkan
         return 0;
     }
 
-	void BufferPool::allocateBuffer(const BufferInitConfig& initConfig, Buffer*& buffer)
-	{
-        buffer = new Buffer(initConfig);
-
+    VulkanBuffer* DefaultVulkanBufferAllocateStrategy::CreateFunc(const VulkanBufferCreation& creation)
+    {
+        VulkanBuffer* buffer = new VulkanBuffer();
         VkBufferCreateInfo desc{};
 
         desc.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
         desc.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
         desc.pNext = nullptr;
-        desc.usage = initConfig.usage;
-        desc.size = initConfig.size;
+        desc.usage = creation.usage;
+        desc.size = creation.size;
         desc.flags = 0;
         desc.queueFamilyIndexCount = 0;
         vkCreateBuffer(VK_G(VkDevice), &desc, nullptr, &buffer->buffer);
@@ -36,17 +35,28 @@ namespace vulkan
         VkMemoryAllocateInfo allocInfo{};
         allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
         allocInfo.allocationSize = memRequirements.size;
-        allocInfo.memoryTypeIndex = findMemoryType_(memRequirements.memoryTypeBits, initConfig.memoryType);
+        allocInfo.memoryTypeIndex = findMemoryType_(memRequirements.memoryTypeBits, creation.memoryType);
 
         vkAllocateMemory(VK_G(VkDevice), &allocInfo, nullptr, &buffer->memory);
 
         vkBindBufferMemory(VK_G(VkDevice), buffer->buffer, buffer->memory, 0);
+        return buffer;
+    }
+
+    void DefaultVulkanBufferAllocateStrategy::DestoryFunc(VulkanBuffer* resource)
+    {
+        vkDestroyBuffer(VK_G(VkDevice), resource->buffer, nullptr);
+        vkFreeMemory(VK_G(VkDevice), resource->memory, nullptr);
+        delete resource;
+    }
+
+    VulkanBufferHandle BufferPool::allocateBuffer(const VulkanBufferCreation& creation)
+	{
+        return DefaultAllocator.create(creation);
 	}
 
-	void BufferPool::deallocateBuffer(Buffer* buffer)
+	void BufferPool::deallocateBuffer(VulkanBufferHandle handle)
 	{
-        vkDestroyBuffer(VK_G(VkDevice), buffer->buffer, nullptr);
-        vkFreeMemory(VK_G(VkDevice), buffer->memory, nullptr);
-        delete buffer;
+        DefaultAllocator.destory(handle);
 	}
 }

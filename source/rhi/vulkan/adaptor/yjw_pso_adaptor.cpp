@@ -5,20 +5,20 @@
 
 namespace vulkan
 {
-    PSOFactoryAdaptor::PSOFactoryAdaptor(const rhi::PSOInitConfig& initConfig)
+    PSOCreationAdaptor::PSOCreationAdaptor(const rhi::PSOCreation& creation)
     {
         PSOVertexBinding vertex_binding;
         vertex_binding.locations.resize(1);
-        for (int i = 0; i < initConfig.vertex_binding.count; i++)
+        for (int i = 0; i < creation.vertex_binding.vertex_formats.size(); i++)
         {
-            vertex_binding.locations[0].push_back(VertexLocation{ i,FormatAdaptor(initConfig.vertex_binding.vertex_formats[i]) });
+            vertex_binding.locations[0].push_back(VertexLocation{ i,FormatAdaptor(creation.vertex_binding.vertex_formats[i]) });
         }
         frac.bind(&vertex_binding);
 
         PSORasterizationStateBinding rasterizationState_binding;
-        rasterizationState_binding.cullMode = CullModeAdptor(initConfig.rasterization_state_binding.cullMode);
-        rasterizationState_binding.polygonMode = PolygonModeAdptor(initConfig.rasterization_state_binding.polygonMode);
-        rasterizationState_binding.frontFace = FrontFaceAdptor(initConfig.rasterization_state_binding.frontFace);
+        rasterizationState_binding.cullMode = CullModeAdptor(creation.rasterization_state_binding.cullMode);
+        rasterizationState_binding.polygonMode = PolygonModeAdptor(creation.rasterization_state_binding.polygonMode);
+        rasterizationState_binding.frontFace = FrontFaceAdptor(creation.rasterization_state_binding.frontFace);
         rasterizationState_binding.lineWidth = 1.0f;
         frac.bind(&rasterizationState_binding);
 
@@ -28,11 +28,11 @@ namespace vulkan
         PSODescriptorLayoutBinding descriptor_layout_binding;
         frac.bind(&descriptor_layout_binding);
 
-        for (int i = 0; i < initConfig.shader_binding.count; i++)
+        for (int i = 0; i < creation.shader_binding.shader_entries.size(); i++)
         {
             PSOShaderBinding shader_binding;
-            shader_binding.shader = ShaderAdaptor(*initConfig.shader_binding.shader_entries[i].shader);
-            shader_binding.entryName = initConfig.shader_binding.shader_entries[i].entryName;
+            shader_binding.shader = ShaderAdaptor(*creation.shader_binding.shader_entries[i].shader);
+            shader_binding.entryName = creation.shader_binding.shader_entries[i].entryName;
             frac.bind(&shader_binding);
         }
     }

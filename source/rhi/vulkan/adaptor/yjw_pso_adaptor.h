@@ -3,12 +3,12 @@
 #include "rhi/vulkan/yjw_vulkan_pso.h"
 namespace vulkan
 {
-    class PSOFactoryAdaptor
+    class PSOCreationAdaptor
     {
     public:
-        PSOFactoryAdaptor(const rhi::PSOInitConfig& initConfig);
-        operator PSOFactory& () { return frac; }
+        PSOCreationAdaptor(const rhi::PSOCreation& creation);
+        operator VulkanPSOCreation& () { return frac; }
     private:
-        PSOFactory frac;
+        VulkanPSOCreation frac;
     };
 }

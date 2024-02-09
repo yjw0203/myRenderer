@@ -10,13 +10,13 @@ namespace rhi
 	class RHI
 	{
 		virtual void init(InitConfig initConfig) = 0;
-		virtual void createResource(const ResourceInitConfig& initConfig, Resource*& resource) = 0;
-		virtual void destoryResource(Resource*& resource) = 0;
-		virtual void createShader(const ShaderInitConfig& initConfig, Shader*& shader) = 0;
-		virtual void destoryShader(Shader*& shader) = 0;
-		virtual void createPSO(const PSOInitConfig& initConfig, PSO*& pso) = 0;
-		virtual void destoryPSO(PSO*& pso) = 0;
-		virtual void createCommandBuffer(const CommandBufferInitConfig& initConfig, CommandBuffer*& commandBuffer) = 0;
-		virtual void destoryCommandBuffer(CommandBuffer*& commandBuffer) = 0;
+		virtual RHIResourceHandle createResource(const RHIResourceCreation& creation) = 0;
+		virtual void destoryResource(RHIResourceHandle resource) = 0;
+		virtual RHIPSOHandle createPSO(const PSOCreation& creation) = 0;
+		virtual void destoryPSO(RHIPSOHandle pso) = 0;
+		virtual RHIShaderHandle createShader(RHIShaderCreation& creation) = 0;
+		virtual void destoryShader(RHIShaderHandle shader) = 0;
+		virtual RHICommandBufferHandle createCommandBuffer(const RHICommandBufferCreation& creation) = 0;
+		virtual void destoryCommandBuffer(RHICommandBufferHandle commandBuffer) = 0;
 	};
 }

@@ -1,23 +1,15 @@
 #pragma once
 #include "yjw_rhi_define.h"
+#include "rhi/common/yjw_rhi_resource_allocator.h"
 
 namespace rhi
 {
     enum class ResourceUsageBits;
     typedef int ResourceUsage;
 
-    struct Buffer
+    class RHIResourceCreation
     {
-        void* payload;
-    };
-
-    struct Texture
-    {
-        void* payload;
-    };
-
-    struct ResourceInitConfig
-    {
+    public:
         ResourceType type;
         int width;
         int height;
@@ -28,11 +20,5 @@ namespace rhi
         MemoryType memoryType;
     };
 
-    class Resource : public RHIObject
-    {
-    public:
-        Resource(const ResourceInitConfig& inInitConfig, void* inPayload) : initConfig(inInitConfig) { setPayload(inPayload); };
-    public:
-        const ResourceInitConfig initConfig;
-    };
+    typedef RHIHandle RHIResourceHandle;
 }

@@ -3,12 +3,9 @@
 
 namespace rhi
 {
-    struct CommandBufferInitConfig
+    struct RHICommandBufferCreation
     {
     };
 
-    class CommandBuffer : public RHIObject
-    {
-    public:
-    };
+    typedef RHIHandle RHICommandBufferHandle;
 }

@@ -6,16 +6,27 @@
 
 namespace vulkan 
 {
-    void loadFromSpirvFile(const char* fileName, Shader* shader);
-    void ShaderPool::createShaderFromFile(const char* fileName, Shader*& shader)
+    void loadFromSpirvFile(const char* fileName, VulkanShader* shader);
+
+    VulkanShader* VulkanShaderAllocateStrategy::CreateFunc(const VulkanShaderCreation& creation)
     {
-        shader = new Shader();
-        loadFromSpirvFile(fileName, shader);
+        VulkanShader* shader = new VulkanShader();
+        loadFromSpirvFile(creation.path.c_str(), shader);
     }
-    void ShaderPool::destoryShader(Shader*& shader)
+
+    void VulkanShaderAllocateStrategy::DestoryFunc(VulkanShader* shader)
     {
         vkDestroyShaderModule(VK_G(VkDevice), shader->shaderModule, nullptr);
         delete shader;
+    }
+
+    VulkanShaderHandle ShaderPool::createShader(const VulkanShaderCreation& creation)
+    {
+        return DefaultAllocator.create(creation);
+    }
+    void ShaderPool::destoryShader(VulkanShaderHandle shader)
+    {
+        DefaultAllocator.destory(shader);
     }
 
 void readFile(const char* filename, std::vector<char>& result)
@@ -36,7 +47,7 @@ void readFile(const char* filename, std::vector<char>& result)
     file.close();
 }
 
-void loadFromSpirvFile(const char* fileName, Shader* shader)
+void loadFromSpirvFile(const char* fileName, VulkanShader* shader)
 {
     std::vector<char> spirv;
     readFile(fileName, spirv);

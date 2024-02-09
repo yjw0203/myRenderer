@@ -3,6 +3,7 @@
 #include "rhi/vulkan/yjw_vulkan_default_states.h"
 #include <vector>
 #include "shader/yjw_shader_define.h"
+#include "rhi/vulkan/yjw_vulkan_resource_ruler.h"
 
 namespace vulkan
 {
@@ -70,17 +71,19 @@ namespace vulkan
         std::string entryName;
     };
 
-    class PSO
+    class VulkanPSOCreation;
+    class VulkanPSO
     {
-        friend class PSOFactory;
-    private:
+    public:
+        static const VulkanResourceType TypeId = VulkanResourceType::pso;
+        typedef VulkanPSOCreation Creation;
         VkRenderPass renderPass{};
         VkPipelineLayout pipelineLayout{};
         std::vector<VkDescriptorSetLayout> descriptorSetLayouts;
         VkPipeline pso{};
     };
 
-	class PSOFactory
+	class VulkanPSOCreation
 	{
 	public:
         void bind(PSOShaderBinding* bind);
@@ -88,8 +91,8 @@ namespace vulkan
 		void bind(PSORasterizationStateBinding* bind);
         void bind(PSOAttachmentBinding* bind);
         void bind(PSODescriptorLayoutBinding* bind);
-        PSO* createGraphicsPSO();
-	private:
+        VulkanPSO* createGraphicsPSO();
+	public:
         VkPipelineCreateFlags                            flags{};
         VkPipelineRasterizationStateCreateInfo           pRasterizationState = DefaultPipelineRasterizationState();
         VkPipelineDepthStencilStateCreateInfo            pDepthStencilState = DefaultPipelineDepthStencilState();
@@ -103,25 +106,47 @@ namespace vulkan
         VkPipeline                                       basePipelineHandle{};
         int32_t                                          basePipelineIndex{};
         
+        VkPipelineVertexInputStateCreateInfo             pVertexInputState{};
+        VkRenderPassCreateInfo                           renderPass_create_info{};
+        std::vector<VkDescriptorSetLayoutCreateInfo>     sertLayout_createInfos;
+        
+        //shader
+        ShaderCreateInfo                                 shaderInfo[5];
+        uint32_t                                         stageCount{};
+        VkPipelineShaderStageCreateInfo                  pStages[5];
+    private:
         //vertex layout
         std::vector<VkVertexInputBindingDescription>     vertexLayout_bindings;
         std::vector<VkVertexInputAttributeDescription>   vertexLayout_attributes;
-        VkPipelineVertexInputStateCreateInfo             pVertexInputState{};
 
         //render pass
         std::vector<VkAttachmentDescription>             renderPass_attachments;
         std::vector<VkAttachmentReference>               renderPass_attachmentRefs;
         VkSubpassDescription                             renderPass_subpass{};
         VkSubpassDependency                              renderPass_dependency{};
-        VkRenderPassCreateInfo                           renderPass_create_info{};
 
         //descriptor set layout
         std::vector<std::vector<VkDescriptorSetLayoutBinding>> setLayout_bindings;
-        std::vector<VkDescriptorSetLayoutCreateInfo>           sertLayout_createInfos;
         
-        //shader
-        uint32_t                                         stageCount{};
-        ShaderCreateInfo                                 shaderInfo[5];
-        VkPipelineShaderStageCreateInfo                  pStages[5];
 	};
+
+    typedef ResourceHandle<VulkanPSO> VulkanPSOHandle;
+
+    struct DefaultVulkanPSOAllocateStrategy
+    {
+        VulkanPSO* CreateFunc(VulkanPSOCreation& creation);
+        void DestoryFunc(VulkanPSO* resource);
+    };
+
+    class VulkanPSOPool
+    {
+    public:
+        VulkanPSOHandle createPSO(VulkanPSOCreation& initConfig);
+        void destroyPSO(VulkanPSOHandle handle);
+
+    private:
+        ResourceAllocator<VulkanPSO, DefaultVulkanPSOAllocateStrategy> DefaultAllocator;
+    };
+
+    EXTERN_GLOBAL_REF(VulkanPSOPool);
 }

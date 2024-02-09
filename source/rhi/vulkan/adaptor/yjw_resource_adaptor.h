@@ -3,35 +3,13 @@
 #include "rhi/vulkan/resource/yjw_vulkan_resource_header.h"
 namespace vulkan
 {
-    class BufferAdaptor
+    class ResourceCreationAdaptor
     {
     public:
-        BufferAdaptor(const rhi::Resource& resource) : payload((Buffer*)(resource.getPayload())) {}
-        BufferAdaptor(Buffer& buffer) : payload(&buffer) {}
-        operator rhi::Buffer() { return rhi::Buffer{ payload }; }
-        operator Buffer& () { return *payload; }
+        ResourceCreationAdaptor(const rhi::RHIResourceCreation& initConfig) : payload(initConfig){}
+        operator VulkanTextureCreation();
+        operator VulkanBufferCreation();
     private:
-        Buffer* payload = nullptr;
-    };
-
-    class TextureAdaptor
-    {
-    public:
-        TextureAdaptor(const rhi::Resource& resource) : payload((Texture*)(resource.getPayload())) {}
-        TextureAdaptor(Texture& texture) : payload(&texture) {}
-        operator rhi::Texture() { return rhi::Texture{ payload }; }
-        operator Texture& () { return *payload; }
-    private:
-        Texture* payload = nullptr;
-    };
-
-    class ResourceInitConfigAdaptor
-    {
-    public:
-        ResourceInitConfigAdaptor(const rhi::ResourceInitConfig& initConfig) : payload(initConfig){}
-        operator TextureInitConfig();
-        operator BufferInitConfig();
-    private:
-        const rhi::ResourceInitConfig& payload;
+        const rhi::RHIResourceCreation& payload;
     };
 }

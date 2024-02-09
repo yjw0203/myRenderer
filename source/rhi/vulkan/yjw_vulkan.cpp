@@ -4,81 +4,65 @@
 #include "rhi/vulkan/adaptor/yjw_resource_adaptor.h"
 #include "rhi/vulkan/adaptor/yjw_shader_adaptor.h"
 #include "rhi/vulkan/adaptor/yjw_pso_adaptor.h"
+#include "rhi/vulkan/adaptor/yjw_command_adaptor.h"
 #include "command/yjw_vulkan_command_buffer.h"
+#include "rhi/vulkan/yjw_vulkan_resource_ruler.h"
 
 namespace vulkan
 {
-    void VulkanRHI::createResource(const rhi::ResourceInitConfig& initConfig, rhi::Resource*& resource)
+    rhi::RHIResourceHandle VulkanRHI::createResource(const rhi::RHIResourceCreation& creation)
     {
-        if (initConfig.type == rhi::ResourceType::buffer)
+        if (creation.type == rhi::ResourceType::buffer)
         {
-            Buffer* buffer = nullptr;
-            VK_G(BufferPool).allocateBuffer(ResourceInitConfigAdaptor(initConfig), buffer);
-            resource = new rhi::Resource(initConfig, buffer);
+            return VK_G(BufferPool).allocateBuffer(ResourceCreationAdaptor(creation));
         }
         else
         {
-            Texture* texture = nullptr;
-            VK_G(TexturePool).createTexture(ResourceInitConfigAdaptor(initConfig), texture);
-            resource = new rhi::Resource(initConfig, texture);
+            return VK_G(TexturePool).createTexture(ResourceCreationAdaptor(creation));
         }
     }
 
-    void VulkanRHI::destoryResource(rhi::Resource*& resource)
+    void VulkanRHI::destoryResource(rhi::RHIResourceHandle resource)
     {
-        if (resource->initConfig.type == rhi::ResourceType::buffer)
+        if (resource_type(resource) == VulkanResourceType::buffer)
         {
-            Buffer& buffer = BufferAdaptor(*resource);
-            VK_G(BufferPool).deallocateBuffer(&buffer);
-            delete resource;
+            VK_G(BufferPool).deallocateBuffer(resource);
         }
         else
         {
-            Texture& texture = TextureAdaptor(*resource);
-            VK_G(TexturePool).destroyTexture(&texture);
-            delete resource;
+            VK_G(TexturePool).destroyTexture(resource);
         }
     }
 
-    void VulkanRHI::createShader(const rhi::ShaderInitConfig& initConfig, rhi::Shader*& shader)
+    rhi::RHIPSOHandle VulkanRHI::createPSO(const rhi::PSOCreation& creation)
     {
-        Shader* vk_shader = nullptr;
-        VK_G(ShaderPool).createShaderFromFile(initConfig.name.c_str(), vk_shader);
-        shader = new rhi::Shader(initConfig, vk_shader);
+        PSOCreationAdaptor vkcreation(creation);
+        return VK_G(VulkanPSOPool).createPSO(vkcreation);
     }
 
-    void VulkanRHI::destoryShader(rhi::Shader*& shader)
+    void VulkanRHI::destoryPSO(rhi::RHIPSOHandle handle)
     {
-        Shader* vk_shader = ShaderAdaptor(*shader);
-        VK_G(ShaderPool).destoryShader(vk_shader);
-        delete shader;
+        VK_G(VulkanPSOPool).destroyPSO(handle);
     }
 
-    void VulkanRHI::createPSO(const rhi::PSOInitConfig& initConfig, rhi::PSO*& pso)
+    rhi::RHIShaderHandle VulkanRHI::createShader(rhi::RHIShaderCreation& creation)
     {
-        PSOFactoryAdaptor frac(initConfig);
-        PSO* vk_pso = ((PSOFactory)frac).createGraphicsPSO();
-        pso = new rhi::PSO();
-        pso->setPayload(vk_pso);
+        VulkanShaderCreationAdaptor vkShader(creation);
+        return VK_G(ShaderPool).createShader(vkShader);
     }
 
-    void VulkanRHI::destoryPSO(rhi::PSO*& pso)
+    void VulkanRHI::destoryShader(rhi::RHIShaderHandle shader)
     {
-
+        VK_G(ShaderPool).destoryShader(shader);
     }
 
-    void VulkanRHI::createCommandBuffer(const rhi::CommandBufferInitConfig& initConfig, rhi::CommandBuffer*& commandBuffer)
+    rhi::RHICommandBufferHandle VulkanRHI::createCommandBuffer(const rhi::RHICommandBufferCreation& creation)
     {
-        CommandBuffer* vk_command_buffer = nullptr;
-        VK_G(CommandBufferPool).allocateCommandBuffer(vk_command_buffer);
-        commandBuffer = new rhi::CommandBuffer();
-        commandBuffer->setPayload(vk_command_buffer);
+        return VK_G(CommandBufferPool).allocateCommandBuffer(RHICommandBufferCreationAdaptor(creation));
     }
 
-    void VulkanRHI::destoryCommandBuffer(rhi::CommandBuffer*& commandBuffer)
+    void VulkanRHI::destoryCommandBuffer(rhi::RHICommandBufferHandle handle)
     {
-        CommandBuffer* vk_command_buffer = (CommandBuffer*)commandBuffer->getPayload();
-        VK_G(CommandBufferPool).destoryCommandBuffer(vk_command_buffer);
-        delete commandBuffer;
+        VK_G(CommandBufferPool).destoryCommandBuffer(handle);
     }
 }

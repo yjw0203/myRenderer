@@ -14,22 +14,22 @@ namespace vulkan
         return 0;
     }
 
-	void TexturePool::createTexture(const TextureInitConfig& initConfig, Texture*& texture)
-	{
-        texture = new Texture(initConfig);
+    VulkanTexture* DefaultVulkanTextureAllocateStrategy::CreateFunc(const VulkanTextureCreation& creation)
+    {
+        VulkanTexture* texture = new VulkanTexture();
 
         VkImageCreateInfo desc{};
         desc.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
         desc.imageType = VK_IMAGE_TYPE_2D;
-        desc.extent.width = initConfig.width;
-        desc.extent.height = initConfig.height;
-        desc.extent.depth = initConfig.depth;
-        desc.mipLevels = initConfig.mipLevels;
-        desc.arrayLayers = initConfig.arrayLayers;
-        desc.format = initConfig.format;
+        desc.extent.width = creation.width;
+        desc.extent.height = creation.height;
+        desc.extent.depth = creation.depth;
+        desc.mipLevels = creation.mipLevels;
+        desc.arrayLayers = creation.arrayLayers;
+        desc.format = creation.format;
         desc.tiling = VK_IMAGE_TILING_OPTIMAL;
         desc.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-        desc.usage = initConfig.usage;
+        desc.usage = creation.usage;
         desc.samples = VK_SAMPLE_COUNT_1_BIT;
         desc.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
         desc.queueFamilyIndexCount = 0;
@@ -42,19 +42,29 @@ namespace vulkan
         VkMemoryAllocateInfo allocInfo{};
         allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
         allocInfo.allocationSize = memRequirements.size;
-        allocInfo.memoryTypeIndex = findTextureMemoryType_(memRequirements.memoryTypeBits, initConfig.memoryType);
+        allocInfo.memoryTypeIndex = findTextureMemoryType_(memRequirements.memoryTypeBits, creation.memoryType);
 
         vkAllocateMemory(VK_G(VkDevice), &allocInfo, nullptr, &texture->memory);
 
         vkBindImageMemory(VK_G(VkDevice), texture->texture, texture->memory, 0);
+        return texture;
+    }
+    
+    void DefaultVulkanTextureAllocateStrategy::DestoryFunc(VulkanTexture* resource)
+    {
+        vkDestroyImage(VK_G(VkDevice), resource->texture, nullptr);
+        vkFreeMemory(VK_G(VkDevice), resource->memory, nullptr);
+        delete resource;
+    }
+
+    VulkanTextureHandle TexturePool::createTexture(const VulkanTextureCreation& creation)
+	{
+        return DefaultAllocator.create(creation);
 	}
 
-	void TexturePool::destroyTexture(Texture* texture)
+	void TexturePool::destroyTexture(VulkanTextureHandle handle)
 	{
-        vkDestroyImage(VK_G(VkDevice), texture->texture, nullptr);
-        vkFreeMemory(VK_G(VkDevice), texture->memory, nullptr);
-
-        delete texture;
+        DefaultAllocator.destory(handle);
 	}
 
 }

@@ -3,14 +3,12 @@
 #include "rhi/vulkan/shader/yjw_shader_utils.h"
 namespace vulkan
 {
-    class ShaderAdaptor
+    class VulkanShaderCreationAdaptor
     {
     public:
-        ShaderAdaptor(const rhi::Shader& shader) : payload((Shader*)shader.payload) {}
-        ShaderAdaptor(Shader& shader) : payload(&shader) {}
-        operator rhi::ShaderPayload() { return rhi::ShaderPayload{ payload }; }
-        operator Shader* () { return payload; }
+        VulkanShaderCreationAdaptor(const rhi::RHIShaderCreation& creation);
+        operator VulkanShaderCreation& () { return frac; }
     private:
-        Shader* payload = nullptr;
+        VulkanShaderCreation frac;
     };
 }

@@ -4,12 +4,12 @@
 
 namespace vulkan
 {
-    ResourceInitConfigAdaptor::operator TextureInitConfig()
+    ResourceCreationAdaptor::operator VulkanTextureCreation()
     {
         assert(payload.type != rhi::ResourceType::buffer);
         assert(payload.type != rhi::ResourceType::unkown);
 
-        TextureInitConfig initConfig;
+        VulkanTextureCreation initConfig;
         initConfig.width = payload.width;
         initConfig.height = payload.height;
         initConfig.mipLevels = payload.miplevels;
@@ -48,10 +48,10 @@ namespace vulkan
         return std::move(initConfig);
     }
 
-    ResourceInitConfigAdaptor::operator BufferInitConfig()
+    ResourceCreationAdaptor::operator VulkanBufferCreation()
     {
         assert(payload.type == rhi::ResourceType::buffer);
-        BufferInitConfig initConfig;
+        VulkanBufferCreation initConfig;
         initConfig.size = payload.width;
         initConfig.usage = ImageUsageFlagsAdptor(payload.usage);
         initConfig.memoryType = MemoryPropertyFlagsAdptor(payload.memoryType);

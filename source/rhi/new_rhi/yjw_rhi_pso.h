@@ -2,6 +2,7 @@
 #include "yjw_rhi_define.h"
 #include "yjw_rhi_shader.h"
 #include "yjw_rhi_object.h"
+#include "rhi/common/yjw_rhi_resource_allocator.h"
 
 namespace rhi
 {
@@ -16,27 +17,23 @@ namespace rhi
 
     struct PSOVextexBinding
     {
-        Format* vertex_formats;
-        int count;
+        std::vector<Format> vertex_formats;
     };
 
     struct PSOAttachmentBinding
     {
-        Format* attachment_formats;
-        int count;
+        std::vector<Format> attachment_formats;
         Format depth_stencil_format;
     };
 
     struct PSODescriptorLayoutBinding
     {
-        DescriptorBinding* descriptor_bindings;
-        int count;
+        std::vector<DescriptorBinding> descriptor_bindings;
     };
 
     struct PSOShaderBinding
     {
-        ShaderEntry* shader_entries;
-        int count;
+        std::vector<ShaderEntry> shader_entries;
     };
 
     struct PSORasterizationStateBinding
@@ -46,7 +43,7 @@ namespace rhi
         FrontFace frontFace;
     };
 
-    struct PSOInitConfig
+    struct PSOCreation
     {
         PSOVextexBinding vertex_binding;
         PSOAttachmentBinding attachment_binding;
@@ -55,8 +52,5 @@ namespace rhi
         PSORasterizationStateBinding rasterization_state_binding;
     };
 
-    class PSO : public RHIObject
-    {
-    public:
-    };
+    typedef RHIHandle RHIPSOHandle;
 }

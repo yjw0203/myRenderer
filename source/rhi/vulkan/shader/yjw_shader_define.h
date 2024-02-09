@@ -4,14 +4,25 @@
 #include <string>
 #include "vulkan/vulkan.h"
 #include "rhi/vulkan/yjw_vulkan_global.h"
+#include "rhi/vulkan/yjw_vulkan_resource_ruler.h"
 
 namespace vulkan {
-	class Shader
+    class VulkanShaderCreation
+    {
+    public:
+        std::string path;
+    };
+
+	class VulkanShader
 	{
 	public:
+        static const VulkanResourceType TypeId = VulkanResourceType::shader;
+        typedef VulkanShaderCreation Creation;
         std::unordered_map<std::string, struct ShaderReflect>reflects;
         VkShaderModule shaderModule{};
 	};
+    
+    typedef ResourceHandle<VulkanShader> VulkanShaderHandle;
 
     enum BaseDataType
     {

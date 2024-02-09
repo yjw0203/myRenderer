@@ -7,13 +7,13 @@ namespace vulkan
 	class VulkanRHI : public rhi::RHI
 	{
 		virtual void init(rhi::InitConfig initConfig) override;
-		virtual void createResource(const rhi::ResourceInitConfig& initConfig, rhi::Resource*& resource) override;
-		virtual void destoryResource(rhi::Resource*& resource) override;
-		virtual void createShader(const rhi::ShaderInitConfig& initConfig, rhi::Shader*& shader) override;
-		virtual void destoryShader(rhi::Shader*& shader) override;
-		virtual void createPSO(const rhi::PSOInitConfig& initConfig, rhi::PSO*& pso) override;
-		virtual void destoryPSO(rhi::PSO*& pso) override;
-		virtual void createCommandBuffer(const rhi::CommandBufferInitConfig& initConfig, rhi::CommandBuffer*& commandBuffer) override;
-		virtual void destoryCommandBuffer(rhi::CommandBuffer*& commandBuffer) override;
+		virtual rhi::RHIResourceHandle createResource(const rhi::RHIResourceCreation& creation) override;
+		virtual void destoryResource(rhi::RHIResourceHandle resource) override;
+		virtual rhi::RHIPSOHandle createPSO(const rhi::PSOCreation& creation) override;
+		virtual void destoryPSO(rhi::RHIPSOHandle pso) override;
+		virtual rhi::RHIShaderHandle createShader(rhi::RHIShaderCreation& creation) override;
+		virtual void destoryShader(rhi::RHIShaderHandle handle) override;
+		virtual rhi::RHICommandBufferHandle createCommandBuffer(const rhi::RHICommandBufferCreation& creation) override;
+		virtual void destoryCommandBuffer(rhi::RHICommandBufferHandle handle) override;
 	};
 }

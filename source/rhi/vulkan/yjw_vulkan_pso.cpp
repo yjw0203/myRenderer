@@ -8,7 +8,7 @@ namespace vulkan
         return 0;
     }
 
-    void PSOFactory::bind(PSOShaderBinding* bind)
+    void VulkanPSOCreation::bind(PSOShaderBinding* bind)
     {
         std::string entry(bind->entryName);
         VkShaderStageFlagBits stage = bind->shader->reflects[entry].stage;
@@ -32,7 +32,7 @@ namespace vulkan
         }
     }
 
-    void PSOFactory::bind(PSOVertexBinding* bind)
+    void VulkanPSOCreation::bind(PSOVertexBinding* bind)
     {
         int location_count = 0;
 
@@ -71,7 +71,7 @@ namespace vulkan
         pVertexInputState.pVertexAttributeDescriptions = vertexLayout_attributes.data();
     }
 
-    void PSOFactory::bind(PSORasterizationStateBinding* bind)
+    void VulkanPSOCreation::bind(PSORasterizationStateBinding* bind)
     {
         pRasterizationState.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
         pRasterizationState.polygonMode = bind->polygonMode;
@@ -83,7 +83,7 @@ namespace vulkan
         pRasterizationState.rasterizerDiscardEnable = VK_FALSE;
     }
 
-    void PSOFactory::bind(PSOAttachmentBinding* bind)
+    void VulkanPSOCreation::bind(PSOAttachmentBinding* bind)
     {
         renderPass_attachments.resize(bind->color_attachments_count + (bind->depth_stencil_attachment != nullptr));
         for (int index = 0; index < bind->color_attachments_count; index++)
@@ -121,7 +121,7 @@ namespace vulkan
             renderPass_attachmentRefs.back().attachment = (int)renderPass_attachmentRefs.size() - 1;
             renderPass_attachmentRefs.back().layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
         }
-        
+
         renderPass_subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
         renderPass_subpass.colorAttachmentCount = bind->color_attachments_count;
         renderPass_subpass.pColorAttachments = renderPass_attachmentRefs.data();
@@ -146,7 +146,7 @@ namespace vulkan
         renderPass_create_info.pDependencies = &renderPass_dependency;
     }
 
-    void PSOFactory::bind(PSODescriptorLayoutBinding* bind)
+    void VulkanPSOCreation::bind(PSODescriptorLayoutBinding* bind)
     {
         int set_count = bind->bindings.size();
 
@@ -175,18 +175,18 @@ namespace vulkan
 
     }
 
-	PSO* PSOFactory::createGraphicsPSO()
-	{
-        PSO* pso = new PSO();
+    VulkanPSO* DefaultVulkanPSOAllocateStrategy::CreateFunc(VulkanPSOCreation& creation)
+    {
+        VulkanPSO* pso = new VulkanPSO();
 
-        if (vkCreateRenderPass(VK_G(VkDevice), &renderPass_create_info, nullptr, &pso->renderPass) != VK_SUCCESS) {
+        if (vkCreateRenderPass(VK_G(VkDevice), &creation.renderPass_create_info, nullptr, &pso->renderPass) != VK_SUCCESS) {
             throw std::runtime_error("failed to create render pass!");
         }
 
-        pso->descriptorSetLayouts.resize(sertLayout_createInfos.size());
-        for (int i = 0; i < sertLayout_createInfos.size(); i++)
+        pso->descriptorSetLayouts.resize(creation.sertLayout_createInfos.size());
+        for (int i = 0; i < creation.sertLayout_createInfos.size(); i++)
         {
-            vkCreateDescriptorSetLayout(VK_G(VkDevice), &sertLayout_createInfos[i], nullptr, &pso->descriptorSetLayouts[i]);
+            vkCreateDescriptorSetLayout(VK_G(VkDevice), &creation.sertLayout_createInfos[i], nullptr, &pso->descriptorSetLayouts[i]);
         }
 
         VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
@@ -199,29 +199,29 @@ namespace vulkan
             throw std::runtime_error("failed to create pipeline layout!");
         }
 
-        for (int stageIndex = 0; stageIndex < stageCount; stageIndex++)
+        for (int stageIndex = 0; stageIndex < creation.stageCount; stageIndex++)
         {
-            pStages[stageIndex].sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-            pStages[stageIndex].pNext = nullptr;
-            pStages[stageIndex].flags = 0;
-            pStages[stageIndex].stage = shaderInfo[stageIndex].stage;
-            pStages[stageIndex].module = shaderInfo[stageIndex].module;
-            pStages[stageIndex].pName = shaderInfo[stageIndex].entryName.c_str();
-            pStages[stageIndex].pSpecializationInfo = nullptr;
+            creation.pStages[stageIndex].sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+            creation.pStages[stageIndex].pNext = nullptr;
+            creation.pStages[stageIndex].flags = 0;
+            creation.pStages[stageIndex].stage = creation.shaderInfo[stageIndex].stage;
+            creation.pStages[stageIndex].module = creation.shaderInfo[stageIndex].module;
+            creation.pStages[stageIndex].pName = creation.shaderInfo[stageIndex].entryName.c_str();
+            creation.pStages[stageIndex].pSpecializationInfo = nullptr;
         }
 
         VkGraphicsPipelineCreateInfo pipelineInfo{};
         pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
-        pipelineInfo.stageCount = stageCount;
-        pipelineInfo.pStages = pStages;
-        pipelineInfo.pVertexInputState = &pVertexInputState;
-        pipelineInfo.pInputAssemblyState = &pInputAssemblyState;
-        pipelineInfo.pViewportState = &pViewportState;
-        pipelineInfo.pRasterizationState = &pRasterizationState;
-        pipelineInfo.pDepthStencilState = &pDepthStencilState;
-        pipelineInfo.pMultisampleState = &pMultisampleState;
-        pipelineInfo.pColorBlendState = &pColorBlendState;
-        pipelineInfo.pDynamicState = &pDynamicState;
+        pipelineInfo.stageCount = creation.stageCount;
+        pipelineInfo.pStages = creation.pStages;
+        pipelineInfo.pVertexInputState = &creation.pVertexInputState;
+        pipelineInfo.pInputAssemblyState = &creation.pInputAssemblyState;
+        pipelineInfo.pViewportState = &creation.pViewportState;
+        pipelineInfo.pRasterizationState = &creation.pRasterizationState;
+        pipelineInfo.pDepthStencilState = &creation.pDepthStencilState;
+        pipelineInfo.pMultisampleState = &creation.pMultisampleState;
+        pipelineInfo.pColorBlendState = &creation.pColorBlendState;
+        pipelineInfo.pDynamicState = &creation.pDynamicState;
         pipelineInfo.layout = pso->pipelineLayout;
         pipelineInfo.renderPass = pso->renderPass;
         pipelineInfo.subpass = 0;
@@ -231,5 +231,26 @@ namespace vulkan
             throw std::runtime_error("failed to create graphics pipeline!");
         }
         return pso;
-	}
+    }
+
+    void DefaultVulkanPSOAllocateStrategy::DestoryFunc(VulkanPSO* resource)
+    {
+        vkDestroyPipeline(VK_G(VkDevice), resource->pso, nullptr);
+        vkDestroyPipelineLayout(VK_G(VkDevice), resource->pipelineLayout, nullptr);
+        for (VkDescriptorSetLayout& descriptorSetLayout : resource->descriptorSetLayouts)
+        {
+            vkDestroyDescriptorSetLayout(VK_G(VkDevice), descriptorSetLayout, nullptr);
+        }
+        vkDestroyRenderPass(VK_G(VkDevice), resource->renderPass, nullptr);
+    }
+
+    VulkanPSOHandle VulkanPSOPool::createPSO(VulkanPSOCreation& creation)
+    {
+        return DefaultAllocator.create(creation);
+    }
+
+    void VulkanPSOPool::destroyPSO(VulkanPSOHandle handle)
+    {
+        DefaultAllocator.destory(handle);
+    }
 }

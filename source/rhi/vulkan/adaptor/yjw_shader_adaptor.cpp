@@ -3,5 +3,8 @@
 
 namespace vulkan
 {
-    
+    VulkanShaderCreationAdaptor::VulkanShaderCreationAdaptor(const rhi::RHIShaderCreation& creation)
+    {
+        frac.path = creation.name;
+    }
 }

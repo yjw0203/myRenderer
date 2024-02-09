@@ -1,10 +1,13 @@
 #pragma once
 #include "vulkan/vulkan.h"
 #include "rhi/vulkan/yjw_vulkan_global.h"
+#include "rhi/common/yjw_rhi_resource_allocator.h"
+#include "rhi/vulkan/yjw_vulkan_resource_ruler.h"
 
 namespace vulkan
 {
-	struct TextureInitConfig
+
+	struct VulkanTextureCreation
 	{
 		VkImageType type;
 		uint32_t width;
@@ -17,24 +20,32 @@ namespace vulkan
 		VkMemoryPropertyFlags memoryType;
 	};
 
-	class Texture
+	class VulkanTexture
 	{
-		friend class TexturePool;
 	public:
+		static const VulkanResourceType TypeId = VulkanResourceType::texture;
+		typedef VulkanTextureCreation Creation;
 		operator VkImage&() { return texture; }
 		operator VkDeviceMemory&() { return memory; }
-	private:
-		Texture(const TextureInitConfig& inInitConfig) : initConfig(inInitConfig) {}
-		const TextureInitConfig initConfig;
 		VkImage texture{};
 		VkDeviceMemory memory{};
+	};
+	typedef ResourceHandle<VulkanTexture> VulkanTextureHandle;
+
+	struct DefaultVulkanTextureAllocateStrategy
+	{
+		VulkanTexture* CreateFunc(const VulkanTextureCreation& creation);
+		void DestoryFunc(VulkanTexture* resource);
 	};
 
 	class TexturePool
 	{
 	public:
-		void createTexture(const TextureInitConfig& initConfig, Texture*& texture);
-		void destroyTexture(Texture* texture);
+		VulkanTextureHandle createTexture(const VulkanTextureCreation& initConfig);
+		void destroyTexture(VulkanTextureHandle handle);
+
+	private:
+		ResourceAllocator<VulkanTexture, DefaultVulkanTextureAllocateStrategy> DefaultAllocator;
 	};
 
 	EXTERN_GLOBAL_REF(TexturePool);
