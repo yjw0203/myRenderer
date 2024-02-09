@@ -14,6 +14,7 @@ class ResourcePool;
 template<typename Type>
 struct ResourceHandle
 {
+	ResourceHandle<Type>(){}
 	ResourceHandle<Type>(RHIHandle handle)
 		:ID(handle.ID), CreateTimeStamp(handle.CreateTimeStamp), Pool(handle.Pool),TypeId(handle.TypeId) 
 	{

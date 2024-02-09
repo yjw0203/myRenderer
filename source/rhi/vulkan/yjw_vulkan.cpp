@@ -7,6 +7,7 @@
 #include "rhi/vulkan/adaptor/yjw_command_adaptor.h"
 #include "command/yjw_vulkan_command_buffer.h"
 #include "rhi/vulkan/yjw_vulkan_resource_ruler.h"
+#include "rhi/vulkan/yjw_vulkan_descriptor_set.h"
 
 namespace vulkan
 {
@@ -64,5 +65,17 @@ namespace vulkan
     void VulkanRHI::destoryCommandBuffer(rhi::RHICommandBufferHandle handle)
     {
         VK_G(CommandBufferPool).destoryCommandBuffer(handle);
+    }
+
+    rhi::RHIDescriptorSetHandle createDescriptorSet(rhi::RHIPSOHandle pso)
+    {
+        VulkanDescariptorSetCreation creation;
+        creation.pso = pso;
+        return VK_G(VulkanDescriptorSetPool).createDescriptorSet(creation);
+    }
+
+    void destoryDescriptorSet(rhi::RHIDescriptorSetHandle descriptorSet)
+    {
+        VK_G(VulkanDescriptorSetPool).destoryDescriptorSet(descriptorSet);
     }
 }

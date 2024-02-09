@@ -148,6 +148,8 @@ namespace vulkan
 
     void VulkanPSOCreation::bind(PSODescriptorLayoutBinding* bind)
     {
+        descriptorLayoutBinding = *bind;
+
         int set_count = bind->bindings.size();
 
         setLayout_bindings.resize(set_count);
@@ -230,6 +232,9 @@ namespace vulkan
         if (vkCreateGraphicsPipelines(VK_G(VkDevice), VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &pso->pso) != VK_SUCCESS) {
             throw std::runtime_error("failed to create graphics pipeline!");
         }
+
+        pso->descriptorLayoutBinding = creation.descriptorLayoutBinding;
+
         return pso;
     }
 

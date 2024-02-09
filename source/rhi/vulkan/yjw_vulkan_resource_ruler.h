@@ -9,7 +9,8 @@ namespace vulkan
 		texture,
 		pso,
 		shader,
-		commandBuffer
+		commandBuffer,
+		descriptorSet
 	};
 
 	bool check_resource_type(const RHIHandle& handle, VulkanResourceType type)

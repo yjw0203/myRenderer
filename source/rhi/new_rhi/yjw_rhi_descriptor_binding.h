@@ -1,10 +1,7 @@
 #pragma once
+#include "rhi/common/yjw_rhi_resource_allocator.h"
 
 namespace rhi
 {
-    class ResourceBinding
-    {
-    public:
-        void* payload;
-    };
+    typedef RHIHandle RHIDescriptorSetHandle;
 }

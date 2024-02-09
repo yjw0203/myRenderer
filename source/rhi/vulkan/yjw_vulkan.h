@@ -15,5 +15,7 @@ namespace vulkan
 		virtual void destoryShader(rhi::RHIShaderHandle handle) override;
 		virtual rhi::RHICommandBufferHandle createCommandBuffer(const rhi::RHICommandBufferCreation& creation) override;
 		virtual void destoryCommandBuffer(rhi::RHICommandBufferHandle handle) override;
+		virtual rhi::RHIDescriptorSetHandle createDescriptorSet(rhi::RHIPSOHandle pso) override;
+		virtual void destoryDescriptorSet(rhi::RHIDescriptorSetHandle descriptorSet) override;
 	};
 }

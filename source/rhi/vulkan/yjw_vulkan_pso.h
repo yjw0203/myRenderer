@@ -33,7 +33,7 @@ namespace vulkan
     // pso bindings
     struct PSOShaderBinding
     {
-        Shader* shader;
+        VulkanShader* shader;
         std::string entryName;
     };
 
@@ -60,8 +60,23 @@ namespace vulkan
     struct PSODescriptorLayoutBinding
     {
         std::vector<std::vector<DescriptorSetLayoutBinding>> bindings;
+        int queryCount(VkDescriptorType type);
     };
-
+    int PSODescriptorLayoutBinding::queryCount(VkDescriptorType type)
+    {
+        int count = 0;
+        for (std::vector<DescriptorSetLayoutBinding>& Bindings : bindings)
+        {
+            for (DescriptorSetLayoutBinding& Binding : Bindings)
+            {
+                if (Binding.type == type)
+                {
+                    count++;
+                }
+            }
+        }
+        return count;
+    }
 
     class ShaderCreateInfo
     {
@@ -81,6 +96,7 @@ namespace vulkan
         VkPipelineLayout pipelineLayout{};
         std::vector<VkDescriptorSetLayout> descriptorSetLayouts;
         VkPipeline pso{};
+        PSODescriptorLayoutBinding descriptorLayoutBinding;
     };
 
 	class VulkanPSOCreation
@@ -91,7 +107,6 @@ namespace vulkan
 		void bind(PSORasterizationStateBinding* bind);
         void bind(PSOAttachmentBinding* bind);
         void bind(PSODescriptorLayoutBinding* bind);
-        VulkanPSO* createGraphicsPSO();
 	public:
         VkPipelineCreateFlags                            flags{};
         VkPipelineRasterizationStateCreateInfo           pRasterizationState = DefaultPipelineRasterizationState();
@@ -114,6 +129,8 @@ namespace vulkan
         ShaderCreateInfo                                 shaderInfo[5];
         uint32_t                                         stageCount{};
         VkPipelineShaderStageCreateInfo                  pStages[5];
+
+        PSODescriptorLayoutBinding                       descriptorLayoutBinding;
     private:
         //vertex layout
         std::vector<VkVertexInputBindingDescription>     vertexLayout_bindings;

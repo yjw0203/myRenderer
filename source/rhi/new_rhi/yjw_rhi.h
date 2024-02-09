@@ -4,6 +4,7 @@
 #include "yjw_rhi_shader.h"
 #include "yjw_rhi_pso.h"
 #include "yjw_rhi_command.h"
+#include "yjw_rhi_descriptor_binding.h"
 
 namespace rhi
 {
@@ -18,5 +19,7 @@ namespace rhi
 		virtual void destoryShader(RHIShaderHandle shader) = 0;
 		virtual RHICommandBufferHandle createCommandBuffer(const RHICommandBufferCreation& creation) = 0;
 		virtual void destoryCommandBuffer(RHICommandBufferHandle commandBuffer) = 0;
+		virtual RHIDescriptorSetHandle createDescriptorSet(RHIPSOHandle pso) = 0;
+		virtual void destoryDescriptorSet(RHIDescriptorSetHandle descriptorSet) = 0;
 	};
 }
