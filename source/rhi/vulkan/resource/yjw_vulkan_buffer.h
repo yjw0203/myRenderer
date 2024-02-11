@@ -21,6 +21,7 @@ namespace vulkan
 		operator VkBuffer() { return buffer; }
 		operator VkDeviceMemory() { return memory; }
 		VulkanBuffer() {}
+		VkDeviceSize size{};
 		VkBuffer buffer{};
 		VkDeviceMemory memory{};
 	};

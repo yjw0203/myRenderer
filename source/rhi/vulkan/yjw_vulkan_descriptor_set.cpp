@@ -6,6 +6,7 @@ namespace vulkan
 	VulkanDescriptorSet* DefaultVulkanDescriptorSetAllocateStrategy::CreateFunc(VulkanDescariptorSetCreation& creation)
 	{
 		VulkanDescriptorSet* vulkanDescriptorSet = new VulkanDescriptorSet();
+        vulkanDescriptorSet->psoHandle = creation.pso;
 
         VulkanPSO* pso = creation.pso.Get();
         PSODescriptorLayoutBinding& descriptorSetLayout = pso->descriptorLayoutBinding;

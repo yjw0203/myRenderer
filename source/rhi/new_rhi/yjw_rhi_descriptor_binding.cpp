@@ -1,4 +1,4 @@
-#include "yjw_rhi_resource_binding.h"
+#include "yjw_rhi_descriptor_binding.h"
 
 namespace rhi
 {

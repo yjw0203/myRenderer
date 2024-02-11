@@ -7,10 +7,12 @@ namespace vulkan
 	{
 		buffer = 0,
 		texture,
+		descriptor,
 		pso,
 		shader,
 		commandBuffer,
-		descriptorSet
+		descriptorSet,
+		attachmentSet,
 	};
 
 	bool check_resource_type(const RHIHandle& handle, VulkanResourceType type)
@@ -23,8 +25,14 @@ namespace vulkan
 		assert(check_resource_type(handle, type));
 	}
 
-	VulkanResourceType resource_type(const RHIHandle& handle)
+	VulkanResourceType get_resource_type(const RHIHandle& handle)
 	{
 		return (VulkanResourceType)handle.TypeId;
+	}
+
+	template<typename Type>
+	Type* HandleCast(RHIHandle handle)
+	{
+		return((ResourceHandle<Type>)handle).Get();
 	}
 }

@@ -2,10 +2,12 @@
 #include "yjw_property_adaptor.h"
 #include "yjw_shader_adaptor.h"
 #include <cassert>
+#include "rhi/vulkan/yjw_vulkan_resource_ruler.h"
+#include <algorithm>
 
 namespace vulkan
 {
-    PSOCreationAdaptor::PSOCreationAdaptor(const rhi::PSOCreation& creation)
+    PSOCreationAdaptor::PSOCreationAdaptor(rhi::PSOCreation& creation)
     {
         PSOVertexBinding vertex_binding;
         vertex_binding.locations.resize(1);
@@ -22,16 +24,36 @@ namespace vulkan
         rasterizationState_binding.lineWidth = 1.0f;
         frac.bind(&rasterizationState_binding);
 
-        PSOAttachmentBinding attachment_binding;
+        PSOAttachmentBinding attachment_binding{};
+        for (int i = 0; i < creation.attachment_binding.attachment_formats.size(); i++)
+        {
+            attachment_binding.color_attachments.push_back(AttachmentBinding{ FormatAdaptor(creation.attachment_binding.attachment_formats[i]) });
+        }
+        attachment_binding.has_depth_stencil_attachment = false;
+        if (creation.attachment_binding.depth_stencil_format != rhi::Format::unknow)
+        {
+            attachment_binding.has_depth_stencil_attachment = true;
+            attachment_binding.depth_stencil_attachment = AttachmentBinding{ FormatAdaptor(creation.attachment_binding.depth_stencil_format) };
+        }
         frac.bind(&attachment_binding);
 
         PSODescriptorLayoutBinding descriptor_layout_binding;
+        int max_set_id = 0;
+        for (rhi::DescriptorBinding& binding : creation.descriptor_layout_binding.descriptor_bindings)
+        {
+            max_set_id = std::max(max_set_id, binding.setId);
+        }
+        descriptor_layout_binding.bindings.resize(max_set_id + 1);
+        for (rhi::DescriptorBinding& binding : creation.descriptor_layout_binding.descriptor_bindings)
+        {
+            descriptor_layout_binding.bindings[binding.setId].push_back(DescriptorSetLayoutBinding(binding.slotId, DescriptorTypeAdaptor(binding.descriptorType), ShaderTypeAdaptor(binding.shaderStage)));
+        }
         frac.bind(&descriptor_layout_binding);
 
         for (int i = 0; i < creation.shader_binding.shader_entries.size(); i++)
         {
             PSOShaderBinding shader_binding;
-            shader_binding.shader = ShaderAdaptor(*creation.shader_binding.shader_entries[i].shader);
+            shader_binding.shader = HandleCast<VulkanShader>(creation.shader_binding.shader_entries[i].shader);
             shader_binding.entryName = creation.shader_binding.shader_entries[i].entryName;
             frac.bind(&shader_binding);
         }

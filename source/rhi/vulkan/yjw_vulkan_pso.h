@@ -52,9 +52,9 @@ namespace vulkan
 
     struct PSOAttachmentBinding
     {
-        AttachmentBinding* color_attachments;
-        int color_attachments_count;
-        AttachmentBinding* depth_stencil_attachment;
+        std::vector<AttachmentBinding> color_attachments;
+        bool has_depth_stencil_attachment{};
+        AttachmentBinding depth_stencil_attachment;
     };
 
     struct PSODescriptorLayoutBinding
@@ -97,6 +97,7 @@ namespace vulkan
         std::vector<VkDescriptorSetLayout> descriptorSetLayouts;
         VkPipeline pso{};
         PSODescriptorLayoutBinding descriptorLayoutBinding;
+        int attachmentCount;
     };
 
 	class VulkanPSOCreation

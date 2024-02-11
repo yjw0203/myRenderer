@@ -15,10 +15,13 @@ namespace vulkan
 	class VulkanDescriptorSet
 	{
 	public:
-		static const VulkanResourceType TypeId = VulkanResourceType::texture;
+		static const VulkanResourceType TypeId = VulkanResourceType::descriptorSet;
 		typedef VulkanDescariptorSetCreation Creation;
+		VulkanPSOHandle psoHandle;
 		VkDescriptorPool descriptorPool;
 		std::vector<VkDescriptorSet> descriptorSets;
+		VkDescriptorSet getDescriptorSet(int index) { return descriptorSets[index]; }
+		VkDescriptorPool getDescriptorPool() { return descriptorPool; }
 	};
 
 	typedef ResourceHandle<VulkanDescriptorSet> VulkanDescriptorSetHandle;

@@ -85,8 +85,8 @@ namespace vulkan
 
     void VulkanPSOCreation::bind(PSOAttachmentBinding* bind)
     {
-        renderPass_attachments.resize(bind->color_attachments_count + (bind->depth_stencil_attachment != nullptr));
-        for (int index = 0; index < bind->color_attachments_count; index++)
+        renderPass_attachments.resize(bind->color_attachments.size() + (bind->has_depth_stencil_attachment));
+        for (int index = 0; index < bind->color_attachments.size(); index++)
         {
             renderPass_attachments[index].format = bind->color_attachments[index].format;
             renderPass_attachments[index].samples = VK_SAMPLE_COUNT_1_BIT;
@@ -98,9 +98,9 @@ namespace vulkan
             renderPass_attachments[index].finalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
         }
 
-        if (bind->depth_stencil_attachment)
+        if (bind->has_depth_stencil_attachment)
         {
-            renderPass_attachments.back().format = (*bind->depth_stencil_attachment).format;
+            renderPass_attachments.back().format = (bind->depth_stencil_attachment).format;
             renderPass_attachments.back().samples = VK_SAMPLE_COUNT_1_BIT;
             renderPass_attachments.back().loadOp = VK_ATTACHMENT_LOAD_OP_LOAD;
             renderPass_attachments.back().storeOp = VK_ATTACHMENT_STORE_OP_STORE;
@@ -110,22 +110,22 @@ namespace vulkan
             renderPass_attachments.back().finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
         }
 
-        renderPass_attachmentRefs.resize(bind->color_attachments_count + (bind->depth_stencil_attachment != nullptr));
-        for (int index = 0; index < bind->color_attachments_count; index++)
+        renderPass_attachmentRefs.resize(bind->color_attachments.size() + (bind->has_depth_stencil_attachment));
+        for (int index = 0; index < bind->color_attachments.size(); index++)
         {
             renderPass_attachmentRefs[index].attachment = index;
             renderPass_attachmentRefs[index].layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
         }
-        if (bind->depth_stencil_attachment)
+        if (bind->has_depth_stencil_attachment)
         {
             renderPass_attachmentRefs.back().attachment = (int)renderPass_attachmentRefs.size() - 1;
             renderPass_attachmentRefs.back().layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
         }
 
         renderPass_subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
-        renderPass_subpass.colorAttachmentCount = bind->color_attachments_count;
+        renderPass_subpass.colorAttachmentCount = bind->color_attachments.size();
         renderPass_subpass.pColorAttachments = renderPass_attachmentRefs.data();
-        if (bind->depth_stencil_attachment)
+        if (bind->has_depth_stencil_attachment)
         {
             renderPass_subpass.pDepthStencilAttachment = &renderPass_attachmentRefs.back();
         }
@@ -234,6 +234,8 @@ namespace vulkan
         }
 
         pso->descriptorLayoutBinding = creation.descriptorLayoutBinding;
+
+        pso->attachmentCount = creation.renderPass_create_info.attachmentCount;
 
         return pso;
     }

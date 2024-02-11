@@ -1,6 +1,7 @@
 #pragma once
 #include "rhi/new_rhi/yjw_rhi_resource.h"
 #include "vulkan/vulkan.h"
+#include "rhi/vulkan/resource/yjw_vulkan_descriptor.h"
 
 namespace vulkan
 {
@@ -11,6 +12,25 @@ namespace vulkan
         operator VkFormat();
     private:
         rhi::Format payload;
+    };
+
+    class DescriptorTypeAdaptor
+    {
+    public:
+        DescriptorTypeAdaptor(rhi::DescriptorType type) :payload(type) {}
+        operator VulkanDescriptorType();
+        operator VkDescriptorType();
+    private:
+        rhi::DescriptorType payload;
+    };
+
+    class ShaderTypeAdaptor
+    {
+    public:
+        ShaderTypeAdaptor(rhi::ShaderType type) :payload(type) {}
+        operator VkShaderStageFlags();
+    private:
+        rhi::ShaderType payload;
     };
 
     class ImageUsageFlagsAdptor
@@ -65,5 +85,14 @@ namespace vulkan
         operator VkFrontFace();
     private:
         rhi::FrontFace payload;
+    };
+
+    class ResouraceStateAdptor
+    {
+    public:
+        ResouraceStateAdptor(rhi::RHIResourceState state) :payload(state) {}
+        operator VkImageLayout();
+    private:
+        rhi::RHIResourceState payload;
     };
 }

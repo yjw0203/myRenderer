@@ -1,11 +1,16 @@
 #pragma once
+#include <vector>
 
 struct RHIHandle
 {
-	int ID;
-	long CreateTimeStamp;
-	void* Pool;
-	int TypeId;
+	int ID{};
+	long CreateTimeStamp{};
+	void* Pool{};
+	int TypeId{};
+	bool isNull()
+	{
+		return Pool == 0;
+	}
 };
 
 template<typename Type>

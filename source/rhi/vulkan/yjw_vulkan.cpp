@@ -8,6 +8,9 @@
 #include "command/yjw_vulkan_command_buffer.h"
 #include "rhi/vulkan/yjw_vulkan_resource_ruler.h"
 #include "rhi/vulkan/yjw_vulkan_descriptor_set.h"
+#include "rhi/vulkan/resource/yjw_vulkan_descriptor.h"
+#include "rhi/vulkan/adaptor/yjw_descriptor_adaptor.h"
+#include "rhi/vulkan/yjw_vulkan_attachment_set.h"
 
 namespace vulkan
 {
@@ -25,7 +28,7 @@ namespace vulkan
 
     void VulkanRHI::destoryResource(rhi::RHIResourceHandle resource)
     {
-        if (resource_type(resource) == VulkanResourceType::buffer)
+        if (get_resource_type(resource) == VulkanResourceType::buffer)
         {
             VK_G(BufferPool).deallocateBuffer(resource);
         }
@@ -67,15 +70,37 @@ namespace vulkan
         VK_G(CommandBufferPool).destoryCommandBuffer(handle);
     }
 
-    rhi::RHIDescriptorSetHandle createDescriptorSet(rhi::RHIPSOHandle pso)
+    rhi::RHIDescriptorSetHandle VulkanRHI::createDescriptorSet(rhi::RHIPSOHandle pso)
     {
         VulkanDescariptorSetCreation creation;
         creation.pso = pso;
         return VK_G(VulkanDescriptorSetPool).createDescriptorSet(creation);
     }
 
-    void destoryDescriptorSet(rhi::RHIDescriptorSetHandle descriptorSet)
+    void VulkanRHI::destoryDescriptorSet(rhi::RHIDescriptorSetHandle descriptorSet)
     {
         VK_G(VulkanDescriptorSetPool).destoryDescriptorSet(descriptorSet);
+    }
+
+    rhi::RHIDescriptorHandle VulkanRHI::createDescriptor(rhi::RHIDescriptorCreation creation)
+    {
+        VulkanDescriptorCreation vkcreation = VulkanDescriptorCreationAdaptor(creation);
+        return VK_G(VulkanDescriptorPool).create(vkcreation);
+    }
+
+    void VulkanRHI::destoryDescriptor(rhi::RHIDescriptorHandle descriptor)
+    {
+        VK_G(VulkanDescriptorPool).destory(descriptor);
+    }
+
+    rhi::RHIAttachmentSetHandle VulkanRHI::createAttachmentSet(rhi::RHIAttachmentSetCreation creation)
+    {
+        VulkanAttachmentSetCreationAdaptor vkcreation = VulkanAttachmentSetCreationAdaptor(creation);
+        return VK_G(VulkanAttachmentSetPool).createAttachmentSet(vkcreation);
+    }
+
+    void VulkanRHI::destoryAttachmentSet(rhi::RHIAttachmentSetHandle attachmentSetHandle)
+    {
+        VK_G(VulkanAttachmentSetPool).destoryAttachmentSet(attachmentSetHandle);
     }
 }

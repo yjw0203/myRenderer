@@ -3,4 +3,5 @@
 
 namespace rhi
 {
+	RHI* GpuDevice = new vulkan::VulkanRHI();
 }

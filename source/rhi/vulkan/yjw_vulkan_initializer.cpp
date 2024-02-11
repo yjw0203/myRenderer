@@ -340,6 +340,34 @@ namespace vulkan
         */
     }
 
+    void createDefaultSampler()
+    {
+        VkPhysicalDeviceProperties properties{};
+        vkGetPhysicalDeviceProperties(VK_G(VkPhysicalDevice), &properties);
+
+        VkSamplerCreateInfo samplerInfo{};
+        samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
+        samplerInfo.magFilter = VK_FILTER_LINEAR;
+        samplerInfo.minFilter = VK_FILTER_LINEAR;
+        samplerInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+        samplerInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+        samplerInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+        samplerInfo.anisotropyEnable = VK_FALSE;
+        samplerInfo.maxAnisotropy = properties.limits.maxSamplerAnisotropy;
+        samplerInfo.borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK;
+        samplerInfo.unnormalizedCoordinates = VK_FALSE;
+        samplerInfo.compareEnable = VK_FALSE;
+        samplerInfo.compareOp = VK_COMPARE_OP_ALWAYS;
+        samplerInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
+        samplerInfo.minLod = 0.0f;
+        samplerInfo.maxLod = 1.0f;
+        samplerInfo.mipLodBias = 0.0f;
+
+        if (vkCreateSampler(VK_G(VkDevice), &samplerInfo, nullptr, &VK_G(VulkanDefaultResource).DefaultSampler) != VK_SUCCESS) {
+            throw std::runtime_error("failed to create texture sampler!");
+        }
+    }
+
 	void VulkanRHI::init(rhi::InitConfig initConfig)
 	{
         VK_G(VkInitConfig) = initConfig;
@@ -350,6 +378,7 @@ namespace vulkan
         createPhysicalDevice();
         createLogicalDeviceAndQueues();
         createSwapchain();
+        createDefaultSampler();
 
         VK_G(CommandBufferPool).initialize();
 	}

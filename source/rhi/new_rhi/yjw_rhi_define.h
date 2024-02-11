@@ -97,6 +97,21 @@ namespace rhi
     enum class DescriptorType
     {
         uniform_buffer,
-        shader_resource_texture
+        shader_resource_texture,
+        depth_stencil,
+        render_target,
+        unordered_access
+    };
+
+    enum RHIResourceState
+    {
+        undefine,
+        render_target,
+        depth_stencil_write,
+        depth_stencil_read,
+        shader_resource_read,
+        transfer_src,
+        transfer_dst,
+        present_src
     };
 }

@@ -18,8 +18,9 @@ namespace vulkan
     VulkanBuffer* DefaultVulkanBufferAllocateStrategy::CreateFunc(const VulkanBufferCreation& creation)
     {
         VulkanBuffer* buffer = new VulkanBuffer();
-        VkBufferCreateInfo desc{};
+        buffer->size = creation.size;
 
+        VkBufferCreateInfo desc{};
         desc.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
         desc.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
         desc.pNext = nullptr;

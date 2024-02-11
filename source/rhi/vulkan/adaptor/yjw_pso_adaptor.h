@@ -6,7 +6,7 @@ namespace vulkan
     class PSOCreationAdaptor
     {
     public:
-        PSOCreationAdaptor(const rhi::PSOCreation& creation);
+        PSOCreationAdaptor(rhi::PSOCreation& creation);
         operator VulkanPSOCreation& () { return frac; }
     private:
         VulkanPSOCreation frac;

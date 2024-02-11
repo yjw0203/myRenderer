@@ -7,6 +7,8 @@
 namespace vulkan
 {
 
+	void transitionImageLayout(VkCommandBuffer& commandBuffer, VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout);
+
 	struct VulkanTextureCreation
 	{
 		VkImageType type;
@@ -29,6 +31,7 @@ namespace vulkan
 		operator VkDeviceMemory&() { return memory; }
 		VkImage texture{};
 		VkDeviceMemory memory{};
+		VulkanTextureCreation creation{};
 	};
 	typedef ResourceHandle<VulkanTexture> VulkanTextureHandle;
 

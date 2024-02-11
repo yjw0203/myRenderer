@@ -10,7 +10,6 @@ namespace rhi
     {
         ShaderType shaderStage;
         int setId;
-        int bindId;
         int slotId;
         DescriptorType descriptorType;
     };

@@ -31,6 +31,11 @@ namespace vulkan
 		}
 	};
 
+	struct VulkanDefaultResource
+	{
+		VkSampler DefaultSampler;
+	};
+
 
 #define EXTERN_GLOBAL_REF(T) template T& GetGlobalRef<T>();
 #define VK_G(T) GetGlobalRef<T>()
@@ -45,5 +50,6 @@ namespace vulkan
 	EXTERN_GLOBAL_REF(VkPresentQueue);
 	EXTERN_GLOBAL_REF(SwapChainInfo);
 	EXTERN_GLOBAL_REF(VkSwapchainKHR);
+	EXTERN_GLOBAL_REF(VulkanDefaultResource);
 
 }

@@ -20,6 +20,40 @@ namespace vulkan
         assert(0);
     }
 
+    DescriptorTypeAdaptor::operator VulkanDescriptorType()
+    {
+        switch (payload)
+        {
+        case rhi::DescriptorType::uniform_buffer: return VulkanDescriptorType::uniform_buffer;
+        case rhi::DescriptorType::shader_resource_texture: return VulkanDescriptorType::shader_resource_texture;
+        case rhi::DescriptorType::depth_stencil: return VulkanDescriptorType::depth_stencil;
+        case rhi::DescriptorType::render_target: return VulkanDescriptorType::render_target;
+        case rhi::DescriptorType::unordered_access: return VulkanDescriptorType::unordered_access;
+        }
+        assert(0);
+    }
+
+    DescriptorTypeAdaptor::operator VkDescriptorType()
+    {
+        switch (payload)
+        {
+        case rhi::DescriptorType::uniform_buffer: return VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+        case rhi::DescriptorType::shader_resource_texture: return VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+        }
+        assert(0);
+    }
+
+    ShaderTypeAdaptor::operator VkShaderStageFlags()
+    {
+        switch (payload)
+        {
+        case rhi::ShaderType::vertex_shader: return VK_SHADER_STAGE_VERTEX_BIT;
+        case rhi::ShaderType::pixel_shader: return VK_SHADER_STAGE_FRAGMENT_BIT;
+        case rhi::ShaderType::compute_shader: return VK_SHADER_STAGE_COMPUTE_BIT;
+        }
+        assert(0);
+    }
+
     ImageUsageFlagsAdptor::operator VkImageUsageFlags()
     {
         VkImageUsageFlags flag = 0;
@@ -131,6 +165,22 @@ namespace vulkan
         {
         case rhi::FrontFace::counter_clockwise: return VK_FRONT_FACE_COUNTER_CLOCKWISE;
         case rhi::FrontFace::clockwise: return VK_FRONT_FACE_CLOCKWISE;
+        }
+        assert(0);
+    }
+
+    ResouraceStateAdptor::operator VkImageLayout()
+    {
+        switch (payload)
+        {
+        case rhi::RHIResourceState::undefine: return VK_IMAGE_LAYOUT_UNDEFINED;
+        case rhi::RHIResourceState::render_target: return VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+        case rhi::RHIResourceState::depth_stencil_write: return VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+        case rhi::RHIResourceState::depth_stencil_read: return VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL;
+        case rhi::RHIResourceState::shader_resource_read: return VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+        case rhi::RHIResourceState::transfer_src: return VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
+        case rhi::RHIResourceState::transfer_dst: return VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
+        case rhi::RHIResourceState::present_src: return VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
         }
         assert(0);
     }
