@@ -92,7 +92,9 @@ namespace vulkan
     {
     public:
         ResouraceStateAdptor(rhi::RHIResourceState state) :payload(state) {}
+        ResouraceStateAdptor(VkImageLayout state);
         operator VkImageLayout();
+        operator rhi::RHIResourceState() { return payload; };
     private:
         rhi::RHIResourceState payload;
     };

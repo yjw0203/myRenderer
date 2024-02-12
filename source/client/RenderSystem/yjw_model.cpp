@@ -46,7 +46,7 @@ namespace yjw
             model->materials[i] = std::make_shared<Material>();
             model->mesh->subMeshes.push_back(Mesh::SubMesh{ currentOffset ,(uint32_t)pmxModel.m_materials[i].m_numFaceVertices });
             std::string texPath8 = filePath + "/" + pmxModel.m_textures[pmxModel.m_materials[i].m_textureIndex].m_textureName;
-            model->materials[i]->texture = rpi::RPICreateDefaultTexture2D(1, 1, rpi::RPIFormat::R8G8B8A8_srgb);//new rhi::RHITexture2DFromFile(texPath8.c_str());
+            model->materials[i]->texture = rpi::RPICreateTexture2DFromFile(texPath8.c_str());
             model->materials[i]->textureShaderResource = rpi::RPICreateDescriptor(model->materials[i]->texture, rpi::RPIDescriptorType::shader_resource_texture, rpi::RPIFormat::R8G8B8A8_srgb);
             model->materials[i]->diffuse = pmxModel.m_materials[i].m_diffuse;
             model->materials[i]->specular = pmxModel.m_materials[i].m_specular;

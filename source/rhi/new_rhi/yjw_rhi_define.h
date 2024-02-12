@@ -54,18 +54,6 @@ namespace rhi
         readback = 3,
     };
 
-    enum class ResourceState : char
-    {
-        undefine,
-        render_target,
-        depth_stencil_write,
-        depth_stencil_read,
-        shader_resource_read,
-        transfer_src,
-        transfer_dst,
-        present_src
-    };
-
     enum class PolygonMode
     {
         fill,
@@ -106,6 +94,7 @@ namespace rhi
     enum RHIResourceState
     {
         undefine,
+        common,
         render_target,
         depth_stencil_write,
         depth_stencil_read,

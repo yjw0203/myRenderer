@@ -56,7 +56,7 @@ namespace yjw
         this->in_diffuse = RPICreateDescriptor(in_diffuse, RPIDescriptorType::shader_resource_texture, RPIFormat::R32G32B32A32_sfloat);
         this->in_specular = RPICreateDescriptor(in_specular, RPIDescriptorType::shader_resource_texture, RPIFormat::R32G32B32A32_sfloat);
         this->in_ambient = RPICreateDescriptor(in_ambient, RPIDescriptorType::shader_resource_texture, RPIFormat::R32G32B32A32_sfloat);
-        this->in_depth = RPICreateDescriptor(in_ambient, RPIDescriptorType::shader_resource_texture, RPIFormat::D24_unorm_S8_uint);
+        this->in_depth = RPICreateDescriptor(in_depth, RPIDescriptorType::shader_resource_texture, RPIFormat::D24_unorm_S8_uint);
         this->out_color = RPICreateDescriptor(out_color, RPIDescriptorType::render_target, RPIFormat::R8G8B8A8_unorm);
         RPIAttachmentSetCreator attachmentSetCreator(pipeline);
         attachmentSetCreator.setColorAttachment(0, this->out_color);

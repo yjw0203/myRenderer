@@ -32,6 +32,7 @@ namespace vulkan
 		VkImage texture{};
 		VkDeviceMemory memory{};
 		VulkanTextureCreation creation{};
+		VkImageLayout currentState{};
 	};
 	typedef ResourceHandle<VulkanTexture> VulkanTextureHandle;
 

@@ -180,11 +180,29 @@ namespace vulkan
         assert(0);
     }
 
+    ResouraceStateAdptor::ResouraceStateAdptor(VkImageLayout state)
+    {
+        switch (state)
+        {
+        case VK_IMAGE_LAYOUT_UNDEFINED: payload = rhi::RHIResourceState::undefine; return;
+        case VK_IMAGE_LAYOUT_GENERAL: payload = rhi::RHIResourceState::common; return;
+        case VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL: payload = rhi::RHIResourceState::render_target; return;
+        case VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL: payload = rhi::RHIResourceState::depth_stencil_write; return;
+        case VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL: payload = rhi::RHIResourceState::depth_stencil_read; return;
+        case VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL: payload = rhi::RHIResourceState::shader_resource_read; return;
+        case VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL: payload = rhi::RHIResourceState::transfer_src; return;
+        case VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL: payload = rhi::RHIResourceState::transfer_dst; return;
+        case VK_IMAGE_LAYOUT_PRESENT_SRC_KHR: payload = rhi::RHIResourceState::present_src; return;
+        }
+        assert(0);
+    }
+
     ResouraceStateAdptor::operator VkImageLayout()
     {
         switch (payload)
         {
         case rhi::RHIResourceState::undefine: return VK_IMAGE_LAYOUT_UNDEFINED;
+        case rhi::RHIResourceState::common: return VK_IMAGE_LAYOUT_GENERAL;
         case rhi::RHIResourceState::render_target: return VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
         case rhi::RHIResourceState::depth_stencil_write: return VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
         case rhi::RHIResourceState::depth_stencil_read: return VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL;

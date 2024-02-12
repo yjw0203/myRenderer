@@ -1,5 +1,6 @@
 #include "yjw_rpi.h"
-
+#define STB_IMAGE_IMPLEMENTATION
+#include <stb_image.h>
 namespace rpi
 {
 	void RPIInit(int width, int height, void* window)
@@ -87,9 +88,34 @@ namespace rpi
 		creation.memoryType = rhi::MemoryType::default_;
 		return rhi::GpuDevice->createResource(creation);
 	}
+	RPITexture RPICreateTexture2DFromFile(const char* filePath)
+	{
+		int texWidth, texHeight, texChannels;
+		stbi_uc* pixels = stbi_load(filePath, &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
+		rhi::RHIResourceCreation creation{};
+		creation.type = rhi::ResourceType::texture2D;
+		creation.width = texWidth;
+		creation.height = texHeight;
+		creation.depthOrArraySize = 1;
+		creation.miplevels = 1;
+		creation.format = rhi::Format::R8G8B8A8_srgb;
+		creation.usage = (int)rhi::ResourceUsageBits::allow_transfer_dst;
+		creation.memoryType = rhi::MemoryType::default_;
+		RPITexture texture = rhi::GpuDevice->createResource(creation);
+
+		int imageSize = texWidth * texHeight * 4;
+		rhi::GpuDevice->updateResource(texture, pixels, 0, imageSize);
+		rhi::GpuDevice->writeResourceBarrierImmediately(texture, rhi::GpuDevice->getResourceState(texture), rhi::RHIResourceState::shader_resource_read);
+		stbi_image_free(pixels);
+		return texture;
+	}
 	void RPIDestoryResource(RPIResource resource)
 	{
 		rhi::GpuDevice->destoryResource(resource);
+	}
+	RPIResourceState RPIGetResourceState(RPIResource resource)
+	{
+		return rhi::GpuDevice->getResourceState(resource);
 	}
 	RPIShader RPICreateShader(const char* name)
 	{
@@ -138,13 +164,17 @@ namespace rpi
 	{
 		rhi::GpuDevice->resetCommandBuffer(commandBuffer);
 	}
+	void RPIPresent()
+	{
+		rhi::GpuDevice->present();
+	}
 	void RPICmdCopyToSwapchainBackTexture(RPICommandBuffer commandBuffer, RPITexture texture)
 	{
 		rhi::GpuDevice->cmdCopyToSwapchainBackTexture(commandBuffer, texture);
 	}
-	void RPIPresent()
+	void RPICmdResourceBarrier(RPICommandBuffer commandBuffer, RPIResource texture, RPIResourceState beforeState, RPIResourceState afterState)
 	{
-		rhi::GpuDevice->present();
+		rhi::GpuDevice->cmdResourceBarrier(commandBuffer, texture, beforeState, afterState);
 	}
 	void RPIUpdateResource(RPIResource resource, void* data,int offset, int size)
 	{

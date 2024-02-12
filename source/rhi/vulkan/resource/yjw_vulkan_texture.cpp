@@ -1,5 +1,5 @@
 #include "yjw_vulkan_texture.h"
-
+#include "rhi/vulkan/command/yjw_vulkan_command_buffer.h"
 namespace vulkan
 {
     void transitionImageLayout(VkCommandBuffer& commandBuffer, VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout)
@@ -72,6 +72,7 @@ namespace vulkan
     {
         VulkanTexture* texture = new VulkanTexture();
         texture->creation = creation;
+        texture->currentState = VK_IMAGE_LAYOUT_GENERAL;
 
         VkImageCreateInfo desc{};
         desc.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
@@ -83,11 +84,11 @@ namespace vulkan
         desc.arrayLayers = creation.arrayLayers;
         desc.format = creation.format;
         desc.tiling = VK_IMAGE_TILING_OPTIMAL;
-        desc.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
         desc.usage = creation.usage;
         desc.samples = VK_SAMPLE_COUNT_1_BIT;
         desc.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
         desc.queueFamilyIndexCount = 0;
+        desc.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
 
         vkCreateImage(VK_G(VkDevice), &desc, nullptr, &texture->texture);
 
@@ -102,6 +103,11 @@ namespace vulkan
         vkAllocateMemory(VK_G(VkDevice), &allocInfo, nullptr, &texture->memory);
 
         vkBindImageMemory(VK_G(VkDevice), texture->texture, texture->memory, 0);
+
+        OneTimeCommandBuffer commandBuffer = VK_G(CommandBufferPool).beginImmdiatelyCommandBuffer();
+        transitionImageLayout(commandBuffer.commandBuffer, *texture, texture->creation.format, VK_IMAGE_LAYOUT_UNDEFINED, texture->currentState);
+        VK_G(CommandBufferPool).endImmdiatelyCommandBuffer(commandBuffer);
+
         return texture;
     }
     

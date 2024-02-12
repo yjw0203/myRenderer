@@ -11,7 +11,10 @@ namespace rpi
 	RPITexture RPICreateDefaultTexture2D(int width, int height, RPIFormat format,int mipLevels = 1);
 	RPITexture RPICreateDepthStencilTexture2D(int width, int height, RPIFormat format);
 	RPITexture RPICreateUploadTexture2D(int width, int height, RPIFormat format);
+	RPITexture RPICreateTexture2DFromFile(const char* filePath);
 	void RPIDestoryResource(RPIResource resource);
+
+	RPIResourceState RPIGetResourceState(RPIResource resource);
 
 	RPIShader RPICreateShader(const char* name);
 	void RPIDestoryShader(RPIShader shader);
@@ -27,8 +30,9 @@ namespace rpi
 	void RPIDestoryCommandBuffer(RPICommandBuffer commandBuffer);
 	void RPISubmitCommandBuffer(RPICommandBuffer commandBuffer);
 	void RPIResetCommandBuffer(RPICommandBuffer commandBuffer);
-	void RPICmdCopyToSwapchainBackTexture(RPICommandBuffer commandBuffer, RPITexture texture);
 	void RPIPresent();
+	void RPICmdCopyToSwapchainBackTexture(RPICommandBuffer commandBuffer, RPITexture texture);
+	void RPICmdResourceBarrier(RPICommandBuffer commandBuffer, RPIResource texture, RPIResourceState beforeState, RPIResourceState afterState);
 
 	//update
 	void RPIUpdateResource(RPIResource resource, void* data,int offset, int size);

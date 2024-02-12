@@ -16,5 +16,5 @@ namespace rpi
 	typedef rhi::Format RPIFormat;
 	typedef rhi::DescriptorType RPIDescriptorType;
 	typedef rhi::ShaderType RPIShaderType;
-	typedef rhi::ResourceState RPIResourceState;
+	typedef rhi::RHIResourceState RPIResourceState;
 }

@@ -55,11 +55,11 @@ namespace yjw
         initialResourceState[depth] = RPIResourceState::depth_stencil_write;
 
         this->out_abeldo = RPICreateDescriptor(out_abedlo, RPIDescriptorType::render_target, RPIFormat::R8G8B8A8_snorm);
-        this->out_normal = RPICreateDescriptor(out_abedlo, RPIDescriptorType::render_target, RPIFormat::R8G8B8A8_snorm);
-        this->out_diffuse = RPICreateDescriptor(out_abedlo, RPIDescriptorType::render_target, RPIFormat::R32G32B32A32_sfloat);
-        this->out_specular = RPICreateDescriptor(out_abedlo, RPIDescriptorType::render_target, RPIFormat::R32G32B32A32_sfloat);
-        this->out_ambient = RPICreateDescriptor(out_abedlo, RPIDescriptorType::render_target, RPIFormat::R32G32B32A32_sfloat);
-        this->out_depth = RPICreateDescriptor(out_abedlo, RPIDescriptorType::depth_stencil, RPIFormat::D24_unorm_S8_uint);
+        this->out_normal = RPICreateDescriptor(out_normal, RPIDescriptorType::render_target, RPIFormat::R8G8B8A8_snorm);
+        this->out_diffuse = RPICreateDescriptor(out_diffuse, RPIDescriptorType::render_target, RPIFormat::R32G32B32A32_sfloat);
+        this->out_specular = RPICreateDescriptor(out_specular, RPIDescriptorType::render_target, RPIFormat::R32G32B32A32_sfloat);
+        this->out_ambient = RPICreateDescriptor(out_ambient, RPIDescriptorType::render_target, RPIFormat::R32G32B32A32_sfloat);
+        this->out_depth = RPICreateDescriptor(depth, RPIDescriptorType::depth_stencil, RPIFormat::D24_unorm_S8_uint);
 
         RPIAttachmentSetCreator attachmentCreator(pipeline);
         attachmentCreator.setColorAttachment(0, this->out_abeldo);

@@ -11,6 +11,7 @@
 #include "rhi/vulkan/resource/yjw_vulkan_descriptor.h"
 #include "rhi/vulkan/adaptor/yjw_descriptor_adaptor.h"
 #include "rhi/vulkan/yjw_vulkan_attachment_set.h"
+#include "rhi/vulkan/adaptor/yjw_property_adaptor.h"
 #include <stdexcept>
 
 namespace vulkan
@@ -39,6 +40,16 @@ namespace vulkan
         {
             VK_G(TexturePool).destroyTexture(resource);
         }
+    }
+
+    rhi::RHIResourceState VulkanRHI::getResourceState(rhi::RHIResourceHandle resource)
+    {
+        if (get_resource_type(resource) == VulkanResourceType::texture)
+        {
+            VulkanTexture* texture = HandleCast<VulkanTexture>(resource);
+            return ResouraceStateAdptor(texture->currentState);
+        }
+        return rhi::RHIResourceState::undefine;
     }
 
     rhi::RHIPSOHandle VulkanRHI::createPSO(rhi::PSOCreation& creation)

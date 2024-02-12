@@ -16,6 +16,7 @@ namespace rhi
 		virtual void init(InitConfig initConfig) = 0;
 		virtual RHIResourceHandle createResource(const RHIResourceCreation& creation) = 0;
 		virtual void destoryResource(RHIResourceHandle resource) = 0;
+		virtual RHIResourceState getResourceState(RHIResourceHandle resource) = 0;
 		virtual RHIPSOHandle createPSO(PSOCreation& creation) = 0;
 		virtual void destoryPSO(RHIPSOHandle pso) = 0;
 		virtual RHIShaderHandle createShader(RHIShaderCreation& creation) = 0;
@@ -32,6 +33,7 @@ namespace rhi
 		//update
 		virtual void writeDescriptorSet(RHIDescriptorSetHandle descriptorSet, DescriptorWrite* write, int count) = 0;
 		virtual void updateResource(RHIResourceHandle resourceHandle, void* data, int offset, int size) = 0;
+		virtual void writeResourceBarrierImmediately(RHIResourceHandle resourceHandle, RHIResourceState beforeState, RHIResourceState afterState) = 0;
 
 		//cmd
 		virtual void cmdBeginPass(RHICommandBufferHandle commandBufferHandle,RHIPSOHandle psoHandle, RHIAttachmentSetHandle attachmentSetHandle) = 0;

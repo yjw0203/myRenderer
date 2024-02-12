@@ -15,6 +15,7 @@ namespace vulkan
 			cullMode = VK_CULL_MODE_FRONT_BIT;
 			frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE;
 			depthBiasEnable = VK_FALSE;
+			depthBiasClamp = 0.0;
 			flags = 0;
 			pNext = nullptr;
 		}

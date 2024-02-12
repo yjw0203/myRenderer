@@ -9,6 +9,7 @@ namespace vulkan
 		virtual void init(rhi::InitConfig initConfig) override;
 		virtual rhi::RHIResourceHandle createResource(const rhi::RHIResourceCreation& creation) override;
 		virtual void destoryResource(rhi::RHIResourceHandle resource) override;
+		virtual rhi::RHIResourceState getResourceState(rhi::RHIResourceHandle resource) override;
 		virtual rhi::RHIPSOHandle createPSO(rhi::PSOCreation& creation) override;
 		virtual void destoryPSO(rhi::RHIPSOHandle pso) override;
 		virtual rhi::RHIShaderHandle createShader(rhi::RHIShaderCreation& creation) override;
@@ -25,6 +26,7 @@ namespace vulkan
 		//update
 		virtual void writeDescriptorSet(rhi::RHIDescriptorSetHandle descriptorSet, rhi::DescriptorWrite* writes, int count) override;
 		virtual void updateResource(rhi::RHIResourceHandle resourceHandle, void* data, int offset, int size) override;
+		virtual void writeResourceBarrierImmediately(rhi::RHIResourceHandle resourceHandle, rhi::RHIResourceState beforeState, rhi::RHIResourceState afterState) override;
 
 		//cmd
 		virtual void cmdBeginPass(rhi::RHICommandBufferHandle commandBufferHandle, rhi::RHIPSOHandle psoHandle, rhi::RHIAttachmentSetHandle attachmentSetHandle) override;

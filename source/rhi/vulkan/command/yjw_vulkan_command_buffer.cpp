@@ -73,6 +73,7 @@ namespace vulkan
         int index = currentUseOneTimeCommandBufferIndex;
         VkCommandBuffer commandBuffer;
         vkWaitForFences(VK_G(VkDevice), 1, &oneTimeCommandBufferFences[index], VK_TRUE, UINT64_MAX);
+        vkResetFences(VK_G(VkDevice), 1, &oneTimeCommandBufferFences[index]);
         commandBuffer = oneTimeCommandBuffers[index];
         vkResetCommandBuffer(commandBuffer, VK_COMMAND_BUFFER_RESET_RELEASE_RESOURCES_BIT);
 
@@ -95,6 +96,7 @@ namespace vulkan
         submitInfo.pCommandBuffers = &commandBuffer.commandBuffer;
 
         vkQueueSubmit(VK_G(VkGraphicsQueue), 1, &submitInfo, oneTimeCommandBufferFences[commandBuffer.index]);
+        vkQueueWaitIdle(VK_G(VkGraphicsQueue));
     }
 
 }

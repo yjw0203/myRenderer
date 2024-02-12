@@ -69,8 +69,13 @@ namespace vulkan
         vertexLayout_bindings.resize(binding_count);
         for (int iter = 0; iter < binding_count; iter++)
         {
+            int stride = 0;
+            for (VertexLocation& location : bind->locations[iter])
+            {
+                stride += formatToSize(location.format);
+            }
             vertexLayout_bindings[iter].binding = iter;
-            vertexLayout_bindings[iter].stride = 0;
+            vertexLayout_bindings[iter].stride = stride;
             vertexLayout_bindings[iter].inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
             location_count += bind->locations[iter].size();
         }

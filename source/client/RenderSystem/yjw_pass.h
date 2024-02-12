@@ -11,7 +11,7 @@ namespace yjw
         virtual void setupData() = 0;
         virtual void recordCommand(RPICommandBuffer commandBuffer) = 0;
         virtual void submit() = 0;
-        virtual void setResourceBarrier();
+        virtual void setResourceBarrier(RPICommandBuffer commandBuffer);
     protected:
         std::map<RPIResource, RPIResourceState> initialResourceState;
     };

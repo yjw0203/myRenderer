@@ -22,7 +22,7 @@ namespace vulkan
 		renderPassInfo.framebuffer = attachmentSet->frameBuffer;
 		renderPassInfo.renderArea.offset = { 0, 0 };
 		renderPassInfo.renderArea.extent = VK_G(SwapChainInfo).swapchainExtent;
-
+		renderPassInfo.clearValueCount = 0;
 		renderPassInfo.pClearValues = nullptr;
 
 		vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pso->pso);

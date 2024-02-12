@@ -64,13 +64,13 @@ namespace yjw
 
         for (auto& texture : texture_map)
         {
-            //IRHI::Get()->resourceBarrier(texture.second.resource_handle.get(), texture.second.resource_handle->state, RHIResourceState::transfer_dst);
+            //RPICmdResourceBarrier(commandBuffer, texture.second.resource_handle, RPIGetResourceState(texture.second.resource_handle), RHIResourceState::transfer_dst);
             ///IRHI::Get()->clearImageResource(texture.second.resource_handle.get());
         }
 
         for (auto pass : passes)
         {
-            pass->setResourceBarrier();
+            pass->setResourceBarrier(commandBuffer);
             pass->recordCommand(commandBuffer);
         }
     }
