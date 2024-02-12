@@ -2,7 +2,17 @@
 
 namespace rpi
 {
-	RPIResource createGpuVertexBuffer(int size)
+	void RPIInit(int width, int height, void* window)
+	{
+		rhi::InitConfig initConfig{};
+		initConfig.debug_mode = false;
+		initConfig.width = width;
+		initConfig.height = height;
+		initConfig.window = window;
+		rhi::GpuDevice->init(initConfig);
+	}
+
+	RPIBuffer RPICreateGpuVertexBuffer(int size)
 	{
 		rhi::RHIResourceCreation creation{};
 		creation.type = rhi::ResourceType::buffer;
@@ -11,7 +21,7 @@ namespace rpi
 		creation.memoryType = rhi::MemoryType::default_;
 		return rhi::GpuDevice->createResource(creation);
 	}
-	RPIResource createGpuIndexBuffer(int size)
+	RPIBuffer RPICreateGpuIndexBuffer(int size)
 	{
 		rhi::RHIResourceCreation creation{};
 		creation.type = rhi::ResourceType::buffer;
@@ -20,7 +30,7 @@ namespace rpi
 		creation.memoryType = rhi::MemoryType::default_;
 		return rhi::GpuDevice->createResource(creation);
 	}
-	RPIResource createGpuIndirectBuffer(int size)
+	RPIBuffer RPICreateGpuIndirectBuffer(int size)
 	{
 		rhi::RHIResourceCreation creation{};
 		creation.type = rhi::ResourceType::buffer;
@@ -29,7 +39,7 @@ namespace rpi
 		creation.memoryType = rhi::MemoryType::default_;
 		return rhi::GpuDevice->createResource(creation);
 	}
-	RPIResource createUploadBuffer(int size)
+	RPIBuffer RPICreateUploadBuffer(int size)
 	{
 		rhi::RHIResourceCreation creation{};
 		creation.type = rhi::ResourceType::buffer;
@@ -38,7 +48,7 @@ namespace rpi
 		creation.memoryType = rhi::MemoryType::upload;
 		return rhi::GpuDevice->createResource(creation);
 	}
-	RPIResource createDefaultTexture2D(int width, int height, RPIFormat format, int mipLevels /* = 1*/)
+	RPITexture RPICreateDefaultTexture2D(int width, int height, RPIFormat format, int mipLevels /* = 1*/)
 	{
 		rhi::RHIResourceCreation creation{};
 		creation.type = rhi::ResourceType::texture2D;
@@ -51,7 +61,7 @@ namespace rpi
 		creation.memoryType = rhi::MemoryType::default_;
 		return rhi::GpuDevice->createResource(creation);
 	}
-	RPIResource createDepthStencilTexture2D(int width, int height, RPIFormat format)
+	RPITexture RPICreateDepthStencilTexture2D(int width, int height, RPIFormat format)
 	{
 		rhi::RHIResourceCreation creation{};
 		creation.type = rhi::ResourceType::texture2D;
@@ -64,7 +74,7 @@ namespace rpi
 		creation.memoryType = rhi::MemoryType::default_;
 		return rhi::GpuDevice->createResource(creation);
 	}
-	RPIResource createUploadTexture2D(int width, int height, RPIFormat format)
+	RPITexture RPICreateUploadTexture2D(int width, int height, RPIFormat format)
 	{
 		rhi::RHIResourceCreation creation{};
 		creation.type = rhi::ResourceType::texture2D;
@@ -77,21 +87,21 @@ namespace rpi
 		creation.memoryType = rhi::MemoryType::default_;
 		return rhi::GpuDevice->createResource(creation);
 	}
-	void destoryResource(RPIResource resource)
+	void RPIDestoryResource(RPIResource resource)
 	{
 		rhi::GpuDevice->destoryResource(resource);
 	}
-	RPIShader createShader(const char* name)
+	RPIShader RPICreateShader(const char* name)
 	{
 		rhi::RHIShaderCreation creation{};
 		creation.name = std::string(name);
 		return rhi::GpuDevice->createShader(creation);
 	}
-	void destoryShader(RPIShader shader)
+	void RPIDestoryShader(RPIShader shader)
 	{
 		rhi::GpuDevice->destoryShader(shader);
 	}
-	RPIDescriptor createDescriptor(RPIResource resource, RPIDescriptorType descriptorType, RPIFormat format)
+	RPIDescriptor RPICreateDescriptor(RPIResource resource, RPIDescriptorType descriptorType, RPIFormat format)
 	{
 		rhi::RHIDescriptorCreation creation{};
 		creation.type = descriptorType;
@@ -99,16 +109,45 @@ namespace rpi
 		creation.format = format;
 		return rhi::GpuDevice->createDescriptor(creation);
 	}
-	void destoryDescriptor(RPIDescriptor descriptor)
+	void RPIDestoryDescriptor(RPIDescriptor descriptor)
 	{
 		rhi::GpuDevice->destoryDescriptor(descriptor);
 	}
-	RPIDescriptorSet createDescriptorSet(RPIPipeline pipeline)
+	RPIDescriptorSet RPICreateDescriptorSet(RPIPipeline pipeline)
 	{
 		return rhi::GpuDevice->createDescriptorSet(pipeline);
 	}
-	void destoryDescriptorSet(RPIDescriptorSet descriptorSet)
+	void RPIDestoryDescriptorSet(RPIDescriptorSet descriptorSet)
 	{
 		rhi::GpuDevice->destoryDescriptorSet(descriptorSet);
+	}
+	RPICommandBuffer RPICreateCommandBuffer()
+	{
+		rhi::RHICommandBufferCreation creation{};
+		return rhi::GpuDevice->createCommandBuffer(creation);
+	}
+	void RPIDestoryCommandBuffer(RPICommandBuffer commandBuffer)
+	{
+		rhi::GpuDevice->destoryCommandBuffer(commandBuffer);
+	}
+	void RPISubmitCommandBuffer(RPICommandBuffer commandBuffer)
+	{
+		rhi::GpuDevice->submitCommandBuffer(commandBuffer);
+	}
+	void RPIResetCommandBuffer(RPICommandBuffer commandBuffer)
+	{
+		rhi::GpuDevice->resetCommandBuffer(commandBuffer);
+	}
+	void RPICmdCopyToSwapchainBackTexture(RPICommandBuffer commandBuffer, RPITexture texture)
+	{
+		rhi::GpuDevice->cmdCopyToSwapchainBackTexture(commandBuffer, texture);
+	}
+	void RPIPresent()
+	{
+		rhi::GpuDevice->present();
+	}
+	void RPIUpdateResource(RPIResource resource, void* data,int offset, int size)
+	{
+		rhi::GpuDevice->updateResource(resource, data, offset, size);
 	}
 }

@@ -3,6 +3,23 @@
 #include <stdexcept>
 namespace vulkan
 {
+    int PSODescriptorLayoutBinding::queryCount(VkDescriptorType type)
+    {
+        int count = 0;
+        for (std::vector<DescriptorSetLayoutBinding>& Bindings : bindings)
+        {
+            for (DescriptorSetLayoutBinding& Binding : Bindings)
+            {
+                if (Binding.type == type)
+                {
+                    count++;
+                }
+            }
+        }
+        return count;
+    }
+
+
     int formatToSize(VkFormat format)
     {
         return 0;

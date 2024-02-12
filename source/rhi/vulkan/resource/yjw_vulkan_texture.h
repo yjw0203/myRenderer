@@ -44,7 +44,7 @@ namespace vulkan
 	class TexturePool
 	{
 	public:
-		VulkanTextureHandle createTexture(const VulkanTextureCreation& initConfig);
+		VulkanTextureHandle createTexture(VulkanTextureCreation& initConfig);
 		void destroyTexture(VulkanTextureHandle handle);
 
 	private:

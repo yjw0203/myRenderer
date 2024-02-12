@@ -62,22 +62,7 @@ namespace vulkan
         std::vector<std::vector<DescriptorSetLayoutBinding>> bindings;
         int queryCount(VkDescriptorType type);
     };
-    int PSODescriptorLayoutBinding::queryCount(VkDescriptorType type)
-    {
-        int count = 0;
-        for (std::vector<DescriptorSetLayoutBinding>& Bindings : bindings)
-        {
-            for (DescriptorSetLayoutBinding& Binding : Bindings)
-            {
-                if (Binding.type == type)
-                {
-                    count++;
-                }
-            }
-        }
-        return count;
-    }
-
+    
     class ShaderCreateInfo
     {
     public:

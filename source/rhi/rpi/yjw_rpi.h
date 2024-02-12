@@ -3,21 +3,33 @@
 
 namespace rpi
 {
-	RPIResource createGpuVertexBuffer(int size);
-	RPIResource createGpuIndexBuffer(int size);
-	RPIResource createGpuIndirectBuffer(int size);
-	RPIResource createUploadBuffer(int size);
-	RPIResource createDefaultTexture2D(int width, int height, RPIFormat format,int mipLevels = 1);
-	RPIResource createDepthStencilTexture2D(int width, int height, RPIFormat format);
-	RPIResource createUploadTexture2D(int width, int height, RPIFormat format);
-	void destoryResource(RPIResource resource);
+	void RPIInit(int width, int height, void* window);
+	RPIBuffer RPICreateGpuVertexBuffer(int size);
+	RPIBuffer RPICreateGpuIndexBuffer(int size);
+	RPIBuffer RPICreateGpuIndirectBuffer(int size);
+	RPIBuffer RPICreateUploadBuffer(int size);
+	RPITexture RPICreateDefaultTexture2D(int width, int height, RPIFormat format,int mipLevels = 1);
+	RPITexture RPICreateDepthStencilTexture2D(int width, int height, RPIFormat format);
+	RPITexture RPICreateUploadTexture2D(int width, int height, RPIFormat format);
+	void RPIDestoryResource(RPIResource resource);
 
-	RPIShader createShader(const char* name);
-	void destoryShader(RPIShader shader);
+	RPIShader RPICreateShader(const char* name);
+	void RPIDestoryShader(RPIShader shader);
 
-	RPIDescriptor createDescriptor(RPIResource resource, RPIDescriptorType descriptorType, RPIFormat format);
-	void destoryDescriptor(RPIDescriptor descriptor);
+	RPIDescriptor RPICreateDescriptor(RPIResource resource, RPIDescriptorType descriptorType, RPIFormat format);
+	void RPIDestoryDescriptor(RPIDescriptor descriptor);
 
-	RPIDescriptorSet createDescriptorSet(RPIPipeline pipeline);
-	void destoryDescriptorSet(RPIDescriptorSet descriptorSet);
+	RPIDescriptorSet RPICreateDescriptorSet(RPIPipeline pipeline);
+	void RPIDestoryDescriptorSet(RPIDescriptorSet descriptorSet);
+
+	//cmd
+	RPICommandBuffer RPICreateCommandBuffer();
+	void RPIDestoryCommandBuffer(RPICommandBuffer commandBuffer);
+	void RPISubmitCommandBuffer(RPICommandBuffer commandBuffer);
+	void RPIResetCommandBuffer(RPICommandBuffer commandBuffer);
+	void RPICmdCopyToSwapchainBackTexture(RPICommandBuffer commandBuffer, RPITexture texture);
+	void RPIPresent();
+
+	//update
+	void RPIUpdateResource(RPIResource resource, void* data,int offset, int size);
 }

@@ -34,6 +34,8 @@ namespace vulkan
         if (vkCreateFramebuffer(VK_G(VkDevice), &framebufferInfo, nullptr, &attachmentSet->frameBuffer) != VK_SUCCESS) {
             throw std::runtime_error("failed to create framebuffer!");
         }
+
+        return attachmentSet;
 	}
 
 	void DefaultVulkanVulkanAttachmentSetAllocateStrategy::DestoryFunc(VulkanAttachmentSet* attachmentSet)

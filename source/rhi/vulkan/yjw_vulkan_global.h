@@ -34,6 +34,8 @@ namespace vulkan
 	struct VulkanDefaultResource
 	{
 		VkSampler DefaultSampler;
+		VkCommandBuffer DefaultCommandBuffer;
+		VkSemaphore imageAvailableSemaphore;
 	};
 
 

@@ -5,7 +5,7 @@
 #include "rhi/vulkan/yjw_vulkan_resource_ruler.h"
 namespace vulkan
 {
-
+	uint32_t findMemoryType_(uint32_t typeFilter, VkMemoryPropertyFlags properties);
 	struct VulkanBufferCreation
 	{
 		VkDeviceSize size;
@@ -22,6 +22,8 @@ namespace vulkan
 		operator VkDeviceMemory() { return memory; }
 		VulkanBuffer() {}
 		VkDeviceSize size{};
+		VkBufferUsageFlags usage;
+		VkMemoryPropertyFlags memoryType;
 		VkBuffer buffer{};
 		VkDeviceMemory memory{};
 	};
@@ -36,7 +38,7 @@ namespace vulkan
 	class BufferPool
 	{
 	public:
-		VulkanBufferHandle allocateBuffer(const VulkanBufferCreation& creation);
+		VulkanBufferHandle allocateBuffer(VulkanBufferCreation& creation);
 		void deallocateBuffer(VulkanBufferHandle buffer);
 	private:
 		ResourceAllocator<VulkanBuffer, DefaultVulkanBufferAllocateStrategy> DefaultAllocator;

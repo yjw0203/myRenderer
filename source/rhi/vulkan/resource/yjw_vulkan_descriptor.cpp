@@ -40,7 +40,7 @@ namespace vulkan
             if (creation.format == VK_FORMAT_D24_UNORM_S8_UINT)
             {
                 createInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT | VK_IMAGE_ASPECT_STENCIL_BIT;
-                if (creation.descriptor_type == VulkanDescriptorType::shader_resource)
+                if (creation.descriptor_type == VulkanDescriptorType::shader_resource_texture)
                 {
                     createInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT;//hack
                 }

@@ -84,4 +84,25 @@ namespace vulkan
 		VulkanTexture* vkTexture = HandleCast<VulkanTexture>(resourceHandle);
 		transitionImageLayout(commandBuffer, *vkTexture, vkTexture->creation.format, ResouraceStateAdptor(beforeState), ResouraceStateAdptor(afterState));
 	}
+	void VulkanRHI::cmdCopyToSwapchainBackTexture(rhi::RHICommandBufferHandle commandBufferHandle, rhi::RHIResourceHandle resource)
+	{
+		VulkanTexture* vulkanTexture = HandleCast<VulkanTexture>(resource);
+		VulkanCommandBuffer* commandBuffer = HandleCast<VulkanCommandBuffer>(commandBufferHandle);
+		VkCommandBuffer vkCommandBuffer = commandBuffer->commandBuffer;
+
+		VkImage present_image = *vulkanTexture;
+		VkImageCopy imageCopyRegion{};
+		imageCopyRegion.srcSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+		imageCopyRegion.srcSubresource.layerCount = 1;
+		imageCopyRegion.dstSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+		imageCopyRegion.dstSubresource.layerCount = 1;
+		imageCopyRegion.extent.width = VK_G(SwapChainInfo).swapchainExtent.width;
+		imageCopyRegion.extent.height = VK_G(SwapChainInfo).swapchainExtent.height;
+		imageCopyRegion.extent.depth = 1;
+		transitionImageLayout(vkCommandBuffer, VK_G(SwapChainInfo).swapchainImages[VK_G(SwapChainInfo).swapchainImageIndex], VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+		transitionImageLayout(vkCommandBuffer, present_image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
+		vkCmdCopyImage(vkCommandBuffer, present_image, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, VK_G(SwapChainInfo).swapchainImages[VK_G(SwapChainInfo).swapchainImageIndex], VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &imageCopyRegion);
+		transitionImageLayout(vkCommandBuffer, present_image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
+		transitionImageLayout(vkCommandBuffer, VK_G(SwapChainInfo).swapchainImages[VK_G(SwapChainInfo).swapchainImageIndex], VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
+	}
 }

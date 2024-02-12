@@ -19,6 +19,8 @@ namespace vulkan
     {
         VulkanBuffer* buffer = new VulkanBuffer();
         buffer->size = creation.size;
+        buffer->usage = creation.usage;
+        buffer->memoryType = creation.memoryType;
 
         VkBufferCreateInfo desc{};
         desc.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
@@ -51,7 +53,7 @@ namespace vulkan
         delete resource;
     }
 
-    VulkanBufferHandle BufferPool::allocateBuffer(const VulkanBufferCreation& creation)
+    VulkanBufferHandle BufferPool::allocateBuffer(VulkanBufferCreation& creation)
 	{
         return DefaultAllocator.create(creation);
 	}

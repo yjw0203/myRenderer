@@ -14,7 +14,7 @@ namespace vulkan
 	class ShaderPool
 	{
 	public:
-		VulkanShaderHandle createShader(const VulkanShaderCreation& creation);
+		VulkanShaderHandle createShader(VulkanShaderCreation& creation);
 		void destoryShader(VulkanShaderHandle handle);
 	private:
 		ResourceAllocator<VulkanShader, VulkanShaderAllocateStrategy> DefaultAllocator;

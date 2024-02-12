@@ -112,7 +112,7 @@ namespace vulkan
         delete resource;
     }
 
-    VulkanTextureHandle TexturePool::createTexture(const VulkanTextureCreation& creation)
+    VulkanTextureHandle TexturePool::createTexture(VulkanTextureCreation& creation)
 	{
         return DefaultAllocator.create(creation);
 	}

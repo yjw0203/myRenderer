@@ -11,7 +11,6 @@ namespace rpi
 		void cmdBeginPass();
 		void cmdEndPass();
 		void cmdBindDescriptorSet(RPIDescriptorSet bindDescriptorSet);
-		void cmdBindAttachmentSet(RPIAttachmentSet bindAttachmentSet);
 		void cmdBindVertexBuffer(RPIResource buffer);
 		void cmdBindIndexBuffer(RPIResource buffer);
 		void cmdDrawIndex(int indexCount, int instanceCount, int firstIndex, int vertexOffset, int firstInstance);

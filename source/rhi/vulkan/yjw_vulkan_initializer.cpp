@@ -368,6 +368,19 @@ namespace vulkan
         }
     }
 
+    void createDefaultCommandBuffer()
+    {
+        VulkanCommandBufferHandle handle = VK_G(CommandBufferPool).allocateCommandBuffer(VulkanCommandBufferCreation{});
+        VK_G(VulkanDefaultResource).DefaultCommandBuffer = handle.Get()->commandBuffer;
+    }
+
+    void createDefaultSyncObject()
+    {
+        VkSemaphoreCreateInfo semaphoreInfo{};
+        semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
+        vkCreateSemaphore(VK_G(VkDevice), &semaphoreInfo, nullptr, &VK_G(VulkanDefaultResource).imageAvailableSemaphore);
+    }
+
 	void VulkanRHI::init(rhi::InitConfig initConfig)
 	{
         VK_G(VkInitConfig) = initConfig;
@@ -379,6 +392,7 @@ namespace vulkan
         createLogicalDeviceAndQueues();
         createSwapchain();
         createDefaultSampler();
+        createDefaultCommandBuffer();
 
         VK_G(CommandBufferPool).initialize();
 	}

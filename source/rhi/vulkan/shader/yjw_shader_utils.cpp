@@ -20,7 +20,7 @@ namespace vulkan
         delete shader;
     }
 
-    VulkanShaderHandle ShaderPool::createShader(const VulkanShaderCreation& creation)
+    VulkanShaderHandle ShaderPool::createShader(VulkanShaderCreation& creation)
     {
         return DefaultAllocator.create(creation);
     }
@@ -47,6 +47,7 @@ void readFile(const char* filename, std::vector<char>& result)
     file.close();
 }
 
+void getReflectFromSpirv(const char* spirvPointer, int spirvSize, std::unordered_map<std::string, ShaderReflect>& refects);
 void loadFromSpirvFile(const char* fileName, VulkanShader* shader)
 {
     std::vector<char> spirv;

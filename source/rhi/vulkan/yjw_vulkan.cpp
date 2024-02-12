@@ -11,6 +11,7 @@
 #include "rhi/vulkan/resource/yjw_vulkan_descriptor.h"
 #include "rhi/vulkan/adaptor/yjw_descriptor_adaptor.h"
 #include "rhi/vulkan/yjw_vulkan_attachment_set.h"
+#include <stdexcept>
 
 namespace vulkan
 {
@@ -18,11 +19,13 @@ namespace vulkan
     {
         if (creation.type == rhi::ResourceType::buffer)
         {
-            return VK_G(BufferPool).allocateBuffer(ResourceCreationAdaptor(creation));
+            VulkanBufferCreation vkcreation = ResourceCreationAdaptor(creation);
+            return VK_G(BufferPool).allocateBuffer(vkcreation);
         }
         else
         {
-            return VK_G(TexturePool).createTexture(ResourceCreationAdaptor(creation));
+            VulkanTextureCreation vkcreation = ResourceCreationAdaptor(creation);
+            return VK_G(TexturePool).createTexture(vkcreation);
         }
     }
 
@@ -38,7 +41,7 @@ namespace vulkan
         }
     }
 
-    rhi::RHIPSOHandle VulkanRHI::createPSO(const rhi::PSOCreation& creation)
+    rhi::RHIPSOHandle VulkanRHI::createPSO(rhi::PSOCreation& creation)
     {
         PSOCreationAdaptor vkcreation(creation);
         return VK_G(VulkanPSOPool).createPSO(vkcreation);
@@ -102,5 +105,65 @@ namespace vulkan
     void VulkanRHI::destoryAttachmentSet(rhi::RHIAttachmentSetHandle attachmentSetHandle)
     {
         VK_G(VulkanAttachmentSetPool).destoryAttachmentSet(attachmentSetHandle);
+    }
+    void VulkanRHI::submitCommandBuffer(rhi::RHICommandBufferHandle commandBufferHandle)
+    {
+        VulkanCommandBuffer* commandBuffer = HandleCast<VulkanCommandBuffer>(commandBufferHandle);
+        vkEndCommandBuffer(commandBuffer->commandBuffer);
+
+        VkSubmitInfo submitInfo{};
+        submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+
+        VkSemaphore waitSemaphores[] = { VK_G(VulkanDefaultResource).imageAvailableSemaphore };
+        VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
+        submitInfo.waitSemaphoreCount = 1;
+        submitInfo.pWaitSemaphores = waitSemaphores;
+        submitInfo.pWaitDstStageMask = waitStages;
+
+        submitInfo.commandBufferCount = 1;
+        submitInfo.pCommandBuffers = &commandBuffer->commandBuffer;
+
+        submitInfo.signalSemaphoreCount = 0;
+        submitInfo.pSignalSemaphores = nullptr;
+
+        if (vkQueueSubmit(VK_G(VkGraphicsQueue), 1, &submitInfo, commandBuffer->fence) != VK_SUCCESS) {
+            throw std::runtime_error("failed to submit draw command buffer!");
+        }
+    }
+    void VulkanRHI::resetCommandBuffer(rhi::RHICommandBufferHandle commandBufferHandle)
+    {
+        VulkanCommandBuffer* commandBuffer = HandleCast<VulkanCommandBuffer>(commandBufferHandle);
+        vkWaitForFences(VK_G(VkDevice), 1, &commandBuffer->fence, VK_TRUE, UINT64_MAX);
+        vkResetFences(VK_G(VkDevice), 1, &commandBuffer->fence);
+
+        //reset command buffer
+        vkResetCommandBuffer(commandBuffer->commandBuffer, VK_COMMAND_BUFFER_RESET_RELEASE_RESOURCES_BIT);
+        VkCommandBufferBeginInfo beginInfo{};
+        beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+        vkBeginCommandBuffer(commandBuffer->commandBuffer, &beginInfo);
+    }
+
+    void VulkanRHI::waitForIdle()
+    {
+        vkQueueWaitIdle(VK_G(VkGraphicsQueue));
+    }
+
+    void VulkanRHI::present()
+    {
+        VkPresentInfoKHR presentInfo{};
+        presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
+
+        presentInfo.waitSemaphoreCount = 0;;
+        presentInfo.pWaitSemaphores = nullptr;
+
+        VkSwapchainKHR swapChains[] = { VK_G(VkSwapchainKHR) };
+        presentInfo.swapchainCount = 1;
+        presentInfo.pSwapchains = swapChains;
+
+        presentInfo.pImageIndices = &VK_G(SwapChainInfo).swapchainImageIndex;
+
+        vkQueuePresentKHR(VK_G(VkPresentQueue), &presentInfo);
+        vkQueueWaitIdle(VK_G(VkGraphicsQueue));
+        vkAcquireNextImageKHR(VK_G(VkDevice), VK_G(VkSwapchainKHR), UINT64_MAX, VK_G(VulkanDefaultResource).imageAvailableSemaphore, VK_NULL_HANDLE, &VK_G(SwapChainInfo).swapchainImageIndex);
     }
 }

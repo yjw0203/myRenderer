@@ -1,7 +1,7 @@
 #pragma once
 
 #include "yjw_render_system.h"
-#include "rhi/rhi/yjw_rhi_header.h"
+#include "rhi/rpi/yjw_rpi_header.h"
 #include "client/WindowManager/yjw_windows_manager.h"
 #include "generate/projectInfo.h"
 #include "glm/glm.hpp"
@@ -16,7 +16,7 @@
 
 namespace yjw
 {
-    using namespace rhi;
+    using namespace rpi;
 
     DefaultPipeline pipeline;
 
@@ -27,9 +27,7 @@ namespace yjw
     void RenderSystem::initialize()
     {
         WindowsManager::get().initialize();
-        CreateInfo rhi_createinfo{};
-        rhi_createinfo.window = WindowsManager::get().window;
-        IRHI::Get()->initialize(rhi_createinfo);
+        RPIInit(800, 600, WindowsManager::get().window);
 
         g_resource_store.initializeResource();
         
@@ -65,10 +63,10 @@ namespace yjw
         g_resource_store.updateCameraData();
         g_resource_store.updateLightData();
 
-        IRHI::Get()->beginFrame();
         pipeline.render();
-
-        IRHI::Get()->endFrame(pipeline.output.get());
+        rpi::RPICmdCopyToSwapchainBackTexture(pipeline.commandBuffer,pipeline.output);
+        rpi::RPISubmitCommandBuffer(pipeline.commandBuffer);
+        rpi::RPIPresent();
 
         WindowsManager::get().loop();
     }

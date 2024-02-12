@@ -3,7 +3,7 @@
 #include "../yjw_global_delegate.h"
 #include <map>
 #include <functional>
-class GLFWwindow;
+struct GLFWwindow;
 
 namespace yjw
 {

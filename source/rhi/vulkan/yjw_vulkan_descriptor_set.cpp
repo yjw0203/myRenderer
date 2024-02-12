@@ -44,6 +44,8 @@ namespace vulkan
             throw std::runtime_error("failed to allocate descriptor sets!");
         }
 
+        return vulkanDescriptorSet;
+
         /* todo: write default resource
         //descriptor write
         std::vector<VkDescriptorImageInfo> imageInfos;

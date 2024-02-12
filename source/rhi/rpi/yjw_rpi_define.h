@@ -4,6 +4,8 @@
 namespace rpi
 {
 	typedef rhi::RHIResourceHandle RPIResource;
+	typedef RPIResource RPIBuffer;
+	typedef RPIResource RPITexture;
 	typedef rhi::RHIDescriptorHandle RPIDescriptor;
 	typedef rhi::RHIAttachmentSetHandle RPIAttachmentSet;
 	typedef rhi::RHIDescriptorSetHandle RPIDescriptorSet;
@@ -14,4 +16,5 @@ namespace rpi
 	typedef rhi::Format RPIFormat;
 	typedef rhi::DescriptorType RPIDescriptorType;
 	typedef rhi::ShaderType RPIShaderType;
+	typedef rhi::ResourceState RPIResourceState;
 }

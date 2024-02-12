@@ -11,6 +11,12 @@ struct RHIHandle
 	{
 		return Pool == 0;
 	}
+	bool operator <(const RHIHandle& t) const {
+		if (Pool != t.Pool)return Pool < t.Pool;
+		if (ID != t.ID)return ID < t.ID;
+		if (CreateTimeStamp != t.CreateTimeStamp)return CreateTimeStamp < t.CreateTimeStamp;
+		return TypeId < t.TypeId;
+	}
 };
 
 template<typename Type>
@@ -21,9 +27,9 @@ struct ResourceHandle
 {
 	ResourceHandle<Type>(){}
 	ResourceHandle<Type>(RHIHandle handle)
-		:ID(handle.ID), CreateTimeStamp(handle.CreateTimeStamp), Pool(handle.Pool),TypeId(handle.TypeId) 
+		:ID(handle.ID), CreateTimeStamp(handle.CreateTimeStamp), Pool((ResourcePool<Type>*)handle.Pool),TypeId(handle.TypeId)
 	{
-		if (handle.TypeId != Type::TypeId)
+		if (handle.TypeId != (int)Type::TypeId)
 		{
 			ID = 0;
 			CreateTimeStamp = 0;
@@ -61,7 +67,7 @@ template<typename Type, typename AllocateStrategy>
 class ResourceAllocator
 {
 public:
-	ResourceHandle<Type> create(const typename Type::Creation& creation);
+	ResourceHandle<Type> create(typename Type::Creation& creation);
 	void destory(ResourceHandle<Type>& handle);
 	AllocateStrategy allocateStrategy;
 private:
@@ -132,7 +138,7 @@ void ResourcePool<Type>::deallocate(const ResourceHandle<Type>& handle)
 }
 
 template<typename Type, typename AllocateStrategy>
-ResourceHandle<Type> ResourceAllocator<Type, AllocateStrategy>::create(const typename Type::Creation& creation)
+ResourceHandle<Type> ResourceAllocator<Type, AllocateStrategy>::create(typename Type::Creation& creation)
 {
 	Type* resource = allocateStrategy.CreateFunc(creation);
 	return pool.allocate(resource);

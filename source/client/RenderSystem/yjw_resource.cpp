@@ -7,12 +7,12 @@ namespace yjw
 
     void GlobalResourceStore::initializeResource()
     {
-        cameraUniform = std::make_shared<RHIUniformBuffer>(144);
-        lightUniform = std::make_shared<RHIUniformBuffer>(32);
-        optionUniform = std::make_shared<RHIUniformBuffer>(16);
+        cameraUniform = RPICreateUploadBuffer(144);
+        lightUniform = RPICreateUploadBuffer(32);
+        optionUniform = RPICreateUploadBuffer(16);
 
         glm::vec2 screenSize = glm::vec2(720, 720);
-        optionUniform->update(&screenSize, sizeof(screenSize), 0);
+        RPIUpdateResource(optionUniform, &screenSize, 0, sizeof(screenSize));
     }
 
     void GlobalResourceStore::updateCameraData()
@@ -28,7 +28,7 @@ namespace yjw
         data.view = camera.getViewMatrix();
         data.project = camera.getProjectionMatrix();
         data.positon = glm::vec4(camera.position, 1);
-        cameraUniform->update(&data, sizeof(data), 0);
+        RPIUpdateResource(cameraUniform, &data, 0, sizeof(data));
     }
     
     void GlobalResourceStore::updateLightData()
@@ -41,7 +41,7 @@ namespace yjw
         Data light;
         light.pos = glm::vec3(-3, 15, -8);
         light.color = glm::vec3(1, 1, 1);
-        lightUniform->update(&light, sizeof(light), 0);
+        RPIUpdateResource(lightUniform, &light, 0, sizeof(light));
     }
 
 }

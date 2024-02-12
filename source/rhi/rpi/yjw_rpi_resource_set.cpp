@@ -30,7 +30,7 @@ namespace rpi
 
 	RPIAttachmentSet RPIAttachmentSetCreator::create()
 	{
-		rhi::GpuDevice->createAttachmentSet(creation);
+		return rhi::GpuDevice->createAttachmentSet(creation);
 	}
 
 	void RPIAttachmentSetDestoryer::destory()
