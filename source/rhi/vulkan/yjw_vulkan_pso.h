@@ -33,6 +33,7 @@ namespace vulkan
     // pso bindings
     struct PSOShaderBinding
     {
+        VkShaderStageFlagBits shaderType;
         VulkanShader* shader;
         std::string entryName;
     };

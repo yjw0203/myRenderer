@@ -14,6 +14,7 @@ namespace rhi
 
     struct ShaderEntry
     {
+        ShaderType shaderType;
         RHIShaderHandle shader;
         std::string entryName;
     };

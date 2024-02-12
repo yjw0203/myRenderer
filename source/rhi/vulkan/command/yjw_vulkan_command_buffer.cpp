@@ -68,11 +68,12 @@ namespace vulkan
         DefaultAllocator.destory(commandBuffer);
     }
 
-    VkCommandBuffer CommandBufferPool::beginImmdiatelyCommandBuffer()
+    OneTimeCommandBuffer CommandBufferPool::beginImmdiatelyCommandBuffer()
     {
+        int index = currentUseOneTimeCommandBufferIndex;
         VkCommandBuffer commandBuffer;
-        vkWaitForFences(VK_G(VkDevice), 1, &oneTimeCommandBufferFences[currentUseOneTimeCommandBufferIndex], VK_TRUE, UINT64_MAX);
-        commandBuffer = oneTimeCommandBuffers[currentUseOneTimeCommandBufferIndex];
+        vkWaitForFences(VK_G(VkDevice), 1, &oneTimeCommandBufferFences[index], VK_TRUE, UINT64_MAX);
+        commandBuffer = oneTimeCommandBuffers[index];
         vkResetCommandBuffer(commandBuffer, VK_COMMAND_BUFFER_RESET_RELEASE_RESOURCES_BIT);
 
         VkCommandBufferBeginInfo beginInfo{};
@@ -81,20 +82,19 @@ namespace vulkan
         vkBeginCommandBuffer(commandBuffer, &beginInfo);
 
         currentUseOneTimeCommandBufferIndex = (currentUseOneTimeCommandBufferIndex + 1) % oneTimeCommandBuffersCount;
-        return commandBuffer;
+        return OneTimeCommandBuffer{ commandBuffer,index };
     }
 
-    void CommandBufferPool::endImmdiatelyCommandBuffer(VkCommandBuffer& commandBuffer)
+    void CommandBufferPool::endImmdiatelyCommandBuffer(OneTimeCommandBuffer& commandBuffer)
     {
-        vkEndCommandBuffer(commandBuffer);
+        vkEndCommandBuffer(commandBuffer.commandBuffer);
 
         VkSubmitInfo submitInfo{};
         submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
         submitInfo.commandBufferCount = 1;
-        submitInfo.pCommandBuffers = &commandBuffer;
+        submitInfo.pCommandBuffers = &commandBuffer.commandBuffer;
 
-        int index = (&commandBuffer - oneTimeCommandBuffers.data()) / sizeof(VkCommandBuffer);
-        vkQueueSubmit(VK_G(VkGraphicsQueue), 1, &submitInfo, oneTimeCommandBufferFences[index]);
+        vkQueueSubmit(VK_G(VkGraphicsQueue), 1, &submitInfo, oneTimeCommandBufferFences[commandBuffer.index]);
     }
 
 }

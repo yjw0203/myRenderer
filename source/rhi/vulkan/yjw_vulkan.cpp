@@ -126,7 +126,8 @@ namespace vulkan
         submitInfo.signalSemaphoreCount = 0;
         submitInfo.pSignalSemaphores = nullptr;
 
-        if (vkQueueSubmit(VK_G(VkGraphicsQueue), 1, &submitInfo, commandBuffer->fence) != VK_SUCCESS) {
+        VkResult vr;
+        if ((vr = vkQueueSubmit(VK_G(VkGraphicsQueue), 1, &submitInfo, commandBuffer->fence)) != VK_SUCCESS) {
             throw std::runtime_error("failed to submit draw command buffer!");
         }
     }

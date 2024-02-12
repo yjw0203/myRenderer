@@ -36,6 +36,7 @@ namespace yjw
 
         std::vector<RPIDescriptorSet> descriptors_sets;
         std::vector<RPIBuffer> uniformsBuffers;
+        std::vector<RPIDescriptor> uniformsBufferDescriptors;
         std::vector<Entity> entitys;
     };
 }

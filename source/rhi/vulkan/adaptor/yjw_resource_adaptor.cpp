@@ -53,7 +53,7 @@ namespace vulkan
         assert(payload.type == rhi::ResourceType::buffer);
         VulkanBufferCreation initConfig;
         initConfig.size = payload.width;
-        initConfig.usage = ImageUsageFlagsAdptor(payload.usage);
+        initConfig.usage = BufferUsageFlagsAdptor(payload.usage);
         initConfig.memoryType = MemoryPropertyFlagsAdptor(payload.memoryType);
         return std::move(initConfig);
     }

@@ -3,10 +3,5 @@
 
 namespace vulkan
 {
-	template<typename T>
-	T& GetGlobalRef()
-	{
-		static T instance;
-		return instance;
-	}
+	
 }

@@ -98,6 +98,8 @@ namespace vulkan
 			sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
 			dynamicStateCount = static_cast<uint32_t>(dynamicStates.size());
 			pDynamicStates = dynamicStates.data();
+			flags = 0;
+			pNext = nullptr;
 		}
 	};
 }

@@ -53,6 +53,7 @@ namespace vulkan
         for (int i = 0; i < creation.shader_binding.shader_entries.size(); i++)
         {
             PSOShaderBinding shader_binding;
+            shader_binding.shaderType = ShaderTypeAdaptor(creation.shader_binding.shader_entries[i].shaderType);
             shader_binding.shader = HandleCast<VulkanShader>(creation.shader_binding.shader_entries[i].shader);
             shader_binding.entryName = creation.shader_binding.shader_entries[i].entryName;
             frac.bind(&shader_binding);

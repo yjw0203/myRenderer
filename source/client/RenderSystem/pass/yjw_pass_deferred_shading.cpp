@@ -16,8 +16,8 @@ namespace yjw
         ps = RPICreateShader(SHADER_FILE(deferred_shading_frag.spv));
 
         RPIPipelineCreator pipelineCreator;
-        pipelineCreator.addShaderEntry(vs, "main");
-        pipelineCreator.addShaderEntry(ps, "main");
+        pipelineCreator.addShaderEntry(RPIShaderType::vertex_shader, vs, "main");
+        pipelineCreator.addShaderEntry(RPIShaderType::pixel_shader, ps, "main");
         pipelineCreator.addVertexAttribute(RPIFormat::R32G32_sfloat);
         pipelineCreator.addColorAttachment(RPIFormat::R8G8B8A8_unorm);
         pipelineCreator.addDescriptor(RPIShaderType::pixel_shader, 0, 0, RPIDescriptorType::uniform_buffer);
@@ -60,14 +60,15 @@ namespace yjw
         this->out_color = RPICreateDescriptor(out_color, RPIDescriptorType::render_target, RPIFormat::R8G8B8A8_unorm);
         RPIAttachmentSetCreator attachmentSetCreator(pipeline);
         attachmentSetCreator.setColorAttachment(0, this->out_color);
+        attachementSet = attachmentSetCreator.create();
     }
 
     void DeferredShadingPass::setupData()
     {
         RPIDescriptorSetWriter writer(this->descriptors_set);
-        writer.setDescriptor(0, 0, g_resource_store.cameraUniform);
-        writer.setDescriptor(0, 1, g_resource_store.lightUniform);
-        writer.setDescriptor(0, 2, g_resource_store.optionUniform);
+        writer.setDescriptor(0, 0, g_resource_store.cameraUniformDescriptor);
+        writer.setDescriptor(0, 1, g_resource_store.lightUniformDescriptor);
+        writer.setDescriptor(0, 2, g_resource_store.optionUniformDescriptor);
         writer.setDescriptor(1, 0, in_abeldo);
         writer.setDescriptor(1, 1, in_normal);
         writer.setDescriptor(1, 2, in_diffuse);

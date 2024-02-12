@@ -54,6 +54,17 @@ namespace vulkan
         assert(0);
     }
 
+    ShaderTypeAdaptor::operator VkShaderStageFlagBits()
+    {
+        switch (payload)
+        {
+        case rhi::ShaderType::vertex_shader: return VK_SHADER_STAGE_VERTEX_BIT;
+        case rhi::ShaderType::pixel_shader: return VK_SHADER_STAGE_FRAGMENT_BIT;
+        case rhi::ShaderType::compute_shader: return VK_SHADER_STAGE_COMPUTE_BIT;
+        }
+        assert(0);
+    }
+
     ImageUsageFlagsAdptor::operator VkImageUsageFlags()
     {
         VkImageUsageFlags flag = 0;

@@ -27,14 +27,20 @@ namespace vulkan
         VkCommandPool commandPool;
     };
 
+    struct OneTimeCommandBuffer
+    {
+        VkCommandBuffer commandBuffer;
+        int index;
+    };
+
     class CommandBufferPool
     {
     public:
         void initialize();
         VulkanCommandBufferHandle allocateCommandBuffer(VulkanCommandBufferCreation creation);
         void destoryCommandBuffer(VulkanCommandBufferHandle commandBuffer);
-        VkCommandBuffer beginImmdiatelyCommandBuffer();
-        void endImmdiatelyCommandBuffer(VkCommandBuffer& commandBuffer);
+        OneTimeCommandBuffer beginImmdiatelyCommandBuffer();
+        void endImmdiatelyCommandBuffer(OneTimeCommandBuffer& commandBuffer);
     private:
         VkCommandPool primaryCommandPool;
         ResourceAllocator<VulkanCommandBuffer, DefaultVulkanCommandBufferAllocateStrategy> DefaultAllocator;

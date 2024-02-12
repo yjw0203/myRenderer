@@ -378,7 +378,9 @@ namespace vulkan
     {
         VkSemaphoreCreateInfo semaphoreInfo{};
         semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
-        vkCreateSemaphore(VK_G(VkDevice), &semaphoreInfo, nullptr, &VK_G(VulkanDefaultResource).imageAvailableSemaphore);
+        if (vkCreateSemaphore(VK_G(VkDevice), &semaphoreInfo, nullptr, &VK_G(VulkanDefaultResource).imageAvailableSemaphore) != VK_SUCCESS) {
+            throw std::runtime_error("failed to create texture sampler!");
+        }
     }
 
 	void VulkanRHI::init(rhi::InitConfig initConfig)
@@ -391,9 +393,10 @@ namespace vulkan
         createPhysicalDevice();
         createLogicalDeviceAndQueues();
         createSwapchain();
+        VK_G(CommandBufferPool).initialize();
         createDefaultSampler();
         createDefaultCommandBuffer();
+        createDefaultSyncObject();
 
-        VK_G(CommandBufferPool).initialize();
 	}
 }

@@ -7,7 +7,11 @@
 namespace vulkan
 {
 	template<typename T>
-	T& GetGlobalRef();
+	T& GetGlobalRef()
+	{
+		static T instance;
+		return instance;
+	}
 
 	typedef VkQueue VkGraphicsQueue;
 	typedef VkQueue VkPresentQueue;

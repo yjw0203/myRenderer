@@ -5,7 +5,7 @@ namespace rpi
 	void RPIInit(int width, int height, void* window)
 	{
 		rhi::InitConfig initConfig{};
-		initConfig.debug_mode = false;
+		initConfig.debug_mode = true;
 		initConfig.width = width;
 		initConfig.height = height;
 		initConfig.window = window;

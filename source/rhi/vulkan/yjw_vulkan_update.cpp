@@ -118,11 +118,11 @@ namespace vulkan
                 memcpy(map_data, data, (size_t)size);
                 vkUnmapMemory(VK_G(VkDevice), stagingBufferMemory);
 
-                VkCommandBuffer commandBuffer = VK_G(CommandBufferPool).beginImmdiatelyCommandBuffer();
+                OneTimeCommandBuffer commandBuffer = VK_G(CommandBufferPool).beginImmdiatelyCommandBuffer();
                 VkBufferCopy copyRegion{};
                 copyRegion.dstOffset = offset;
                 copyRegion.size = size;
-                vkCmdCopyBuffer(commandBuffer, stagingBuffer, *buffer, 1, &copyRegion);
+                vkCmdCopyBuffer(commandBuffer.commandBuffer, stagingBuffer, *buffer, 1, &copyRegion);
                 VK_G(CommandBufferPool).endImmdiatelyCommandBuffer(commandBuffer);
 
                 vkDestroyBuffer(VK_G(VkDevice), stagingBuffer, nullptr);

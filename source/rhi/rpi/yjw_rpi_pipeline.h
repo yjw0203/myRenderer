@@ -10,7 +10,7 @@ namespace rpi
 		void addColorAttachment(RPIFormat format);
 		void addDepthStencilAttachment(RPIFormat format);
 		void addDescriptor(RPIShaderType shaderType, int setId, int slotId, RPIDescriptorType descriptorType);
-		void addShaderEntry(RPIShader shader, const char* entryName);
+		void addShaderEntry(RPIShaderType shaderType, RPIShader shader, const char* entryName);
 		RPIPipeline create();
 		void clear();
 	private:

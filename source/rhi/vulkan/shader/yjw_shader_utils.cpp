@@ -12,6 +12,7 @@ namespace vulkan
     {
         VulkanShader* shader = new VulkanShader();
         loadFromSpirvFile(creation.path.c_str(), shader);
+        return shader;
     }
 
     void VulkanShaderAllocateStrategy::DestoryFunc(VulkanShader* shader)
@@ -99,6 +100,7 @@ VkShaderStageFlagBits parseShaderStage(spv::ExecutionModel stage)
 
 void getReflectFromSpirv(const char* spirvPointer, int spirvSize, std::unordered_map<std::string, ShaderReflect>& refects)
 {
+    /*
     spirv_cross::CompilerReflection reflection((uint32_t*)spirvPointer, spirvSize);
     spirv_cross::ShaderResources resources = reflection.get_shader_resources();
 
@@ -161,6 +163,7 @@ void getReflectFromSpirv(const char* spirvPointer, int spirvSize, std::unordered
             refect.sampler2Ds.push_back(s);
         }
     }
+    */
 }
 
 }

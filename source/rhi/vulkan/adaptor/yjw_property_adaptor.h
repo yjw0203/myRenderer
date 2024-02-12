@@ -29,6 +29,7 @@ namespace vulkan
     public:
         ShaderTypeAdaptor(rhi::ShaderType type) :payload(type) {}
         operator VkShaderStageFlags();
+        operator VkShaderStageFlagBits();
     private:
         rhi::ShaderType payload;
     };

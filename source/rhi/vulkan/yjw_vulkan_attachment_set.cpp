@@ -20,6 +20,7 @@ namespace vulkan
             attachments[current_index] = *descriptor;
             width = descriptor->getImageWidth();
             height = descriptor->getImageHeight();
+            current_index++;
         }
         assert(width * height > 0);
         VkFramebufferCreateInfo framebufferInfo{};

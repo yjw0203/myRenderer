@@ -11,8 +11,8 @@ namespace yjw
         ps = RPICreateShader(SHADER_FILE(gbuffer_frag.spv));
 
         RPIPipelineCreator pipelineCreator;
-        pipelineCreator.addShaderEntry(vs, "main");
-        pipelineCreator.addShaderEntry(ps, "main");
+        pipelineCreator.addShaderEntry(RPIShaderType::vertex_shader, vs, "main");
+        pipelineCreator.addShaderEntry(RPIShaderType::pixel_shader, ps, "main");
         pipelineCreator.addVertexAttribute(RPIFormat::R32G32B32_sfloat);
         pipelineCreator.addVertexAttribute(RPIFormat::R32G32B32_sfloat);
         pipelineCreator.addVertexAttribute(RPIFormat::R32G32_sfloat);
@@ -28,11 +28,14 @@ namespace yjw
         pipelineCreator.addDescriptor(RPIShaderType::pixel_shader, 0, 3, RPIDescriptorType::uniform_buffer);
         pipelineCreator.addDescriptor(RPIShaderType::pixel_shader, 1, 0, RPIDescriptorType::shader_resource_texture);
         pipeline = pipelineCreator.create();
-        descriptors_sets.resize(10);
-        for (int i = 0; i < 10; i++)
+        descriptors_sets.resize(100);
+        uniformsBuffers.resize(100);
+        uniformsBufferDescriptors.resize(100);
+        for (int i = 0; i < 100; i++)
         {
             descriptors_sets[i] = RPICreateDescriptorSet(pipeline);
             uniformsBuffers[i] = RPICreateUploadBuffer(48);
+            uniformsBufferDescriptors[i] = RPICreateDescriptor(uniformsBuffers[i], RPIDescriptorType::uniform_buffer, RPIFormat::unknow);
         }
     }
 
@@ -86,10 +89,10 @@ namespace yjw
             RPIUpdateResource(uniformsBuffers[i], &material_data, 0, sizeof(Material));
 
             RPIDescriptorSetWriter writer(descriptors_sets[i]);
-            writer.setDescriptor(0, 0, g_resource_store.cameraUniform);
-            writer.setDescriptor(0, 1, g_resource_store.lightUniform);
-            writer.setDescriptor(0, 2, g_resource_store.cameraUniform);
-            writer.setDescriptor(0, 3, uniformsBuffers[i]);
+            writer.setDescriptor(0, 0, g_resource_store.cameraUniformDescriptor);
+            writer.setDescriptor(0, 1, g_resource_store.lightUniformDescriptor);
+            writer.setDescriptor(0, 2, g_resource_store.cameraUniformDescriptor);
+            writer.setDescriptor(0, 3, uniformsBufferDescriptors[i]);
             writer.setDescriptor(1, 0, entitys[i].material->textureShaderResource);
             writer.submit();
         }

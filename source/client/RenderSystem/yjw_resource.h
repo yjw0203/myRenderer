@@ -14,8 +14,11 @@ namespace yjw
 
     public:
         RPIBuffer cameraUniform;
+        RPIDescriptor cameraUniformDescriptor;
         RPIBuffer lightUniform;
+        RPIDescriptor lightUniformDescriptor;
         RPIBuffer optionUniform;
+        RPIDescriptor optionUniformDescriptor;
     };
 
     extern GlobalResourceStore g_resource_store;

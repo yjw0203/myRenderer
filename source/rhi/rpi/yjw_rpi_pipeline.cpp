@@ -23,9 +23,10 @@ namespace rpi
 		binding.descriptorType = descriptorType;
 		creation.descriptor_layout_binding.descriptor_bindings.push_back(binding);
 	}
-	void RPIPipelineCreator::addShaderEntry(RPIShader shader, const char* entryName)
+	void RPIPipelineCreator::addShaderEntry(RPIShaderType shaderType, RPIShader shader, const char* entryName)
 	{
 		rhi::ShaderEntry entry{};
+		entry.shaderType = shaderType;
 		entry.shader = shader;
 		entry.entryName = std::string(entryName);
 		creation.shader_binding.shader_entries.push_back(entry);
