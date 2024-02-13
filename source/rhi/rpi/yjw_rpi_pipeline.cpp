@@ -29,6 +29,26 @@ namespace rpi
 		return binding;
 	}
 
+	rhi::PSORasterizationStateBinding getRasterizationState(RPIRasterizationState state)
+	{
+		rhi::PSORasterizationStateBinding binding{};
+		binding.polygonMode = rhi::PolygonMode::fill;
+		binding.frontFace = rhi::FrontFace::clockwise;
+		if (state == RPIRasterizationState::default_)
+		{
+			binding.cullMode = rhi::CullMode::back;
+		}
+		else if (state == RPIRasterizationState::only_back_face)
+		{
+			binding.cullMode = rhi::CullMode::front;
+		}
+		else if (state == RPIRasterizationState::both_face)
+		{
+			binding.cullMode = rhi::CullMode::none;
+		}
+		return binding;
+	}
+
 	void RPIPipelineCreator::addVertexAttribute(RPIFormat format)
 	{
 		creation.vertex_binding.vertex_formats.push_back(format);
@@ -62,13 +82,14 @@ namespace rpi
 	{
 		depthStencilState = state;
 	}
+	void RPIPipelineCreator::addRasterizationState(RPIRasterizationState state)
+	{
+		rasterizationState = state;
+	}
 	void RPIPipelineCreator::flushCacheStateToCreation()
 	{
 		creation.depth_stencil_state_binding = getDepthStencilState(depthStencilState);
-		//default raster state
-		creation.rasterization_state_binding.polygonMode = rhi::PolygonMode::fill;
-		creation.rasterization_state_binding.cullMode = rhi::CullMode::front;
-		creation.rasterization_state_binding.frontFace = rhi::FrontFace::counter_clockwise;
+		creation.rasterization_state_binding = getRasterizationState(rasterizationState);
 	}
 	RPIPipeline RPIPipelineCreator::create()
 	{

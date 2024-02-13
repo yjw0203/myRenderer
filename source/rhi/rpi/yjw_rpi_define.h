@@ -25,4 +25,11 @@ namespace rpi
 		depth_read,
 		depth_write
 	};
+
+	enum RPIRasterizationState
+	{
+		default_,
+		only_back_face,
+		both_face
+	};
 }
