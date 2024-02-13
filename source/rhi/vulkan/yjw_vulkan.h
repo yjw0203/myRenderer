@@ -38,6 +38,7 @@ namespace vulkan
 		virtual void cmdDraw(rhi::RHICommandBufferHandle commandBufferHandle, int vertexCount, int instanceCount, int firstVertex, int firstInstance) override;
 		virtual void cmdResourceBarrier(rhi::RHICommandBufferHandle commandBufferHandle, rhi::RHIResourceHandle resourceHandle, rhi::RHIResourceState beforeState, rhi::RHIResourceState afterState) override;
 		virtual void cmdCopyToSwapchainBackTexture(rhi::RHICommandBufferHandle commandBufferHandle, rhi::RHIResourceHandle resource) override;
+		virtual void cmdClearTexture(rhi::RHICommandBufferHandle commandBufferHandle, rhi::RHIResourceHandle resource) override;
 	
 		virtual void submitCommandBuffer(rhi::RHICommandBufferHandle commandBufferHandle) override;
 		virtual void resetCommandBuffer(rhi::RHICommandBufferHandle commandBufferHandle) override;

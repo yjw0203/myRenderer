@@ -33,6 +33,7 @@ namespace rpi
 	void RPIPresent();
 	void RPICmdCopyToSwapchainBackTexture(RPICommandBuffer commandBuffer, RPITexture texture);
 	void RPICmdResourceBarrier(RPICommandBuffer commandBuffer, RPIResource texture, RPIResourceState beforeState, RPIResourceState afterState);
+	void RPICmdClearTexture(RPICommandBuffer commandBuffer, RPITexture texture);
 
 	//update
 	void RPIUpdateResource(RPIResource resource, void* data,int offset, int size);

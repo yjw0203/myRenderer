@@ -98,4 +98,13 @@ namespace vulkan
     private:
         rhi::RHIResourceState payload;
     };
+
+    class CompareOptionAdptor
+    {
+    public:
+        CompareOptionAdptor(rhi::RHICompareOption option) :payload(option) {}
+        operator VkCompareOp();
+    private:
+        rhi::RHICompareOption payload;
+    };
 }

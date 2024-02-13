@@ -1,6 +1,7 @@
 #include "yjw_vulkan.h"
 #include "yjw_vulkan_global.h"
 #include "command/yjw_vulkan_command_buffer.h"
+#include "rhi/vulkan/resource/yjw_vulkan_texture.h"
 
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
@@ -329,15 +330,6 @@ namespace vulkan
                 throw std::runtime_error("failed to create image views!");
             }
         }
-
-        /*
-        VkCommandBuffer commandBuffer = VulkanCommandBufferAllocater::Get().beginImmdiatelyCommandBuffer();
-        for (size_t i = 0; i < vulkanGod.swapchainImages.size(); i++)
-        {
-            transitionImageLayout(commandBuffer, vulkanGod.swapchainImages[i], VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
-        }
-        VulkanCommandBufferAllocater::Get().endImmdiatelyCommandBuffer(commandBuffer);
-        */
     }
 
     void createDefaultSampler()
@@ -383,6 +375,17 @@ namespace vulkan
         }
     }
 
+    void transitionSwapchainImageLayout()
+    {
+        OneTimeCommandBuffer commandBuffer = VK_G(CommandBufferPool).beginImmdiatelyCommandBuffer();
+        for (size_t i = 0; i < VK_G(SwapChainInfo).swapchainImages.size(); i++)
+        {
+            transitionImageLayout(commandBuffer.commandBuffer, VK_G(SwapChainInfo).swapchainImages[i], VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
+        }
+        VK_G(CommandBufferPool).endImmdiatelyCommandBuffer(commandBuffer);
+        vkAcquireNextImageKHR(VK_G(VkDevice), VK_G(VkSwapchainKHR), UINT64_MAX, VK_G(VulkanDefaultResource).imageAvailableSemaphore, VK_NULL_HANDLE, &VK_G(SwapChainInfo).swapchainImageIndex);
+    }
+
 	void VulkanRHI::init(rhi::InitConfig initConfig)
 	{
         VK_G(VkInitConfig) = initConfig;
@@ -397,6 +400,7 @@ namespace vulkan
         createDefaultSampler();
         createDefaultCommandBuffer();
         createDefaultSyncObject();
+        transitionSwapchainImageLayout();
 
 	}
 }

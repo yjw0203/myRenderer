@@ -83,6 +83,7 @@ namespace vulkan
 		VkCommandBuffer commandBuffer = HandleCast<VulkanCommandBuffer>(commandBufferHandle)->commandBuffer;
 		VulkanTexture* vkTexture = HandleCast<VulkanTexture>(resourceHandle);
 		transitionImageLayout(commandBuffer, *vkTexture, vkTexture->creation.format, ResouraceStateAdptor(beforeState), ResouraceStateAdptor(afterState));
+		vkTexture->currentState = ResouraceStateAdptor(afterState);
 	}
 	void VulkanRHI::cmdCopyToSwapchainBackTexture(rhi::RHICommandBufferHandle commandBufferHandle, rhi::RHIResourceHandle resource)
 	{
@@ -105,4 +106,37 @@ namespace vulkan
 		transitionImageLayout(vkCommandBuffer, present_image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
 		transitionImageLayout(vkCommandBuffer, VK_G(SwapChainInfo).swapchainImages[VK_G(SwapChainInfo).swapchainImageIndex], VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
 	}
+	void VulkanRHI::cmdClearTexture(rhi::RHICommandBufferHandle commandBufferHandle, rhi::RHIResourceHandle resource)
+	{
+		if (get_resource_type(resource) == VulkanResourceType::texture)
+		{
+			VulkanCommandBuffer* vkCommandBuffer = HandleCast<VulkanCommandBuffer>(commandBufferHandle);
+			VulkanTexture* vkTexture = HandleCast<VulkanTexture>(resource);
+			if (vkTexture->creation.format == VK_FORMAT_D24_UNORM_S8_UINT)
+			{
+				VkClearDepthStencilValue value{};
+				value.depth = 1.0f;
+				value.stencil = 0;
+				VkImageSubresourceRange range{};
+				range.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT | VK_IMAGE_ASPECT_STENCIL_BIT;
+				range.baseArrayLayer = 0;
+				range.baseMipLevel = 0;
+				range.layerCount = 1;
+				range.levelCount = 1;
+				vkCmdClearDepthStencilImage(vkCommandBuffer->commandBuffer, *vkTexture, VkImageLayout::VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, &value, 1, &range);
+			}
+			else
+			{
+				VkClearColorValue value{ { 0,0,0,0 } };
+				VkImageSubresourceRange range{};
+				range.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+				range.baseArrayLayer = 0;
+				range.baseMipLevel = 0;
+				range.layerCount = 1;
+				range.levelCount = 1;
+				vkCmdClearColorImage(vkCommandBuffer->commandBuffer, *vkTexture, VkImageLayout::VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, &value, 1, &range);
+			}
+		}
+	}
+
 }

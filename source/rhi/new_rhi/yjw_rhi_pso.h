@@ -42,6 +42,13 @@ namespace rhi
         FrontFace frontFace;
     };
 
+    struct DepthStencilStateBinding
+    {
+        bool depthTest;
+        bool depthWrite;
+        RHICompareOption depthCompareOption;
+    };
+
     struct PSOCreation
     {
         PSOVextexBinding vertex_binding;
@@ -49,6 +56,7 @@ namespace rhi
         PSODescriptorLayoutBinding descriptor_layout_binding;
         PSOShaderBinding shader_binding;
         PSORasterizationStateBinding rasterization_state_binding;
+        DepthStencilStateBinding depth_stencil_state_binding;
     };
 
     typedef RHIHandle RHIPSOHandle;

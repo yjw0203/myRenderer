@@ -18,6 +18,7 @@ namespace yjw
         RPIPipelineCreator pipelineCreator;
         pipelineCreator.addShaderEntry(RPIShaderType::vertex_shader, vs, "main");
         pipelineCreator.addShaderEntry(RPIShaderType::pixel_shader, ps, "main");
+        pipelineCreator.addDepthStencilState(RPIDepthStencilState::no_depth_no_stencil);
         pipelineCreator.addVertexAttribute(RPIFormat::R32G32_sfloat);
         pipelineCreator.addColorAttachment(RPIFormat::R8G8B8A8_unorm);
         pipelineCreator.addDescriptor(RPIShaderType::pixel_shader, 0, 0, RPIDescriptorType::uniform_buffer);

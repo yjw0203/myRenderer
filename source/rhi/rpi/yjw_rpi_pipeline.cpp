@@ -2,6 +2,33 @@
 
 namespace rpi
 {
+	rhi::DepthStencilStateBinding getDepthStencilState(RPIDepthStencilState state)
+	{
+		rhi::DepthStencilStateBinding binding{};
+		binding.depthCompareOption = rhi::RHICompareOption::less_or_equal;
+		if (state == RPIDepthStencilState::no_depth_no_stencil)
+		{
+			binding.depthTest = false;
+			binding.depthWrite = false;
+		}
+		else if(state == RPIDepthStencilState::depth_read)
+		{
+			binding.depthTest = true;
+			binding.depthWrite = false;
+		}
+		else if (state == RPIDepthStencilState::depth_write)
+		{
+			binding.depthTest = false;
+			binding.depthWrite = true;
+		}
+		else if (state == RPIDepthStencilState::depth_read_and_wirte)
+		{
+			binding.depthTest = true;
+			binding.depthWrite = true;
+		}
+		return binding;
+	}
+
 	void RPIPipelineCreator::addVertexAttribute(RPIFormat format)
 	{
 		creation.vertex_binding.vertex_formats.push_back(format);
@@ -31,12 +58,21 @@ namespace rpi
 		entry.entryName = std::string(entryName);
 		creation.shader_binding.shader_entries.push_back(entry);
 	}
-	RPIPipeline RPIPipelineCreator::create()
+	void RPIPipelineCreator::addDepthStencilState(RPIDepthStencilState state)
 	{
+		depthStencilState = state;
+	}
+	void RPIPipelineCreator::flushCacheStateToCreation()
+	{
+		creation.depth_stencil_state_binding = getDepthStencilState(depthStencilState);
 		//default raster state
 		creation.rasterization_state_binding.polygonMode = rhi::PolygonMode::fill;
-		creation.rasterization_state_binding.cullMode = rhi::CullMode::back;
+		creation.rasterization_state_binding.cullMode = rhi::CullMode::front;
 		creation.rasterization_state_binding.frontFace = rhi::FrontFace::counter_clockwise;
+	}
+	RPIPipeline RPIPipelineCreator::create()
+	{
+		flushCacheStateToCreation();
 		return rhi::GpuDevice->createPSO(creation);
 	}
 	void RPIPipelineCreator::clear()

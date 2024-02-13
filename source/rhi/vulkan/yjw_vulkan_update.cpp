@@ -197,6 +197,7 @@ namespace vulkan
             OneTimeCommandBuffer commandBuffer = VK_G(CommandBufferPool).beginImmdiatelyCommandBuffer();
             transitionImageLayout(commandBuffer.commandBuffer, *texture, texture->creation.format, ResouraceStateAdptor(beforeState), ResouraceStateAdptor(afterState));
             VK_G(CommandBufferPool).endImmdiatelyCommandBuffer(commandBuffer);
+            texture->currentState = ResouraceStateAdptor(afterState);
         }
     }
 }

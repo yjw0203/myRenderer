@@ -17,4 +17,12 @@ namespace rpi
 	typedef rhi::DescriptorType RPIDescriptorType;
 	typedef rhi::ShaderType RPIShaderType;
 	typedef rhi::RHIResourceState RPIResourceState;
+
+	enum RPIDepthStencilState
+	{
+		no_depth_no_stencil,
+		depth_read_and_wirte,
+		depth_read,
+		depth_write
+	};
 }

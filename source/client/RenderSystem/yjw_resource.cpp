@@ -15,7 +15,7 @@ namespace yjw
         lightUniformDescriptor = RPICreateDescriptor(lightUniform, RPIDescriptorType::uniform_buffer, RPIFormat::unknow);
         optionUniformDescriptor = RPICreateDescriptor(optionUniform, RPIDescriptorType::uniform_buffer, RPIFormat::unknow);
 
-        glm::vec2 screenSize = glm::vec2(720, 720);
+        glm::vec2 screenSize = glm::vec2(1200, 1200);
         RPIUpdateResource(optionUniform, &screenSize, 0, sizeof(screenSize));
     }
 

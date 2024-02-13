@@ -127,7 +127,7 @@ namespace vulkan
             renderPass_attachments[index].storeOp = VK_ATTACHMENT_STORE_OP_STORE;
             renderPass_attachments[index].stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
             renderPass_attachments[index].stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-            renderPass_attachments[index].initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+            renderPass_attachments[index].initialLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
             renderPass_attachments[index].finalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
         }
 
@@ -139,7 +139,7 @@ namespace vulkan
             renderPass_attachments.back().storeOp = VK_ATTACHMENT_STORE_OP_STORE;
             renderPass_attachments.back().stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
             renderPass_attachments.back().stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-            renderPass_attachments.back().initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+            renderPass_attachments.back().initialLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
             renderPass_attachments.back().finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
         }
 
@@ -177,6 +177,29 @@ namespace vulkan
         renderPass_create_info.pSubpasses = &renderPass_subpass;
         renderPass_create_info.dependencyCount = 1;
         renderPass_create_info.pDependencies = &renderPass_dependency;
+
+
+        colorBlendStates.resize(bind->color_attachments.size());
+        for (VkPipelineColorBlendAttachmentState& colorBlendAttachment : colorBlendStates)
+        {
+            colorBlendAttachment.colorWriteMask = VK_COLOR_COMPONENT_R_BIT |
+                VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT |
+                VK_COLOR_COMPONENT_A_BIT;
+            colorBlendAttachment.blendEnable = VK_FALSE;
+            colorBlendAttachment.srcColorBlendFactor = VK_BLEND_FACTOR_ONE; // Optional
+            colorBlendAttachment.dstColorBlendFactor = VK_BLEND_FACTOR_ZERO; // Optional
+            colorBlendAttachment.colorBlendOp = VK_BLEND_OP_ADD; // Optional
+            colorBlendAttachment.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE; // Optional
+            colorBlendAttachment.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO; // Optional
+            colorBlendAttachment.alphaBlendOp = VK_BLEND_OP_ADD; // Optional
+        }
+
+        pColorBlendState.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
+        pColorBlendState.pNext = nullptr;
+        pColorBlendState.logicOpEnable = VK_FALSE;
+        pColorBlendState.logicOp = VK_LOGIC_OP_COPY;
+        pColorBlendState.attachmentCount = colorBlendStates.size();
+        pColorBlendState.pAttachments = colorBlendStates.data();
     }
 
     void VulkanPSOCreation::bind(PSODescriptorLayoutBinding* bind)
@@ -208,6 +231,11 @@ namespace vulkan
             layoutInfo.pBindings = setLayout_bindings[i].data();
         }
 
+    }
+
+    void VulkanPSOCreation::bind(VkPipelineDepthStencilStateCreateInfo bind)
+    {
+        pDepthStencilState = bind;
     }
 
     VulkanPSO* DefaultVulkanPSOAllocateStrategy::CreateFunc(VulkanPSOCreation& creation)
@@ -244,29 +272,6 @@ namespace vulkan
             creation.pStages[stageIndex].pName = creation.shaderInfo[stageIndex].entryName.c_str();
             creation.pStages[stageIndex].pSpecializationInfo = nullptr;
         }
-
-        std::vector<VkPipelineColorBlendAttachmentState> colorBlendStates;
-        colorBlendStates.resize(creation.renderPass_create_info.attachmentCount);
-        for (VkPipelineColorBlendAttachmentState& colorBlendAttachment : colorBlendStates)
-        {
-            colorBlendAttachment.colorWriteMask = VK_COLOR_COMPONENT_R_BIT |
-                VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT |
-                VK_COLOR_COMPONENT_A_BIT;
-            colorBlendAttachment.blendEnable = VK_FALSE;
-            colorBlendAttachment.srcColorBlendFactor = VK_BLEND_FACTOR_ONE; // Optional
-            colorBlendAttachment.dstColorBlendFactor = VK_BLEND_FACTOR_ZERO; // Optional
-            colorBlendAttachment.colorBlendOp = VK_BLEND_OP_ADD; // Optional
-            colorBlendAttachment.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE; // Optional
-            colorBlendAttachment.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO; // Optional
-            colorBlendAttachment.alphaBlendOp = VK_BLEND_OP_ADD; // Optional
-        }
-
-        creation.pColorBlendState.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
-        creation.pColorBlendState.pNext = nullptr;
-        creation.pColorBlendState.logicOpEnable = VK_FALSE;
-        creation.pColorBlendState.logicOp = VK_LOGIC_OP_COPY;
-        creation.pColorBlendState.attachmentCount = creation.renderPass_create_info.attachmentCount;
-        creation.pColorBlendState.pAttachments = colorBlendStates.data();
 
         VkGraphicsPipelineCreateInfo pipelineInfo{};
         pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;

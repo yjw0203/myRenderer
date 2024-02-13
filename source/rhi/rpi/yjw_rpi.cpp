@@ -176,8 +176,13 @@ namespace rpi
 	{
 		rhi::GpuDevice->cmdResourceBarrier(commandBuffer, texture, beforeState, afterState);
 	}
+	void RPICmdClearTexture(RPICommandBuffer commandBuffer, RPITexture texture)
+	{
+		rhi::GpuDevice->cmdClearTexture(commandBuffer, texture);
+	}
 	void RPIUpdateResource(RPIResource resource, void* data,int offset, int size)
 	{
 		rhi::GpuDevice->updateResource(resource, data, offset, size);
 	}
+
 }

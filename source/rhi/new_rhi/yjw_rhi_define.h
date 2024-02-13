@@ -103,4 +103,15 @@ namespace rhi
         transfer_dst,
         present_src
     };
+
+    enum class RHICompareOption {
+        never,
+        less,
+        equal,
+        less_or_equal,
+        greater,
+        not_equal,
+        greater_or_equal,
+        always
+    };
 }

@@ -213,4 +213,20 @@ namespace vulkan
         }
         assert(0);
     }
+
+    CompareOptionAdptor::operator VkCompareOp()
+    {
+        switch (payload)
+        {
+        case rhi::RHICompareOption::never: return VK_COMPARE_OP_NEVER;
+        case rhi::RHICompareOption::less: return VK_COMPARE_OP_LESS;
+        case rhi::RHICompareOption::equal: return VK_COMPARE_OP_EQUAL;
+        case rhi::RHICompareOption::less_or_equal: return VK_COMPARE_OP_LESS_OR_EQUAL;
+        case rhi::RHICompareOption::greater: return VK_COMPARE_OP_GREATER;
+        case rhi::RHICompareOption::not_equal: return VK_COMPARE_OP_NOT_EQUAL;
+        case rhi::RHICompareOption::greater_or_equal: return VK_COMPARE_OP_GREATER_OR_EQUAL;
+        case rhi::RHICompareOption::always: return VK_COMPARE_OP_ALWAYS;
+        }
+        assert(0);
+    }
 }

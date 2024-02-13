@@ -13,6 +13,7 @@ namespace yjw
         RPIPipelineCreator pipelineCreator;
         pipelineCreator.addShaderEntry(RPIShaderType::vertex_shader, vs, "main");
         pipelineCreator.addShaderEntry(RPIShaderType::pixel_shader, ps, "main");
+        pipelineCreator.addDepthStencilState(RPIDepthStencilState::depth_read_and_wirte);
         pipelineCreator.addVertexAttribute(RPIFormat::R32G32B32_sfloat);
         pipelineCreator.addVertexAttribute(RPIFormat::R32G32B32_sfloat);
         pipelineCreator.addVertexAttribute(RPIFormat::R32G32_sfloat);
@@ -109,7 +110,7 @@ namespace yjw
             drawer.cmdBindIndexBuffer(entitys[i].mesh->index_buffer);
             drawer.cmdDrawIndex(entitys[i].mesh->subMeshes[entitys[i].subMeshId].size, 1, entitys[i].mesh->subMeshes[entitys[i].subMeshId].offset, 0, 0);
         }
-        drawer.cmdBeginPass();
+        drawer.cmdEndPass();
     }
 
     void GBufferPass::submit()

@@ -94,6 +94,7 @@ namespace vulkan
 		void bind(PSORasterizationStateBinding* bind);
         void bind(PSOAttachmentBinding* bind);
         void bind(PSODescriptorLayoutBinding* bind);
+        void bind(VkPipelineDepthStencilStateCreateInfo bind);
 	public:
         VkPipelineCreateFlags                            flags{};
         VkPipelineRasterizationStateCreateInfo           pRasterizationState = DefaultPipelineRasterizationState();
@@ -111,6 +112,7 @@ namespace vulkan
         VkPipelineVertexInputStateCreateInfo             pVertexInputState{};
         VkRenderPassCreateInfo                           renderPass_create_info{};
         std::vector<VkDescriptorSetLayoutCreateInfo>     sertLayout_createInfos;
+        std::vector<VkPipelineColorBlendAttachmentState> colorBlendStates;
         
         //shader
         ShaderCreateInfo                                 shaderInfo[5];

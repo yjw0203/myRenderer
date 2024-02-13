@@ -50,6 +50,13 @@ namespace vulkan
         }
         frac.bind(&descriptor_layout_binding);
 
+        VkPipelineDepthStencilStateCreateInfo depthStencilState{};
+        depthStencilState.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
+        depthStencilState.depthTestEnable = creation.depth_stencil_state_binding.depthTest;
+        depthStencilState.depthWriteEnable = creation.depth_stencil_state_binding.depthWrite;
+        depthStencilState.depthCompareOp = CompareOptionAdptor(creation.depth_stencil_state_binding.depthCompareOption);
+        frac.bind(depthStencilState);
+
         for (int i = 0; i < creation.shader_binding.shader_entries.size(); i++)
         {
             PSOShaderBinding shader_binding;

@@ -27,7 +27,7 @@ namespace yjw
     void RenderSystem::initialize()
     {
         WindowsManager::get().initialize();
-        RPIInit(800, 600, WindowsManager::get().window);
+        RPIInit(1200, 1200, WindowsManager::get().window);
 
         g_resource_store.initializeResource();
         

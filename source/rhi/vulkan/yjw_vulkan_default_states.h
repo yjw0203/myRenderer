@@ -31,6 +31,10 @@ namespace vulkan
 			depthCompareOp = VK_COMPARE_OP_LESS;
 			depthBoundsTestEnable = VK_FALSE;
 			stencilTestEnable = VK_FALSE;
+			front = VkStencilOpState();
+			back = VkStencilOpState();
+			minDepthBounds = 0;
+			maxDepthBounds = 0;
 			flags = 0;
 			pNext = nullptr;
 		}

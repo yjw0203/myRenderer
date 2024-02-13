@@ -45,6 +45,7 @@ namespace rhi
 		virtual void cmdDraw(RHICommandBufferHandle commandBufferHandle, int vertexCount, int instanceCount, int firstVertex, int firstInstance) = 0;
 		virtual void cmdResourceBarrier(RHICommandBufferHandle commandBufferHandle, RHIResourceHandle resourceHandle, RHIResourceState beforeState, RHIResourceState afterState) = 0;
 		virtual void cmdCopyToSwapchainBackTexture(RHICommandBufferHandle commandBufferHandle, RHIResourceHandle resource) = 0;
+		virtual void cmdClearTexture(RHICommandBufferHandle commandBufferHandle, RHIResourceHandle resource) = 0;
 	
 		virtual void submitCommandBuffer(RHICommandBufferHandle commandBufferHandle) = 0;
 		virtual void resetCommandBuffer(RHICommandBufferHandle commandBufferHandle) = 0;

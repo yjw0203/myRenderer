@@ -6,13 +6,13 @@ namespace yjw
 {
     void DefaultPipeline::initializeResource()
     {
-        RPITexture albedo_image = RPICreateDefaultTexture2D(720, 720, RPIFormat::R8G8B8A8_snorm);
-        RPITexture normal_image = RPICreateDefaultTexture2D(720, 720, RPIFormat::R8G8B8A8_snorm);
-        RPITexture depthImage = RPICreateDepthStencilTexture2D(720, 720, RPIFormat::D24_unorm_S8_uint);
-        RPITexture colorImage = RPICreateDefaultTexture2D(720, 720, RPIFormat::R8G8B8A8_unorm);
-        RPITexture diffuseImage = RPICreateDefaultTexture2D(720, 720, RPIFormat::R32G32B32A32_sfloat);
-        RPITexture specularImage = RPICreateDefaultTexture2D(720, 720, RPIFormat::R32G32B32A32_sfloat);
-        RPITexture ambientImage = RPICreateDefaultTexture2D(720, 720, RPIFormat::R32G32B32A32_sfloat);
+        RPITexture albedo_image = RPICreateDefaultTexture2D(1200, 1200, RPIFormat::R8G8B8A8_snorm);
+        RPITexture normal_image = RPICreateDefaultTexture2D(1200, 1200, RPIFormat::R8G8B8A8_snorm);
+        RPITexture depthImage = RPICreateDepthStencilTexture2D(1200, 1200, RPIFormat::D24_unorm_S8_uint);
+        RPITexture colorImage = RPICreateDefaultTexture2D(1200, 1200, RPIFormat::R8G8B8A8_unorm);
+        RPITexture diffuseImage = RPICreateDefaultTexture2D(1200, 1200, RPIFormat::R32G32B32A32_sfloat);
+        RPITexture specularImage = RPICreateDefaultTexture2D(1200, 1200, RPIFormat::R32G32B32A32_sfloat);
+        RPITexture ambientImage = RPICreateDefaultTexture2D(1200, 1200, RPIFormat::R32G32B32A32_sfloat);
         texture_map["albedo"] = Resource{ albedo_image ,true };
         texture_map["normal"] = Resource{ normal_image ,true };
         texture_map["depth"] = Resource{ depthImage ,true };
@@ -64,8 +64,8 @@ namespace yjw
 
         for (auto& texture : texture_map)
         {
-            //RPICmdResourceBarrier(commandBuffer, texture.second.resource_handle, RPIGetResourceState(texture.second.resource_handle), RHIResourceState::transfer_dst);
-            ///IRHI::Get()->clearImageResource(texture.second.resource_handle.get());
+            RPICmdResourceBarrier(commandBuffer, texture.second.resource_handle, RPIGetResourceState(texture.second.resource_handle), RHIResourceState::transfer_dst);
+            RPICmdClearTexture(commandBuffer, texture.second.resource_handle);
         }
 
         for (auto pass : passes)
