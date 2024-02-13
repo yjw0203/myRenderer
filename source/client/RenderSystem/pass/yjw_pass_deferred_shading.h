@@ -1,6 +1,6 @@
 #pragma once
 #include "../yjw_pass.h"
-#include "rhi/rhi/yjw_rhi_header.h"
+#include "rhi/rpi/yjw_rpi_header.h"
 #include "client/RenderSystem/yjw_model.h"
 
 namespace yjw
@@ -11,33 +11,34 @@ namespace yjw
     public:
         virtual void buildPSO() override;
         virtual void setupData() override;
-        virtual void recordCommand() override;
+        virtual void recordCommand(RPICommandBuffer commandBuffer) override;
         virtual void submit() override;
         void registerTexture(
-            std::shared_ptr<RHIResource> in_abeldo,
-            std::shared_ptr<RHIResource> in_normal,
-            std::shared_ptr<RHIResource> in_diffuse,
-            std::shared_ptr<RHIResource> in_specular,
-            std::shared_ptr<RHIResource> in_ambient,
-            std::shared_ptr<RHIResource> in_depth,
-            std::shared_ptr<RHIResource> out_color);
+            RPITexture in_abeldo,
+            RPITexture in_normal,
+            RPITexture in_diffuse,
+            RPITexture in_specular,
+            RPITexture in_ambient,
+            RPITexture in_depth,
+            RPITexture out_color);
 
     private:
-        std::shared_ptr<RHIAttachmentsSet> attachementSet;
-        std::shared_ptr<RHIPipeline> pipeline;
-        std::shared_ptr<RHIShader> vs;
-        std::shared_ptr<RHIShader> ps;
+        RPIAttachmentSet attachementSet;
+        RPIPipeline pipeline;
+        RPIShader vs;
+        RPIShader ps;
 
-        std::shared_ptr<RHIDescriptorsSet> descriptors_set;
+        RPIDescriptorSet descriptors_set;
 
-        std::shared_ptr<RHIShaderResourceTexture> in_abeldo;
-        std::shared_ptr<RHIShaderResourceTexture> in_normal;
-        std::shared_ptr<RHIShaderResourceTexture> in_depth;
-        std::shared_ptr<RHIShaderResourceTexture> in_diffuse;
-        std::shared_ptr<RHIShaderResourceTexture> in_specular;
-        std::shared_ptr<RHIShaderResourceTexture> in_ambient;
+        RPIDescriptor in_abeldo;
+        RPIDescriptor in_normal;
+        RPIDescriptor in_depth;
+        RPIDescriptor in_diffuse;
+        RPIDescriptor in_specular;
+        RPIDescriptor in_ambient;
+        RPIDescriptor out_color;
 
-        std::unique_ptr<RHIBuffer> vertex_buffer;
+        RPIBuffer vertex_buffer;
 
     };
 }

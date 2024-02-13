@@ -7,8 +7,8 @@
 
 #include <vector>
 
-const int WIDTH = 720;
-const int HEIGHT = 720;
+const int WIDTH = 1200;
+const int HEIGHT = 1200;
 
 namespace yjw
 {

@@ -3,11 +3,11 @@
 #include <map>
 #include <string>
 #include <memory>
-#include "rhi/rhi/yjw_rhi_header.h"
+#include "rhi/rpi/yjw_rpi_header.h"
 #include "client/RenderSystem/yjw_pass.h"
 namespace yjw
 {
-    using namespace rhi;
+    using namespace rpi;
     class DefaultPipeline : Pipeline
     {
     public:
@@ -15,11 +15,12 @@ namespace yjw
         virtual void config() override;
         virtual void render() override;
 
-        std::shared_ptr<RHIResource> output = nullptr;
+        RPIResource output;
+        RPICommandBuffer commandBuffer;
     private:
         struct Resource
         {
-            std::shared_ptr<RHIResource> resource_handle;
+            RPIResource resource_handle;
             bool need_clear_pre_render = false;
         };
 

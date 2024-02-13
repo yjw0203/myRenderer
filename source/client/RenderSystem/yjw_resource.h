@@ -1,10 +1,10 @@
 #pragma once
-#include "rhi/rhi/yjw_rhi_header.h"
+#include "rhi/rpi/yjw_rpi_header.h"
 #include <memory>
 
 namespace yjw
 {
-    using namespace rhi;
+    using namespace rpi;
     class GlobalResourceStore
     {
     public:
@@ -13,9 +13,12 @@ namespace yjw
         void updateLightData();
 
     public:
-        std::shared_ptr<RHIUniformBuffer> cameraUniform;
-        std::shared_ptr<RHIUniformBuffer> lightUniform;
-        std::shared_ptr<RHIUniformBuffer> optionUniform;
+        RPIBuffer cameraUniform;
+        RPIDescriptor cameraUniformDescriptor;
+        RPIBuffer lightUniform;
+        RPIDescriptor lightUniformDescriptor;
+        RPIBuffer optionUniform;
+        RPIDescriptor optionUniformDescriptor;
     };
 
     extern GlobalResourceStore g_resource_store;

@@ -1,12 +1,12 @@
 #include "yjw_pass.h"
-#include "rhi/rhi/yjw_rhi_header.h"
+#include "rhi/rpi/yjw_rpi_header.h"
 namespace yjw
 {
-    void Pass::setResourceBarrier()
+    void Pass::setResourceBarrier(RPICommandBuffer commandBuffer)
     {
         for (auto pair : initialResourceState)
         {
-            rhi::IRHI::Get()->resourceBarrier(pair.first.get(), pair.first->state, pair.second);
+            rpi::RPICmdResourceBarrier(commandBuffer, pair.first, rpi::RPIGetResourceState(pair.first), pair.second);
         }
     }
 }

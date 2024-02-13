@@ -3,7 +3,7 @@
 #include <memory>
 #include <vector>
 #include <glm/glm.hpp>
-#include "rhi/rhi/yjw_rhi_header.h"
+#include "rhi/rpi/yjw_rpi_header.h"
 
 namespace yjw
 {
@@ -26,15 +26,15 @@ namespace yjw
         std::vector<MeshVertex> vertices;
         std::vector<uint32_t> indices;
 
-        std::unique_ptr<rhi::RHIBuffer> vertex_buffer;
-        std::unique_ptr<rhi::RHIBuffer> index_buffer;
+        rpi::RPIBuffer vertex_buffer;
+        rpi::RPIBuffer index_buffer;
     };
 
     class Material
     {
     public:
-        rhi::RHITexture2DFromFile* texture;
-        std::shared_ptr<rhi::RHIShaderResourceTexture> textureShaderResource;
+        rpi::RPITexture texture;
+        rpi::RPIDescriptor textureShaderResource;
         glm::vec4    diffuse;
         glm::vec3    specular;
         float        specularPower;

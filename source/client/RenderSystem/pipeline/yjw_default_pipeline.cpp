@@ -6,13 +6,13 @@ namespace yjw
 {
     void DefaultPipeline::initializeResource()
     {
-        std::shared_ptr <RHITexture2D> albedo_image = std::make_shared<RHITexture2D>(720, 720, 1, RHIFormat::R8G8B8A8_snorm, RHIResourceUsageBits::allow_render_target | RHIResourceUsageBits::allow_transfer_src, RHIMemoryType::default_);
-        std::shared_ptr <RHITexture2D> normal_image = std::make_shared<RHITexture2D>(720, 720, 1, RHIFormat::R8G8B8A8_snorm, RHIResourceUsageBits::allow_render_target | RHIResourceUsageBits::allow_transfer_src, RHIMemoryType::default_);
-        std::shared_ptr <RHITexture2D> depthImage = std::make_shared<RHITexture2D>(720, 720, 1, RHIFormat::D24_unorm_S8_uint, RHIResourceUsageBits::allow_depth_stencil, RHIMemoryType::default_);
-        std::shared_ptr <RHITexture2D> colorImage = std::make_shared<RHITexture2D>(720, 720, 1, RHIFormat::R8G8B8A8_unorm, RHIResourceUsageBits::allow_render_target | RHIResourceUsageBits::allow_transfer_src, RHIMemoryType::default_);
-        std::shared_ptr <RHITexture2D> diffuseImage = std::make_shared<RHITexture2D>(720, 720, 1, RHIFormat::R32G32B32A32_sfloat, RHIResourceUsageBits::allow_render_target | RHIResourceUsageBits::allow_transfer_src, RHIMemoryType::default_);
-        std::shared_ptr <RHITexture2D> specularImage = std::make_shared<RHITexture2D>(720, 720, 1, RHIFormat::R32G32B32A32_sfloat, RHIResourceUsageBits::allow_render_target | RHIResourceUsageBits::allow_transfer_src, RHIMemoryType::default_);
-        std::shared_ptr <RHITexture2D> ambientImage = std::make_shared<RHITexture2D>(720, 720, 1, RHIFormat::R32G32B32A32_sfloat, RHIResourceUsageBits::allow_render_target | RHIResourceUsageBits::allow_transfer_src, RHIMemoryType::default_);
+        RPITexture albedo_image = RPICreateDefaultTexture2D(1200, 1200, RPIFormat::R8G8B8A8_snorm);
+        RPITexture normal_image = RPICreateDefaultTexture2D(1200, 1200, RPIFormat::R8G8B8A8_snorm);
+        RPITexture depthImage = RPICreateDepthStencilTexture2D(1200, 1200, RPIFormat::D24_unorm_S8_uint);
+        RPITexture colorImage = RPICreateDefaultTexture2D(1200, 1200, RPIFormat::R8G8B8A8_unorm);
+        RPITexture diffuseImage = RPICreateDefaultTexture2D(1200, 1200, RPIFormat::R32G32B32A32_sfloat);
+        RPITexture specularImage = RPICreateDefaultTexture2D(1200, 1200, RPIFormat::R32G32B32A32_sfloat);
+        RPITexture ambientImage = RPICreateDefaultTexture2D(1200, 1200, RPIFormat::R32G32B32A32_sfloat);
         texture_map["albedo"] = Resource{ albedo_image ,true };
         texture_map["normal"] = Resource{ normal_image ,true };
         texture_map["depth"] = Resource{ depthImage ,true };
@@ -22,6 +22,8 @@ namespace yjw
         texture_map["ambient"] = Resource{ ambientImage ,true };
 
         output = colorImage;
+
+        commandBuffer = RPICreateCommandBuffer();
     }
 
     void DefaultPipeline::config()
@@ -54,6 +56,7 @@ namespace yjw
 
     void DefaultPipeline::render()
     {
+        RPIResetCommandBuffer(commandBuffer);
         for (auto pass : passes)
         {
             pass->setupData();
@@ -61,14 +64,14 @@ namespace yjw
 
         for (auto& texture : texture_map)
         {
-            IRHI::Get()->resourceBarrier(texture.second.resource_handle.get(), texture.second.resource_handle->state, RHIResourceState::transfer_dst);
-            IRHI::Get()->clearImageResource(texture.second.resource_handle.get());
+            RPICmdResourceBarrier(commandBuffer, texture.second.resource_handle, RPIGetResourceState(texture.second.resource_handle), RHIResourceState::transfer_dst);
+            RPICmdClearTexture(commandBuffer, texture.second.resource_handle);
         }
 
         for (auto pass : passes)
         {
-            pass->setResourceBarrier();
-            pass->recordCommand();
+            pass->setResourceBarrier(commandBuffer);
+            pass->recordCommand(commandBuffer);
         }
     }
 }

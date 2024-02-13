@@ -1,4 +1,4 @@
-#pragma once;
+#pragma once
 #include "yjw_light.h"
 #include "yjw_model.h"
 #include <vector>
