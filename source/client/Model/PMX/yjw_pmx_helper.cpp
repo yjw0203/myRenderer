@@ -8,18 +8,38 @@ namespace yjw
     class PMXFile
     {
     public:
-        PMXFile(const char* filePath) :file(filePath, std::ios::binary) {}
-        void read(char* data, int size)
+        PMXFile(const char* filePath)
         {
-            if (!file.read((char*)data, size))
+            std::ifstream file(filePath, std::ios::binary);
+            file.seekg(0, file.end);
+            unsigned long long fileSize = file.tellg();
+            file.seekg(0, file.beg);
+            buffer.resize(fileSize);
+            fileCur = 0;
+            if (!file.read(buffer.data(), fileSize))
             {
                 auto rs = file.fail();
                 printf("ggg\n");
+                buffer.clear();
+            }
+            file.close();
+        }
+        void read(char* data, int size)
+        {
+            if (fileCur + size <= buffer.size())
+            {
+                memcpy(data, buffer.data() + fileCur, size);
+                fileCur += size;
+            }
+            else
+            {
+                throw;
             }
         }
 
     private:
-        std::ifstream file;
+        std::vector<char> buffer;
+        unsigned long long fileCur;
     };
 
     class PMXFileStream
