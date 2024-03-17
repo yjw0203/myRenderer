@@ -1,4 +1,4 @@
-set(TARGET_NAME rhi)
+set(TARGET_NAME RHI)
 
 file(GLOB_RECURSE HEADER_FILES "*.h")
 file(GLOB_RECURSE SOURCE_FILES "*.cpp")

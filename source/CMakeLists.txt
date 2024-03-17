@@ -11,6 +11,7 @@ set(SHADER_PATH ${PROJECT_SOURCE_DIR}/shaders)
 set(RESOURCE_PATH ${PROJECT_SOURCE_DIR}/resource)
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/project/projectInfo.h.in ${CMAKE_CURRENT_SOURCE_DIR}/generate/projectInfo.h)
 
-add_subdirectory(rhi)
+add_subdirectory(RHI)
 
 add_subdirectory(client)
+add_subdirectory(test)
