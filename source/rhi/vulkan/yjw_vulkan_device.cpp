@@ -4,6 +4,8 @@
 #include <stdexcept>
 #include "yjw_vulkan_command_queue.h"
 #include "yjw_vulkan_swap_chain.h"
+#include "yjw_vulkan_pipeline.h"
+#include "yjw_vulkan_shader.h"
 namespace rhi
 {
     QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device) {
@@ -99,6 +101,16 @@ namespace rhi
         return new VulkanSwapChain(this, window);
     }
 
+    RHIShader* VulkanDevice::CreateShaderByBinaryUrl(const char* url)
+    {
+        return new VulkanShader(this, url, true);
+    }
+
+    RHIRenderPipeline* VulkanDevice::CreateRenderPipeline(const RHIRenderPipelineDescriptor& renderPipelineDescriptor)
+    {
+        return new VulkanRenderPipeline(this, renderPipelineDescriptor);
+    }
+
     VulkanDevice::~VulkanDevice()
     {
         delete m_command_queue;
@@ -132,7 +144,14 @@ namespace rhi
 
     VulkanDeviceObject::VulkanDeviceObject(VulkanDevice* device)
         :m_parent_device(device)
-    {}
+    {
+        
+    }
+
+    VulkanDeviceObject::~VulkanDeviceObject()
+    {
+        
+    }
 
     VulkanDevice* VulkanDeviceObject::GetDevice()
     {

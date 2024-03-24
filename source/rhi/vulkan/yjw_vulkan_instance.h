@@ -10,7 +10,6 @@ namespace rhi
         VulkanInstance(RHIInstanceConfig config);
         ~VulkanInstance();
         virtual RHIDevice* CreateDevice() override;
-        virtual void DestroyDevice(RHIDevice* device) override;
         VkInstance GetNativeInstance();
     private:
         VkInstance m_native_instance = nullptr;

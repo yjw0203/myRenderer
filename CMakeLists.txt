@@ -14,7 +14,7 @@ set(CMAKE_CXX_STANDARD 17)
 
 ## 3rd party
 set(vulkan_lib_dir ${CMAKE_CURRENT_SOURCE_DIR}/3rd/VulkanSDK/1.3.204.1/Lib)
-file(GLOB VULKAN_LIB_FILES ${vulkan_lib_dir}/*.lib)
+file(GLOB VULKAN_LIB_FILES ${vulkan_lib_dir}/*d.lib)
 set(vulkan_include ${CMAKE_CURRENT_SOURCE_DIR}/3rd/VulkanSDK/1.3.204.1/Include)
 set(vulkan_libs ${VULKAN_LIB_FILES} ${CMAKE_CURRENT_SOURCE_DIR}/3rd/VulkanSDK/1.3.204.1/Lib/vulkan-1.lib)
 

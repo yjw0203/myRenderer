@@ -1,5 +1,6 @@
 #pragma once
 #include "yjw_rhi_device.h"
+#include "yjw_rhi_object.h"
 
 namespace rhi
 {
@@ -17,20 +18,18 @@ namespace rhi
         bool isDebugMode;
     };
 
-    class RHIInstanceImpl
+    class RHIInstanceImpl : public RHIObject
     {
     public:
         virtual RHIDevice* CreateDevice() = 0;
-        virtual void DestroyDevice(RHIDevice* device) = 0;
     };
 
-    class RHIInstance
+    class RHIInstance 
     {
     public:
         RHIInstance(RHIInstanceConfig config);
         ~RHIInstance();
         RHIDevice* CreateDevice();
-        void DestroyDevice(RHIDevice* device);
     private:
         RHIInstanceImpl* m_impl = nullptr;
     };

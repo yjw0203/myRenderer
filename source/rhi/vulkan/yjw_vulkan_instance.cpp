@@ -72,11 +72,6 @@ namespace rhi
         return new VulkanDevice(this, m_config.isDebugMode);
     }
 
-    void VulkanInstance::DestroyDevice(RHIDevice* device)
-    {
-        delete device;
-    }
-
     VkInstance VulkanInstance::GetNativeInstance()
     {
         return m_native_instance;

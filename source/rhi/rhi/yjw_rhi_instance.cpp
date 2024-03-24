@@ -10,16 +10,11 @@ namespace rhi
 
     RHIInstance::~RHIInstance()
     {
-        delete m_impl;
+        m_impl->release();
     }
 
     RHIDevice* RHIInstance::CreateDevice()
     {
         return m_impl->CreateDevice();
-    }
-
-    void RHIInstance::DestroyDevice(RHIDevice* device)
-    {
-        m_impl->DestroyDevice(device);
     }
 }

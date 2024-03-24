@@ -22,6 +22,8 @@ namespace rhi
         ~VulkanDevice();
 
         virtual RHISwapChain* CreateSwapchain(void* window) override;
+        virtual RHIShader* CreateShaderByBinaryUrl(const char* url) override;
+        virtual RHIRenderPipeline* CreateRenderPipeline(const RHIRenderPipelineDescriptor& renderPipelineDescriptor) override;
 
         VkPhysicalDevice GetGpu();
         VkDevice GetNativeDevice();
@@ -40,6 +42,7 @@ namespace rhi
     {
     public:
         VulkanDeviceObject(VulkanDevice* device);
+        ~VulkanDeviceObject();
         VulkanDevice* GetDevice();
     private:
         VulkanDevice* m_parent_device = nullptr;

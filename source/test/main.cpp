@@ -19,6 +19,8 @@ void initRender()
     instance = new RHIInstance(config);
     device = instance->CreateDevice();
     swapchain = device->CreateSwapchain(window);
+
+    device->CreateShaderByBinaryUrl("D:/workspace/projects/vulkanRenderSample/shaders/gbuffer_vert.spv");
 }
 
 void render()
