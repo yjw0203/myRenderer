@@ -10,6 +10,7 @@ namespace rhi
     {
     public:
         VulkanSwapChain(VulkanDevice* pDevice, void* window);
+        ~VulkanSwapChain();
         virtual RHITexture* GetBackTexture() override;
         virtual RHITextureView* GetBackTextureView() override;
         void Present(bool bSync);

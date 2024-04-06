@@ -14,5 +14,7 @@ namespace rhi
         virtual void Draw(int vertexCount, int instanceCount, int firstVertex, int firstInstance) = 0;
         virtual void Submit() = 0;
         virtual void Present(RHISwapChain* swapchain, bool bSync) = 0;
+
+        virtual void CopyTexture2D(RHITexture* srcTexture, RHITexture* dstTexture) = 0;
     };
 }

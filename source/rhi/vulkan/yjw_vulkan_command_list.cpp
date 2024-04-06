@@ -133,6 +133,21 @@ namespace rhi
         swapchain->Present(bSync);
     }
 
+    void VulkanCommandBuffer::CopyTexture2D(VulkanTexture* srcTexture, VulkanTexture* dstTexture)
+    {
+        VkImageCopy imageCopyRegion{};
+        imageCopyRegion.srcSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+        imageCopyRegion.srcSubresource.layerCount = 1;
+        imageCopyRegion.dstSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+        imageCopyRegion.dstSubresource.layerCount = 1;
+        imageCopyRegion.extent.width = srcTexture->GetWidth();
+        imageCopyRegion.extent.height = srcTexture->GetHeight();
+        imageCopyRegion.extent.depth = 1;
+        srcTexture->TransitionState(m_command_list.GetCommandBuffer(), VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
+        dstTexture->TransitionState(m_command_list.GetCommandBuffer(), VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+        vkCmdCopyImage(m_command_list.GetCommandBuffer(), srcTexture->GetVkImage(), VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, dstTexture->GetVkImage(), VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &imageCopyRegion);
+    }
+
     void VulkanCommandBuffer::PrepareForRender()
     {
         vkCmdBindPipeline(m_command_list.GetCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, m_state_cache.GetRenderPipeline()->GetOrCreateVkPipeline(m_current_render_pass));

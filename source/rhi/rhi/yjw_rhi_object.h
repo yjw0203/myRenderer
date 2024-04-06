@@ -6,6 +6,7 @@ namespace rhi
     class RHIObject
     {
     public:
+        virtual ~RHIObject(){}
         void retain(RHIObject* byWhich);
         void release();
     private:

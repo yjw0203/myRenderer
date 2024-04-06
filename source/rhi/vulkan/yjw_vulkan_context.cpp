@@ -38,4 +38,9 @@ namespace rhi
     {
         m_command_buffer.Present(ResourceCast(swapchain), bSync);
     }
+
+    void VulkanContext::CopyTexture2D(RHITexture* srcTexture, RHITexture* dstTexture)
+    {
+        m_command_buffer.CopyTexture2D(ResourceCast(srcTexture), ResourceCast(dstTexture));
+    }
 }

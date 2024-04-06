@@ -174,6 +174,12 @@ namespace rhi
         vkAcquireNextImageKHR(GetDevice()->GetNativeDevice(), m_native_swapchain, UINT64_MAX, m_imageAvailableSemaphore, VK_NULL_HANDLE, &m_swapchainImageIndex);
     }
 
+    VulkanSwapChain::~VulkanSwapChain()
+    {
+        vkDestroySemaphore(GetDevice()->GetNativeDevice(), m_imageAvailableSemaphore, nullptr);
+        vkDestroySwapchainKHR(GetDevice()->GetNativeDevice(), m_native_swapchain, nullptr);
+    }
+
     void VulkanSwapChain::Present(bool bSync)
     {
         VkPresentInfoKHR presentInfo{};

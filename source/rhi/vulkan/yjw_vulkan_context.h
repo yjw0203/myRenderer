@@ -17,6 +17,8 @@ namespace rhi
         virtual void Draw(int vertexCount, int instanceCount, int firstVertex, int firstInstance) override;
         virtual void Submit() override;
         virtual void Present(RHISwapChain* swapchain, bool bSync) override;
+
+        virtual void CopyTexture2D(RHITexture* srcTexture, RHITexture* dstTexture) override;
     private:
         VulkanStateCache m_state_cache;
         VulkanCommandBuffer m_command_buffer;

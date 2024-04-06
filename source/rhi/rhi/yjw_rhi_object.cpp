@@ -1,7 +1,9 @@
 #include "yjw_rhi_object.h"
+#include "yjw_rhi_swap_chain.h"
 
 namespace rhi
 {
+
     void RHIObject::retain(RHIObject* byWhich)
     {
         m_ref_count.fetch_add(1);

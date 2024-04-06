@@ -6,14 +6,36 @@
 
 using namespace rhi;
 
-GLFWwindow* window = nullptr;
 RHIInstance* instance = nullptr;
 RHIDevice* device = nullptr;
-RHISwapChain* swapchain = nullptr;
+
+class Window
+{
+public:
+    void create()
+    {
+        m_window = glfwCreateWindow(800, 800, "WOW!", nullptr, nullptr);
+        m_swapchain = device->CreateSwapchain(m_window);
+    }
+
+    void destroy()
+    {
+        glfwDestroyWindow(m_window);
+        m_swapchain->release();
+    }
+public:
+    GLFWwindow* m_window = nullptr;
+    RHISwapChain* m_swapchain = nullptr;
+};
+
+const  int countOfWindows = 5;
+Window* windows[countOfWindows] = { nullptr,nullptr };
 
 RHIRenderPass* renderPass = nullptr;
 RHIRenderPipeline* renderPipeline = nullptr;
 RHIContext* context = nullptr;
+RHITexture* rtTexture = nullptr;
+RHITextureView* rtTextureView = nullptr;
 
 void initRender()
 {
@@ -22,14 +44,8 @@ void initRender()
     config.isDebugMode = true;
     instance = new RHIInstance(config);
     device = instance->CreateDevice();
-    swapchain = device->CreateSwapchain(window);
+    
     context = device->CreateContext();
-
-    RHIRenderPassDescriptor renderpassDesc{};
-    renderpassDesc.colorAttachmentCount = 1;
-    renderpassDesc.colorAttachments[0] = swapchain->GetBackTextureView()
-        ;
-    renderPass = device->CreateRenderPass(renderpassDesc);
 
     RHIShader* vs = device->CreateShaderByBinaryUrl("D:/workspace/projects/vulkanRenderSample/shaders/test1_vert.spv");
     RHIShader* ps = device->CreateShaderByBinaryUrl("D:/workspace/projects/vulkanRenderSample/shaders/test1_frag.spv");
@@ -43,6 +59,27 @@ void initRender()
 
     vs->release();
     ps->release();
+
+    RHITextureDescriptor textureDesc{};
+    textureDesc.resourceType = RHIResourceType::texture2D;
+    textureDesc.format = RHIFormat::B8G8R8A8_srgb;
+    textureDesc.width = 800;
+    textureDesc.height = 800;
+    textureDesc.depthOrArraySize = 1;
+    textureDesc.miplevels = 1;
+    textureDesc.usage = (int)RHIResourceUsageBits::allow_render_target | (int)RHIResourceUsageBits::allow_transfer_src;
+    textureDesc.memoryType = RHIMemoryType::default_;
+    rtTexture = device->CreateTexture(textureDesc);
+
+    RHITextureViewDescriptor textureViewDesc{};
+    textureViewDesc.texture = rtTexture;
+    textureViewDesc.format = RHIFormat::B8G8R8A8_srgb;
+    rtTextureView = device->CreateTextureView(textureViewDesc);
+
+    RHIRenderPassDescriptor renderpassDesc{};
+    renderpassDesc.colorAttachmentCount = 1;
+    renderpassDesc.colorAttachments[0] = rtTextureView;
+    renderPass = device->CreateRenderPass(renderpassDesc);
 }
 
 void render()
@@ -51,8 +88,23 @@ void render()
     context->SetRenderPipeline(renderPipeline);
     context->Draw(3, 1, 0, 0);
     context->EndPass();
-    context->Submit();
-    context->Present(swapchain, false);
+    for (int i = 0; i < countOfWindows; i++)
+    {
+        if (windows[i])
+        {
+            context->CopyTexture2D(rtTexture, windows[i]->m_swapchain->GetBackTexture());
+            break;
+        }
+    }
+    
+    for (int i = 0; i < countOfWindows; i++)
+    {
+        if (windows[i])
+        {
+            context->Present(windows[i]->m_swapchain, false);
+        }
+    }
+    
 }
 
 
@@ -63,19 +115,38 @@ int main()
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
     glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
-    window = glfwCreateWindow(800, 800, "WOW!", nullptr, nullptr);
-
     initRender();
+
+    for (int i = 0; i < countOfWindows; i++)
+    {
+        windows[i] = new Window();
+        windows[i]->create();
+    }
 
     bool shouldClose = false;
 
     while (!shouldClose)
     {
-        if (glfwWindowShouldClose(window))
+        for (int i = 0; i < countOfWindows; i++)
         {
-            shouldClose = true;
+            if (windows[i] && glfwWindowShouldClose(windows[i]->m_window))
+            {
+                windows[i]->destroy();
+                delete windows[i];
+                windows[i] = nullptr;
+            }
         }
-        else
+
+        shouldClose = true;
+        for (int i = 0; i < countOfWindows; i++)
+        {
+            if (windows[i])
+            {
+                shouldClose = false;
+            }
+        }
+
+        if (!shouldClose)
         {
             render();
             glfwPollEvents();

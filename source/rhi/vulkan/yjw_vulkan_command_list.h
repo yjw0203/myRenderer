@@ -33,6 +33,8 @@ namespace rhi
         void CmdDraw(int vertexCount, int instanceCount, int firstVertex, int firstInstance);
         void Submit();
         void Present(VulkanSwapChain* swapchain, bool bSync);
+
+        void CopyTexture2D(VulkanTexture* srcTexture, VulkanTexture* dstTexture);
     private:
         void PrepareForRender();
     private:
