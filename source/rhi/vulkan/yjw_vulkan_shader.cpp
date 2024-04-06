@@ -5,15 +5,15 @@
 
 namespace rhi
 {
-    VulkanShaderType ConvertSPVExecutionModelToVulkanShaderType(spv::ExecutionModel model)
+    RHIShaderType ConvertSPVExecutionModelToVulkanShaderType(spv::ExecutionModel model)
     {
         switch (model)
         {
-        case spv::ExecutionModel::ExecutionModelVertex:return VulkanShaderType::vertex;
-        case spv::ExecutionModel::ExecutionModelFragment:return VulkanShaderType::fragment;
-        case spv::ExecutionModel::ExecutionModelKernel:return VulkanShaderType::compute;
+        case spv::ExecutionModel::ExecutionModelVertex:return RHIShaderType::vertex;
+        case spv::ExecutionModel::ExecutionModelFragment:return RHIShaderType::fragment;
+        case spv::ExecutionModel::ExecutionModelKernel:return RHIShaderType::compute;
         }
-        return VulkanShaderType::count;
+        return RHIShaderType::count;
     }
 
     VulkanShader::VulkanShader(VulkanDevice* pDevice, const char* url, bool isBinary)
@@ -35,7 +35,7 @@ namespace rhi
         return m_shader_module;
     }
 
-    std::unordered_map<RHIName, VulkanResourceBinding>& VulkanShader::GetReflectionTableByEntryName(RHIName name)
+    std::unordered_map<RHIName, VulkanResourceBindingVariable>& VulkanShader::GetReflectionTableByEntryName(RHIName name)
     {
         return m_entry_reflection_tables[name];
     }
@@ -93,8 +93,8 @@ namespace rhi
         {
             reflection.set_entry_point(entryPoint.name, entryPoint.execution_model);
 
-            std::unordered_map<RHIName, VulkanResourceBinding>& reflection_table = m_entry_reflection_tables[RHIName(entryPoint.name.c_str())];
-            VulkanShaderType shaderType = ConvertSPVExecutionModelToVulkanShaderType(entryPoint.execution_model);
+            std::unordered_map<RHIName, VulkanResourceBindingVariable>& reflection_table = m_entry_reflection_tables[RHIName(entryPoint.name.c_str())];
+            RHIShaderType shaderType = ConvertSPVExecutionModelToVulkanShaderType(entryPoint.execution_model);
 
             for (auto& resource : resources.uniform_buffers)
             {
@@ -102,7 +102,7 @@ namespace rhi
                 spirv_cross::SPIRType type = reflection.get_type(resource.base_type_id);
                 int setId = reflection.get_decoration(resource.id, spv::DecorationDescriptorSet);
                 int binding = reflection.get_decoration(resource.id, spv::DecorationBinding);
-                VulkanResourceBinding& reflection_variable = reflection_table[name];
+                VulkanResourceBindingVariable& reflection_variable = reflection_table[name];
                 reflection_variable.shaderType = shaderType;
                 reflection_variable.setId = setId;
                 reflection_variable.binding = binding;
@@ -115,7 +115,7 @@ namespace rhi
                 spirv_cross::SPIRType type = reflection.get_type(resource.base_type_id);
                 int setId = reflection.get_decoration(resource.id, spv::DecorationDescriptorSet);
                 int binding = reflection.get_decoration(resource.id, spv::DecorationBinding);
-                VulkanResourceBinding& reflection_variable = reflection_table[name];
+                VulkanResourceBindingVariable& reflection_variable = reflection_table[name];
                 reflection_variable.shaderType = shaderType;
                 reflection_variable.setId = setId;
                 reflection_variable.binding = binding;

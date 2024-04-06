@@ -28,7 +28,7 @@ public:
     RHISwapChain* m_swapchain = nullptr;
 };
 
-const  int countOfWindows = 5;
+const  int countOfWindows = 2;
 Window* windows[countOfWindows] = { nullptr,nullptr };
 
 RHIRenderPass* renderPass = nullptr;

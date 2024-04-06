@@ -14,7 +14,7 @@ namespace rhi
         VulkanShader(VulkanDevice* pDevice, const char* url, bool isBinary);
         ~VulkanShader();
         VkShaderModule GetNativeShaderModule();
-        std::unordered_map<RHIName, VulkanResourceBinding>& GetReflectionTableByEntryName(RHIName name);
+        std::unordered_map<RHIName, VulkanResourceBindingVariable>& GetReflectionTableByEntryName(RHIName name);
     private:
         void ReadCodeFromFileUrl(const char* url, std::vector<char>& code);
         VkShaderModule CreateShaderModuleFromBinaryCode(VkDevice device, const void* pCode,int code_size);
@@ -25,6 +25,6 @@ namespace rhi
     private:
         VulkanDevice* m_parent_device = nullptr;
         VkShaderModule m_shader_module = nullptr;
-        std::unordered_map<RHIName, std::unordered_map<RHIName, VulkanResourceBinding>> m_entry_reflection_tables;
+        std::unordered_map<RHIName, std::unordered_map<RHIName, VulkanResourceBindingVariable>> m_entry_reflection_tables;
     };
 }

@@ -1,15 +1,17 @@
 #include "yjw_vulkan_pipeline.h".
 #include "yjw_vulkan_resource_cast.h"
 #include "yjw_vulkan_type_conversation.h"
+#include "yjw_vulkan_resource_binding.h"
 
 namespace rhi
 {
-    void VulkanResourceLayoutView::AddReflectionTable(VulkanShaderType shaderType, std::unordered_map<RHIName, VulkanResourceBinding>& reflection_table)
+    void VulkanResourceLayoutView::AddReflectionTable(RHIShaderType shaderType, std::unordered_map<RHIName, VulkanResourceBindingVariable>& reflection_table)
     {
         VkShaderStageFlagBits shaderBits = ConvertShaderTypeToVkStage(shaderType);
         for (auto& iter : reflection_table)
         {
-            VulkanResourceBinding& binding = iter.second;
+            VulkanResourceBindingVariable& binding = iter.second;
+            m_reflect_table[(int)shaderType][iter.first] = binding;
             VkDescriptorSetLayoutBinding decriptorBinding{};
             decriptorBinding.binding = binding.binding;
             decriptorBinding.descriptorCount = 1;
@@ -17,7 +19,7 @@ namespace rhi
             decriptorBinding.pImmutableSamplers = nullptr;
             decriptorBinding.descriptorType = ConvertShaderResourceTypeToDescriptorType(binding.resourceType);
             m_sets[binding.setId].push_back(decriptorBinding);
-            m_max_set_count = std::max(m_max_set_count, binding.setId);
+            m_max_set_id = std::max(m_max_set_id, binding.setId);
         }
     }
 
@@ -26,9 +28,30 @@ namespace rhi
         return m_sets[setId];
     }
 
+    std::unordered_map<RHIName, VulkanResourceBindingVariable>& VulkanResourceLayoutView::GetReflectTableByShaderType(RHIShaderType shaderType)
+    {
+        return m_reflect_table[(int)shaderType];
+    }
+
     int VulkanResourceLayoutView::GetMaxSetCount()
     {
-        return m_max_set_count;
+        return m_max_set_id + 1;
+    }
+
+    int VulkanResourceLayoutView::GetDescriptorCount(VkDescriptorType type)
+    {
+        int count = 0;
+        for (int setId = 0; setId <= m_max_set_id; setId++)
+        {
+            for (VkDescriptorSetLayoutBinding& binding : m_sets[setId])
+            {
+                if (binding.descriptorType == type)
+                {
+                    count++;
+                }
+            }
+        }
+        return count;
     }
 
     VulkanRenderPipeline::VulkanRenderPipeline(VulkanDevice* device, const RHIRenderPipelineDescriptor& desc)
@@ -187,11 +210,10 @@ namespace rhi
         }
 
         VulkanResourceLayoutView layoutView;
-        layoutView.AddReflectionTable(VulkanShaderType::vertex, ResourceCast(m_descriptor.vs)->GetReflectionTableByEntryName(RHIName(m_descriptor.vs_entry)));
-        layoutView.AddReflectionTable(VulkanShaderType::vertex, ResourceCast(m_descriptor.ps)->GetReflectionTableByEntryName(RHIName(m_descriptor.ps_entry)));
-        int descriptorSetCount = layoutView.GetMaxSetCount() + 1;
-        std::vector<VkDescriptorSetLayout> descriptorSetLayouts;
-        descriptorSetLayouts.resize(descriptorSetCount);
+        layoutView.AddReflectionTable(RHIShaderType::vertex, ResourceCast(m_descriptor.vs)->GetReflectionTableByEntryName(RHIName(m_descriptor.vs_entry)));
+        layoutView.AddReflectionTable(RHIShaderType::fragment, ResourceCast(m_descriptor.ps)->GetReflectionTableByEntryName(RHIName(m_descriptor.ps_entry)));
+        int descriptorSetCount = layoutView.GetMaxSetCount();
+        m_descriptor_set_layouts.resize(descriptorSetCount);
         for (int setId = 0; setId < descriptorSetCount; setId++)
         {
             std::vector<VkDescriptorSetLayoutBinding>& bindings = layoutView.GetBindingsBySetID(setId);
@@ -201,25 +223,28 @@ namespace rhi
             createInfo.pBindings = bindings.data();
             createInfo.flags = 0;
             createInfo.pNext = nullptr;
-            vkCreateDescriptorSetLayout(GetDevice()->GetNativeDevice(), &createInfo, nullptr, &descriptorSetLayouts[setId]);
+            vkCreateDescriptorSetLayout(GetDevice()->GetNativeDevice(), &createInfo, nullptr, &m_descriptor_set_layouts[setId]);
         }
 
         VkPipelineLayoutCreateInfo pipelineLayoutInfo;
         pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
         pipelineLayoutInfo.pNext = nullptr;
         pipelineLayoutInfo.flags = 0;
-        pipelineLayoutInfo.setLayoutCount = descriptorSetLayouts.size();
-        pipelineLayoutInfo.pSetLayouts = descriptorSetLayouts.data();
+        pipelineLayoutInfo.setLayoutCount = m_descriptor_set_layouts.size();
+        pipelineLayoutInfo.pSetLayouts = m_descriptor_set_layouts.data();
         pipelineLayoutInfo.pushConstantRangeCount = 0;
         pipelineLayoutInfo.pPushConstantRanges = nullptr;
         vkCreatePipelineLayout(GetDevice()->GetNativeDevice(), &pipelineLayoutInfo, nullptr, &m_pipeline_layout);
 
-        for (int setId = 0; setId < descriptorSetCount; setId++)
-        {
-            vkDestroyDescriptorSetLayout(GetDevice()->GetNativeDevice(), descriptorSetLayouts[setId], nullptr);
-        }
-
         return m_pipeline_layout;
+    }
+
+    RHIResourceBinding* VulkanRenderPipeline::CreateResourceBinding()
+    {
+        VulkanResourceLayoutView layoutView;
+        layoutView.AddReflectionTable(RHIShaderType::vertex, ResourceCast(m_descriptor.vs)->GetReflectionTableByEntryName(RHIName(m_descriptor.vs_entry)));
+        layoutView.AddReflectionTable(RHIShaderType::fragment, ResourceCast(m_descriptor.ps)->GetReflectionTableByEntryName(RHIName(m_descriptor.ps_entry)));
+        return new VulkanResourceBinding(GetDevice(), layoutView, m_descriptor_set_layouts.data(), m_descriptor_set_layouts.size());
     }
 
     VulkanRenderPipeline::~VulkanRenderPipeline()
@@ -230,7 +255,16 @@ namespace rhi
         {
             VulkanRenderPass* renderPass = iter.first;
             renderPass->release();
+            vkDestroyPipeline(GetDevice()->GetNativeDevice(), iter.second, nullptr);
         }
+
+        for (int setId = 0; setId < m_descriptor_set_layouts.size(); setId++)
+        {
+            vkDestroyDescriptorSetLayout(GetDevice()->GetNativeDevice(), m_descriptor_set_layouts[setId], nullptr);
+        }
+
+        vkDestroyPipelineLayout(GetDevice()->GetNativeDevice(), m_pipeline_layout, nullptr);
+
     }
     
 }

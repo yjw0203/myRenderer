@@ -3,15 +3,26 @@
 
 namespace rhi
 {
-    VkShaderStageFlagBits ConvertShaderTypeToVkStage(VulkanShaderType shaderType)
+    VkShaderStageFlagBits ConvertShaderTypeToVkStage(RHIShaderType shaderType)
     {
         switch (shaderType)
         {
-        case VulkanShaderType::vertex:return VkShaderStageFlagBits::VK_SHADER_STAGE_VERTEX_BIT;
-        case VulkanShaderType::fragment:return VkShaderStageFlagBits::VK_SHADER_STAGE_FRAGMENT_BIT;
-        case VulkanShaderType::compute:return VkShaderStageFlagBits::VK_SHADER_STAGE_COMPUTE_BIT;
+        case RHIShaderType::vertex:return VkShaderStageFlagBits::VK_SHADER_STAGE_VERTEX_BIT;
+        case RHIShaderType::fragment:return VkShaderStageFlagBits::VK_SHADER_STAGE_FRAGMENT_BIT;
+        case RHIShaderType::compute:return VkShaderStageFlagBits::VK_SHADER_STAGE_COMPUTE_BIT;
         }
         return (VkShaderStageFlagBits)0;
+    }
+
+    RHIShaderType ConvertVkStageToShaderType(VkShaderStageFlagBits shaderType)
+    {
+        switch (shaderType)
+        {
+        case VkShaderStageFlagBits::VK_SHADER_STAGE_VERTEX_BIT:return  RHIShaderType::vertex;
+        case VkShaderStageFlagBits::VK_SHADER_STAGE_FRAGMENT_BIT:return  RHIShaderType::fragment;
+        case VkShaderStageFlagBits::VK_SHADER_STAGE_COMPUTE_BIT:return  RHIShaderType::compute;
+        }
+        return RHIShaderType::count;
     }
 
     VkDescriptorType ConvertShaderResourceTypeToDescriptorType(VulkanShaderResourceType shaderType)

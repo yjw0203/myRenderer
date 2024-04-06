@@ -11,6 +11,14 @@ namespace rhi
     class RHITexture;
     class RHITextureView;
 
+    enum class RHIShaderType : char
+    {
+        vertex,
+        fragment,
+        compute,
+        count
+    };
+
     enum class RHIResourceType : char
     {
         unkown,

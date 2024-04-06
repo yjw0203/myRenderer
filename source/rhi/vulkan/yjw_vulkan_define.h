@@ -1,24 +1,17 @@
 #pragma once
+#include "RHI/rhi/yjw_rhi_define.h"
 #define VULKAN_MAX_DESCRIPTOR_SET 16
 namespace rhi
 {
-    enum VulkanShaderType
-    {
-        vertex,
-        fragment,
-        compute,
-        count
-    };
-
     enum VulkanShaderResourceType
     {
         uniform_buffer,
         sampled_image
     };
 
-    struct VulkanResourceBinding
+    struct VulkanResourceBindingVariable
     {
-        VulkanShaderType shaderType;
+        RHIShaderType shaderType;
         int setId;
         int binding;
         VulkanShaderResourceType resourceType;

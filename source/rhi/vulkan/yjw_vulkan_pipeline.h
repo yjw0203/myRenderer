@@ -15,12 +15,15 @@ namespace rhi
     {
     public:
         VulkanResourceLayoutView() {};
-        void AddReflectionTable(VulkanShaderType shaderType, std::unordered_map<RHIName, VulkanResourceBinding>& reflection_table);
+        void AddReflectionTable(RHIShaderType shaderType, std::unordered_map<RHIName, VulkanResourceBindingVariable>& reflection_table);
         std::vector<VkDescriptorSetLayoutBinding>& GetBindingsBySetID(int setId);
+        std::unordered_map<RHIName, VulkanResourceBindingVariable>& GetReflectTableByShaderType(RHIShaderType shaderType);
         int GetMaxSetCount();
+        int GetDescriptorCount(VkDescriptorType type);
     private:
         std::vector<VkDescriptorSetLayoutBinding> m_sets[VULKAN_MAX_DESCRIPTOR_SET];
-        int m_max_set_count = -1;
+        std::unordered_map<RHIName, VulkanResourceBindingVariable> m_reflect_table[(int)RHIShaderType::count];
+        int m_max_set_id = -1;
     };
 
     class VulkanRenderPipeline : public RHIRenderPipeline, VulkanDeviceObject
@@ -28,10 +31,14 @@ namespace rhi
     public:
         VulkanRenderPipeline(VulkanDevice* device,const RHIRenderPipelineDescriptor& desc);
         ~VulkanRenderPipeline();
+        virtual RHIResourceBinding* CreateResourceBinding() override;
+
         VkPipeline GetOrCreateVkPipeline(VulkanRenderPass* renderPass);
     private:
         VkPipelineLayout GetOrCreateVkPipelineLayout();
+    private:
         VkPipelineLayout m_pipeline_layout = nullptr;
+        std::vector<VkDescriptorSetLayout> m_descriptor_set_layouts;
         std::unordered_map<VulkanRenderPass*, VkPipeline> m_pipelines;
     };
 }

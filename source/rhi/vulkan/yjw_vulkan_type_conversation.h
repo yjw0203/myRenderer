@@ -5,7 +5,8 @@
 
 namespace rhi
 {
-    VkShaderStageFlagBits ConvertShaderTypeToVkStage(VulkanShaderType shaderType);
+    VkShaderStageFlagBits ConvertShaderTypeToVkStage(RHIShaderType shaderType);
+    RHIShaderType ConvertVkStageToShaderType(VkShaderStageFlagBits shaderType);
     VkDescriptorType ConvertShaderResourceTypeToDescriptorType(VulkanShaderResourceType shaderType);
     VkBufferUsageFlags ConvertBufferUsageToVkBufferUsage(RHIResourceUsage usage);
     VkImageUsageFlags ConvertImageUsageToVkImageUsage(RHIResourceUsage usage);
