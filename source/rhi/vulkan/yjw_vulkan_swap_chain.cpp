@@ -136,32 +136,33 @@ namespace rhi
         m_swapchainExtent = extent;
 
         //create swapchain image
+        std::vector<VkImage> images;
         vkGetSwapchainImagesKHR(pDevice->GetNativeDevice(), m_native_swapchain, &imageCount, nullptr);
-        m_swapchainImages.resize(imageCount);
-        vkGetSwapchainImagesKHR(pDevice->GetNativeDevice(), m_native_swapchain, &imageCount, m_swapchainImages.data());
+        images.resize(imageCount);
+        vkGetSwapchainImagesKHR(pDevice->GetNativeDevice(), m_native_swapchain, &imageCount, images.data());
+
 
         //create swapchain image view
-        m_swapchainImageViews.resize(m_swapchainImages.size());
+        m_swapchainImages.resize(imageCount);
+        m_swapchainImageViews.resize(imageCount);
 
-        for (size_t i = 0; i < m_swapchainImages.size(); i++) {
-            VkImageViewCreateInfo createInfo{};
-            createInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
-            createInfo.image = m_swapchainImages[i];
-            createInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
-            createInfo.format = m_swapchainImageFormat;
-            createInfo.components.r = VK_COMPONENT_SWIZZLE_IDENTITY;
-            createInfo.components.g = VK_COMPONENT_SWIZZLE_IDENTITY;
-            createInfo.components.b = VK_COMPONENT_SWIZZLE_IDENTITY;
-            createInfo.components.a = VK_COMPONENT_SWIZZLE_IDENTITY;
-            createInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-            createInfo.subresourceRange.baseMipLevel = 0;
-            createInfo.subresourceRange.levelCount = 1;
-            createInfo.subresourceRange.baseArrayLayer = 0;
-            createInfo.subresourceRange.layerCount = 1;
+        for (size_t i = 0; i < imageCount; i++) 
+        {
+            RHITextureDescriptor textureDesc{};
+            textureDesc.resourceType = RHIResourceType::texture2D;
+            textureDesc.format = RHIFormat::B8G8R8A8_srgb;
+            textureDesc.width = m_swapchainExtent.width;
+            textureDesc.height = m_swapchainExtent.height;
+            textureDesc.miplevels = 1;
+            textureDesc.depthOrArraySize = 1;
+            textureDesc.usage = (int)RHIResourceUsageBits::allow_render_target | (int)RHIResourceUsageBits::allow_transfer_src | (int)RHIResourceUsageBits::allow_transfer_dst;
+            textureDesc.memoryType = RHIMemoryType::default_;
+            m_swapchainImages[i] = new VulkanTexture(pDevice, textureDesc, images[i], VK_IMAGE_LAYOUT_UNDEFINED);
 
-            if (vkCreateImageView(pDevice->GetNativeDevice(), &createInfo, nullptr, &m_swapchainImageViews[i]) != VK_SUCCESS) {
-                throw std::runtime_error("failed to create image views!");
-            }
+            RHITextureViewDescriptor viewDesc{};
+            viewDesc.texture = m_swapchainImages[i];
+            viewDesc.format = RHIFormat::B8G8R8A8_srgb;
+            m_swapchainImageViews[i] = new VulkanTextureView(pDevice, viewDesc);
         }
 
         VkSemaphoreCreateInfo semaphoreInfo{};
@@ -173,13 +174,13 @@ namespace rhi
         vkAcquireNextImageKHR(GetDevice()->GetNativeDevice(), m_native_swapchain, UINT64_MAX, m_imageAvailableSemaphore, VK_NULL_HANDLE, &m_swapchainImageIndex);
     }
 
-    void VulkanSwapChain::Prensent(bool bSync)
+    void VulkanSwapChain::Present(bool bSync)
     {
         VkPresentInfoKHR presentInfo{};
         presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
 
-        presentInfo.waitSemaphoreCount = 0;;
-        presentInfo.pWaitSemaphores = nullptr;
+        presentInfo.waitSemaphoreCount = 1;;
+        presentInfo.pWaitSemaphores = &m_imageAvailableSemaphore;
 
         VkSwapchainKHR swapChains[] = { m_native_swapchain };
         presentInfo.swapchainCount = 1;
@@ -189,5 +190,15 @@ namespace rhi
 
         vkQueuePresentKHR(GetDevice()->GetCommandQueue()->GetPresentQueue(), &presentInfo);
         vkAcquireNextImageKHR(GetDevice()->GetNativeDevice(), m_native_swapchain, UINT64_MAX, m_imageAvailableSemaphore, VK_NULL_HANDLE, &m_swapchainImageIndex);
+    }
+
+    RHITexture* VulkanSwapChain::GetBackTexture()
+    {
+        return m_swapchainImages[m_swapchainImageIndex];
+    }
+
+    RHITextureView* VulkanSwapChain::GetBackTextureView()
+    {
+        return m_swapchainImageViews[m_swapchainImageIndex];
     }
 }

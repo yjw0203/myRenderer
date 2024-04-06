@@ -6,6 +6,9 @@
 #include "yjw_vulkan_swap_chain.h"
 #include "yjw_vulkan_pipeline.h"
 #include "yjw_vulkan_shader.h"
+#include "yjw_vulkan_context.h"
+#include "yjw_vulkan_buffer.h"
+#include "yjw_vulkan_texture.h"
 namespace rhi
 {
     QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device) {
@@ -109,6 +112,36 @@ namespace rhi
     RHIRenderPipeline* VulkanDevice::CreateRenderPipeline(const RHIRenderPipelineDescriptor& renderPipelineDescriptor)
     {
         return new VulkanRenderPipeline(this, renderPipelineDescriptor);
+    }
+
+    RHIRenderPass* VulkanDevice::CreateRenderPass(const RHIRenderPassDescriptor& renderPassDescriptor)
+    {
+        return new VulkanRenderPass(this, renderPassDescriptor);
+    }
+
+    RHIBuffer* VulkanDevice::CreateBuffer(const RHIBufferDescriptor& bufferDescriptor)
+    {
+        return new VulkanBuffer(this, bufferDescriptor);
+    }
+
+    RHITexture* VulkanDevice::CreateTexture(const RHITextureDescriptor& tetureDescriptor)
+    {
+        return new VulkanTexture(this, tetureDescriptor);
+    }
+
+    RHIBufferView* VulkanDevice::CreateBufferView(const RHIBufferViewDescriptor& viewDescriptor)
+    {
+        return new VulkanBufferView(this, viewDescriptor);
+    }
+
+    RHITextureView* VulkanDevice::CreateTextureView(const RHITextureViewDescriptor& viewDescriptor)
+    {
+        return new VulkanTextureView(this, viewDescriptor);
+    }
+
+    RHIContext* VulkanDevice::CreateContext()
+    {
+        return new VulkanContext(this);
     }
 
     VulkanDevice::~VulkanDevice()

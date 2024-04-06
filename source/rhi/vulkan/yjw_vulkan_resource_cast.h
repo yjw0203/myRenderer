@@ -5,6 +5,13 @@
 namespace rhi
 {
     class VulkanShader;
+    class VulkanRenderPass;
+    class VulkanRenderPipeline;
+    class VulkanBuffer;
+    class VulkanBufferView;
+    class VulkanTexture;
+    class VulkanTextureView;
+    class VulkanSwapChain;
 
     template<class T>
     struct TVulkanResourceTraits
@@ -14,6 +21,41 @@ namespace rhi
     struct TVulkanResourceTraits<RHIShader>
     {
         typedef VulkanShader TConcreteType;
+    };
+    template<>
+    struct TVulkanResourceTraits<RHIRenderPass>
+    {
+        typedef VulkanRenderPass TConcreteType;
+    };
+    template<>
+    struct TVulkanResourceTraits<RHIRenderPipeline>
+    {
+        typedef VulkanRenderPipeline TConcreteType;
+    };
+    template<>
+    struct TVulkanResourceTraits<RHIBuffer>
+    {
+        typedef VulkanBuffer TConcreteType;
+    };
+    template<>
+    struct TVulkanResourceTraits<RHIBufferView>
+    {
+        typedef VulkanBufferView TConcreteType;
+    };
+    template<>
+    struct TVulkanResourceTraits<RHITexture>
+    {
+        typedef VulkanTexture TConcreteType;
+    };
+    template<>
+    struct TVulkanResourceTraits<RHITextureView>
+    {
+        typedef VulkanTextureView TConcreteType;
+    };
+    template<>
+    struct TVulkanResourceTraits<RHISwapChain>
+    {
+        typedef VulkanSwapChain TConcreteType;
     };
 
     template<typename TRHIType>

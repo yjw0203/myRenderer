@@ -5,20 +5,11 @@
 #include "yjw_vulkan_device.h"
 #include <unordered_map>
 #include "vulkan/vulkan.h"
+#include "yjw_vulkan_render_pass.h"
 
 namespace rhi
 {
     class VulkanDevice;
-
-    class VulkanRenderPass : public RHIObject, VulkanDeviceObject
-    {
-    public:
-        VulkanRenderPass(VulkanDevice* device);
-        ~VulkanRenderPass();
-        VkRenderPass GetNativeRenderPass();
-    private:
-        VkRenderPass m_native_render_pass = nullptr;
-    };
 
     class VulkanResourceLayoutView
     {
@@ -29,7 +20,7 @@ namespace rhi
         int GetMaxSetCount();
     private:
         std::vector<VkDescriptorSetLayoutBinding> m_sets[VULKAN_MAX_DESCRIPTOR_SET];
-        int m_max_set_count = 0;
+        int m_max_set_count = -1;
     };
 
     class VulkanRenderPipeline : public RHIRenderPipeline, VulkanDeviceObject
@@ -40,7 +31,7 @@ namespace rhi
         VkPipeline GetOrCreateVkPipeline(VulkanRenderPass* renderPass);
     private:
         VkPipelineLayout GetOrCreateVkPipelineLayout();
-        VkPipelineLayout m_pipeline_layout;
+        VkPipelineLayout m_pipeline_layout = nullptr;
         std::unordered_map<VulkanRenderPass*, VkPipeline> m_pipelines;
     };
 }

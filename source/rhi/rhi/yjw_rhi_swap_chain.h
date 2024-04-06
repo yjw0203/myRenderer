@@ -1,11 +1,13 @@
 #pragma once
 #include "yjw_rhi_object.h"
+#include "yjw_rhi_resource.h"
 
 namespace rhi
 {
     class RHISwapChain : public RHIObject
     {
     public:
-        virtual void Prensent(bool bSync) = 0;
+        virtual RHITexture* GetBackTexture() = 0;
+        virtual RHITextureView* GetBackTextureView() = 0;
     };
 }

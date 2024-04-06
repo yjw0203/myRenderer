@@ -2,7 +2,7 @@
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 
-#include "RHI/rhi/yjw_rhi_instance.h"
+#include "RHI/rhi/yjw_rhi_header.h"
 
 using namespace rhi;
 
@@ -10,6 +10,10 @@ GLFWwindow* window = nullptr;
 RHIInstance* instance = nullptr;
 RHIDevice* device = nullptr;
 RHISwapChain* swapchain = nullptr;
+
+RHIRenderPass* renderPass = nullptr;
+RHIRenderPipeline* renderPipeline = nullptr;
+RHIContext* context = nullptr;
 
 void initRender()
 {
@@ -19,13 +23,36 @@ void initRender()
     instance = new RHIInstance(config);
     device = instance->CreateDevice();
     swapchain = device->CreateSwapchain(window);
+    context = device->CreateContext();
 
-    device->CreateShaderByBinaryUrl("D:/workspace/projects/vulkanRenderSample/shaders/gbuffer_vert.spv");
+    RHIRenderPassDescriptor renderpassDesc{};
+    renderpassDesc.colorAttachmentCount = 1;
+    renderpassDesc.colorAttachments[0] = swapchain->GetBackTextureView()
+        ;
+    renderPass = device->CreateRenderPass(renderpassDesc);
+
+    RHIShader* vs = device->CreateShaderByBinaryUrl("D:/workspace/projects/vulkanRenderSample/shaders/test1_vert.spv");
+    RHIShader* ps = device->CreateShaderByBinaryUrl("D:/workspace/projects/vulkanRenderSample/shaders/test1_frag.spv");
+
+    RHIRenderPipelineDescriptor pipelineDesc{};
+    pipelineDesc.vs = vs;
+    pipelineDesc.vs_entry = "main";
+    pipelineDesc.ps = ps;
+    pipelineDesc.ps_entry = "main";
+    renderPipeline = device->CreateRenderPipeline(pipelineDesc);
+
+    vs->release();
+    ps->release();
 }
 
 void render()
 {
-    swapchain->Prensent(false);
+    context->BeginPass(renderPass);
+    context->SetRenderPipeline(renderPipeline);
+    context->Draw(3, 1, 0, 0);
+    context->EndPass();
+    context->Submit();
+    context->Present(swapchain, false);
 }
 
 

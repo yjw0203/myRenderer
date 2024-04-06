@@ -1,5 +1,5 @@
 #pragma once
-#include "RHI/rhi/yjw_rhi_define.h"
+#include "RHI/rhi/yjw_rhi_header.h"
 #include "yjw_vulkan_instance.h"
 #include "vulkan/vulkan.h"
 #include <optional>
@@ -21,9 +21,15 @@ namespace rhi
         VulkanDevice(VulkanInstance* vkInstance, bool isDebugMode);
         ~VulkanDevice();
 
+        virtual RHIContext* CreateContext() override;
         virtual RHISwapChain* CreateSwapchain(void* window) override;
         virtual RHIShader* CreateShaderByBinaryUrl(const char* url) override;
         virtual RHIRenderPipeline* CreateRenderPipeline(const RHIRenderPipelineDescriptor& renderPipelineDescriptor) override;
+        virtual RHIRenderPass* CreateRenderPass(const RHIRenderPassDescriptor& renderPassDescriptor) override;
+        virtual RHIBuffer* CreateBuffer(const RHIBufferDescriptor& bufferDescriptor) override;
+        virtual RHITexture* CreateTexture(const RHITextureDescriptor& tetureDescriptor) override;
+        virtual RHIBufferView* CreateBufferView(const RHIBufferViewDescriptor& viewDescriptor) override;
+        virtual RHITextureView* CreateTextureView(const RHITextureViewDescriptor& viewDescriptor) override;
 
         VkPhysicalDevice GetGpu();
         VkDevice GetNativeDevice();

@@ -1,8 +1,9 @@
 #pragma once
-#include "RHI/rhi/yjw_rhi_define.h"
+#include "RHI/rhi/yjw_rhi_header.h"
 #include "yjw_vulkan_state_cache.h"
 #include "yjw_vulkan_render_pass.h"
 #include "yjw_vulkan_device.h"
+#include "yjw_vulkan_command_list.h"
 
 namespace rhi
 {
@@ -10,8 +11,14 @@ namespace rhi
     {
     public:
         VulkanContext(VulkanDevice* device);
+        virtual void BeginPass(RHIRenderPass* renderPass) override;
+        virtual void EndPass() override;
+        virtual void SetRenderPipeline(RHIRenderPipeline* pipeline) override;
+        virtual void Draw(int vertexCount, int instanceCount, int firstVertex, int firstInstance) override;
+        virtual void Submit() override;
+        virtual void Present(RHISwapChain* swapchain, bool bSync) override;
     private:
-        VulkanRenderPass m_render_pass;
         VulkanStateCache m_state_cache;
+        VulkanCommandBuffer m_command_buffer;
     };
 }
