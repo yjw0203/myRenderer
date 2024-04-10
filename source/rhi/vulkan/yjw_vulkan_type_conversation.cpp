@@ -30,7 +30,7 @@ namespace rhi
         switch (shaderType)
         {
         case VulkanShaderResourceType::uniform_buffer:return VkDescriptorType::VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-        case VulkanShaderResourceType::sampled_image:return VkDescriptorType::VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;
+        case VulkanShaderResourceType::sampled_image:return VkDescriptorType::VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
         }
         return (VkDescriptorType)0;
     }

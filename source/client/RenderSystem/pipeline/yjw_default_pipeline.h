@@ -15,12 +15,12 @@ namespace yjw
         virtual void config() override;
         virtual void render() override;
 
-        RPIResource output;
-        RPICommandBuffer commandBuffer;
+        RPITexture output;
+        RPIContext commandBuffer;
     private:
         struct Resource
         {
-            RPIResource resource_handle;
+            RPITexture resource_handle;
             bool need_clear_pre_render = false;
         };
 

@@ -1,5 +1,7 @@
 #include "yjw_vulkan_buffer.h"
 #include "yjw_vulkan_type_conversation.h"
+#include "yjw_vulkan_common.h"
+#include "yjw_vulkan_command_list.h"
 
 namespace rhi
 {
@@ -60,10 +62,45 @@ namespace rhi
         return m_memory;
     }
 
+    void VulkanBuffer::Update(void* data, int bufferOffset, int sizeOfByte)
+    {
+        if (GetDesc().memoryType == RHIMemoryType::default_)
+        {
+            VkBuffer stagingBuffer;
+            VkDeviceMemory stagingBufferMemory;
+            vkCreateBuffer(GetDevice()->GetNativeDevice(), GetDevice()->GetGpu(), sizeOfByte, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
+
+            void* map_data;
+            vkMapMemory(GetDevice()->GetNativeDevice(), stagingBufferMemory, 0, sizeOfByte, 0, &map_data);
+            memcpy(map_data, data, (size_t)sizeOfByte);
+            vkUnmapMemory(GetDevice()->GetNativeDevice(), stagingBufferMemory);
+
+            VkBufferCopy copyRegion{};
+            copyRegion.dstOffset = bufferOffset;
+            copyRegion.size = sizeOfByte;
+            vkCmdCopyBuffer(GetDevice()->GetImmediaCommandList()->GetCommandBuffer(), stagingBuffer, m_buffer, 1, &copyRegion);
+
+            GetDevice()->GetImmediaCommandList()->Submit();
+
+            GetDevice()->WaitForIdle();
+
+            vkDestroyBuffer(GetDevice()->GetNativeDevice(), stagingBuffer, nullptr);
+            vkFreeMemory(GetDevice()->GetNativeDevice(), stagingBufferMemory, nullptr);
+        }
+        else
+        {
+            void* buffer_map;
+            vkMapMemory(GetDevice()->GetNativeDevice(), m_memory, bufferOffset, sizeOfByte, 0, &buffer_map);
+            memcpy(buffer_map, data, static_cast<size_t>(sizeOfByte));
+            vkUnmapMemory(GetDevice()->GetNativeDevice(), m_memory);
+        }
+    }
+
     VulkanBufferView::VulkanBufferView(VulkanDevice* device, const RHIBufferViewDescriptor& desc)
         : VulkanDeviceObject(device)
         , RHIBufferView(desc)
     {
+        /*
         VkBufferViewCreateInfo createInfo{};
         createInfo.sType = VK_STRUCTURE_TYPE_BUFFER_VIEW_CREATE_INFO;
         createInfo.buffer = GetBuffer()->GetVkBuffer();
@@ -73,13 +110,13 @@ namespace rhi
         createInfo.offset = desc.offset;
         createInfo.range = desc.offset + desc.width;
         
-        vkCreateBufferView(device->GetNativeDevice(), &createInfo, nullptr, &m_view);
+        vkCreateBufferView(device->GetNativeDevice(), &createInfo, nullptr, &m_view);*/
         desc.buffer->retain(this);
     }
 
     VulkanBufferView::~VulkanBufferView()
     {
-        vkDestroyBufferView(GetDevice()->GetNativeDevice(), m_view, nullptr);
+        //vkDestroyBufferView(GetDevice()->GetNativeDevice(), m_view, nullptr);
         GetDesc().buffer->release();
     }
 

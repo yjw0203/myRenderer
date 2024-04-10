@@ -23,7 +23,7 @@ namespace yjw
 
         output = colorImage;
 
-        commandBuffer = RPICreateCommandBuffer();
+        commandBuffer = RPICreateContext();
     }
 
     void DefaultPipeline::config()
@@ -56,7 +56,6 @@ namespace yjw
 
     void DefaultPipeline::render()
     {
-        RPIResetCommandBuffer(commandBuffer);
         for (auto pass : passes)
         {
             pass->setupData();
@@ -64,13 +63,11 @@ namespace yjw
 
         for (auto& texture : texture_map)
         {
-            RPICmdResourceBarrier(commandBuffer, texture.second.resource_handle, RPIGetResourceState(texture.second.resource_handle), RHIResourceState::transfer_dst);
             RPICmdClearTexture(commandBuffer, texture.second.resource_handle);
         }
 
         for (auto pass : passes)
         {
-            pass->setResourceBarrier(commandBuffer);
             pass->recordCommand(commandBuffer);
         }
     }

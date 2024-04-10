@@ -31,15 +31,17 @@ namespace rhi
         void CmdBeginPass(VulkanRenderPass* renderPass);
         void CmdEndPass();
         void CmdDraw(int vertexCount, int instanceCount, int firstVertex, int firstInstance);
+        void CmdDrawIndex(int indexCount, int instanceCount, int firstIndex, int vertexOffset, int firstInstance);
         void Submit();
         void Present(VulkanSwapChain* swapchain, bool bSync);
 
         void CopyTexture2D(VulkanTexture* srcTexture, VulkanTexture* dstTexture);
+        void ClearTexture2D(VulkanTexture* texture);
+        VulkanCommandList m_command_list;
     private:
         void PrepareForRender();
     private:
         VulkanRenderPass* m_current_render_pass = nullptr;
-        VulkanCommandList m_command_list;
         VulkanStateCache& m_state_cache;
     };
 }

@@ -99,6 +99,35 @@ namespace rhi
         }
 
         m_command_queue = new VulkanCommandQueue(this, m_queue_family_indices);
+        m_immediately_command_list = new VulkanCommandList(this);
+
+
+        /***************** to be delete ***************/
+        VkPhysicalDeviceProperties properties{};
+        vkGetPhysicalDeviceProperties(m_gpu, &properties);
+
+        VkSamplerCreateInfo samplerInfo{};
+        samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
+        samplerInfo.magFilter = VK_FILTER_LINEAR;
+        samplerInfo.minFilter = VK_FILTER_LINEAR;
+        samplerInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+        samplerInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+        samplerInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+        samplerInfo.anisotropyEnable = VK_FALSE;
+        samplerInfo.maxAnisotropy = properties.limits.maxSamplerAnisotropy;
+        samplerInfo.borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK;
+        samplerInfo.unnormalizedCoordinates = VK_FALSE;
+        samplerInfo.compareEnable = VK_FALSE;
+        samplerInfo.compareOp = VK_COMPARE_OP_ALWAYS;
+        samplerInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
+        samplerInfo.minLod = 0.0f;
+        samplerInfo.maxLod = 1.0f;
+        samplerInfo.mipLodBias = 0.0f;
+
+        if (vkCreateSampler(m_native_device, &samplerInfo, nullptr, &m_default_sampler) != VK_SUCCESS) {
+            throw std::runtime_error("failed to create texture sampler!");
+        }
+        /***************** to be delete ***************/
     }
 
     RHISwapChain* VulkanDevice::CreateSwapchain(void* window)
@@ -148,6 +177,7 @@ namespace rhi
 
     VulkanDevice::~VulkanDevice()
     {
+        delete m_immediately_command_list;
         delete m_command_queue;
         vkDestroyDevice(m_native_device, nullptr);
     }
@@ -175,6 +205,16 @@ namespace rhi
     VulkanCommandQueue* VulkanDevice::GetCommandQueue()
     {
         return m_command_queue;
+    }
+
+    VulkanCommandList* VulkanDevice::GetImmediaCommandList()
+    {
+        return m_immediately_command_list;
+    }
+
+    void VulkanDevice::WaitForIdle()
+    {
+        vkQueueWaitIdle(m_command_queue->GetGraphicsQueue());
     }
 
     VulkanDeviceObject::VulkanDeviceObject(VulkanDevice* device)

@@ -24,9 +24,20 @@ namespace rhi
         m_state_cache.SetRenderPipeline(ResourceCast(pipeline));
     }
 
+    void VulkanContext::SetResourceBinding(RHIResourceBinding* resourceBinding)
+    {
+        m_state_cache.SetResourceBinding(ResourceCast(resourceBinding));
+        ResourceCast(resourceBinding)->TransitionStateToRender(m_command_buffer.m_command_list.GetCommandBuffer());
+    }
+
     void VulkanContext::Draw(int vertexCount, int instanceCount, int firstVertex, int firstInstance)
     {
         m_command_buffer.CmdDraw(vertexCount, instanceCount, firstVertex, firstInstance);
+    }
+
+    void VulkanContext::DrawIndex(int indexCount, int instanceCount, int firstIndex, int vertexOffset, int firstInstance)
+    {
+        m_command_buffer.CmdDrawIndex(indexCount, instanceCount, firstIndex, vertexOffset, firstInstance);
     }
 
     void VulkanContext::Submit()
@@ -43,4 +54,10 @@ namespace rhi
     {
         m_command_buffer.CopyTexture2D(ResourceCast(srcTexture), ResourceCast(dstTexture));
     }
+
+    void VulkanContext::ClearTexture2D(RHITexture* texture)
+    {
+        m_command_buffer.ClearTexture2D(ResourceCast(texture));
+    }
+
 }

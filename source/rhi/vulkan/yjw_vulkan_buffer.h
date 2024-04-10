@@ -12,6 +12,8 @@ namespace rhi
         ~VulkanBuffer();
         VkBuffer GetVkBuffer();
         VkDeviceMemory GetVkDeviceMemory();
+
+        virtual void Update(void* data, int bufferOffset, int sizeOfByte) override;
     private:
         VkBuffer m_buffer;
         VkDeviceMemory m_memory;

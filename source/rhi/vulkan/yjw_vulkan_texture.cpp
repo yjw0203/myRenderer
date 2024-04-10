@@ -1,7 +1,9 @@
 #include "yjw_vulkan_texture.h"
 #include "vulkan/vulkan.h"
 #include "yjw_vulkan_type_conversation.h"
+#include "yjw_vulkan_common.h"
 #include "yjw_vulkan_resource_cast.h"
+#include "yjw_vulkan_context.h"
 
 namespace rhi
 {
@@ -86,6 +88,9 @@ namespace rhi
 
         vkBindImageMemory(device->GetNativeDevice(), m_image, m_memory, 0);
         m_b_create_from_exist_image = false;
+
+        TransitionState(GetDevice()->GetImmediaCommandList()->GetCommandBuffer(), VK_IMAGE_LAYOUT_GENERAL);
+        GetDevice()->GetImmediaCommandList()->Submit();
     }
 
     VulkanTexture::VulkanTexture(VulkanDevice* device, const RHITextureDescriptor& desc, VkImage existImage, VkImageLayout currentLayout)
@@ -129,15 +134,73 @@ namespace rhi
         return GetDesc().height;
     }
 
+    void VulkanTexture::Update(void* data, int sizeOfByte)
+    {
+        if (GetDesc().memoryType == RHIMemoryType::default_)
+        {
+            VkBuffer stagingBuffer;
+            VkDeviceMemory stagingBufferMemory;
+            vkCreateBuffer(GetDevice()->GetNativeDevice(), GetDevice()->GetGpu(), sizeOfByte, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
+
+            void* map_data;
+            vkMapMemory(GetDevice()->GetNativeDevice(), stagingBufferMemory, 0, sizeOfByte, 0, &map_data);
+            memcpy(map_data, data, (size_t)sizeOfByte);
+            vkUnmapMemory(GetDevice()->GetNativeDevice(), stagingBufferMemory);
+
+            VkBufferImageCopy copyRegion{};
+            copyRegion.bufferOffset = 0;
+            copyRegion.bufferRowLength = 0;
+            copyRegion.bufferImageHeight = 0;
+            copyRegion.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+            if (ConvertFormatToVkFormat(GetDesc().format) == VK_FORMAT_D24_UNORM_S8_UINT)
+            {
+                copyRegion.imageSubresource.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT;
+            }
+            copyRegion.imageSubresource.mipLevel = 0;
+            copyRegion.imageSubresource.baseArrayLayer = 0;
+            copyRegion.imageSubresource.layerCount = 1;
+            copyRegion.imageOffset = { 0, 0, 0 };
+            copyRegion.imageExtent = {
+                (unsigned int)GetDesc().width,
+                (unsigned int)GetDesc().height,
+                1
+            };
+
+            VkImageLayout currentLayout = m_current_layout;
+            TransitionState(GetDevice()->GetImmediaCommandList()->GetCommandBuffer(), currentLayout, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+            vkCmdCopyBufferToImage(GetDevice()->GetImmediaCommandList()->GetCommandBuffer(), stagingBuffer, m_image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &copyRegion);
+            TransitionState(GetDevice()->GetImmediaCommandList()->GetCommandBuffer(), VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, currentLayout);
+
+            GetDevice()->GetImmediaCommandList()->Submit();
+
+            GetDevice()->WaitForIdle();
+
+            vkDestroyBuffer(GetDevice()->GetNativeDevice(), stagingBuffer, nullptr);
+            vkFreeMemory(GetDevice()->GetNativeDevice(), stagingBufferMemory, nullptr);
+        }
+        else
+        {
+            void* texture_map;
+            vkMapMemory(GetDevice()->GetNativeDevice(), m_memory, 0, sizeOfByte, 0, &texture_map);
+            memcpy(texture_map, data, static_cast<size_t>(sizeOfByte));
+            vkUnmapMemory(GetDevice()->GetNativeDevice(), m_memory);
+        }
+    }
+
     void VulkanTexture::TransitionState(VkCommandBuffer commandBuffer, VkImageLayout newLayout)
     {
-        if (newLayout == m_current_layout)
+        TransitionState(commandBuffer, m_current_layout, newLayout);
+    }
+
+    void VulkanTexture::TransitionState(VkCommandBuffer commandBuffer, VkImageLayout oldLayout, VkImageLayout newLayout)
+    {
+        if (oldLayout == newLayout)
         {
             return;
         }
         VkImageMemoryBarrier barrier{};
         barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
-        barrier.oldLayout = m_current_layout;
+        barrier.oldLayout = oldLayout;
         barrier.newLayout = newLayout;
         barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
         barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
@@ -156,14 +219,14 @@ namespace rhi
         VkPipelineStageFlags sourceStage;
         VkPipelineStageFlags destinationStage;
 
-        if (m_current_layout == VK_IMAGE_LAYOUT_UNDEFINED && newLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL) {
+        if (oldLayout == VK_IMAGE_LAYOUT_UNDEFINED && newLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL) {
             barrier.srcAccessMask = 0;
             barrier.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
 
             sourceStage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
             destinationStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
         }
-        else if (m_current_layout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL && newLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL) {
+        else if (oldLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL && newLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL) {
             barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
             barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
 
@@ -207,7 +270,7 @@ namespace rhi
         createInfo.subresourceRange.layerCount = 1;
         if (createInfo.format == VK_FORMAT_D24_UNORM_S8_UINT)
         {
-            createInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT | VK_IMAGE_ASPECT_STENCIL_BIT;
+            createInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT;
         }
         else
         {

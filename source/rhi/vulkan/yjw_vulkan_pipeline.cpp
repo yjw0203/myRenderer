@@ -82,14 +82,31 @@ namespace rhi
         shaderStages[1].pName = m_descriptor.ps_entry.c_str();
 
         VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
+        std::unordered_map<RHIName, VulkanInputVertexBindingVariable>& vertex_refect = ResourceCast(m_descriptor.vs)->GetReflectionTableByEntryName(RHIName(m_descriptor.vs_entry)).input_vertexes;
+        std::vector<VkVertexInputBindingDescription> inputBindingDescs;
+        inputBindingDescs.resize(vertex_refect.size());
+        std::vector<VkVertexInputAttributeDescription> inputAttributeDescs;
+        inputAttributeDescs.resize(vertex_refect.size());
+        int cur_index = 0;
+        for (auto& iter : vertex_refect)
+        {
+            inputBindingDescs[cur_index].binding = iter.second.binding;
+            inputBindingDescs[cur_index].stride = iter.second.stride;
+            inputBindingDescs[cur_index].inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
+            inputAttributeDescs[cur_index].location = iter.second.location;
+            inputAttributeDescs[cur_index].binding = iter.second.binding;
+            inputAttributeDescs[cur_index].format = iter.second.format;
+            inputAttributeDescs[cur_index].offset = 0;
+            cur_index++;
+        }
 
         vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
         vertexInputInfo.pNext = nullptr;
         vertexInputInfo.flags = 0;
-        vertexInputInfo.vertexBindingDescriptionCount = 0;
-        vertexInputInfo.pVertexBindingDescriptions = nullptr;
-        vertexInputInfo.vertexAttributeDescriptionCount = 0;
-        vertexInputInfo.pVertexAttributeDescriptions = nullptr;
+        vertexInputInfo.vertexBindingDescriptionCount = inputBindingDescs.size();
+        vertexInputInfo.pVertexBindingDescriptions = inputBindingDescs.data();
+        vertexInputInfo.vertexAttributeDescriptionCount = inputAttributeDescs.size();
+        vertexInputInfo.pVertexAttributeDescriptions = inputAttributeDescs.data();
 
         VkPipelineInputAssemblyStateCreateInfo inputAssemblyInfo{};
         inputAssemblyInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
@@ -210,8 +227,8 @@ namespace rhi
         }
 
         VulkanResourceLayoutView layoutView;
-        layoutView.AddReflectionTable(RHIShaderType::vertex, ResourceCast(m_descriptor.vs)->GetReflectionTableByEntryName(RHIName(m_descriptor.vs_entry)));
-        layoutView.AddReflectionTable(RHIShaderType::fragment, ResourceCast(m_descriptor.ps)->GetReflectionTableByEntryName(RHIName(m_descriptor.ps_entry)));
+        layoutView.AddReflectionTable(RHIShaderType::vertex, ResourceCast(m_descriptor.vs)->GetReflectionTableByEntryName(RHIName(m_descriptor.vs_entry)).resource_bindings);
+        layoutView.AddReflectionTable(RHIShaderType::fragment, ResourceCast(m_descriptor.ps)->GetReflectionTableByEntryName(RHIName(m_descriptor.ps_entry)).resource_bindings);
         int descriptorSetCount = layoutView.GetMaxSetCount();
         m_descriptor_set_layouts.resize(descriptorSetCount);
         for (int setId = 0; setId < descriptorSetCount; setId++)
@@ -241,10 +258,12 @@ namespace rhi
 
     RHIResourceBinding* VulkanRenderPipeline::CreateResourceBinding()
     {
+        GetOrCreateVkPipelineLayout();
         VulkanResourceLayoutView layoutView;
-        layoutView.AddReflectionTable(RHIShaderType::vertex, ResourceCast(m_descriptor.vs)->GetReflectionTableByEntryName(RHIName(m_descriptor.vs_entry)));
-        layoutView.AddReflectionTable(RHIShaderType::fragment, ResourceCast(m_descriptor.ps)->GetReflectionTableByEntryName(RHIName(m_descriptor.ps_entry)));
-        return new VulkanResourceBinding(GetDevice(), layoutView, m_descriptor_set_layouts.data(), m_descriptor_set_layouts.size());
+        layoutView.AddReflectionTable(RHIShaderType::vertex, ResourceCast(m_descriptor.vs)->GetReflectionTableByEntryName(RHIName(m_descriptor.vs_entry)).resource_bindings);
+        layoutView.AddReflectionTable(RHIShaderType::fragment, ResourceCast(m_descriptor.ps)->GetReflectionTableByEntryName(RHIName(m_descriptor.ps_entry)).resource_bindings);
+        std::unordered_map<RHIName, VulkanInputVertexBindingVariable>& input_reflect = ResourceCast(m_descriptor.vs)->GetReflectionTableByEntryName(RHIName(m_descriptor.vs_entry)).input_vertexes;
+        return new VulkanResourceBinding(GetDevice(), layoutView, m_descriptor_set_layouts.data(), m_descriptor_set_layouts.size(), input_reflect);
     }
 
     VulkanRenderPipeline::~VulkanRenderPipeline()

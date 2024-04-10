@@ -34,7 +34,6 @@ namespace rhi
         virtual RHIResourceBinding* CreateResourceBinding() override;
 
         VkPipeline GetOrCreateVkPipeline(VulkanRenderPass* renderPass);
-    private:
         VkPipelineLayout GetOrCreateVkPipelineLayout();
     private:
         VkPipelineLayout m_pipeline_layout = nullptr;

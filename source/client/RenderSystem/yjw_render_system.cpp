@@ -24,11 +24,13 @@ namespace yjw
     std::shared_ptr<Model> heita;
     std::shared_ptr<Model> hutao;
 
+    RPIWindow rpiWindow;
+
     void RenderSystem::initialize()
     {
         WindowsManager::get().initialize();
-        RPIInit(1200, 1200, WindowsManager::get().window);
-
+        RPIInit();
+        rpiWindow = RPICreateWindow(WindowsManager::get().window);
         g_resource_store.initializeResource();
         
         naxita = *Model::load(RESOURCE_FILE(cao),"纳西妲.pmx");
@@ -64,9 +66,7 @@ namespace yjw
         g_resource_store.updateLightData();
 
         pipeline.render();
-        rpi::RPICmdCopyToSwapchainBackTexture(pipeline.commandBuffer,pipeline.output);
-        rpi::RPISubmitCommandBuffer(pipeline.commandBuffer);
-        rpi::RPIPresent();
+        rpi::RPIPresent(pipeline.commandBuffer, rpiWindow, pipeline.output);
 
         WindowsManager::get().loop();
     }

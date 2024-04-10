@@ -11,7 +11,7 @@ namespace yjw
     public:
         virtual void buildPSO() override;
         virtual void setupData() override;
-        virtual void recordCommand(RPICommandBuffer commandBuffer) override;
+        virtual void recordCommand(RPIContext commandBuffer) override;
         virtual void submit() override;
         void registerTexture(
             RPITexture out_abedlo,
@@ -22,21 +22,21 @@ namespace yjw
             RPITexture depth);
 
     private:
-        RPIAttachmentSet attachementSet;
+        RPIRenderPass renderPass;
         RPIPipeline pipeline;
         RPIShader vs;
         RPIShader ps;
 
-        RPIDescriptor out_abeldo;
-        RPIDescriptor out_normal;
-        RPIDescriptor out_diffuse;
-        RPIDescriptor out_specular;
-        RPIDescriptor out_ambient;
-        RPIDescriptor out_depth;
+        RPITextureView out_abeldo;
+        RPITextureView out_normal;
+        RPITextureView out_diffuse;
+        RPITextureView out_specular;
+        RPITextureView out_ambient;
+        RPITextureView out_depth;
 
-        std::vector<RPIDescriptorSet> descriptors_sets;
+        std::vector<RPIResourceBinding> resource_bindings;
         std::vector<RPIBuffer> uniformsBuffers;
-        std::vector<RPIDescriptor> uniformsBufferDescriptors;
+        std::vector<RPIBufferView> uniformsBufferDescriptors;
         std::vector<Entity> entitys;
     };
 }

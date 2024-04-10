@@ -35,7 +35,7 @@ namespace rhi
         return m_shader_module;
     }
 
-    std::unordered_map<RHIName, VulkanResourceBindingVariable>& VulkanShader::GetReflectionTableByEntryName(RHIName name)
+    VulkanReflectTable& VulkanShader::GetReflectionTableByEntryName(RHIName name)
     {
         return m_entry_reflection_tables[name];
     }
@@ -93,7 +93,7 @@ namespace rhi
         {
             reflection.set_entry_point(entryPoint.name, entryPoint.execution_model);
 
-            std::unordered_map<RHIName, VulkanResourceBindingVariable>& reflection_table = m_entry_reflection_tables[RHIName(entryPoint.name.c_str())];
+            std::unordered_map<RHIName, VulkanResourceBindingVariable>& reflection_table = m_entry_reflection_tables[RHIName(entryPoint.name.c_str())].resource_bindings;
             RHIShaderType shaderType = ConvertSPVExecutionModelToVulkanShaderType(entryPoint.execution_model);
 
             for (auto& resource : resources.uniform_buffers)
@@ -120,6 +120,38 @@ namespace rhi
                 reflection_variable.setId = setId;
                 reflection_variable.binding = binding;
                 reflection_variable.resourceType = VulkanShaderResourceType::sampled_image;
+            }
+
+            if (shaderType == RHIShaderType::vertex)
+            {
+                std::unordered_map<RHIName, VulkanInputVertexBindingVariable>& vertex_reflection_table = m_entry_reflection_tables[RHIName(entryPoint.name.c_str())].input_vertexes;
+                int binding_index = 0;
+                for (auto& resource : resources.stage_inputs)
+                {
+                    RHIName name(reflection.get_name(resource.id).c_str());
+                    int location = reflection.get_decoration(resource.id, spv::DecorationLocation);
+                    spirv_cross::SPIRType type = reflection.get_type(resource.base_type_id);
+                    VkFormat vertexFormat = VK_FORMAT_UNDEFINED;
+                    int stride = 0;
+                    if (type.basetype == spirv_cross::SPIRType::BaseType::Float)
+                    {
+                        switch (type.vecsize)
+                        {
+                        case 1:vertexFormat = VK_FORMAT_R32_SFLOAT; break;
+                        case 2:vertexFormat = VK_FORMAT_R32G32_SFLOAT; break;
+                        case 3:vertexFormat = VK_FORMAT_R32G32B32_SFLOAT; break;
+                        case 4:vertexFormat = VK_FORMAT_R32G32B32A32_SFLOAT; break;
+                        }
+                        stride = type.vecsize * 4;
+                    }
+                    assert(vertexFormat != VK_FORMAT_UNDEFINED);
+                    VulkanInputVertexBindingVariable& reflection_variable = vertex_reflection_table[name];
+                    reflection_variable.location = location;
+                    reflection_variable.format = vertexFormat;
+                    reflection_variable.binding = binding_index;
+                    reflection_variable.stride = stride;
+                    binding_index++;
+                }
             }
         }
     }

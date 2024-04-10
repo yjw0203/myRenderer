@@ -14,7 +14,9 @@ namespace rhi
         VkDeviceMemory GetVkDeviceMemory();
         int GetWidth();
         int GetHeight();
+        virtual void Update(void* data, int sizeOfByte) override;
         void TransitionState(VkCommandBuffer commandBuffer, VkImageLayout newLayout);// to be multi thread
+        void TransitionState(VkCommandBuffer commandBuffer, VkImageLayout oldLayout, VkImageLayout newLayout);
     private:
         VkImage m_image;
         VkDeviceMemory m_memory;

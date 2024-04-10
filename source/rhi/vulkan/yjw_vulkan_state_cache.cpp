@@ -11,4 +11,14 @@ namespace rhi
     {
         return m_current_render_pipeline;
     }
+
+    void VulkanStateCache::SetResourceBinding(VulkanResourceBinding* resourceBinding)
+    {
+        m_current_resource_binding = resourceBinding;
+    }
+
+    VulkanResourceBinding* VulkanStateCache::GetResourceBinding()
+    {
+        return m_current_resource_binding;
+    }
 }

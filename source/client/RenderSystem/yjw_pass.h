@@ -9,10 +9,7 @@ namespace yjw
     public:
         virtual void buildPSO() = 0;
         virtual void setupData() = 0;
-        virtual void recordCommand(RPICommandBuffer commandBuffer) = 0;
+        virtual void recordCommand(RPIContext commandBuffer) = 0;
         virtual void submit() = 0;
-        virtual void setResourceBarrier(RPICommandBuffer commandBuffer);
-    protected:
-        std::map<RPIResource, RPIResourceState> initialResourceState;
     };
 }

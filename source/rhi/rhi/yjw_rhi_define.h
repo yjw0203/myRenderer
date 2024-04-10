@@ -135,5 +135,6 @@ namespace rhi
         std::string vs_entry;
         RHIShader* ps{};
         std::string ps_entry;
+        std::vector<RHIFormat> vertex_layouts;
     };
 }

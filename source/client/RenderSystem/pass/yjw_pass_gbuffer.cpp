@@ -10,33 +10,21 @@ namespace yjw
         vs = RPICreateShader(SHADER_FILE(gbuffer_vert.spv));
         ps = RPICreateShader(SHADER_FILE(gbuffer_frag.spv));
 
-        RPIPipelineCreator pipelineCreator;
-        pipelineCreator.addShaderEntry(RPIShaderType::vertex_shader, vs, "main");
-        pipelineCreator.addShaderEntry(RPIShaderType::pixel_shader, ps, "main");
-        pipelineCreator.addDepthStencilState(RPIDepthStencilState::depth_read_and_wirte);
-        pipelineCreator.addVertexAttribute(RPIFormat::R32G32B32_sfloat);
-        pipelineCreator.addVertexAttribute(RPIFormat::R32G32B32_sfloat);
-        pipelineCreator.addVertexAttribute(RPIFormat::R32G32_sfloat);
-        pipelineCreator.addColorAttachment(RPIFormat::R8G8B8A8_snorm);
-        pipelineCreator.addColorAttachment(RPIFormat::R8G8B8A8_snorm);
-        pipelineCreator.addColorAttachment(RPIFormat::R32G32B32A32_sfloat);
-        pipelineCreator.addColorAttachment(RPIFormat::R32G32B32A32_sfloat);
-        pipelineCreator.addColorAttachment(RPIFormat::R32G32B32A32_sfloat);
-        pipelineCreator.addDepthStencilAttachment(RPIFormat::D24_unorm_S8_uint);
-        pipelineCreator.addDescriptor(RPIShaderType::vertex_shader, 0, 0, RPIDescriptorType::uniform_buffer);
-        pipelineCreator.addDescriptor(RPIShaderType::pixel_shader, 0, 1, RPIDescriptorType::uniform_buffer);
-        pipelineCreator.addDescriptor(RPIShaderType::pixel_shader, 0, 2, RPIDescriptorType::uniform_buffer);
-        pipelineCreator.addDescriptor(RPIShaderType::pixel_shader, 0, 3, RPIDescriptorType::uniform_buffer);
-        pipelineCreator.addDescriptor(RPIShaderType::pixel_shader, 1, 0, RPIDescriptorType::shader_resource_texture);
-        pipeline = pipelineCreator.create();
-        descriptors_sets.resize(100);
+        RPIRenderPipelineDescriptor pipelineDesc{};
+        pipelineDesc.vs = vs;
+        pipelineDesc.vs_entry = "main";
+        pipelineDesc.ps = ps;
+        pipelineDesc.ps_entry = "main";
+        pipeline = RPICreateRenderPipeline(pipelineDesc);
+
+        resource_bindings.resize(100);
         uniformsBuffers.resize(100);
         uniformsBufferDescriptors.resize(100);
         for (int i = 0; i < 100; i++)
         {
-            descriptors_sets[i] = RPICreateDescriptorSet(pipeline);
+            resource_bindings[i] = RPICreateResourceBinding(pipeline);
             uniformsBuffers[i] = RPICreateUploadBuffer(48);
-            uniformsBufferDescriptors[i] = RPICreateDescriptor(uniformsBuffers[i], RPIDescriptorType::uniform_buffer, RPIFormat::unknow);
+            uniformsBufferDescriptors[i] = RPICreateBufferView(uniformsBuffers[i], 0, 48);
         }
     }
 
@@ -48,33 +36,33 @@ namespace yjw
         RPITexture out_ambient,
         RPITexture depth)
     {
-        initialResourceState[out_abedlo] = RPIResourceState::render_target;
-        initialResourceState[out_normal] = RPIResourceState::render_target;
-        initialResourceState[out_diffuse] = RPIResourceState::render_target;
-        initialResourceState[out_specular] = RPIResourceState::render_target;
-        initialResourceState[out_ambient] = RPIResourceState::render_target;
-        initialResourceState[depth] = RPIResourceState::depth_stencil_write;
+        this->out_abeldo = RPICreateTextureView(out_abedlo, RPIFormat::R8G8B8A8_snorm);
+        this->out_normal = RPICreateTextureView(out_normal, RPIFormat::R8G8B8A8_snorm);
+        this->out_diffuse = RPICreateTextureView(out_diffuse, RPIFormat::R32G32B32A32_sfloat);
+        this->out_specular = RPICreateTextureView(out_specular,  RPIFormat::R32G32B32A32_sfloat);
+        this->out_ambient = RPICreateTextureView(out_ambient, RPIFormat::R32G32B32A32_sfloat);
+        this->out_depth = RPICreateTextureView(depth, RPIFormat::D24_unorm_S8_uint);
 
-        this->out_abeldo = RPICreateDescriptor(out_abedlo, RPIDescriptorType::render_target, RPIFormat::R8G8B8A8_snorm);
-        this->out_normal = RPICreateDescriptor(out_normal, RPIDescriptorType::render_target, RPIFormat::R8G8B8A8_snorm);
-        this->out_diffuse = RPICreateDescriptor(out_diffuse, RPIDescriptorType::render_target, RPIFormat::R32G32B32A32_sfloat);
-        this->out_specular = RPICreateDescriptor(out_specular, RPIDescriptorType::render_target, RPIFormat::R32G32B32A32_sfloat);
-        this->out_ambient = RPICreateDescriptor(out_ambient, RPIDescriptorType::render_target, RPIFormat::R32G32B32A32_sfloat);
-        this->out_depth = RPICreateDescriptor(depth, RPIDescriptorType::depth_stencil, RPIFormat::D24_unorm_S8_uint);
+        RPITextureView texture[5] = { this->out_abeldo,this->out_normal ,this->out_diffuse ,this->out_specular ,this->out_ambient };
+        renderPass = RPICreateRenderPass(texture, 5, this->out_depth);
 
-        RPIAttachmentSetCreator attachmentCreator(pipeline);
-        attachmentCreator.setColorAttachment(0, this->out_abeldo);
-        attachmentCreator.setColorAttachment(1, this->out_normal);
-        attachmentCreator.setColorAttachment(2, this->out_diffuse);
-        attachmentCreator.setColorAttachment(3, this->out_specular);
-        attachmentCreator.setColorAttachment(4, this->out_ambient);
-        attachmentCreator.setDepthStencilAttachment(this->out_depth);
-        attachementSet = attachmentCreator.create();
+        entitys = RenderSystem::get().scene.buildEntitys();
+        for (int i = 0; i < entitys.size(); i++)
+        {
+            resource_bindings[i]->SetBufferView(RHIShaderType::vertex, RHIName("camera"), g_resource_store.cameraUniformDescriptor);
+            resource_bindings[i]->SetBufferView(RHIShaderType::fragment, RHIName("light"), g_resource_store.lightUniformDescriptor);
+            resource_bindings[i]->SetBufferView(RHIShaderType::fragment, RHIName("camerapos"), g_resource_store.cameraUniformDescriptor);
+            resource_bindings[i]->SetBufferView(RHIShaderType::fragment, RHIName("material"), uniformsBufferDescriptors[i]);
+            resource_bindings[i]->SetTextureView(RHIShaderType::fragment, RHIName("albedoTex"), entitys[i].material->textureShaderResource);
+            resource_bindings[i]->SetVertexBuffer(RHIName("in_pos"), entitys[i].mesh->vertex_buffer.pos);
+            resource_bindings[i]->SetVertexBuffer(RHIName("in_normal"), entitys[i].mesh->vertex_buffer.normal);
+            resource_bindings[i]->SetVertexBuffer(RHIName("in_uv"), entitys[i].mesh->vertex_buffer.uv);
+            resource_bindings[i]->SetIndexBuffer(entitys[i].mesh->index_buffer);
+        }
     }
 
     void GBufferPass::setupData()
     {
-        entitys = RenderSystem::get().scene.buildEntitys();
         for (int i = 0; i < entitys.size(); i++)
         {
             struct Material
@@ -87,30 +75,20 @@ namespace yjw
             material_data.specular = glm::vec4(entitys[i].material->specular, entitys[i].material->specularPower);
             material_data.ambient = entitys[i].material->ambient;
 
-            RPIUpdateResource(uniformsBuffers[i], &material_data, 0, sizeof(Material));
-
-            RPIDescriptorSetWriter writer(descriptors_sets[i]);
-            writer.setDescriptor(0, 0, g_resource_store.cameraUniformDescriptor);
-            writer.setDescriptor(0, 1, g_resource_store.lightUniformDescriptor);
-            writer.setDescriptor(0, 2, g_resource_store.cameraUniformDescriptor);
-            writer.setDescriptor(0, 3, uniformsBufferDescriptors[i]);
-            writer.setDescriptor(1, 0, entitys[i].material->textureShaderResource);
-            writer.submit();
+            RPIUpdateBuffer(uniformsBuffers[i], &material_data, 0, sizeof(Material));
         }
     }
 
-    void GBufferPass::recordCommand(RPICommandBuffer commandBuffer)
+    void GBufferPass::recordCommand(RPIContext commandBuffer)
     {
-        RPIDrawer drawer(pipeline, commandBuffer, attachementSet);
-        drawer.cmdBeginPass();
         for (int i = 0; i < entitys.size(); i++)
         {
-            drawer.cmdBindDescriptorSet(descriptors_sets[i]);
-            drawer.cmdBindVertexBuffer(entitys[i].mesh->vertex_buffer);
-            drawer.cmdBindIndexBuffer(entitys[i].mesh->index_buffer);
-            drawer.cmdDrawIndex(entitys[i].mesh->subMeshes[entitys[i].subMeshId].size, 1, entitys[i].mesh->subMeshes[entitys[i].subMeshId].offset, 0, 0);
+            RPICmdSetResourceBinding(commandBuffer, resource_bindings[i]);
+            RPICmdBeginRenderPass(commandBuffer, renderPass);
+            RPICmdSetPipeline(commandBuffer, pipeline);
+            RPICmdDrawIndex(commandBuffer, entitys[i].mesh->subMeshes[entitys[i].subMeshId].size, 1, entitys[i].mesh->subMeshes[entitys[i].subMeshId].offset, 0, 0);
+            RPICmdEndPass(commandBuffer);
         }
-        drawer.cmdEndPass();
     }
 
     void GBufferPass::submit()

@@ -36,12 +36,21 @@ namespace rhi
         VulkanInstance* GetParentInstance();
         QueueFamilyIndices GetQueueFamilyIndices();
         class VulkanCommandQueue* GetCommandQueue();
+        class VulkanCommandList* GetImmediaCommandList();
+
+        void WaitForIdle();
     private:
         VulkanInstance* m_parent_instance = nullptr;
         VkPhysicalDevice m_gpu = nullptr;
         VkDevice m_native_device = nullptr;
         QueueFamilyIndices m_queue_family_indices{};
         class VulkanCommandQueue* m_command_queue = nullptr;
+        class VulkanCommandList* m_immediately_command_list = nullptr;
+
+    /***************** to be delete ***************/
+    public:
+        VkSampler m_default_sampler = nullptr;
+    /***************** to be delete ***************/
     };
 
     class VulkanDeviceObject

@@ -121,6 +121,12 @@ namespace rhi
         vkCmdDraw(m_command_list.GetCommandBuffer(), vertexCount, instanceCount, firstVertex, firstInstance);
     }
 
+    void VulkanCommandBuffer::CmdDrawIndex(int indexCount, int instanceCount, int firstIndex, int vertexOffset, int firstInstance)
+    {
+        PrepareForRender();
+        vkCmdDrawIndexed(m_command_list.GetCommandBuffer(), indexCount, instanceCount, firstIndex, vertexOffset, firstInstance);
+    }
+
     void VulkanCommandBuffer::Submit()
     {
         m_command_list.Submit();
@@ -148,9 +154,58 @@ namespace rhi
         vkCmdCopyImage(m_command_list.GetCommandBuffer(), srcTexture->GetVkImage(), VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, dstTexture->GetVkImage(), VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &imageCopyRegion);
     }
 
+    void VulkanCommandBuffer::ClearTexture2D(VulkanTexture* texture)
+    {
+        texture->TransitionState(m_command_list.GetCommandBuffer(), VkImageLayout::VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+        if (texture->GetDesc().format == RHIFormat::D24_unorm_S8_uint)
+        {
+            VkClearDepthStencilValue value{};
+            value.depth = 1.0f;
+            value.stencil = 0;
+            VkImageSubresourceRange range{};
+            range.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT | VK_IMAGE_ASPECT_STENCIL_BIT;
+            range.baseArrayLayer = 0;
+            range.baseMipLevel = 0;
+            range.layerCount = 1;
+            range.levelCount = 1;
+            vkCmdClearDepthStencilImage(m_command_list.GetCommandBuffer(), texture->GetVkImage(), VkImageLayout::VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, &value, 1, &range);
+        }
+        else
+        {
+            VkClearColorValue value{ { 0,0,0,0 } };
+            VkImageSubresourceRange range{};
+            range.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+            range.baseArrayLayer = 0;
+            range.baseMipLevel = 0;
+            range.layerCount = 1;
+            range.levelCount = 1;
+            vkCmdClearColorImage(m_command_list.GetCommandBuffer(), texture->GetVkImage(), VkImageLayout::VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, &value, 1, &range);
+        }
+    }
+
     void VulkanCommandBuffer::PrepareForRender()
     {
-        vkCmdBindPipeline(m_command_list.GetCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, m_state_cache.GetRenderPipeline()->GetOrCreateVkPipeline(m_current_render_pass));
+        if (m_state_cache.GetRenderPipeline())
+        {
+            vkCmdBindPipeline(m_command_list.GetCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, m_state_cache.GetRenderPipeline()->GetOrCreateVkPipeline(m_current_render_pass));
+            if (m_state_cache.GetResourceBinding())
+            {
+                vkCmdBindDescriptorSets(
+                    m_command_list.GetCommandBuffer(),
+                    VK_PIPELINE_BIND_POINT_GRAPHICS,
+                    m_state_cache.GetRenderPipeline()->GetOrCreateVkPipelineLayout(),
+                    0,
+                    m_state_cache.GetResourceBinding()->GetDescriptorSetCount(),
+                    m_state_cache.GetResourceBinding()->GetDescriptorSetData(),
+                    0,
+                    nullptr);
+                if (m_state_cache.GetResourceBinding()->GetIndexBuffer())
+                {
+                    vkCmdBindIndexBuffer(m_command_list.GetCommandBuffer(), m_state_cache.GetResourceBinding()->GetIndexBuffer()->GetVkBuffer(), 0, VK_INDEX_TYPE_UINT32);
+                }
+                vkCmdBindVertexBuffers(m_command_list.GetCommandBuffer(), 0, m_state_cache.GetResourceBinding()->GetVertexBufferCount(), m_state_cache.GetResourceBinding()->GetVertexVkBuffers(), m_state_cache.GetResourceBinding()->GetVertexVkBufferOffsets());
+            }
+        }
         vkCmdSetPrimitiveTopology(m_command_list.GetCommandBuffer(), VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST);
     }
 }

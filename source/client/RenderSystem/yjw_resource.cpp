@@ -11,12 +11,12 @@ namespace yjw
         lightUniform = RPICreateUploadBuffer(32);
         optionUniform = RPICreateUploadBuffer(16);
 
-        cameraUniformDescriptor = RPICreateDescriptor(cameraUniform, RPIDescriptorType::uniform_buffer, RPIFormat::unknow);
-        lightUniformDescriptor = RPICreateDescriptor(lightUniform, RPIDescriptorType::uniform_buffer, RPIFormat::unknow);
-        optionUniformDescriptor = RPICreateDescriptor(optionUniform, RPIDescriptorType::uniform_buffer, RPIFormat::unknow);
+        cameraUniformDescriptor = RPICreateBufferView(cameraUniform, 0, 144);
+        lightUniformDescriptor = RPICreateBufferView(lightUniform, 0, 32);
+        optionUniformDescriptor = RPICreateBufferView(optionUniform, 0, 16);
 
         glm::vec2 screenSize = glm::vec2(1200, 1200);
-        RPIUpdateResource(optionUniform, &screenSize, 0, sizeof(screenSize));
+        RPIUpdateBuffer(optionUniform, &screenSize, 0, sizeof(screenSize));
     }
 
     void GlobalResourceStore::updateCameraData()
@@ -32,7 +32,7 @@ namespace yjw
         data.view = camera.getViewMatrix();
         data.project = camera.getProjectionMatrix();
         data.positon = glm::vec4(camera.position, 1);
-        RPIUpdateResource(cameraUniform, &data, 0, sizeof(data));
+        RPIUpdateBuffer(cameraUniform, &data, 0, sizeof(data));
     }
     
     void GlobalResourceStore::updateLightData()
@@ -45,7 +45,7 @@ namespace yjw
         Data light;
         light.pos = glm::vec3(-3, 15, -8);
         light.color = glm::vec3(1, 1, 1);
-        RPIUpdateResource(lightUniform, &light, 0, sizeof(light));
+        RPIUpdateBuffer(lightUniform, &light, 0, sizeof(light));
     }
 
 }

@@ -14,13 +14,16 @@ namespace rhi
         virtual void BeginPass(RHIRenderPass* renderPass) override;
         virtual void EndPass() override;
         virtual void SetRenderPipeline(RHIRenderPipeline* pipeline) override;
+        virtual void SetResourceBinding(RHIResourceBinding* resourceBinding) override;
         virtual void Draw(int vertexCount, int instanceCount, int firstVertex, int firstInstance) override;
+        virtual void DrawIndex(int indexCount, int instanceCount, int firstIndex, int vertexOffset, int firstInstance) override;
         virtual void Submit() override;
         virtual void Present(RHISwapChain* swapchain, bool bSync) override;
 
         virtual void CopyTexture2D(RHITexture* srcTexture, RHITexture* dstTexture) override;
+        virtual void ClearTexture2D(RHITexture* texture) override;
     private:
-        VulkanStateCache m_state_cache;
         VulkanCommandBuffer m_command_buffer;
+        VulkanStateCache m_state_cache;
     };
 }

@@ -9,6 +9,7 @@ namespace rhi
     public:
         RHIBuffer(const RHIBufferDescriptor& desc) : m_descriptor(desc) {}
         const RHIBufferDescriptor& GetDesc() { return m_descriptor; }
+        virtual void Update(void* data, int bufferOffset, int sizeOfByte) = 0;
     private:
         const RHIBufferDescriptor m_descriptor;
     };
@@ -27,6 +28,7 @@ namespace rhi
     public:
         RHITexture(const RHITextureDescriptor& desc) : m_descriptor(desc) {}
         const RHITextureDescriptor& GetDesc() { return m_descriptor; }
+        virtual void Update(void* data, int sizeOfByte) = 0;
     private:
         const RHITextureDescriptor m_descriptor;
     };

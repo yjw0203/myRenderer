@@ -1,5 +1,7 @@
 #pragma once
 #include "RHI/rhi/yjw_rhi_define.h"
+#include "vulkan/vulkan.h"
+#define VULKAN_MAX_VERTEX_BINDING 16
 #define VULKAN_MAX_DESCRIPTOR_SET 16
 namespace rhi
 {
@@ -7,6 +9,14 @@ namespace rhi
     {
         uniform_buffer,
         sampled_image
+    };
+
+    struct VulkanInputVertexBindingVariable
+    {
+        int location;
+        int binding;
+        int stride;
+        VkFormat format;
     };
 
     struct VulkanResourceBindingVariable

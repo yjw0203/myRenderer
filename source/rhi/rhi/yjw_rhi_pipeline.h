@@ -6,7 +6,13 @@
 #include "yjw_rhi_resource_binding.h"
 namespace rhi
 {
-    class RHIRenderPipeline : public RHIObject
+    class RHIPipeline
+    {
+    public:
+        virtual RHIResourceBinding* CreateResourceBinding() = 0;
+    };
+
+    class RHIRenderPipeline : public RHIPipeline, public RHIObject
     {
     public:
         RHIRenderPipeline(const RHIRenderPipelineDescriptor& desc) : m_descriptor(desc) {}

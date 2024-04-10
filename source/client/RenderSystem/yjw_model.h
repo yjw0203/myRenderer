@@ -8,9 +8,15 @@
 namespace yjw
 {
     struct MeshVertex {
-        glm::vec3 pos;
-        glm::vec3 normal;
-        glm::vec2 uv;
+        std::vector<glm::vec3> pos;
+        std::vector<glm::vec3> normal;
+        std::vector<glm::vec2> uv;
+    };
+
+    struct MeshVertexBuffer {
+        rpi::RPIBuffer pos;
+        rpi::RPIBuffer normal;
+        rpi::RPIBuffer uv;
     };
 
     class Mesh
@@ -23,10 +29,10 @@ namespace yjw
         };
 
         std::vector<SubMesh> subMeshes;
-        std::vector<MeshVertex> vertices;
+        MeshVertex vertices;
         std::vector<uint32_t> indices;
 
-        rpi::RPIBuffer vertex_buffer;
+        MeshVertexBuffer vertex_buffer;
         rpi::RPIBuffer index_buffer;
     };
 
@@ -34,7 +40,7 @@ namespace yjw
     {
     public:
         rpi::RPITexture texture;
-        rpi::RPIDescriptor textureShaderResource;
+        rpi::RPITextureView textureShaderResource;
         glm::vec4    diffuse;
         glm::vec3    specular;
         float        specularPower;
