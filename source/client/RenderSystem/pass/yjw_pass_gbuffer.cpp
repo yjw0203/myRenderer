@@ -10,11 +10,12 @@ namespace yjw
         vs = RPICreateShader(SHADER_FILE(gbuffer_vert.spv));
         ps = RPICreateShader(SHADER_FILE(gbuffer_frag.spv));
 
-        RPIRenderPipelineDescriptor pipelineDesc{};
+        RPIRenderPipelineDescriptor pipelineDesc = RPIGetDefaultRenderPipeline();
         pipelineDesc.vs = vs;
         pipelineDesc.vs_entry = "main";
         pipelineDesc.ps = ps;
         pipelineDesc.ps_entry = "main";
+        pipelineDesc.depth_stencil_state = RPIGetDepthStencilState(RPIDepthStencilStateType::default_depth_read_and_write);
         pipeline = RPICreateRenderPipeline(pipelineDesc);
 
         resource_bindings.resize(100);
@@ -81,14 +82,14 @@ namespace yjw
 
     void GBufferPass::recordCommand(RPIContext commandBuffer)
     {
+        RPICmdBeginRenderPass(commandBuffer, renderPass, resource_bindings.data(), entitys.size());
         for (int i = 0; i < entitys.size(); i++)
         {
             RPICmdSetResourceBinding(commandBuffer, resource_bindings[i]);
-            RPICmdBeginRenderPass(commandBuffer, renderPass);
             RPICmdSetPipeline(commandBuffer, pipeline);
             RPICmdDrawIndex(commandBuffer, entitys[i].mesh->subMeshes[entitys[i].subMeshId].size, 1, entitys[i].mesh->subMeshes[entitys[i].subMeshId].offset, 0, 0);
-            RPICmdEndPass(commandBuffer);
         }
+        RPICmdEndPass(commandBuffer);
     }
 
     void GBufferPass::submit()

@@ -290,7 +290,7 @@ namespace rhi
 
     VulkanTexture* VulkanTextureView::GetTexture()
     {
-        return ResourceCast(GetDesc().texture);
+        return VKResourceCast(GetDesc().texture);
     }
 
     VkImageView VulkanTextureView::GetVkImageView()

@@ -135,4 +135,51 @@ namespace rhi
         assert(0);
         return VkFormat::VK_FORMAT_UNDEFINED;
     }
+
+    VkCompareOp ConvertCompareOpToVkCompareOp(RHICompareOp compareOp)
+    {
+        switch (compareOp)
+        {
+        case RHICompareOp::compare_op_never: return VkCompareOp::VK_COMPARE_OP_NEVER;
+        case RHICompareOp::compare_op_less: return VkCompareOp::VK_COMPARE_OP_LESS;
+        case RHICompareOp::compare_op_equal: return VkCompareOp::VK_COMPARE_OP_EQUAL;
+        case RHICompareOp::compare_op_less_or_equal: return VkCompareOp::VK_COMPARE_OP_LESS_OR_EQUAL;
+        case RHICompareOp::compare_op_greater: return VkCompareOp::VK_COMPARE_OP_GREATER;
+        case RHICompareOp::compare_op_not_equal: return VkCompareOp::VK_COMPARE_OP_NOT_EQUAL;
+        case RHICompareOp::compare_op_greater_or_equal: return VkCompareOp::VK_COMPARE_OP_GREATER_OR_EQUAL;
+        case RHICompareOp::compare_op_always: return VkCompareOp::VK_COMPARE_OP_ALWAYS;
+        }
+        assert(0);
+        return VkCompareOp::VK_COMPARE_OP_NEVER;
+    }
+
+    VkStencilOp ConvertStencilOpToVkStencilOp(RHIStencilOp stencilOp)
+    {
+        switch (stencilOp)
+        {
+        case RHIStencilOp::stencil_op_keep: return VkStencilOp::VK_STENCIL_OP_KEEP;
+        case RHIStencilOp::stencil_op_zero: return VkStencilOp::VK_STENCIL_OP_ZERO;
+        case RHIStencilOp::stencil_op_replace: return VkStencilOp::VK_STENCIL_OP_REPLACE;
+        case RHIStencilOp::stencil_op_increment_and_clamp: return VkStencilOp::VK_STENCIL_OP_INCREMENT_AND_CLAMP;
+        case RHIStencilOp::stencil_op_decrement_and_clamp: return VkStencilOp::VK_STENCIL_OP_DECREMENT_AND_CLAMP;
+        case RHIStencilOp::stencil_op_invert: return VkStencilOp::VK_STENCIL_OP_INVERT;
+        case RHIStencilOp::stencil_op_increment_and_wrap: return VkStencilOp::VK_STENCIL_OP_INCREMENT_AND_WRAP;
+        case RHIStencilOp::stencil_op_decrement_and_wrap: return VkStencilOp::VK_STENCIL_OP_DECREMENT_AND_WRAP;
+        }
+        assert(0);
+        return VkStencilOp::VK_STENCIL_OP_KEEP;
+    }
+
+    VkStencilOpState ConvertStencilOpStateToVkStencilOpState(RHIStencilOpState stencilOpState)
+    {
+        VkStencilOpState state{};
+        state.failOp = ConvertStencilOpToVkStencilOp(stencilOpState.failOp);
+        state.passOp = ConvertStencilOpToVkStencilOp(stencilOpState.passOp);
+        state.depthFailOp = ConvertStencilOpToVkStencilOp(stencilOpState.depthFailOp);
+        state.compareOp = ConvertCompareOpToVkCompareOp(stencilOpState.compareOp);
+        state.compareMask = stencilOpState.compareMask;
+        state.writeMask = stencilOpState.writeMask;
+        state.reference = stencilOpState.reference;
+        return state;
+    }
 }

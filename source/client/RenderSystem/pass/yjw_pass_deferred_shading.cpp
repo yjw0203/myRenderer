@@ -15,7 +15,7 @@ namespace yjw
         vs = RPICreateShader(SHADER_FILE(deferred_shading_vert.spv));
         ps = RPICreateShader(SHADER_FILE(deferred_shading_frag.spv));
 
-        RPIRenderPipelineDescriptor pipelineDesc{};
+        RPIRenderPipelineDescriptor pipelineDesc = RPIGetDefaultRenderPipeline();
         pipelineDesc.vs = vs;
         pipelineDesc.vs_entry = "main";
         pipelineDesc.ps = ps;
@@ -61,8 +61,8 @@ namespace yjw
 
     void DeferredShadingPass::recordCommand(RPIContext commandBuffer)
     {
+        RPICmdBeginRenderPass(commandBuffer, renderPass, &resourceBinding, 1);
         RPICmdSetResourceBinding(commandBuffer, resourceBinding);
-        RPICmdBeginRenderPass(commandBuffer, renderPass);
         RPICmdSetPipeline(commandBuffer, pipeline);
         RPICmdDraw(commandBuffer, 6, 1, 0, 0);
         RPICmdEndPass(commandBuffer);

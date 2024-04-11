@@ -65,7 +65,7 @@ namespace rhi
     };
 
     template<typename TRHIType>
-    static inline typename TVulkanResourceTraits<TRHIType>::TConcreteType* ResourceCast(TRHIType* Resource)
+    static inline typename TVulkanResourceTraits<TRHIType>::TConcreteType* VKResourceCast(TRHIType* Resource)
     {
         return static_cast<typename TVulkanResourceTraits<TRHIType>::TConcreteType*>(Resource);
     }

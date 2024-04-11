@@ -5,6 +5,8 @@ namespace rpi
 {
     RPI g_rpi{};
 
+    void RPIInitState();
+
     void RPIInit()
     {
         RHIInstanceConfig config{};
@@ -12,6 +14,7 @@ namespace rpi
         config.isDebugMode = true;
         RPIO(instance) = new RHIInstance(config);
         RPIO(device) = RPIO(instance)->CreateDevice();
+        RPIInitState();
     }
 
     RPIContext RPICreateContext()
@@ -190,8 +193,12 @@ namespace rpi
         context->SetResourceBinding(resourceBinding);
     }
 
-    void RPICmdBeginRenderPass(RPIContext context, RPIRenderPass renderPass)
+    void RPICmdBeginRenderPass(RPIContext context, RPIRenderPass renderPass, RPIResourceBinding* resourceBinding, int resourceBindingCount)
     {
+        for (int index = 0; index < resourceBindingCount; index++)
+        {
+            context->TransitionStateToRender(resourceBinding[index]);
+        }
         context->BeginPass(renderPass);
     }
 

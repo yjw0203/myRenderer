@@ -66,6 +66,32 @@ namespace rhi
         D24_unorm_S8_uint
     };
 
+    enum class RHICompareOp : char
+    {
+        compare_op_never,
+        compare_op_less,
+        compare_op_equal,
+        compare_op_less_or_equal,
+        compare_op_greater,
+        compare_op_not_equal,
+        compare_op_greater_or_equal,
+        compare_op_always,
+        compare_op_count
+    };
+
+    enum class RHIStencilOp : char 
+    {
+        stencil_op_keep,
+        stencil_op_zero,
+        stencil_op_replace,
+        stencil_op_increment_and_clamp,
+        stencil_op_decrement_and_clamp,
+        stencil_op_invert,
+        stencil_op_increment_and_wrap,
+        stencil_op_decrement_and_wrap,
+        stencil_op_count
+    };
+
     struct RHIBufferDescriptor
     {
         RHIResourceType resourceType;
@@ -116,9 +142,28 @@ namespace rhi
         RHITextureView* depthStencilAttachment;
     };
 
+    struct RHIStencilOpState 
+    {
+        RHIStencilOp failOp;
+        RHIStencilOp passOp;
+        RHIStencilOp depthFailOp;
+        RHICompareOp compareOp;
+        int          compareMask;
+        int          writeMask;
+        int          reference;
+    };
+
     struct RHIDepthStencilState
     {
-
+        bool              depthTestEnable;
+        bool              depthWriteEnable;
+        RHICompareOp      depthCompareOp;
+        bool              depthBoundsTestEnable;
+        bool              stencilTestEnable;
+        RHIStencilOpState front;
+        RHIStencilOpState back;
+        float             minDepthBounds;
+        float             maxDepthBounds;
     };
 
     struct RHIRasterizationState

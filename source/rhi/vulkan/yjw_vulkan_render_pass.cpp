@@ -16,7 +16,7 @@ namespace rhi
         VkSubpassDependency renderPass_dependency{};
         for (int index = 0; index < desc.colorAttachmentCount; index++)
         {
-            renderPass_attachments[index].format = ResourceCast(desc.colorAttachments[index])->GetVkFormat();
+            renderPass_attachments[index].format = VKResourceCast(desc.colorAttachments[index])->GetVkFormat();
             renderPass_attachments[index].samples = VK_SAMPLE_COUNT_1_BIT;
             renderPass_attachments[index].loadOp = VK_ATTACHMENT_LOAD_OP_LOAD;
             renderPass_attachments[index].storeOp = VK_ATTACHMENT_STORE_OP_STORE;
@@ -24,13 +24,13 @@ namespace rhi
             renderPass_attachments[index].stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
             renderPass_attachments[index].initialLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
             renderPass_attachments[index].finalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-            m_width = ResourceCast(desc.colorAttachments[index])->GetWidth();
-            m_height = ResourceCast(desc.colorAttachments[index])->GetHeight();
+            m_width = VKResourceCast(desc.colorAttachments[index])->GetWidth();
+            m_height = VKResourceCast(desc.colorAttachments[index])->GetHeight();
         }
 
         if (desc.depthStencilAttachment)
         {
-            renderPass_attachments.back().format = ResourceCast(desc.depthStencilAttachment)->GetVkFormat();
+            renderPass_attachments.back().format = VKResourceCast(desc.depthStencilAttachment)->GetVkFormat();
             renderPass_attachments.back().samples = VK_SAMPLE_COUNT_1_BIT;
             renderPass_attachments.back().loadOp = VK_ATTACHMENT_LOAD_OP_LOAD;
             renderPass_attachments.back().storeOp = VK_ATTACHMENT_STORE_OP_STORE;
@@ -38,8 +38,8 @@ namespace rhi
             renderPass_attachments.back().stencilStoreOp = VK_ATTACHMENT_STORE_OP_STORE;
             renderPass_attachments.back().initialLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
             renderPass_attachments.back().finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-            m_width = ResourceCast(desc.depthStencilAttachment)->GetWidth();
-            m_height = ResourceCast(desc.depthStencilAttachment)->GetHeight();
+            m_width = VKResourceCast(desc.depthStencilAttachment)->GetWidth();
+            m_height = VKResourceCast(desc.depthStencilAttachment)->GetHeight();
         }
 
         for (int index = 0; index < desc.colorAttachmentCount; index++)
@@ -83,11 +83,11 @@ namespace rhi
         std::vector<VkImageView> imageViews(desc.colorAttachmentCount + (desc.depthStencilAttachment != nullptr));
         for (int index = 0; index < desc.colorAttachmentCount; index++)
         {
-            imageViews[index] = ResourceCast(desc.colorAttachments[index])->GetVkImageView();
+            imageViews[index] = VKResourceCast(desc.colorAttachments[index])->GetVkImageView();
         }
         if (desc.depthStencilAttachment)
         {
-            imageViews.back() = ResourceCast(desc.depthStencilAttachment)->GetVkImageView();
+            imageViews.back() = VKResourceCast(desc.depthStencilAttachment)->GetVkImageView();
         }
 
         VkFramebufferCreateInfo framebufferCreateInfo{};
@@ -104,11 +104,11 @@ namespace rhi
 
         for (int index = 0; index < desc.colorAttachmentCount; index++)
         {
-            ResourceCast(desc.colorAttachments[index])->retain(this);
+            VKResourceCast(desc.colorAttachments[index])->retain(this);
         }
         if (desc.depthStencilAttachment)
         {
-            ResourceCast(desc.depthStencilAttachment)->retain(this);
+            VKResourceCast(desc.depthStencilAttachment)->retain(this);
         }
     }
 
@@ -126,11 +126,11 @@ namespace rhi
 
         for (int index = 0; index < GetDesc().colorAttachmentCount; index++)
         {
-            ResourceCast(GetDesc().colorAttachments[index])->release();
+            VKResourceCast(GetDesc().colorAttachments[index])->release();
         }
         if (GetDesc().depthStencilAttachment)
         {
-            ResourceCast(GetDesc().depthStencilAttachment)->release();
+            VKResourceCast(GetDesc().depthStencilAttachment)->release();
         }
     }
 
@@ -158,11 +158,11 @@ namespace rhi
     {
         for (int index = 0; index < GetDesc().colorAttachmentCount; index++)
         {
-            ResourceCast(GetDesc().colorAttachments[index])->GetTexture()->TransitionState(commandBuffer, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
+            VKResourceCast(GetDesc().colorAttachments[index])->GetTexture()->TransitionState(commandBuffer, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
         }
         if (GetDesc().depthStencilAttachment)
         {
-            ResourceCast(GetDesc().depthStencilAttachment)->GetTexture()->TransitionState(commandBuffer, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
+            VKResourceCast(GetDesc().depthStencilAttachment)->GetTexture()->TransitionState(commandBuffer, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
         }
     }
 }

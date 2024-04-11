@@ -67,8 +67,8 @@ namespace yjw
 
         pipeline.render();
         rpi::RPIPresent(pipeline.commandBuffer, rpiWindow, pipeline.output);
-
         WindowsManager::get().loop();
+
     }
     void RenderSystem::shutdown()
     {

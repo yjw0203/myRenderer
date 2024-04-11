@@ -11,7 +11,7 @@ namespace rhi
 
     void VulkanContext::BeginPass(RHIRenderPass* renderPass)
     {
-        m_command_buffer.CmdBeginPass(ResourceCast(renderPass));
+        m_command_buffer.CmdBeginPass(VKResourceCast(renderPass));
     }
 
     void VulkanContext::EndPass()
@@ -21,13 +21,17 @@ namespace rhi
 
     void VulkanContext::SetRenderPipeline(RHIRenderPipeline* pipeline)
     {
-        m_state_cache.SetRenderPipeline(ResourceCast(pipeline));
+        m_state_cache.SetRenderPipeline(VKResourceCast(pipeline));
+    }
+
+    void VulkanContext::TransitionStateToRender(RHIResourceBinding* resourceBinding)
+    {
+        m_command_buffer.CmdTransitionStateToRender(VKResourceCast(resourceBinding));
     }
 
     void VulkanContext::SetResourceBinding(RHIResourceBinding* resourceBinding)
     {
-        m_state_cache.SetResourceBinding(ResourceCast(resourceBinding));
-        ResourceCast(resourceBinding)->TransitionStateToRender(m_command_buffer.m_command_list.GetCommandBuffer());
+        m_state_cache.SetResourceBinding(VKResourceCast(resourceBinding));
     }
 
     void VulkanContext::Draw(int vertexCount, int instanceCount, int firstVertex, int firstInstance)
@@ -47,17 +51,17 @@ namespace rhi
 
     void VulkanContext::Present(RHISwapChain* swapchain, bool bSync)
     {
-        m_command_buffer.Present(ResourceCast(swapchain), bSync);
+        m_command_buffer.Present(VKResourceCast(swapchain), bSync);
     }
 
     void VulkanContext::CopyTexture2D(RHITexture* srcTexture, RHITexture* dstTexture)
     {
-        m_command_buffer.CopyTexture2D(ResourceCast(srcTexture), ResourceCast(dstTexture));
+        m_command_buffer.CopyTexture2D(VKResourceCast(srcTexture), VKResourceCast(dstTexture));
     }
 
     void VulkanContext::ClearTexture2D(RHITexture* texture)
     {
-        m_command_buffer.ClearTexture2D(ResourceCast(texture));
+        m_command_buffer.ClearTexture2D(VKResourceCast(texture));
     }
 
 }

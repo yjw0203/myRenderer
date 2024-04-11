@@ -115,6 +115,11 @@ namespace rhi
         vkCmdEndRenderPass(m_command_list.GetCommandBuffer());
     }
 
+    void VulkanCommandBuffer::CmdTransitionStateToRender(VulkanResourceBinding* resourceBinding)
+    {
+        resourceBinding->TransitionStateToRender(m_command_list.GetCommandBuffer());
+    }
+
     void VulkanCommandBuffer::CmdDraw(int vertexCount, int instanceCount, int firstVertex, int firstInstance)
     {
         PrepareForRender();
@@ -134,7 +139,7 @@ namespace rhi
 
     void VulkanCommandBuffer::Present(VulkanSwapChain* swapchain, bool bSync)
     {
-        ResourceCast(swapchain->GetBackTexture())->TransitionState(m_command_list.GetCommandBuffer(), VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
+        VKResourceCast(swapchain->GetBackTexture())->TransitionState(m_command_list.GetCommandBuffer(), VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
         Submit();
         swapchain->Present(bSync);
     }

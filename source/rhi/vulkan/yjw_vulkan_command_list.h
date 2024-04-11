@@ -30,6 +30,7 @@ namespace rhi
         VulkanCommandBuffer(VulkanDevice* device, VulkanStateCache& stateCache);
         void CmdBeginPass(VulkanRenderPass* renderPass);
         void CmdEndPass();
+        void CmdTransitionStateToRender(VulkanResourceBinding* resourceBinding);
         void CmdDraw(int vertexCount, int instanceCount, int firstVertex, int firstInstance);
         void CmdDrawIndex(int indexCount, int instanceCount, int firstIndex, int vertexOffset, int firstInstance);
         void Submit();
@@ -37,11 +38,11 @@ namespace rhi
 
         void CopyTexture2D(VulkanTexture* srcTexture, VulkanTexture* dstTexture);
         void ClearTexture2D(VulkanTexture* texture);
-        VulkanCommandList m_command_list;
     private:
         void PrepareForRender();
     private:
         VulkanRenderPass* m_current_render_pass = nullptr;
         VulkanStateCache& m_state_cache;
+        VulkanCommandList m_command_list;
     };
 }

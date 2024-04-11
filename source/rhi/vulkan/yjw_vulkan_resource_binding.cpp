@@ -69,7 +69,7 @@ namespace rhi
         }
         VkDescriptorImageInfo imageInfo{};
         imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-        imageInfo.imageView = ResourceCast(view)->GetVkImageView();
+        imageInfo.imageView = VKResourceCast(view)->GetVkImageView();
         imageInfo.sampler = GetDevice()->m_default_sampler;
 
         VkWriteDescriptorSet write{};
@@ -83,7 +83,7 @@ namespace rhi
 
         vkUpdateDescriptorSets(GetDevice()->GetNativeDevice(), 1, &write, 0, nullptr);
 
-        m_binding_textures[(int)shaderType][name] = ResourceCast(view);
+        m_binding_textures[(int)shaderType][name] = VKResourceCast(view);
     }
 
     void VulkanResourceBinding::SetBufferView(RHIShaderType shaderType, RHIName name, RHIBufferView* view)
@@ -99,9 +99,9 @@ namespace rhi
             return;
         }
         VkDescriptorBufferInfo bufferInfo{};
-        bufferInfo.buffer = ResourceCast(view)->GetBuffer()->GetVkBuffer();
-        bufferInfo.offset = ResourceCast(view)->GetDesc().offset;
-        bufferInfo.range = ResourceCast(view)->GetDesc().width;
+        bufferInfo.buffer = VKResourceCast(view)->GetBuffer()->GetVkBuffer();
+        bufferInfo.offset = VKResourceCast(view)->GetDesc().offset;
+        bufferInfo.range = VKResourceCast(view)->GetDesc().width;
 
         VkWriteDescriptorSet write{};
         write.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
@@ -118,14 +118,14 @@ namespace rhi
     void VulkanResourceBinding::SetVertexBuffer(RHIName name, RHIBuffer* buffer)
     {
         VulkanInputVertexBindingVariable& binding = m_input_reflection[name];
-        m_vertex_buffers[binding.binding] = ResourceCast(buffer);
-        m_vertex_vkBuffers[binding.binding] = ResourceCast(buffer)->GetVkBuffer();
+        m_vertex_buffers[binding.binding] = VKResourceCast(buffer);
+        m_vertex_vkBuffers[binding.binding] = VKResourceCast(buffer)->GetVkBuffer();
         m_vertex_bufferOffsets[binding.binding] = 0;
     }
 
     void VulkanResourceBinding::SetIndexBuffer(RHIBuffer* buffer)
     {
-        m_index_buffer = ResourceCast(buffer);
+        m_index_buffer = VKResourceCast(buffer);
     }
 
     int VulkanResourceBinding::GetVertexBufferCount()

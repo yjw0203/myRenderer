@@ -73,16 +73,16 @@ namespace rhi
 
         VkPipelineShaderStageCreateInfo shaderStages[2] = {};
         shaderStages[0].sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-        shaderStages[0].module = ResourceCast(m_descriptor.vs)->GetNativeShaderModule();
+        shaderStages[0].module = VKResourceCast(m_descriptor.vs)->GetNativeShaderModule();
         shaderStages[0].stage = VK_SHADER_STAGE_VERTEX_BIT;
         shaderStages[0].pName = m_descriptor.vs_entry.c_str();
         shaderStages[1].sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-        shaderStages[1].module = ResourceCast(m_descriptor.ps)->GetNativeShaderModule();
+        shaderStages[1].module = VKResourceCast(m_descriptor.ps)->GetNativeShaderModule();
         shaderStages[1].stage = VK_SHADER_STAGE_FRAGMENT_BIT;
         shaderStages[1].pName = m_descriptor.ps_entry.c_str();
 
         VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
-        std::unordered_map<RHIName, VulkanInputVertexBindingVariable>& vertex_refect = ResourceCast(m_descriptor.vs)->GetReflectionTableByEntryName(RHIName(m_descriptor.vs_entry)).input_vertexes;
+        std::unordered_map<RHIName, VulkanInputVertexBindingVariable>& vertex_refect = VKResourceCast(m_descriptor.vs)->GetReflectionTableByEntryName(RHIName(m_descriptor.vs_entry)).input_vertexes;
         std::vector<VkVertexInputBindingDescription> inputBindingDescs;
         inputBindingDescs.resize(vertex_refect.size());
         std::vector<VkVertexInputAttributeDescription> inputAttributeDescs;
@@ -139,15 +139,15 @@ namespace rhi
 
         VkPipelineDepthStencilStateCreateInfo depthStencilStateInfo{};
         depthStencilStateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
-        depthStencilStateInfo.depthTestEnable = VK_FALSE;
-        depthStencilStateInfo.depthWriteEnable = VK_FALSE;
-        depthStencilStateInfo.depthCompareOp = VK_COMPARE_OP_LESS;
-        depthStencilStateInfo.depthBoundsTestEnable = VK_FALSE;
-        depthStencilStateInfo.stencilTestEnable = VK_FALSE;
-        depthStencilStateInfo.front = VkStencilOpState();
-        depthStencilStateInfo.back = VkStencilOpState();
-        depthStencilStateInfo.minDepthBounds = 0;
-        depthStencilStateInfo.maxDepthBounds = 0;
+        depthStencilStateInfo.depthTestEnable = m_descriptor.depth_stencil_state.depthTestEnable;
+        depthStencilStateInfo.depthWriteEnable = m_descriptor.depth_stencil_state.depthWriteEnable;
+        depthStencilStateInfo.depthCompareOp = ConvertCompareOpToVkCompareOp(m_descriptor.depth_stencil_state.depthCompareOp);
+        depthStencilStateInfo.depthBoundsTestEnable = m_descriptor.depth_stencil_state.depthBoundsTestEnable;
+        depthStencilStateInfo.stencilTestEnable = m_descriptor.depth_stencil_state.stencilTestEnable;
+        depthStencilStateInfo.front = ConvertStencilOpStateToVkStencilOpState(m_descriptor.depth_stencil_state.front);
+        depthStencilStateInfo.back = ConvertStencilOpStateToVkStencilOpState(m_descriptor.depth_stencil_state.back);
+        depthStencilStateInfo.minDepthBounds = m_descriptor.depth_stencil_state.minDepthBounds;
+        depthStencilStateInfo.maxDepthBounds = m_descriptor.depth_stencil_state.maxDepthBounds;
         depthStencilStateInfo.flags = 0;
         depthStencilStateInfo.pNext = nullptr;
 
@@ -227,8 +227,8 @@ namespace rhi
         }
 
         VulkanResourceLayoutView layoutView;
-        layoutView.AddReflectionTable(RHIShaderType::vertex, ResourceCast(m_descriptor.vs)->GetReflectionTableByEntryName(RHIName(m_descriptor.vs_entry)).resource_bindings);
-        layoutView.AddReflectionTable(RHIShaderType::fragment, ResourceCast(m_descriptor.ps)->GetReflectionTableByEntryName(RHIName(m_descriptor.ps_entry)).resource_bindings);
+        layoutView.AddReflectionTable(RHIShaderType::vertex, VKResourceCast(m_descriptor.vs)->GetReflectionTableByEntryName(RHIName(m_descriptor.vs_entry)).resource_bindings);
+        layoutView.AddReflectionTable(RHIShaderType::fragment, VKResourceCast(m_descriptor.ps)->GetReflectionTableByEntryName(RHIName(m_descriptor.ps_entry)).resource_bindings);
         int descriptorSetCount = layoutView.GetMaxSetCount();
         m_descriptor_set_layouts.resize(descriptorSetCount);
         for (int setId = 0; setId < descriptorSetCount; setId++)
@@ -260,9 +260,9 @@ namespace rhi
     {
         GetOrCreateVkPipelineLayout();
         VulkanResourceLayoutView layoutView;
-        layoutView.AddReflectionTable(RHIShaderType::vertex, ResourceCast(m_descriptor.vs)->GetReflectionTableByEntryName(RHIName(m_descriptor.vs_entry)).resource_bindings);
-        layoutView.AddReflectionTable(RHIShaderType::fragment, ResourceCast(m_descriptor.ps)->GetReflectionTableByEntryName(RHIName(m_descriptor.ps_entry)).resource_bindings);
-        std::unordered_map<RHIName, VulkanInputVertexBindingVariable>& input_reflect = ResourceCast(m_descriptor.vs)->GetReflectionTableByEntryName(RHIName(m_descriptor.vs_entry)).input_vertexes;
+        layoutView.AddReflectionTable(RHIShaderType::vertex, VKResourceCast(m_descriptor.vs)->GetReflectionTableByEntryName(RHIName(m_descriptor.vs_entry)).resource_bindings);
+        layoutView.AddReflectionTable(RHIShaderType::fragment, VKResourceCast(m_descriptor.ps)->GetReflectionTableByEntryName(RHIName(m_descriptor.ps_entry)).resource_bindings);
+        std::unordered_map<RHIName, VulkanInputVertexBindingVariable>& input_reflect = VKResourceCast(m_descriptor.vs)->GetReflectionTableByEntryName(RHIName(m_descriptor.vs_entry)).input_vertexes;
         return new VulkanResourceBinding(GetDevice(), layoutView, m_descriptor_set_layouts.data(), m_descriptor_set_layouts.size(), input_reflect);
     }
 

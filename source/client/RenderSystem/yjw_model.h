@@ -2,6 +2,7 @@
 #include <string>
 #include <memory>
 #include <vector>
+#include <unordered_map>
 #include <glm/glm.hpp>
 #include "rhi/rpi/yjw_rpi_header.h"
 
@@ -39,7 +40,6 @@ namespace yjw
     class Material
     {
     public:
-        rpi::RPITexture texture;
         rpi::RPITextureView textureShaderResource;
         glm::vec4    diffuse;
         glm::vec3    specular;
@@ -66,6 +66,7 @@ namespace yjw
         
         std::shared_ptr<Mesh> mesh;
         std::vector<std::shared_ptr<Material> > materials;
+        std::unordered_map<std::string, rpi::RPITextureView> textureViews;
         std::vector<Entity> entitys;
     };
 

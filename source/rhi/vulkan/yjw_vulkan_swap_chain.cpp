@@ -141,7 +141,7 @@ namespace rhi
         images.resize(imageCount);
         vkGetSwapchainImagesKHR(pDevice->GetNativeDevice(), m_native_swapchain, &imageCount, images.data());
 
-
+        m_swapchainImageCount = imageCount;
         //create swapchain image view
         m_swapchainImages.resize(imageCount);
         m_swapchainImageViews.resize(imageCount);
@@ -165,18 +165,26 @@ namespace rhi
             m_swapchainImageViews[i] = new VulkanTextureView(pDevice, viewDesc);
         }
 
-        VkSemaphoreCreateInfo semaphoreInfo{};
-        semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
-        if (vkCreateSemaphore(pDevice->GetNativeDevice(), &semaphoreInfo, nullptr, &m_imageAvailableSemaphore) != VK_SUCCESS) {
-            throw std::runtime_error("failed to create texture sampler!");
+        m_imageAvailableSemaphore.resize(imageCount);
+        for (int i = 0; i < imageCount; i++)
+        {
+            VkSemaphoreCreateInfo semaphoreInfo{};
+            semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
+            if (vkCreateSemaphore(pDevice->GetNativeDevice(), &semaphoreInfo, nullptr, &m_imageAvailableSemaphore[i]) != VK_SUCCESS) {
+                throw std::runtime_error("failed to create texture sampler!");
+            }
         }
 
-        vkAcquireNextImageKHR(GetDevice()->GetNativeDevice(), m_native_swapchain, UINT64_MAX, m_imageAvailableSemaphore, VK_NULL_HANDLE, &m_swapchainImageIndex);
+        vkAcquireNextImageKHR(GetDevice()->GetNativeDevice(), m_native_swapchain, UINT64_MAX, m_imageAvailableSemaphore[m_swapchainImageIndex], VK_NULL_HANDLE, &m_swapchainImageIndex);
     }
 
     VulkanSwapChain::~VulkanSwapChain()
     {
-        vkDestroySemaphore(GetDevice()->GetNativeDevice(), m_imageAvailableSemaphore, nullptr);
+        for (int i = 0; i < m_imageAvailableSemaphore.size(); i++)
+        {
+            vkDestroySemaphore(GetDevice()->GetNativeDevice(), m_imageAvailableSemaphore[i], nullptr);
+        }
+        m_imageAvailableSemaphore.clear();
         vkDestroySwapchainKHR(GetDevice()->GetNativeDevice(), m_native_swapchain, nullptr);
     }
 
@@ -186,7 +194,7 @@ namespace rhi
         presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
 
         presentInfo.waitSemaphoreCount = 1;;
-        presentInfo.pWaitSemaphores = &m_imageAvailableSemaphore;
+        presentInfo.pWaitSemaphores = &m_imageAvailableSemaphore[m_swapchainImageIndex];
 
         VkSwapchainKHR swapChains[] = { m_native_swapchain };
         presentInfo.swapchainCount = 1;
@@ -195,7 +203,7 @@ namespace rhi
         presentInfo.pImageIndices = &m_swapchainImageIndex;
 
         vkQueuePresentKHR(GetDevice()->GetCommandQueue()->GetPresentQueue(), &presentInfo);
-        vkAcquireNextImageKHR(GetDevice()->GetNativeDevice(), m_native_swapchain, UINT64_MAX, m_imageAvailableSemaphore, VK_NULL_HANDLE, &m_swapchainImageIndex);
+        vkAcquireNextImageKHR(GetDevice()->GetNativeDevice(), m_native_swapchain, UINT64_MAX, m_imageAvailableSemaphore[(m_swapchainImageIndex + 1) % m_swapchainImageCount], VK_NULL_HANDLE, &m_swapchainImageIndex);
     }
 
     RHITexture* VulkanSwapChain::GetBackTexture()

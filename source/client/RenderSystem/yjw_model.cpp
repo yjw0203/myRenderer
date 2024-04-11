@@ -52,8 +52,17 @@ namespace yjw
             model->materials[i] = std::make_shared<Material>();
             model->mesh->subMeshes.push_back(Mesh::SubMesh{ currentOffset ,(uint32_t)pmxModel.m_materials[i].m_numFaceVertices });
             std::string texPath8 = filePath + "/" + pmxModel.m_textures[pmxModel.m_materials[i].m_textureIndex].m_textureName;
-            model->materials[i]->texture = rpi::RPICreateTexture2DFromFile(texPath8.c_str());
-            model->materials[i]->textureShaderResource = rpi::RPICreateTextureView(model->materials[i]->texture, rpi::RPIFormat::R8G8B8A8_srgb);
+            if (model->textureViews.find(texPath8) != model->textureViews.end() && model->textureViews[texPath8])
+            {
+            }
+            else
+            {
+                rpi::RPITexture texture = rpi::RPICreateTexture2DFromFile(texPath8.c_str());
+                rpi::RPITextureView textureView = rpi::RPICreateTextureView(texture, rpi::RPIFormat::R8G8B8A8_srgb);
+                model->textureViews[texPath8] = textureView;
+                texture->release();
+            }
+            model->materials[i]->textureShaderResource = model->textureViews[texPath8];
             model->materials[i]->diffuse = pmxModel.m_materials[i].m_diffuse;
             model->materials[i]->specular = pmxModel.m_materials[i].m_specular;
             model->materials[i]->specularPower = pmxModel.m_materials[i].m_specularPower;

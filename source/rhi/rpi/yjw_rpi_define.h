@@ -23,26 +23,12 @@ namespace rpi
     typedef RHIShaderType RPIShaderType;
 
     typedef RHIRenderPipelineDescriptor RPIRenderPipelineDescriptor;
+    typedef RHIDepthStencilState RPIDepthStencilState;
 
     struct RPIWindow
     {
         void* window;
         RPISwapChain swapchain;
-    };
-
-    enum RPIDepthStencilState
-    {
-        no_depth_no_stencil,
-        depth_read_and_wirte,
-        depth_read,
-        depth_write
-    };
-
-    enum RPIRasterizationState
-    {
-        default_,
-        only_back_face,
-        both_face
     };
 
     struct RPI

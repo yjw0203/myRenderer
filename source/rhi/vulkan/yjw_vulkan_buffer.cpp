@@ -122,6 +122,6 @@ namespace rhi
 
     VulkanBuffer* VulkanBufferView::GetBuffer()
     {
-        return ResourceCast(GetDesc().buffer);
+        return VKResourceCast(GetDesc().buffer);
     }
 }

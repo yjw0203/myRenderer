@@ -20,8 +20,9 @@ namespace rhi
         VkFormat m_swapchainImageFormat{};
         VkExtent2D m_swapchainExtent{};
         uint32_t m_swapchainImageIndex{};
+        uint32_t m_swapchainImageCount{};
         std::vector<VulkanTexture*> m_swapchainImages;
         std::vector<VulkanTextureView*> m_swapchainImageViews;
-        VkSemaphore m_imageAvailableSemaphore;
+        std::vector<VkSemaphore> m_imageAvailableSemaphore;
     };
 }
