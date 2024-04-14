@@ -23,7 +23,6 @@ namespace yjw
         RPIRenderPipelineDescriptor pipelineDesc = RPIGetDefaultRenderPipeline();
         pipelineDesc.vs = vs;
         pipelineDesc.ps = ps;
-        pipelineDesc.depth_stencil_state = RPIGetDepthStencilState(RPIDepthStencilStateType::default_depth_read_and_write);
         pipeline = RPICreateRenderPipeline(pipelineDesc);
         resourceBinding = RPICreateResourceBinding(pipeline);
     }

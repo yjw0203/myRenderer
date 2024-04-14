@@ -22,6 +22,6 @@ Texture2D applyTex;
 float4 PSMain(VS_OUTPUT input) : SV_Target  
 {  
     SamplerState defaultSampler;
-    float2 uv = input.sv_Position.xy;
+    float2 uv = normalize(input.sv_Position.xy/input.sv_Position.w);
     return applyTex.Sample(defaultSampler,uv);
 }

@@ -83,7 +83,7 @@ namespace rhi
         createInfo.ppEnabledExtensionNames = deviceExtensions.data();
 
         std::vector<const char*> validationLayers = {
-            "VK_LAYER_KHRONOS_validation"
+            "VK_LAYER_KHRONOS_validation",
         };
         if (isDebugMode) {
             createInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
