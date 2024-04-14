@@ -41,8 +41,9 @@ namespace yjw
 
     void ApplyToWindowPass::recordCommand(RPIContext commandBuffer)
     {
-        RPICmdBeginRenderPass(commandBuffer, renderPass, nullptr, 0);
+        RPICmdBeginRenderPass(commandBuffer, renderPass, &resourceBinding, 1);
         RPICmdSetPipeline(commandBuffer, pipeline);
+        RPICmdSetResourceBinding(commandBuffer, resourceBinding);
         RPICmdDraw(commandBuffer, 6, 1, 0, 0);
         RPICmdEndPass(commandBuffer);
     }
