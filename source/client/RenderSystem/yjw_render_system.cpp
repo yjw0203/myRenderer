@@ -37,9 +37,9 @@ namespace yjw
         heita = *Model::load(RESOURCE_FILE(heita),"黑塔.pmx");
         hutao = *Model::load(RESOURCE_FILE(hutao),"胡桃.pmx");
 
-        //scene.models.push_back(naxita);
+        scene.models.push_back(naxita);
         //scene.models.push_back(heita);
-        scene.models.push_back(hutao);
+        //scene.models.push_back(hutao);
 
         activeCamera.position = glm::vec3(1, 12, -16);
         //activeCamera.direction = glm::vec3(0, 0, 0) - activeCamera.position;
@@ -47,7 +47,9 @@ namespace yjw
         activeCamera.up = glm::vec3(0, -1, -0.2);
 
         pipeline.initializeResource();
-        pipeline.config();
+        DefaultPipelineConfig config;
+        config.window = rpiWindow;
+        pipeline.config(config);
 
     }
     

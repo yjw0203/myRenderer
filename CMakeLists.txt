@@ -25,4 +25,7 @@ set(stb_include ${CMAKE_CURRENT_SOURCE_DIR}/3rd/stb/include)
 
 set(glm_include ${CMAKE_CURRENT_SOURCE_DIR}/3rd/glm-0.9.9.8)
 
+set(shaderc_include ${CMAKE_CURRENT_SOURCE_DIR}/3rd/shaderc/include)
+set(shaderc_lib ${CMAKE_CURRENT_SOURCE_DIR}/3rd/shaderc/lib/ShaderConductor.lib)
+
 add_subdirectory(source)

@@ -11,10 +11,6 @@ namespace yjw
         lightUniform = RPICreateUploadBuffer(32);
         optionUniform = RPICreateUploadBuffer(16);
 
-        cameraUniformDescriptor = RPICreateBufferView(cameraUniform, 0, 144);
-        lightUniformDescriptor = RPICreateBufferView(lightUniform, 0, 32);
-        optionUniformDescriptor = RPICreateBufferView(optionUniform, 0, 16);
-
         glm::vec2 screenSize = glm::vec2(1200, 1200);
         RPIUpdateBuffer(optionUniform, &screenSize, 0, sizeof(screenSize));
     }

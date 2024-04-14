@@ -16,18 +16,12 @@ namespace rhi
         return RHIShaderType::count;
     }
 
-    VulkanShader::VulkanShader(VulkanDevice* pDevice, const char* url, bool isBinary)
+    VulkanShader::VulkanShader(VulkanDevice* pDevice, const void* binary, int binarySize, const char* entryName)
         :VulkanDeviceObject(pDevice)
     {
-        VkDevice device = pDevice->GetNativeDevice();
-        if (isBinary)
-        {
-            m_shader_module = CreateShaderModuleFromBinaryUrl(device, url);
-        }
-        else
-        {
-
-        }
+        m_shader_module = CreateShaderModuleFromBinaryCode(pDevice->GetNativeDevice(), binary, binarySize);
+        GenerateReflectionTable(binary, binarySize);
+        m_entry_name = std::string(entryName);
     }
 
     VkShaderModule VulkanShader::GetNativeShaderModule()
@@ -38,6 +32,11 @@ namespace rhi
     VulkanReflectTable& VulkanShader::GetReflectionTableByEntryName(RHIName name)
     {
         return m_entry_reflection_tables[name];
+    }
+
+    const char* VulkanShader::GetEntryName()
+    {
+        return m_entry_name.c_str();
     }
 
     void VulkanShader::ReadCodeFromFileUrl(const char* url, std::vector<char>& code)
@@ -109,7 +108,7 @@ namespace rhi
                 reflection_variable.resourceType = VulkanShaderResourceType::uniform_buffer;
             }
 
-            for (auto& resource : resources.sampled_images)
+            for (auto& resource : resources.separate_images)
             {
                 RHIName name(reflection.get_name(resource.id).c_str());
                 spirv_cross::SPIRType type = reflection.get_type(resource.base_type_id);
@@ -119,7 +118,7 @@ namespace rhi
                 reflection_variable.shaderType = shaderType;
                 reflection_variable.setId = setId;
                 reflection_variable.binding = binding;
-                reflection_variable.resourceType = VulkanShaderResourceType::sampled_image;
+                reflection_variable.resourceType = VulkanShaderResourceType::separate_images;
             }
 
             if (shaderType == RHIShaderType::vertex)
@@ -129,6 +128,7 @@ namespace rhi
                 for (auto& resource : resources.stage_inputs)
                 {
                     RHIName name(reflection.get_name(resource.id).c_str());
+                    name.erase(0, 7);
                     int location = reflection.get_decoration(resource.id, spv::DecorationLocation);
                     spirv_cross::SPIRType type = reflection.get_type(resource.base_type_id);
                     VkFormat vertexFormat = VK_FORMAT_UNDEFINED;

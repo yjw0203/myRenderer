@@ -8,11 +8,16 @@
 namespace yjw
 {
     using namespace rpi;
+    struct DefaultPipelineConfig
+    {
+        RPIWindow window;
+    };
+
     class DefaultPipeline : Pipeline
     {
     public:
         virtual void initializeResource() override;
-        virtual void config() override;
+        void config(DefaultPipelineConfig config);
         virtual void render() override;
 
         RPITexture output;

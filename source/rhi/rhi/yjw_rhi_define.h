@@ -137,9 +137,9 @@ namespace rhi
 
     struct RHIRenderPassDescriptor
     {
-        RHITextureView* colorAttachments[RHI_MAX_RENDER_TARGETS];
-        int colorAttachmentCount;
-        RHITextureView* depthStencilAttachment;
+        RHITextureView* colorAttachments[RHI_MAX_RENDER_TARGETS] = {};
+        int colorAttachmentCount = 0;
+        RHITextureView* depthStencilAttachment = nullptr;
     };
 
     struct RHIStencilOpState 
@@ -177,9 +177,7 @@ namespace rhi
         RHIDepthStencilState depth_stencil_state{};
         RHIRasterizationState rasterization_state{};
         RHIShader* vs{};
-        std::string vs_entry;
         RHIShader* ps{};
-        std::string ps_entry;
         std::vector<RHIFormat> vertex_layouts;
     };
 }

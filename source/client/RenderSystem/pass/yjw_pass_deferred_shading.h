@@ -30,14 +30,6 @@ namespace yjw
 
         RPIResourceBinding resourceBinding;
 
-        RPITextureView in_abeldo;
-        RPITextureView in_normal;
-        RPITextureView in_depth;
-        RPITextureView in_diffuse;
-        RPITextureView in_specular;
-        RPITextureView in_ambient;
-        RPITextureView out_color;
-
         RPIBuffer vertex_buffer;
 
     };

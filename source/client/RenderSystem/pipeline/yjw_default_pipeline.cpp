@@ -1,5 +1,7 @@
 #include "yjw_default_pipeline.h"
+#include "client/RenderSystem/pass/yjw_pass_draw_triangle.h"
 #include "client/RenderSystem/pass/yjw_pass_gbuffer.h"
+#include "client/RenderSystem/pass/yjw_pass_apply_to_window.h"
 #include "client/RenderSystem/pass/yjw_pass_deferred_shading.h"
 
 namespace yjw
@@ -26,14 +28,21 @@ namespace yjw
         commandBuffer = RPICreateContext();
     }
 
-    void DefaultPipeline::config()
+    void DefaultPipeline::config(DefaultPipelineConfig config)
     {
         std::shared_ptr<GBufferPass> gbuffer_pass = std::make_shared<GBufferPass>();
         std::shared_ptr<DeferredShadingPass> deferred_shading_pass = std::make_shared<DeferredShadingPass>();
+        std::shared_ptr<ApplyToWindowPass> applyToWindowPass = std::make_shared<ApplyToWindowPass>(config.window);
 
-        deferred_shading_pass->buildPSO();
-        gbuffer_pass->buildPSO();
+        passes.push_back(gbuffer_pass);
+        passes.push_back(deferred_shading_pass);
+        passes.push_back(applyToWindowPass);
 
+        for (auto pass : passes)
+        {
+            pass->buildPSO();
+        }
+        
         gbuffer_pass->registerTexture(
             texture_map["albedo"].resource_handle,
             texture_map["normal"].resource_handle,
@@ -49,9 +58,8 @@ namespace yjw
             texture_map["ambient"].resource_handle,
             texture_map["depth"].resource_handle,
             texture_map["color"].resource_handle);
+        applyToWindowPass->registerTexture(texture_map["color"].resource_handle);
 
-        passes.push_back(gbuffer_pass);
-        passes.push_back(deferred_shading_pass);
     }
 
     void DefaultPipeline::render()

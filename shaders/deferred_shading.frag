@@ -30,7 +30,7 @@ layout(set = 0,binding = 2) uniform Option
 
 void main() {
 
-    vec2 uv = gl_FragCoord.xy/option.screenSize;
+    vec2 uv = SV_Position.xy/option.screenSize;
 
     mat4 screenToWorld = inverse(camera.project * camera.view);
     vec4 camera_pos = vec4(camera.pos,1);

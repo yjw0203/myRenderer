@@ -19,12 +19,12 @@ namespace rpi
     RPITexture RPICreateUploadTexture2D(int width, int height, RPIFormat format);
     RPITexture RPICreateTexture2DFromFile(const char* filePath);
 
-    RPITextureView RPICreateTextureView(RPITexture texture, RPIFormat format);
-    RPIBufferView RPICreateBufferView(RPIBuffer buffer, int offset, int width);
+    RPITexture RPICreateTextureView(RPITexture texture, RPIFormat format);
+    RPIBuffer RPICreateBufferView(RPIBuffer buffer, int offset, int width);
 
-    RPIShader RPICreateShader(const char* name);
+    RPIShader RPICreateShader(RPIShaderType shaderType, const char* name, const char* entryName);
 
-    RPIRenderPass RPICreateRenderPass(RPITextureView* rtvs, int rtvCount, RPITextureView dsv);
+    RPIRenderPass RPICreateRenderPass(RPITexture* rtvs, int rtvCount, RPITexture dsv);
     RPIPipeline RPICreateRenderPipeline(RPIRenderPipelineDescriptor createInfo);
 
     RPIResourceBinding RPICreateResourceBinding(RPIPipeline pipeline);

@@ -8,7 +8,8 @@ namespace rhi
     enum VulkanShaderResourceType
     {
         uniform_buffer,
-        sampled_image
+        sampled_image,
+        separate_images
     };
 
     struct VulkanInputVertexBindingVariable

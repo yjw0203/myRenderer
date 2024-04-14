@@ -17,3 +17,5 @@ target_include_directories(${TARGET_NAME} PUBLIC $<BUILD_INTERFACE:${glfw_includ
 
 target_include_directories(${TARGET_NAME} PUBLIC $<BUILD_INTERFACE:${stb_include}>)
 
+target_link_libraries(${TARGET_NAME} PUBLIC ${shaderc_lib})
+target_include_directories(${TARGET_NAME} PUBLIC $<BUILD_INTERFACE:${shaderc_include}>)

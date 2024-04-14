@@ -9,13 +9,8 @@ namespace rpi
     typedef RHIInstance* RPIInstance;
     typedef RHIDevice* RPIDevice;
     typedef RHIContext* RPIContext;
-    typedef RHIBuffer* RPIBuffer;
-    typedef RHITexture* RPITexture;
-    typedef RHIBufferView* RPIBufferView;
-    typedef RHITextureView* RPITextureView;
     typedef RHIPipeline* RPIPipeline;
     typedef RHIRenderPass* RPIRenderPass;
-    typedef RHIResourceBinding* RPIResourceBinding;
     typedef RHIShader* RPIShader;
     typedef RHISwapChain* RPISwapChain;
 
@@ -37,3 +32,6 @@ namespace rpi
         RPIDevice device;
     };
 }
+
+#include "yjw_rpi_resource.h"
+#include "yjw_rpi_resource_binding.h"

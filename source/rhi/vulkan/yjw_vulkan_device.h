@@ -23,7 +23,7 @@ namespace rhi
 
         virtual RHIContext* CreateContext() override;
         virtual RHISwapChain* CreateSwapchain(void* window) override;
-        virtual RHIShader* CreateShaderByBinaryUrl(const char* url) override;
+        virtual RHIShader* CreateShaderByBinary(const void* binaryData, int size, const char* entryName) override;
         virtual RHIRenderPipeline* CreateRenderPipeline(const RHIRenderPipelineDescriptor& renderPipelineDescriptor) override;
         virtual RHIRenderPass* CreateRenderPass(const RHIRenderPassDescriptor& renderPassDescriptor) override;
         virtual RHIBuffer* CreateBuffer(const RHIBufferDescriptor& bufferDescriptor) override;

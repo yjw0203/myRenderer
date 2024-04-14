@@ -135,9 +135,9 @@ namespace rhi
         return new VulkanSwapChain(this, window);
     }
 
-    RHIShader* VulkanDevice::CreateShaderByBinaryUrl(const char* url)
+    RHIShader* VulkanDevice::CreateShaderByBinary(const void* binaryData, int size, const char* entryName)
     {
-        return new VulkanShader(this, url, true);
+        return new VulkanShader(this, binaryData, size, entryName);
     }
 
     RHIRenderPipeline* VulkanDevice::CreateRenderPipeline(const RHIRenderPipelineDescriptor& renderPipelineDescriptor)

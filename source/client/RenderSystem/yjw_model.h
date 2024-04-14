@@ -40,7 +40,7 @@ namespace yjw
     class Material
     {
     public:
-        rpi::RPITextureView textureShaderResource;
+        rpi::RPITexture textureShaderResource;
         glm::vec4    diffuse;
         glm::vec3    specular;
         float        specularPower;
@@ -66,7 +66,7 @@ namespace yjw
         
         std::shared_ptr<Mesh> mesh;
         std::vector<std::shared_ptr<Material> > materials;
-        std::unordered_map<std::string, rpi::RPITextureView> textureViews;
+        std::unordered_map<std::string, rpi::RPITexture> textures;
         std::vector<Entity> entitys;
     };
 

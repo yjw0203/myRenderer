@@ -145,6 +145,7 @@ namespace rhi
         //create swapchain image view
         m_swapchainImages.resize(imageCount);
         m_swapchainImageViews.resize(imageCount);
+        m_swapchainRenderPasses.resize(imageCount);
 
         for (size_t i = 0; i < imageCount; i++) 
         {
@@ -163,6 +164,12 @@ namespace rhi
             viewDesc.texture = m_swapchainImages[i];
             viewDesc.format = RHIFormat::B8G8R8A8_srgb;
             m_swapchainImageViews[i] = new VulkanTextureView(pDevice, viewDesc);
+
+            RHIRenderPassDescriptor renderPassDesc{};
+            renderPassDesc.colorAttachments[0] = m_swapchainImageViews[i];
+            renderPassDesc.colorAttachmentCount = 1;
+            renderPassDesc.depthStencilAttachment = nullptr;
+            m_swapchainRenderPasses[i] = new VulkanRenderPass(pDevice, renderPassDesc);
         }
 
         m_imageAvailableSemaphore.resize(imageCount);
@@ -180,6 +187,24 @@ namespace rhi
 
     VulkanSwapChain::~VulkanSwapChain()
     {
+        for (int i = 0; i < m_swapchainImages.size(); i++)
+        {
+            m_swapchainImages[i]->release();
+        }
+        m_swapchainImages.clear();
+
+        for (int i = 0; i < m_swapchainImageViews.size(); i++)
+        {
+            m_swapchainImageViews[i]->release();
+        }
+        m_swapchainImageViews.clear();
+
+        for (int i = 0; i < m_swapchainRenderPasses.size(); i++)
+        {
+            m_swapchainRenderPasses[i]->release();
+        }
+        m_swapchainRenderPasses.clear();
+
         for (int i = 0; i < m_imageAvailableSemaphore.size(); i++)
         {
             vkDestroySemaphore(GetDevice()->GetNativeDevice(), m_imageAvailableSemaphore[i], nullptr);
@@ -214,5 +239,10 @@ namespace rhi
     RHITextureView* VulkanSwapChain::GetBackTextureView()
     {
         return m_swapchainImageViews[m_swapchainImageIndex];
+    }
+
+    RHIRenderPass* VulkanSwapChain::GetCurrentRenderPass()
+    {
+        return m_swapchainRenderPasses[m_swapchainImageIndex];
     }
 }

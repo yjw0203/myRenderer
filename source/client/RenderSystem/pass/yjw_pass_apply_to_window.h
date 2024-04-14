@@ -6,29 +6,25 @@
 namespace yjw
 {
     using namespace rpi;
-    class GBufferPass : public Pass
+    class ApplyToWindowPass : public Pass
     {
     public:
+        ApplyToWindowPass(RPIWindow window);
         virtual void buildPSO() override;
         virtual void setupData() override;
         virtual void recordCommand(RPIContext commandBuffer) override;
         virtual void submit() override;
-        void registerTexture(
-            RPITexture out_abedlo,
-            RPITexture out_normal,
-            RPITexture out_diffuse,
-            RPITexture out_specular,
-            RPITexture out_ambient,
-            RPITexture depth);
+        void registerTexture(RPITexture apply_tex);
 
     private:
         RPIRenderPass renderPass;
         RPIPipeline pipeline;
         RPIShader vs;
         RPIShader ps;
+        RPIWindow m_window;
 
-        std::vector<RPIResourceBinding> resource_bindings;
-        std::vector<RPIBuffer> uniformsBuffers;
-        std::vector<Entity> entitys;
+        RPIResourceBinding resourceBinding;
+        RPIBuffer vertex_buffer;
+
     };
 }
