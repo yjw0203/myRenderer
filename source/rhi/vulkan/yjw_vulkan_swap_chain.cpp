@@ -172,8 +172,8 @@ namespace rhi
             m_swapchainRenderPasses[i] = new VulkanRenderPass(pDevice, renderPassDesc);
         }
 
-        m_imageAvailableSemaphore.resize(imageCount);
-        for (int i = 0; i < imageCount; i++)
+        m_imageAvailableSemaphore.resize(m_maxFrameInFlight);
+        for (int i = 0; i < m_maxFrameInFlight; i++)
         {
             VkSemaphoreCreateInfo semaphoreInfo{};
             semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
@@ -182,7 +182,7 @@ namespace rhi
             }
         }
 
-        vkAcquireNextImageKHR(GetDevice()->GetNativeDevice(), m_native_swapchain, UINT64_MAX, m_imageAvailableSemaphore[m_swapchainImageIndex], VK_NULL_HANDLE, &m_swapchainImageIndex);
+        vkAcquireNextImageKHR(GetDevice()->GetNativeDevice(), m_native_swapchain, UINT64_MAX, m_imageAvailableSemaphore[m_currentFlightFrame], VK_NULL_HANDLE, &m_swapchainImageIndex);
     }
 
     VulkanSwapChain::~VulkanSwapChain()
@@ -219,7 +219,7 @@ namespace rhi
         presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
 
         presentInfo.waitSemaphoreCount = 1;;
-        presentInfo.pWaitSemaphores = &m_imageAvailableSemaphore[m_swapchainImageIndex];
+        presentInfo.pWaitSemaphores = &m_imageAvailableSemaphore[m_currentFlightFrame];
 
         VkSwapchainKHR swapChains[] = { m_native_swapchain };
         presentInfo.swapchainCount = 1;
@@ -229,6 +229,8 @@ namespace rhi
 
         vkQueuePresentKHR(GetDevice()->GetCommandQueue()->GetPresentQueue(), &presentInfo);
         vkAcquireNextImageKHR(GetDevice()->GetNativeDevice(), m_native_swapchain, UINT64_MAX, m_imageAvailableSemaphore[(m_swapchainImageIndex + 1) % m_swapchainImageCount], VK_NULL_HANDLE, &m_swapchainImageIndex);
+    
+        m_currentFlightFrame = (m_currentFlightFrame + 1) % m_maxFrameInFlight;
     }
 
     RHITexture* VulkanSwapChain::GetBackTexture()

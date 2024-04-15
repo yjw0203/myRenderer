@@ -27,5 +27,7 @@ namespace rhi
         std::vector<VulkanTextureView*> m_swapchainImageViews;
         std::vector<VulkanRenderPass*> m_swapchainRenderPasses;
         std::vector<VkSemaphore> m_imageAvailableSemaphore;
+        int m_maxFrameInFlight = 3;
+        int m_currentFlightFrame = 0;
     };
 }
