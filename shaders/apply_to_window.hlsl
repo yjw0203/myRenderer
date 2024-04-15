@@ -19,9 +19,14 @@ VS_OUTPUT VSMain(VS_INPUT input)
 
 Texture2D applyTex;
   
+cbuffer option
+{  
+    float2 screenSize;  
+};
+
 float4 PSMain(VS_OUTPUT input) : SV_Target  
 {  
     SamplerState defaultSampler;
-    float2 uv = normalize(input.sv_Position.xy/input.sv_Position.w);
+    float2 uv = input.sv_Position.xy/screenSize;
     return applyTex.Sample(defaultSampler,uv);
 }

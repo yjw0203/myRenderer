@@ -29,6 +29,7 @@ namespace yjw
 
     void ApplyToWindowPass::registerTexture(RPITexture apply_tex)
     {
+        resourceBinding.SetBuffer(RHIShaderType::fragment, RHIName("option"), g_resource_store.optionUniform);
         resourceBinding.SetTexture(RHIShaderType::fragment, RHIName("applyTex"), apply_tex);
         resourceBinding.SetVertexBuffer(RHIName("POSITION"), vertex_buffer);
     }

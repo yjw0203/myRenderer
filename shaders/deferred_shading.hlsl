@@ -46,7 +46,7 @@ float4 PSMain(VS_OUTPUT input) : SV_Target
 {  
     SamplerState defaultSampler;
     float2 uv = input.sv_Position.xy/screenSize;  
-    float4 screenSpacePos = float4(input.sv_Position.xy * 2.0f - 1.0f, depth_map.Sample(defaultSampler, uv).r, 1.0f);  
+    float4 screenSpacePos = float4(uv * 2.0f - 1.0f, depth_map.Sample(defaultSampler, uv).r, 1.0f);  
     float4x4 screenToWorld = mul(transpose(projectMat), transpose(viewMat));  
     float4 worldSpacePos = mul(screenToWorld, screenSpacePos);  
     worldSpacePos /= worldSpacePos.w;  
