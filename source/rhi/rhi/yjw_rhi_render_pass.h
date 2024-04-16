@@ -10,6 +10,8 @@ namespace rhi
     public:
         RHIRenderPass(const RHIRenderPassDescriptor& desc) : m_descriptor(desc) {};
         const RHIRenderPassDescriptor& GetDesc() { return m_descriptor; }
+        virtual int GetWidth() = 0;
+        virtual int GetHeight() = 0;
     private:
         const RHIRenderPassDescriptor m_descriptor;
     };

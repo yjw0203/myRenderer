@@ -64,4 +64,9 @@ namespace rhi
         m_command_buffer.ClearTexture2D(VKResourceCast(texture));
     }
 
+    VkCommandBuffer VulkanContext::GetVkCommandBuffer()
+    {
+        return m_command_buffer.GetCommandBuffer();
+    }
+
 }

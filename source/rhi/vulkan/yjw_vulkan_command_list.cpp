@@ -213,4 +213,9 @@ namespace rhi
         }
         vkCmdSetPrimitiveTopology(m_command_list.GetCommandBuffer(), VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST);
     }
+
+    VkCommandBuffer VulkanCommandBuffer::GetCommandBuffer()
+    {
+        return m_command_list.GetCommandBuffer();
+    }
 }

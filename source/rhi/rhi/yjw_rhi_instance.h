@@ -1,27 +1,25 @@
 #pragma once
 #include "yjw_rhi_device.h"
 #include "yjw_rhi_object.h"
+#include "yjw_rhi_layer.h"
 
 namespace rhi
 {
-    enum class ERHIType
-    {
-        none,
-        vulkan,
-        d3d12,
-        metal
-    };
-
-    struct RHIInstanceConfig
-    {
-        ERHIType rhiType;
-        bool isDebugMode;
-    };
-
     class RHIInstanceImpl : public RHIObject
     {
     public:
+        RHIInstanceImpl(const RHIInstanceConfig& config);
+        virtual ~RHIInstanceImpl();
         virtual RHIDevice* CreateDevice() = 0;
+        const RHIInstanceConfig& GetConfig();
+        RHILayer* GetRHILayer(RHILayerType type);
+
+        void OnInstanceInit(RHIInstanceImpl* instance);
+        void OnDeviceInit(RHIDevice* device);
+        void OnDeviceShutdown(RHIDevice* device);
+    private:
+        RHIInstanceConfig m_config{};
+        RHILayer* m_rhi_layers[rhi_layer_count] = {};
     };
 
     class RHIInstance 
@@ -30,6 +28,7 @@ namespace rhi
         RHIInstance(RHIInstanceConfig config);
         ~RHIInstance();
         RHIDevice* CreateDevice();
+        RHILayer* GetRHILayer(RHILayerType type);
     private:
         RHIInstanceImpl* m_impl = nullptr;
     };

@@ -43,4 +43,6 @@ namespace rpi
     void RPICmdCopyTexture(RPIContext context, RPITexture srcTexture, RPITexture dstTexture);
     
     void RPIUpdateBuffer(RPIBuffer buffer, void* data,int offset, int size);
+
+    RHILayer* RPIGetLayer(RHILayerType type);
 }

@@ -26,7 +26,7 @@ namespace rhi
     }
 
     VulkanInstance::VulkanInstance(RHIInstanceConfig config)
-        :m_config(config)
+        :RHIInstanceImpl(config)
     {
         VkApplicationInfo appInfo{};
         appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
@@ -62,16 +62,19 @@ namespace rhi
         if (vkCreateInstance(&createInfo, nullptr, &m_native_instance) != VK_SUCCESS) {
             throw std::runtime_error("failed to create instance!");
         }
+
+        OnInstanceInit(this);
     }
 
     VulkanInstance::~VulkanInstance()
     {
+        RHIInstanceImpl::~RHIInstanceImpl();
         vkDestroyInstance(m_native_instance,nullptr);
     }
 
     RHIDevice* VulkanInstance::CreateDevice()
     {
-        return new VulkanDevice(this, m_config.isDebugMode);
+        return new VulkanDevice(this, GetConfig().isDebugMode);
     }
 
     VkInstance VulkanInstance::GetNativeInstance()

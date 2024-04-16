@@ -77,7 +77,8 @@ namespace rhi
 
         std::vector<const char*> deviceExtensions = {
             VK_KHR_SWAPCHAIN_EXTENSION_NAME,
-            VK_KHR_MULTIVIEW_EXTENSION_NAME
+            VK_KHR_MULTIVIEW_EXTENSION_NAME,
+            VK_KHR_DYNAMIC_RENDERING_EXTENSION_NAME
         };
         createInfo.enabledExtensionCount = static_cast<uint32_t>(deviceExtensions.size());
         createInfo.ppEnabledExtensionNames = deviceExtensions.data();
@@ -128,6 +129,8 @@ namespace rhi
             throw std::runtime_error("failed to create texture sampler!");
         }
         /***************** to be delete ***************/
+
+        GetParentInstance()->OnDeviceInit(this);
     }
 
     RHISwapChain* VulkanDevice::CreateSwapchain(void* window)
@@ -177,6 +180,8 @@ namespace rhi
 
     VulkanDevice::~VulkanDevice()
     {
+        GetParentInstance()->OnDeviceShutdown(this);
+
         delete m_immediately_command_list;
         delete m_command_queue;
         vkDestroyDevice(m_native_device, nullptr);

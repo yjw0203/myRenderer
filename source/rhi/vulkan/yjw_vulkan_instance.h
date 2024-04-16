@@ -13,6 +13,6 @@ namespace rhi
         VkInstance GetNativeInstance();
     private:
         VkInstance m_native_instance = nullptr;
-        RHIInstanceConfig m_config{};
+
     };
 }

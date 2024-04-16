@@ -12,8 +12,8 @@ namespace rhi
         ~VulkanRenderPass();
         VkRenderPass GetNativeRenderPass();
         VkFramebuffer GetFramebuffer();
-        int GetWidth();
-        int GetHeight();
+        virtual int GetWidth() override;
+        virtual int GetHeight() override;
         void TransitionStateToRender(VkCommandBuffer commandBuffer);
     private:
         VkRenderPass m_native_render_pass = nullptr;

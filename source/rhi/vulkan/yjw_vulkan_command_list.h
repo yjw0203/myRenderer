@@ -38,6 +38,8 @@ namespace rhi
 
         void CopyTexture2D(VulkanTexture* srcTexture, VulkanTexture* dstTexture);
         void ClearTexture2D(VulkanTexture* texture);
+
+        VkCommandBuffer GetCommandBuffer();
     private:
         void PrepareForRender();
     private:

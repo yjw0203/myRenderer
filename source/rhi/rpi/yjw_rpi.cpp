@@ -13,6 +13,7 @@ namespace rpi
         RHIInstanceConfig config{};
         config.rhiType = ERHIType::vulkan;
         config.isDebugMode = true;
+        config.layers.push_back(rhi_layer_imgui);
         RPIO(instance) = new RHIInstance(config);
         RPIO(device) = RPIO(instance)->CreateDevice();
         RPIInitState();
@@ -307,5 +308,10 @@ namespace rpi
     void RPIUpdateBuffer(RPIBuffer buffer, void* data, int offset, int size)
     {
         buffer.GetBuffer()->Update(data, offset, size);
+    }
+
+    RHILayer* RPIGetLayer(RHILayerType type)
+    {
+        return RPIO(instance)->GetRHILayer(type);
     }
 }

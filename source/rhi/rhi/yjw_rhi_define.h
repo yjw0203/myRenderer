@@ -11,6 +11,28 @@ namespace rhi
     class RHITexture;
     class RHITextureView;
 
+    enum class ERHIType
+    {
+        none,
+        vulkan,
+        d3d12,
+        metal
+    };
+
+    enum RHILayerType
+    {
+        rhi_layer_imgui,
+        rhi_layer_count
+    };
+
+    struct RHIInstanceConfig
+    {
+        ERHIType rhiType;
+        bool isDebugMode;
+        std::vector<RHILayerType> layers;
+    };
+
+
     enum class RHIShaderType : char
     {
         vertex,

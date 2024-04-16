@@ -23,6 +23,8 @@ namespace rhi
 
         virtual void CopyTexture2D(RHITexture* srcTexture, RHITexture* dstTexture) override;
         virtual void ClearTexture2D(RHITexture* texture) override;
+
+        VkCommandBuffer GetVkCommandBuffer();
     private:
         VulkanCommandBuffer m_command_buffer;
         VulkanStateCache m_state_cache;

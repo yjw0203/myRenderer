@@ -3,6 +3,7 @@
 #include "client/RenderSystem/pass/yjw_pass_gbuffer.h"
 #include "client/RenderSystem/pass/yjw_pass_apply_to_window.h"
 #include "client/RenderSystem/pass/yjw_pass_deferred_shading.h"
+#include "client/RenderSystem/pass/yjw_pass_imgui.h"
 
 namespace yjw
 {
@@ -33,9 +34,11 @@ namespace yjw
         std::shared_ptr<GBufferPass> gbuffer_pass = std::make_shared<GBufferPass>();
         std::shared_ptr<DeferredShadingPass> deferred_shading_pass = std::make_shared<DeferredShadingPass>();
         std::shared_ptr<ApplyToWindowPass> applyToWindowPass = std::make_shared<ApplyToWindowPass>(config.window);
+        std::shared_ptr<DrawImGuiPass> drawImGuiPass = std::make_shared<DrawImGuiPass>();
 
         passes.push_back(gbuffer_pass);
         passes.push_back(deferred_shading_pass);
+        passes.push_back(drawImGuiPass);
         passes.push_back(applyToWindowPass);
 
         for (auto pass : passes)
@@ -58,8 +61,8 @@ namespace yjw
             texture_map["ambient"].resource_handle,
             texture_map["depth"].resource_handle,
             texture_map["color"].resource_handle);
+        drawImGuiPass->registerTexture(texture_map["color"].resource_handle);
         applyToWindowPass->registerTexture(texture_map["color"].resource_handle);
-
     }
 
     void DefaultPipeline::render()
