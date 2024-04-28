@@ -1,4 +1,4 @@
-cmake_minimum_required( VERSION 3.10 )
+cmake_minimum_required( VERSION 3.18 )
 
 message( STATUS "==========================================================================\n" )
 message( STATUS "project 'Renderer' generation started" )
@@ -16,6 +16,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(vulkan_lib_dir ${CMAKE_CURRENT_SOURCE_DIR}/3rd/VulkanSDK/1.3.204.1/Lib)
 file(GLOB VULKAN_LIB_FILES ${vulkan_lib_dir}/*d.lib)
 set(vulkan_include ${CMAKE_CURRENT_SOURCE_DIR}/3rd/VulkanSDK/1.3.204.1/Include)
+
 set(vulkan_libs ${VULKAN_LIB_FILES} ${CMAKE_CURRENT_SOURCE_DIR}/3rd/VulkanSDK/1.3.204.1/Lib/vulkan-1.lib)
 
 set(glfw_include ${CMAKE_CURRENT_SOURCE_DIR}/3rd/glfw/include)
@@ -27,5 +28,8 @@ set(glm_include ${CMAKE_CURRENT_SOURCE_DIR}/3rd/glm-0.9.9.8)
 
 set(shaderc_include ${CMAKE_CURRENT_SOURCE_DIR}/3rd/shaderc/include)
 set(shaderc_lib ${CMAKE_CURRENT_SOURCE_DIR}/3rd/shaderc/lib/ShaderConductor.lib)
+
+set(3rd_party_include ${vulkan_include} ${glfw_include} ${stb_include} ${glm_include} ${shaderc_include})
+set(3rd_party_lib ${vulkan_libs} ${glfw_lib} ${shaderc_lib})
 
 add_subdirectory(source)

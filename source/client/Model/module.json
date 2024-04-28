@@ -1,0 +1,5 @@
+{
+    "name": "Model",
+    "dependencys": ["Module","Utils","File"],
+    "build": "lib"
+}

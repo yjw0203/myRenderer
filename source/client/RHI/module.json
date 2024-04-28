@@ -1,0 +1,5 @@
+{
+    "name": "RHI",
+    "dependencys": [],
+    "build": "lib"
+}

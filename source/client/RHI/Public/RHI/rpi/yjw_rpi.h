@@ -1,0 +1,48 @@
+#pragma once
+#include "RHI/rpi/yjw_rpi_define.h"
+
+namespace rpi
+{
+    extern RPI g_rpi;
+#define RPIO(object) g_rpi.object
+
+    void RPIInit();
+    RPIContext RPICreateContext();
+    RPIWindow RPICreateWindow(void* window);
+    void RPIDestroyWindow(RPIWindow window);
+    RPIBuffer RPICreateGpuVertexBuffer(int size);
+    RPIBuffer RPICreateGpuIndexBuffer(int size);
+    RPIBuffer RPICreateGpuIndirectBuffer(int size);
+    RPIBuffer RPICreateUploadBuffer(int size);
+    RPITexture RPICreateDefaultTexture2D(int width, int height, RPIFormat format,int mipLevels = 1);
+    RPITexture RPICreateDepthStencilTexture2D(int width, int height, RPIFormat format);
+    RPITexture RPICreateUploadTexture2D(int width, int height, RPIFormat format);
+    RPITexture RPICreateTexture2DFromFile(const char* filePath);
+
+    RPITexture RPICreateTextureView(RPITexture texture, RPIFormat format);
+    RPIBuffer RPICreateBufferView(RPIBuffer buffer, int offset, int width);
+
+    RPIShader RPICreateShader(RPIShaderType shaderType, const char* name, const char* entryName);
+
+    RPIRenderPass RPICreateRenderPass(RPITexture* rtvs, int rtvCount, RPITexture dsv);
+    RPIPipeline RPICreateRenderPipeline(RPIRenderPipelineDescriptor createInfo);
+
+    RPIResourceBinding RPICreateResourceBinding(RPIPipeline pipeline);
+
+
+    void RPISubmit(RPIContext context);
+    void RPIPresent(RPIContext context, RPIWindow window, RPITexture presentTexture);
+
+    void RPICmdSetPipeline(RPIContext context, RPIPipeline pipeline);
+    void RPICmdSetResourceBinding(RPIContext context, RPIResourceBinding resourceBinding);
+    void RPICmdBeginRenderPass(RPIContext context, RPIRenderPass renderPass, RPIResourceBinding* resourceBinding, int resourceBindingCount);
+    void RPICmdEndPass(RPIContext context);
+    void RPICmdDraw(RPIContext context, int vertexCount, int instanceCount, int firstVertex, int firstInstance);
+    void RPICmdDrawIndex(RPIContext context, int indexCount, int instanceCount, int firstIndex, int vertexOffset, int firstInstance);
+    void RPICmdClearTexture(RPIContext context, RPITexture texture);
+    void RPICmdCopyTexture(RPIContext context, RPITexture srcTexture, RPITexture dstTexture);
+    
+    void RPIUpdateBuffer(RPIBuffer buffer, void* data,int offset, int size);
+
+    RHILayer* RPIGetLayer(RHILayerType type);
+}

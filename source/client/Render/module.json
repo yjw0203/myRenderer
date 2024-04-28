@@ -1,0 +1,5 @@
+{
+    "name": "Render",
+    "dependencys": ["RHI","Utils","Model","Application","File","Module"],
+    "build": "lib"
+}

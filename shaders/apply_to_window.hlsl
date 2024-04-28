@@ -28,5 +28,6 @@ float4 PSMain(VS_OUTPUT input) : SV_Target
 {  
     SamplerState defaultSampler;
     float2 uv = input.sv_Position.xy/screenSize;
-    return applyTex.Sample(defaultSampler,uv);
+    float4 color = applyTex.Sample(defaultSampler,uv);
+    return color;
 }
