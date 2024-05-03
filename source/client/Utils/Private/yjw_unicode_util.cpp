@@ -319,6 +319,11 @@ namespace yjw
     }
 
     bool ConvU16ToU8(const std::u16string& u16Str, std::string& u8Str) {
+        if (u16Str.empty())
+        {
+            u8Str = "";
+            return true;
+        }
         for (auto u16It = u16Str.begin(); u16It != u16Str.end(); ++u16It) {
             std::array<char16_t, 2> u16Ch;
             if (IsU16HighSurrogate((*u16It))) {

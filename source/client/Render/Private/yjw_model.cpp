@@ -1,4 +1,4 @@
-#include "yjw_model.h"
+﻿#include "yjw_model.h"
 #include <fstream>
 #include <iostream>
 #include <vector>

@@ -211,7 +211,7 @@ namespace rhi
                 vkCmdBindVertexBuffers(m_command_list.GetCommandBuffer(), 0, m_state_cache.GetResourceBinding()->GetVertexBufferCount(), m_state_cache.GetResourceBinding()->GetVertexVkBuffers(), m_state_cache.GetResourceBinding()->GetVertexVkBufferOffsets());
             }
         }
-        vkCmdSetPrimitiveTopology(m_command_list.GetCommandBuffer(), VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST);
+        //vkCmdSetPrimitiveTopology(m_command_list.GetCommandBuffer(), VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST);
     }
 
     VkCommandBuffer VulkanCommandBuffer::GetCommandBuffer()

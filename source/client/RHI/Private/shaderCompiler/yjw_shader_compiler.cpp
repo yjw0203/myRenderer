@@ -1,4 +1,4 @@
-#include "yjw_shader_compiler.h"
+﻿#include "yjw_shader_compiler.h"
 
 #include <fstream>
 #include <iostream>
@@ -107,7 +107,8 @@ namespace rhi
     {
         std::string filename(url);
         std::ifstream file(filename, std::ios::binary);
-        if (!file) {
+        if (!file)
+        {
             std::cout << "无法打开文件：" << filename << std::endl;
             return;
         }

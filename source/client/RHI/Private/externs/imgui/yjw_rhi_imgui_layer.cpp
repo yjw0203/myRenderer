@@ -1,6 +1,6 @@
 #include "Public/RHI/externs/imgui/yjw_rhi_imgui_layer.h"
-#include "Private/externs/imgui/3rd/imgui.h"
-#include "Private/externs/imgui/3rd/imgui_impl_vulkan.h"
+#include "Private/externs/imgui/native/imgui.h"
+#include "Private/externs/imgui/native/imgui_impl_vulkan.h"
 
 #include "Private/vulkan/yjw_vulkan_context.h"
 #include "Private/vulkan/yjw_vulkan_instance.h"
