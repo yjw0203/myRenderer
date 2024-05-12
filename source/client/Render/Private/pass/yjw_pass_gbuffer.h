@@ -1,7 +1,8 @@
 #pragma once
 #include "../yjw_pass.h"
 #include "rhi/rpi/yjw_rpi_header.h"
-#include "Private/yjw_model.h"
+#include "Model/yjw_model.h"
+#include "Private/yjw_scene.h"
 
 namespace yjw
 {
@@ -29,6 +30,6 @@ namespace yjw
 
         std::vector<RPIResourceBinding> resource_bindings;
         std::vector<RPIBuffer> uniformsBuffers;
-        std::vector<Entity> entitys;
+        std::vector<RenderEntity> m_entitys;
     };
 }

@@ -1,5 +1,6 @@
 #include "Public/RHI/rhi/yjw_rhi_instance.h"
 #include "Private/vulkan/yjw_vulkan_instance.h"
+#include "RHI/rhi/yjw_rhi_swap_chain.h"
 #include "Public/RHI/externs/imgui/yjw_rhi_imgui_layer.h"
 
 namespace rhi
@@ -58,6 +59,22 @@ namespace rhi
         for (RHILayerType layerType : GetConfig().layers)
         {
             m_rhi_layers[layerType]->OnDeviceShutdown(device);
+        }
+    }
+
+    void RHIInstanceImpl::OnSwapchainInit(RHISwapChain* swapchain)
+    {
+        for (RHILayerType layerType : GetConfig().layers)
+        {
+            m_rhi_layers[layerType]->OnSwapchainInit(swapchain);
+        }
+    }
+
+    void RHIInstanceImpl::OnSwapchainShutdown(RHISwapChain* swapchain)
+    {
+        for (RHILayerType layerType : GetConfig().layers)
+        {
+            m_rhi_layers[layerType]->OnSwapchainShutdown(swapchain);
         }
     }
 

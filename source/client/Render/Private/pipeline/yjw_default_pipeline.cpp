@@ -4,6 +4,7 @@
 #include "Private/pass/yjw_pass_apply_to_window.h"
 #include "Private/pass/yjw_pass_deferred_shading.h"
 #include "Private/pass/yjw_pass_imgui.h"
+#include "Private/pass/yjw_pass_forward.h"
 
 namespace yjw
 {
@@ -33,15 +34,17 @@ namespace yjw
 
     void DefaultPipeline::config(DefaultPipelineConfig config)
     {
-        std::shared_ptr<GBufferPass> gbuffer_pass = std::make_shared<GBufferPass>();
-        std::shared_ptr<DeferredShadingPass> deferred_shading_pass = std::make_shared<DeferredShadingPass>();
+        //std::shared_ptr<GBufferPass> gbuffer_pass = std::make_shared<GBufferPass>();
+        //std::shared_ptr<DeferredShadingPass> deferred_shading_pass = std::make_shared<DeferredShadingPass>();
+        forwardPass = std::make_shared<ForwardPass>();
         std::shared_ptr<ApplyToWindowPass> applyToWindowPass = std::make_shared<ApplyToWindowPass>(config.window);
         std::shared_ptr<DrawImGuiPass> drawImGuiPass = std::make_shared<DrawImGuiPass>();
 
         drawImGuiPass->setData(m_ui);
 
-        passes.push_back(gbuffer_pass);
-        passes.push_back(deferred_shading_pass);
+        //passes.push_back(gbuffer_pass);
+        //passes.push_back(deferred_shading_pass);
+        passes.push_back(forwardPass);
         passes.push_back(drawImGuiPass);
         passes.push_back(applyToWindowPass);
 
@@ -49,7 +52,8 @@ namespace yjw
         {
             pass->buildPSO();
         }
-        
+        forwardPass->registerTexture(texture_map["color"].resource_handle, texture_map["depth"].resource_handle);
+        /*
         gbuffer_pass->registerTexture(
             texture_map["albedo"].resource_handle,
             texture_map["normal"].resource_handle,
@@ -64,13 +68,15 @@ namespace yjw
             texture_map["specular"].resource_handle,
             texture_map["ambient"].resource_handle,
             texture_map["depth"].resource_handle,
-            texture_map["color"].resource_handle);
+            texture_map["color"].resource_handle);*/
+
         drawImGuiPass->registerTexture(texture_map["color"].resource_handle);
         applyToWindowPass->registerTexture(texture_map["color"].resource_handle);
     }
 
     void DefaultPipeline::render()
     {
+        forwardPass->setData(((EditorUI*)m_ui)->m_metallic, ((EditorUI*)m_ui)->m_roughness);
         for (auto pass : passes)
         {
             pass->setupData();

@@ -6,6 +6,7 @@
 #include "rhi/rpi/yjw_rpi_header.h"
 #include "Private/yjw_pass.h"
 #include "Private/editorUI/yjw_editor_ui.h"
+#include "Private/pass/yjw_pass_forward.h"
 namespace yjw
 {
     using namespace rpi;
@@ -29,6 +30,8 @@ namespace yjw
             RPITexture resource_handle;
             bool need_clear_pre_render = false;
         };
+
+        std::shared_ptr<ForwardPass> forwardPass;
 
         std::map<std::string, Resource> texture_map;
         std::vector<std::shared_ptr<Pass> > passes;

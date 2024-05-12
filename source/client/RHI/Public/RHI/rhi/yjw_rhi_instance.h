@@ -17,6 +17,8 @@ namespace rhi
         void OnInstanceInit(RHIInstanceImpl* instance);
         void OnDeviceInit(RHIDevice* device);
         void OnDeviceShutdown(RHIDevice* device);
+        void OnSwapchainInit(class RHISwapChain* swapchain);
+        void OnSwapchainShutdown(class RHISwapChain* swapchain);
     private:
         RHIInstanceConfig m_config{};
         RHILayer* m_rhi_layers[rhi_layer_count] = {};

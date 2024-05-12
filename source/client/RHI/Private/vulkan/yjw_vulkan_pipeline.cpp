@@ -18,7 +18,21 @@ namespace rhi
             decriptorBinding.stageFlags = shaderBits;
             decriptorBinding.pImmutableSamplers = nullptr;
             decriptorBinding.descriptorType = ConvertShaderResourceTypeToDescriptorType(binding.resourceType);
-            m_sets[binding.setId].push_back(decriptorBinding);
+            for (int i = 0; i <= m_sets[binding.setId].size(); i++)
+            {
+                if (i == m_sets[binding.setId].size())
+                {
+                    //no exist binding
+                    m_sets[binding.setId].push_back(decriptorBinding);
+                    break;
+                }
+                else if (m_sets[binding.setId][i].binding == decriptorBinding.binding)
+                {
+                    //exist binding
+                    m_sets[binding.setId][i].stageFlags |= shaderBits;
+                    break;
+                }
+            }
             m_max_set_id = std::max(m_max_set_id, binding.setId);
         }
     }

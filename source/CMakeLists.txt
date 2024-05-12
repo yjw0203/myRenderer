@@ -1,8 +1,4 @@
 
-
-file(GLOB_RECURSE HEADERS "*.h")
-file(GLOB_RECURSE SOURCES "*.cpp")
-
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/generate)
 
 set(PROJECT_PATH ${PROJECT_SOURCE_DIR})

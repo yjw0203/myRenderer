@@ -105,22 +105,45 @@ namespace yjw
         QDEF,
     };
 
-    struct PMXVertex
+    struct PMXVertices
     {
-        glm::vec3    m_position;
-        glm::vec3    m_normal;
-        glm::vec2    m_uv;
+        struct Int4
+        {
+            int data[4];
+        };
+        
+        std::vector<glm::vec3>    m_position;
+        std::vector<glm::vec3>    m_normal;
+        std::vector<glm::vec2>    m_uv;
 
-        glm::vec4    m_addUV[4];
+        std::vector<glm::vec4>    m_addUV[4];
 
-        PMXVertexWeight    m_weightType; // 0:BDEF1 1:BDEF2 2:BDEF4 3:SDEF 4:QDEF
-        int32_t        m_boneIndices[4];
-        float        m_boneWeights[4];
-        glm::vec3    m_sdefC;
-        glm::vec3    m_sdefR0;
-        glm::vec3    m_sdefR1;
+        std::vector<PMXVertexWeight>    m_weightType; // 0:BDEF1 1:BDEF2 2:BDEF4 3:SDEF 4:QDEF
+        std::vector<Int4>        m_boneIndices;
+        std::vector<glm::vec4>        m_boneWeights;
+        std::vector<glm::vec3>    m_sdefC;
+        std::vector<glm::vec3>    m_sdefR0;
+        std::vector<glm::vec3>    m_sdefR1;
 
-        float    m_edgeMag;
+        std::vector<float>    m_edgeMag;
+
+        void resize(int size)
+        {
+            m_position.resize(size);
+            m_normal.resize(size);
+            m_uv.resize(size);
+            m_addUV[0].resize(size);
+            m_addUV[1].resize(size);
+            m_addUV[2].resize(size);
+            m_addUV[3].resize(size);
+            m_weightType.resize(size);
+            m_boneIndices.resize(size);
+            m_boneWeights.resize(size);
+            m_sdefC.resize(size);
+            m_sdefR0.resize(size);
+            m_sdefR1.resize(size);
+            m_edgeMag.resize(size);
+        }
     };
     typedef uint32_t PMXIndex;
 
@@ -132,7 +155,7 @@ namespace yjw
         PMXHeader    m_header;
         PMXInfo        m_info;
 
-        std::vector<PMXVertex>        m_vertices;
+        PMXVertices        m_vertices;
         std::vector<PMXIndex>        m_indices;
         std::vector<PMXTexture>        m_textures;
         std::vector<PMXMaterial>    m_materials;

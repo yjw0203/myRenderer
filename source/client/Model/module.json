@@ -1,5 +1,5 @@
 {
     "name": "Model",
-    "dependencys": ["Module","Utils","File"],
+    "dependencys": ["Module","Utils","File","RHI"],
     "build": "lib"
 }

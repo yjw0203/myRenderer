@@ -1,4 +1,4 @@
-#include "Public/Model/yjw_pmx_helper.h"
+#include "Private/pmx/yjw_pmx_helper.h"
 #include "Utils/yjw_unicode_util.h"
 #include "File/yjw_file_system_module_header.h"
 #include <fstream>
@@ -148,62 +148,62 @@ namespace yjw
 
             auto& vertices = model->m_vertices;
             vertices.resize(vertexCount);
-            for (auto& vertex : vertices)
+            for (int index = 0; index < vertexCount; index++)
             {
-                stream >> vertex.m_position;
-                stream >> vertex.m_normal;
-                stream >> vertex.m_uv;
+                stream >> vertices.m_position[index];
+                stream >> vertices.m_normal[index];
+                stream >> vertices.m_uv[index];
 
                 for (uint8_t i = 0; i < model->m_header.m_addUVNum; i++)
                 {
-                    stream >> vertex.m_addUV[i];
+                    stream >> vertices.m_addUV[i][index];
                 }
 
-                stream >> vertex.m_weightType;
+                stream >> vertices.m_weightType[index];
 
 
                 PMXFileStreamSpecific specStream(file, model->m_header.m_boneIndexSize);
 
-                switch (vertex.m_weightType)
+                switch (vertices.m_weightType[index])
                 {
                 case PMXVertexWeight::BDEF1:
-                    specStream >> vertex.m_boneIndices[0];
+                    specStream >> vertices.m_boneIndices[index].data[0];
                     break;
                 case PMXVertexWeight::BDEF2:
-                    specStream >> vertex.m_boneIndices[0];
-                    specStream >> vertex.m_boneIndices[1];
-                    stream >> vertex.m_boneWeights[0];
+                    specStream >> vertices.m_boneIndices[index].data[0];
+                    specStream >> vertices.m_boneIndices[index].data[1];
+                    stream >> vertices.m_boneWeights[index][0];
                     break;
                 case PMXVertexWeight::BDEF4:
-                    specStream >> vertex.m_boneIndices[0];
-                    specStream >> vertex.m_boneIndices[1];
-                    specStream >> vertex.m_boneIndices[2];
-                    specStream >> vertex.m_boneIndices[3];
-                    stream >> vertex.m_boneWeights[0];
-                    stream >> vertex.m_boneWeights[1];
-                    stream >> vertex.m_boneWeights[2];
-                    stream >> vertex.m_boneWeights[3];
+                    specStream >> vertices.m_boneIndices[index].data[0];
+                    specStream >> vertices.m_boneIndices[index].data[1];
+                    specStream >> vertices.m_boneIndices[index].data[2];
+                    specStream >> vertices.m_boneIndices[index].data[3];
+                    stream >> vertices.m_boneWeights[index][0];
+                    stream >> vertices.m_boneWeights[index][1];
+                    stream >> vertices.m_boneWeights[index][2];
+                    stream >> vertices.m_boneWeights[index][3];
                     break;
                 case PMXVertexWeight::SDEF:
-                    specStream >> vertex.m_boneIndices[0];
-                    specStream >> vertex.m_boneIndices[1];
-                    stream >> vertex.m_boneWeights[0];
-                    stream >> vertex.m_sdefC;
-                    stream >> vertex.m_sdefR0;
-                    stream >> vertex.m_sdefR1;
+                    specStream >> vertices.m_boneIndices[index].data[0];
+                    specStream >> vertices.m_boneIndices[index].data[1];
+                    stream >> vertices.m_boneWeights[index][0];
+                    stream >> vertices.m_sdefC[index];
+                    stream >> vertices.m_sdefR0[index];
+                    stream >> vertices.m_sdefR1[index];
                     break;
                 case PMXVertexWeight::QDEF:
-                    specStream >> vertex.m_boneIndices[0];
-                    specStream >> vertex.m_boneIndices[1];
-                    specStream >> vertex.m_boneIndices[2];
-                    specStream >> vertex.m_boneIndices[3];
-                    stream >> vertex.m_boneWeights[0];
-                    stream >> vertex.m_boneWeights[1];
-                    stream >> vertex.m_boneWeights[2];
-                    stream >> vertex.m_boneWeights[3];
+                    specStream >> vertices.m_boneIndices[index].data[0];
+                    specStream >> vertices.m_boneIndices[index].data[1];
+                    specStream >> vertices.m_boneIndices[index].data[2];
+                    specStream >> vertices.m_boneIndices[index].data[3];
+                    stream >> vertices.m_boneWeights[index][0];
+                    stream >> vertices.m_boneWeights[index][1];
+                    stream >> vertices.m_boneWeights[index][2];
+                    stream >> vertices.m_boneWeights[index][3];
                     break;
                 }
-                stream >> vertex.m_edgeMag;
+                stream >> vertices.m_edgeMag[index];
             }
         }
 
@@ -312,10 +312,10 @@ namespace yjw
             }
         }
     }
-    class PMXModelBuilder
+    class PMXModelLoader
     {
     public:
-        PMXModelBuilder(const char* filePath)
+        PMXModelLoader(const char* filePath)
         {
             FileReader reader = FileSystemModule::Get()->GetFileReader();
             FileBlob blob = reader.ReadHoleFile(filePath);
@@ -341,7 +341,7 @@ namespace yjw
 
     PMXModel PMXModel::load(const char* filePath)
     {
-        std::unique_ptr<PMXModelBuilder> builder = std::make_unique<PMXModelBuilder>(filePath);
+        std::unique_ptr<PMXModelLoader> builder = std::make_unique<PMXModelLoader>(filePath);
         return *builder;
     }
 }

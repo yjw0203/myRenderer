@@ -65,7 +65,7 @@ namespace rhi
         options.enable16bitTypes = true;
         options.enableDebugInfo = true;
         options.disableOptimizations = false;
-        options.optimizationLevel = 1;
+        options.optimizationLevel = 0;
         options.shaderModel = { 6, 2 };
         options.shiftAllTexturesBindings = 0;
         options.shiftAllSamplersBindings = 16;

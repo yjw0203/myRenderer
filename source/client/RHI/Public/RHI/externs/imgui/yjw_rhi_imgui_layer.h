@@ -12,6 +12,8 @@ namespace rhi
         virtual void OnInstanceInit(class RHIInstanceImpl* instance);
         virtual void OnDeviceInit(class RHIDevice* device);
         virtual void OnDeviceShutdown(class RHIDevice* device);
+        virtual void OnSwapchainInit(class RHISwapChain* swapchain);
+        virtual void OnSwapchainShutdown(class RHISwapChain* swapchain);
 
         void NewFrame(RHIContext* context, RHIRenderPass* renderPass);
         void Render(class RHIContext* context);

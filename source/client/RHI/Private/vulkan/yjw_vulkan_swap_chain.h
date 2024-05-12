@@ -15,6 +15,7 @@ namespace rhi
         virtual RHITexture* GetBackTexture() override;
         virtual RHITextureView* GetBackTextureView() override;
         virtual RHIRenderPass* GetCurrentRenderPass() override;
+        virtual void* GetNativeWindow() override;
         void Present(bool bSync);
     private:
         VkSurfaceKHR m_surface = nullptr;
@@ -29,5 +30,6 @@ namespace rhi
         std::vector<VkSemaphore> m_imageAvailableSemaphore;
         int m_maxFrameInFlight = 3;
         int m_currentFlightFrame = 0;
+        void* m_window = nullptr;
     };
 }

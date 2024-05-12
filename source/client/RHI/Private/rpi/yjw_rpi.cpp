@@ -40,7 +40,7 @@ namespace rpi
         desc.resourceType = rhi::RHIResourceType::buffer;
         desc.memoryType = rhi::RHIMemoryType::default_;
         desc.width = size;
-        desc.usage = (int)RHIResourceUsageBits::allow_vertex_buffer | (int)RHIResourceUsageBits::allow_transfer_dst | (int)RHIResourceUsageBits::deny_shader_resource;
+        desc.usage = (int)RHIResourceUsageBits::allow_index_buffer | (int)RHIResourceUsageBits::allow_vertex_buffer | (int)RHIResourceUsageBits::allow_transfer_dst | (int)RHIResourceUsageBits::deny_shader_resource;
         RHIBuffer* buffer = RPIO(device)->CreateBuffer(desc);
 
         RHIBufferViewDescriptor viewDesc{};
@@ -57,7 +57,7 @@ namespace rpi
         desc.resourceType = rhi::RHIResourceType::buffer;
         desc.memoryType = rhi::RHIMemoryType::default_;
         desc.width = size;
-        desc.usage = (int)RHIResourceUsageBits::allow_index_buffer | (int)RHIResourceUsageBits::allow_transfer_dst | (int)RHIResourceUsageBits::deny_shader_resource;
+        desc.usage = (int)RHIResourceUsageBits::allow_index_buffer | (int)RHIResourceUsageBits::allow_vertex_buffer | (int)RHIResourceUsageBits::allow_transfer_dst | (int)RHIResourceUsageBits::deny_shader_resource;
         RHIBuffer* buffer = RPIO(device)->CreateBuffer(desc);
 
         RHIBufferViewDescriptor viewDesc{};

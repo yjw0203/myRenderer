@@ -1,6 +1,7 @@
 #include "Public/RHI/externs/imgui/yjw_rhi_imgui_layer.h"
 #include "Private/externs/imgui/native/imgui.h"
 #include "Private/externs/imgui/native/imgui_impl_vulkan.h"
+#include "Private/externs/imgui/native/imgui_impl_glfw.h"
 
 #include "Private/vulkan/yjw_vulkan_context.h"
 #include "Private/vulkan/yjw_vulkan_instance.h"
@@ -18,6 +19,7 @@ namespace rhi
         ImGuiIO& io = ImGui::GetIO();
         io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
         io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
+        io.ConfigFlags |= ImGuiConfigFlags_NavEnableSetMousePos;
     }
 
     void RHIImguiLayer::OnInstanceInit(class RHIInstanceImpl* instance)
@@ -91,12 +93,22 @@ namespace rhi
         vkDestroyDescriptorPool(vkDevice->GetNativeDevice(), m_descriptor_pool, nullptr);
     }
 
+    void RHIImguiLayer::OnSwapchainInit(class RHISwapChain* swapchain)
+    {
+        ImGui_ImplGlfw_InitForVulkan((GLFWwindow*)swapchain->GetNativeWindow(), true);
+    }
+    void RHIImguiLayer::OnSwapchainShutdown(class RHISwapChain* swapchain)
+    {
+        ImGui_ImplGlfw_Shutdown();
+    }
+
     void RHIImguiLayer::NewFrame(RHIContext* context, RHIRenderPass* renderPass)
     {
         context->BeginPass(renderPass);
         ImGuiIO& io = ImGui::GetIO();
         io.DisplaySize = ImVec2(renderPass->GetWidth(), renderPass->GetHeight());;
         ImGui_ImplVulkan_NewFrame();
+        ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
     }
 

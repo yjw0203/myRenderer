@@ -83,6 +83,7 @@ namespace rhi
     VulkanSwapChain::VulkanSwapChain(VulkanDevice* pDevice, void* window)
         :VulkanDeviceObject(pDevice)
     {
+        m_window = window;
         VkResult re;
         if ((re = glfwCreateWindowSurface(pDevice->GetParentInstance()->GetNativeInstance(), (GLFWwindow*)window, nullptr, &m_surface)) != VK_SUCCESS) {
             throw std::runtime_error("failed to create window surface!");
@@ -183,10 +184,12 @@ namespace rhi
         }
 
         vkAcquireNextImageKHR(GetDevice()->GetNativeDevice(), m_native_swapchain, UINT64_MAX, m_imageAvailableSemaphore[m_currentFlightFrame], VK_NULL_HANDLE, &m_swapchainImageIndex);
+        GetDevice()->GetParentInstance()->OnSwapchainInit(this);
     }
 
     VulkanSwapChain::~VulkanSwapChain()
     {
+        GetDevice()->GetParentInstance()->OnSwapchainShutdown(this);
         for (int i = 0; i < m_swapchainImages.size(); i++)
         {
             m_swapchainImages[i]->release();
@@ -246,5 +249,10 @@ namespace rhi
     RHIRenderPass* VulkanSwapChain::GetCurrentRenderPass()
     {
         return m_swapchainRenderPasses[m_swapchainImageIndex];
+    }
+
+    void* VulkanSwapChain::GetNativeWindow()
+    {
+        return m_window;
     }
 }

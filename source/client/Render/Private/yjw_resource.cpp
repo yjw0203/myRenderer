@@ -41,7 +41,7 @@ namespace yjw
         };
         Data light;
         light.pos = glm::vec3(-3, 15, -8);
-        light.color = glm::vec3(1, 1, 1);
+        light.color = glm::vec3(2, 2, 2);
         RPIUpdateBuffer(lightUniform, &light, 0, sizeof(light));
     }
 

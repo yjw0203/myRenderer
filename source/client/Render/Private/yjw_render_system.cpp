@@ -23,6 +23,7 @@ namespace yjw
     std::shared_ptr<Model> naxita;
     std::shared_ptr<Model> heita;
     std::shared_ptr<Model> hutao;
+    std::shared_ptr<Model> Cube;
 
     RPIWindow rpiWindow;
 
@@ -36,9 +37,10 @@ namespace yjw
         rpiWindow = RPICreateWindow(WindowsManager::get().window);
         g_resource_store.initializeResource();
         
-        naxita = *Model::load(RESOURCE_FILE(cao),"纳西妲.pmx");
-        heita = *Model::load(RESOURCE_FILE(heita),"黑塔.pmx");
-        hutao = *Model::load(RESOURCE_FILE(hutao),"胡桃.pmx");
+        //Cube = *Model::load(RESOURCE_FILE(Cube),"Cube.gltf", model_file_format_gltf);
+        naxita = *Model::load(RESOURCE_FILE(cao), "纳西妲.pmx", model_file_format_pmx);
+        heita = *Model::load(RESOURCE_FILE(heita),"黑塔.pmx", model_file_format_pmx);
+        hutao = *Model::load(RESOURCE_FILE(hutao),"胡桃.pmx", model_file_format_pmx);
 
         scene->models.push_back(naxita);
         //scene.models.push_back(heita);
