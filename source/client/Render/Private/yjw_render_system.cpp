@@ -11,8 +11,9 @@
 #include <ctime>
 #include "pass/yjw_pass_gbuffer.h"
 #include "pass/yjw_pass_deferred_shading.h"
-#include "yjw_resource.h"
 #include "pipeline/yjw_default_pipeline.h"
+
+#include "InternalShaderResource/yjw_internal_shader_resource.h"
 
 namespace yjw
 {
@@ -35,7 +36,11 @@ namespace yjw
         WindowsManager::get().initialize();
         RPIInit();
         rpiWindow = RPICreateWindow(WindowsManager::get().window);
-        g_resource_store.initializeResource();
+
+        g_internal_shader_parameters.Initialize();
+        g_internal_shader_parameters.m_light->lightPos = glm::vec3(-3, 15, -8);
+        g_internal_shader_parameters.m_light->lightColor = glm::vec3(2, 2, 2);
+        g_internal_shader_parameters.m_option->screenSize = glm::vec2(1200, 1200);
         
         //Cube = *Model::load(RESOURCE_FILE(Cube),"Cube.gltf", model_file_format_gltf);
         naxita = *Model::load(RESOURCE_FILE(cao), "纳西妲.pmx", model_file_format_pmx);
@@ -69,9 +74,12 @@ namespace yjw
         deltaTime = (time - currentTime) / 1000000.0f;
         currentTime = time;
 
-        g_resource_store.updateCameraData();
-        g_resource_store.updateLightData();
+        RenderCamera& camera = *RenderSystem::get().activeCamera;
+        g_internal_shader_parameters.m_camera->viewMat = camera.getViewMatrix();
+        g_internal_shader_parameters.m_camera->projectMat = camera.getProjectionMatrix();
+        g_internal_shader_parameters.m_camera->cameraPos = glm::vec4(camera.position, 1);
 
+        g_internal_shader_parameters.FlushCpuDataToGpu();
         pipeline.render();
         rpi::RPIPresent(pipeline.commandBuffer, rpiWindow, pipeline.output);
         WindowsManager::get().loop();

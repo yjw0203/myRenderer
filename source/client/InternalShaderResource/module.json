@@ -1,0 +1,5 @@
+{
+    "name": "InternalShaderResource",
+    "dependencys": ["Module","RHI"],
+    "build": "lib"
+}

@@ -1,7 +1,7 @@
 #include "yjw_pass_apply_to_window.h"
 #include "Render/yjw_render_system.h"
 #include "projectInfo.h"
-#include "../yjw_resource.h"
+#include "InternalShaderResource/yjw_internal_shader_resource.h"
 
 namespace yjw
 {
@@ -29,7 +29,7 @@ namespace yjw
 
     void ApplyToWindowPass::registerTexture(RPITexture apply_tex)
     {
-        resourceBinding.SetBuffer(RHIShaderType::fragment, RHIName("option"), g_resource_store.optionUniform);
+        resourceBinding.SetBuffer(RHIShaderType::fragment, RHIName("option"), g_internal_shader_parameters.GetGpuBufferByShaderParameterName("option"));
         resourceBinding.SetTexture(RHIShaderType::fragment, RHIName("applyTex"), apply_tex);
         resourceBinding.SetVertexBuffer(RHIName("POSITION"), vertex_buffer);
     }

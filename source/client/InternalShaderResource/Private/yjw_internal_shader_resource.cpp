@@ -1,0 +1,43 @@
+#include "Public/InternalShaderResource/yjw_internal_shader_resource.h"
+
+namespace yjw
+{
+    InternalShaderParameter g_internal_shader_parameters;
+
+    void InternalShaderParameter::Initialize()
+    {
+        m_total_size = InternalLinkType<1>::GetTotalParameterSize();
+        m_gpu_data = rpi::RPICreateUploadBuffer(m_total_size);
+        m_cpu_data = malloc(m_total_size);
+        InternalLinkType<1>::Initialize(this);
+    }
+
+    void InternalShaderParameter::Destroy()
+    {
+        for (InternalShaderParameterLayout& layout : m_shader_parameter_layouts)
+        {
+            layout.gpuData.Release();
+        }
+        m_shader_parameter_layouts.clear();
+        m_gpu_data.Release();
+        free(m_cpu_data);
+    }
+
+    void InternalShaderParameter::FlushCpuDataToGpu()
+    {
+        rpi::RPIUpdateBuffer(m_gpu_data, m_cpu_data, 0, m_total_size);
+    }
+
+    rpi::RPIBuffer InternalShaderParameter::GetGpuBufferByShaderParameterName(const std::string& shaderName)
+    {
+        for (InternalShaderParameterLayout& layout : m_shader_parameter_layouts)
+        {
+            if (layout.name == shaderName)
+            {
+                return layout.gpuData;
+            }
+        }
+        return rpi::RPIBuffer::Null;
+    }
+
+}

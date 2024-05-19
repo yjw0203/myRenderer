@@ -1,8 +1,8 @@
 #include "yjw_pass_gbuffer.h"
 #include "Render/yjw_render_system.h"
 #include "projectInfo.h"
-#include "../yjw_resource.h"
 #include "../yjw_scene.h"
+#include "InternalShaderResource/yjw_internal_shader_resource.h"
 namespace yjw
 {
     void GBufferPass::buildPSO()
@@ -39,7 +39,7 @@ namespace yjw
         m_entitys = RenderSystem::get().scene->buildEntitys();
         for (int i = 0; i < m_entitys.size(); i++)
         {
-            resource_bindings[i].SetBuffer(RHIShaderType::vertex, RHIName("camera"), g_resource_store.cameraUniform);
+            resource_bindings[i].SetBuffer(RHIShaderType::vertex, RHIName("camera"), g_internal_shader_parameters.GetGpuBufferByShaderParameterName("camera"));
             resource_bindings[i].SetBuffer(RHIShaderType::fragment, RHIName("material"), uniformsBuffers[i]);
             resource_bindings[i].SetTexture(RHIShaderType::fragment, RHIName("albedoTex"), m_entitys[i].material->textureShaderResource);
             resource_bindings[i].SetVertexBuffer(RHIName("POSITION"), m_entitys[i].mesh->vertex_buffers[0].buffer);

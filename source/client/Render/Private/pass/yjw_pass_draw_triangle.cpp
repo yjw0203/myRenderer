@@ -1,7 +1,6 @@
 #include "yjw_pass_draw_triangle.h"
 #include "Render/yjw_render_system.h"
 #include "projectInfo.h"
-#include "../yjw_resource.h"
 
 namespace yjw
 {

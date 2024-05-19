@@ -2,7 +2,7 @@
 #include "Render/yjw_render_system.h"
 #include "projectInfo.h"
 #include <memory>
-#include "../yjw_resource.h"
+#include "InternalShaderResource/yjw_internal_shader_resource.h"
 namespace yjw
 {
     void DeferredShadingPass::buildPSO()
@@ -34,9 +34,9 @@ namespace yjw
     {
         renderPass = RPICreateRenderPass(&out_color, 1, RPITexture::Null);
 
-        resourceBinding.SetBuffer(RHIShaderType::fragment, RHIName("camera"), g_resource_store.cameraUniform);
-        resourceBinding.SetBuffer(RHIShaderType::fragment, RHIName("light"), g_resource_store.lightUniform);
-        resourceBinding.SetBuffer(RHIShaderType::fragment, RHIName("option"), g_resource_store.optionUniform);
+        resourceBinding.SetBuffer(RHIShaderType::fragment, RHIName("camera"), g_internal_shader_parameters.GetGpuBufferByShaderParameterName("camera"));
+        resourceBinding.SetBuffer(RHIShaderType::fragment, RHIName("light"), g_internal_shader_parameters.GetGpuBufferByShaderParameterName("light"));
+        resourceBinding.SetBuffer(RHIShaderType::fragment, RHIName("option"), g_internal_shader_parameters.GetGpuBufferByShaderParameterName("option"));
         resourceBinding.SetTexture(RHIShaderType::fragment, RHIName("albedo_map"), in_abeldo);
         resourceBinding.SetTexture(RHIShaderType::fragment, RHIName("normal_map"), in_normal);
         resourceBinding.SetTexture(RHIShaderType::fragment, RHIName("diffuse_map"), in_diffuse);
