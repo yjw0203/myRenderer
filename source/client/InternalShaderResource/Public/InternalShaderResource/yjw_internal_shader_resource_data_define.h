@@ -26,6 +26,7 @@ namespace yjw
         };
     }
 
+    /* 
     template<class T>
     struct TInternalShaderInfo
     {
@@ -44,5 +45,5 @@ namespace yjw
     struct TInternalShaderInfo<InternalShaderData::Option>
     {
         inline static const std::string shaderName = "option";
-    };
+    };*/
 }
