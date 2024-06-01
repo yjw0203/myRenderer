@@ -140,7 +140,7 @@ namespace rhi
 
     RHIShader* VulkanDevice::CreateShaderByBinary(const void* binaryData, int size, const char* entryName,const ShaderReflect& reflect)
     {
-        return new VulkanShader(this, binaryData, size, entryName);
+        return new VulkanShader(this, binaryData, size, entryName, reflect);
     }
 
     RHIRenderPipeline* VulkanDevice::CreateRenderPipeline(const RHIRenderPipelineDescriptor& renderPipelineDescriptor)

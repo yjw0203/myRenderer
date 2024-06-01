@@ -223,7 +223,7 @@ namespace rpi
     {
         ShaderCompiler shaderCompiler;
         ShaderBlob blob = shaderCompiler.CompileFromFileHLSLToSpirv(RPIConvertShaderTypeToShaderCType(shaderType), name, entryName);
-        RPIShader shader = RPIO(device)->CreateShaderByBinary(blob.Data(), blob.Size(), entryName);
+        RPIShader shader = RPIO(device)->CreateShaderByBinary(blob.Data(), blob.Size(), entryName, blob.GetReflect());
         blob.Release();
         return shader;
     }
