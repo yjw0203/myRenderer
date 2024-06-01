@@ -5,46 +5,57 @@
 
 namespace rhi
 {
-    void VulkanResourceLayoutView::AddReflectionTable(RHIShaderType shaderType, std::unordered_map<RHIName, VulkanResourceBindingVariable>& reflection_table)
+    void VulkanResourceLayoutView::AddReflectionTable(RHIShaderType shaderType, const ShaderReflect& reflect)
     {
         VkShaderStageFlagBits shaderBits = ConvertShaderTypeToVkStage(shaderType);
-        for (auto& iter : reflection_table)
+        m_reflect_table[(int)shaderType] = reflect;
+        for (const ShaderReflect::UBO& ubo : reflect.m_ubos)
         {
-            VulkanResourceBindingVariable& binding = iter.second;
-            m_reflect_table[(int)shaderType][iter.first] = binding;
-            VkDescriptorSetLayoutBinding decriptorBinding{};
-            decriptorBinding.binding = binding.binding;
-            decriptorBinding.descriptorCount = 1;
-            decriptorBinding.stageFlags = shaderBits;
-            decriptorBinding.pImmutableSamplers = nullptr;
-            decriptorBinding.descriptorType = ConvertShaderResourceTypeToDescriptorType(binding.resourceType);
-            for (int i = 0; i <= m_sets[binding.setId].size(); i++)
-            {
-                if (i == m_sets[binding.setId].size())
-                {
-                    //no exist binding
-                    m_sets[binding.setId].push_back(decriptorBinding);
-                    break;
-                }
-                else if (m_sets[binding.setId][i].binding == decriptorBinding.binding)
-                {
-                    //exist binding
-                    m_sets[binding.setId][i].stageFlags |= shaderBits;
-                    break;
-                }
-            }
-            m_max_set_id = std::max(m_max_set_id, binding.setId);
+            AddBinding(shaderBits,RHIName(ubo.m_name), ubo.m_set, ubo.m_binding, VkDescriptorType::VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER);
         }
+        for (const ShaderReflect::SeparateImage& image : reflect.m_separate_images)
+        {
+            AddBinding(shaderBits, RHIName(image.m_name), image.m_set, image.m_binding, VkDescriptorType::VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER);
+        }
+        if (shaderType == RHIShaderType::vertex)
+        {
+            for (const auto& input : reflect.m_inputs)
+            {
+                m_vertex_input_table[RHIName(input.m_name)] = input.m_loacation;
+            }
+        }
+    }
+
+    void VulkanResourceLayoutView::AddBinding(VkShaderStageFlagBits shaderBits, RHIName name, int set, int binding, VkDescriptorType descriptorType)
+    {
+        m_resource_table[(int)ConvertVkStageToShaderType(shaderBits)][name] = VariableBinding{ descriptorType ,set, binding };
+        VkDescriptorSetLayoutBinding decriptorBinding{};
+        decriptorBinding.binding = binding;
+        decriptorBinding.descriptorCount = 1;
+        decriptorBinding.stageFlags = shaderBits;
+        decriptorBinding.pImmutableSamplers = nullptr;
+        decriptorBinding.descriptorType = descriptorType;
+        for (int i = 0; i <= m_sets[set].size(); i++)
+        {
+            if (i == m_sets[set].size())
+            {
+                //no exist binding
+                m_sets[set].push_back(decriptorBinding);
+                break;
+            }
+            else if (m_sets[set][i].binding == decriptorBinding.binding)
+            {
+                //exist binding
+                m_sets[set][i].stageFlags |= shaderBits;
+                break;
+            }
+        }
+        m_max_set_id = std::max(m_max_set_id, set);
     }
 
     std::vector<VkDescriptorSetLayoutBinding>& VulkanResourceLayoutView::GetBindingsBySetID(int setId)
     {
         return m_sets[setId];
-    }
-
-    std::unordered_map<RHIName, VulkanResourceBindingVariable>& VulkanResourceLayoutView::GetReflectTableByShaderType(RHIShaderType shaderType)
-    {
-        return m_reflect_table[(int)shaderType];
     }
 
     int VulkanResourceLayoutView::GetMaxSetCount()
@@ -68,11 +79,36 @@ namespace rhi
         return count;
     }
 
+    int VulkanResourceLayoutView::GetVertexBindingCount()
+    {
+        return m_reflect_table[(int)RHIShaderType::vertex].m_inputs.size();
+    }
+
+    const VulkanResourceLayoutView::VariableBinding* VulkanResourceLayoutView::GetVariableBinding(RHIShaderType shaderType, RHIName name)
+    {
+        if (m_resource_table[(int)shaderType].find(name) == m_resource_table[(int)shaderType].end())
+        {
+            return nullptr;
+        }
+        return &m_resource_table[(int)shaderType][name];
+    }
+
+    int VulkanResourceLayoutView::GetVertexInputLocation(const RHIName& name)
+    {
+        if (m_vertex_input_table.find(name) == m_vertex_input_table.end())
+        {
+            return -1;
+        }
+        return m_vertex_input_table[name];
+    }
+
     VulkanRenderPipeline::VulkanRenderPipeline(VulkanDevice* device, const RHIRenderPipelineDescriptor& desc)
         : RHIRenderPipeline(desc), VulkanDeviceObject(device)
     {
         desc.vs->retain(this);
         desc.ps->retain(this);
+        m_reflect_view.AddReflectionTable(RHIShaderType::vertex, VKResourceCast(desc.vs)->GetReflect());
+        m_reflect_view.AddReflectionTable(RHIShaderType::fragment, VKResourceCast(desc.ps)->GetReflect());
     }
 
     VkPipeline VulkanRenderPipeline::GetOrCreateVkPipeline(VulkanRenderPass* renderPass)
@@ -96,22 +132,22 @@ namespace rhi
         shaderStages[1].pName = VKResourceCast(m_descriptor.ps)->GetEntryName();
 
         VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
-        std::unordered_map<RHIName, VulkanInputVertexBindingVariable>& vertex_refect = VKResourceCast(m_descriptor.vs)->GetReflectionTableByEntryName(RHIName(VKResourceCast(m_descriptor.vs)->GetEntryName())).input_vertexes;
+        const std::vector<ShaderReflect::Input>& vertex_refect = VKResourceCast(m_descriptor.vs)->GetReflect().m_inputs;
         std::vector<VkVertexInputBindingDescription> inputBindingDescs;
         inputBindingDescs.resize(vertex_refect.size());
         std::vector<VkVertexInputAttributeDescription> inputAttributeDescs;
         inputAttributeDescs.resize(vertex_refect.size());
-        int cur_index = 0;
+        int current_index = 0;
         for (auto& iter : vertex_refect)
         {
-            inputBindingDescs[cur_index].binding = iter.second.binding;
-            inputBindingDescs[cur_index].stride = iter.second.stride;
-            inputBindingDescs[cur_index].inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
-            inputAttributeDescs[cur_index].location = iter.second.location;
-            inputAttributeDescs[cur_index].binding = iter.second.binding;
-            inputAttributeDescs[cur_index].format = iter.second.format;
-            inputAttributeDescs[cur_index].offset = 0;
-            cur_index++;
+            inputBindingDescs[current_index].binding = current_index;
+            inputBindingDescs[current_index].stride = ShaderReflect::DataTypeToSize(iter.m_type);
+            inputBindingDescs[current_index].inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
+            inputAttributeDescs[current_index].location = iter.m_loacation;
+            inputAttributeDescs[current_index].binding = current_index;
+            inputAttributeDescs[current_index].format = ConvertDataTypeToVkFormat(iter.m_type);
+            inputAttributeDescs[current_index].offset = 0;
+            current_index++;
         }
 
         vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
@@ -240,14 +276,11 @@ namespace rhi
             return m_pipeline_layout;
         }
 
-        VulkanResourceLayoutView layoutView;
-        layoutView.AddReflectionTable(RHIShaderType::vertex, VKResourceCast(m_descriptor.vs)->GetReflectionTableByEntryName(RHIName(VKResourceCast(m_descriptor.vs)->GetEntryName())).resource_bindings);
-        layoutView.AddReflectionTable(RHIShaderType::fragment, VKResourceCast(m_descriptor.ps)->GetReflectionTableByEntryName(RHIName(VKResourceCast(m_descriptor.ps)->GetEntryName())).resource_bindings);
-        int descriptorSetCount = layoutView.GetMaxSetCount();
+        int descriptorSetCount = m_reflect_view.GetMaxSetCount();
         m_descriptor_set_layouts.resize(descriptorSetCount);
         for (int setId = 0; setId < descriptorSetCount; setId++)
         {
-            std::vector<VkDescriptorSetLayoutBinding>& bindings = layoutView.GetBindingsBySetID(setId);
+            std::vector<VkDescriptorSetLayoutBinding>& bindings = m_reflect_view.GetBindingsBySetID(setId);
             VkDescriptorSetLayoutCreateInfo createInfo{};
             createInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
             createInfo.bindingCount = bindings.size();
@@ -273,11 +306,7 @@ namespace rhi
     RHIResourceBinding* VulkanRenderPipeline::CreateResourceBinding()
     {
         GetOrCreateVkPipelineLayout();
-        VulkanResourceLayoutView layoutView;
-        layoutView.AddReflectionTable(RHIShaderType::vertex, VKResourceCast(m_descriptor.vs)->GetReflectionTableByEntryName(RHIName(VKResourceCast(m_descriptor.vs)->GetEntryName())).resource_bindings);
-        layoutView.AddReflectionTable(RHIShaderType::fragment, VKResourceCast(m_descriptor.ps)->GetReflectionTableByEntryName(RHIName(VKResourceCast(m_descriptor.ps)->GetEntryName())).resource_bindings);
-        std::unordered_map<RHIName, VulkanInputVertexBindingVariable>& input_reflect = VKResourceCast(m_descriptor.vs)->GetReflectionTableByEntryName(RHIName(VKResourceCast(m_descriptor.vs)->GetEntryName())).input_vertexes;
-        return new VulkanResourceBinding(GetDevice(), layoutView, m_descriptor_set_layouts.data(), m_descriptor_set_layouts.size(), input_reflect);
+        return new VulkanResourceBinding(GetDevice(), m_reflect_view, m_descriptor_set_layouts.data(), m_descriptor_set_layouts.size());
     }
 
     VulkanRenderPipeline::~VulkanRenderPipeline()

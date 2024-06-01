@@ -8,10 +8,10 @@
 
 namespace rhi
 {
-    VulkanResourceBinding::VulkanResourceBinding(VulkanDevice* pDevice, VulkanResourceLayoutView& layoutView, VkDescriptorSetLayout* pDescriptorSetLayout, int descriptorSetLayoutCount, std::unordered_map<RHIName, VulkanInputVertexBindingVariable>& input_reflect)
-        :VulkanDeviceObject(pDevice)
+    VulkanResourceBinding::VulkanResourceBinding(VulkanDevice* pDevice, VulkanResourceLayoutView& reflectView, VkDescriptorSetLayout* pDescriptorSetLayout, int descriptorSetLayoutCount)
+        :VulkanDeviceObject(pDevice),m_reflect_view(reflectView)
     {
-        assert(descriptorSetLayoutCount == layoutView.GetMaxSetCount());
+        assert(descriptorSetLayoutCount == reflectView.GetMaxSetCount());
         //poor
         std::array<VkDescriptorType, 3> descriptorType{ VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_DESCRIPTOR_TYPE_STORAGE_IMAGE ,VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER };
 
@@ -21,7 +21,7 @@ namespace rhi
         {
             VkDescriptorPoolSize poolSize{};
             poolSize.type = descriptorType[index];
-            poolSize.descriptorCount = layoutView.GetDescriptorCount(descriptorType[index]);
+            poolSize.descriptorCount = reflectView.GetDescriptorCount(descriptorType[index]);
             if (poolSize.descriptorCount > 0)
             {
                 poolSizes.push_back(poolSize);
@@ -32,13 +32,13 @@ namespace rhi
         poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
         poolInfo.poolSizeCount = static_cast<uint32_t>(poolSizes.size());
         poolInfo.pPoolSizes = poolSizes.data();
-        poolInfo.maxSets = layoutView.GetMaxSetCount();
+        poolInfo.maxSets = reflectView.GetMaxSetCount();
 
         if (vkCreateDescriptorPool(pDevice->GetNativeDevice(), &poolInfo, nullptr, &m_descriptor_pool) != VK_SUCCESS) {
             throw std::runtime_error("failed to create descriptor pool!");
         }
 
-        m_descriptor_sets.resize(layoutView.GetMaxSetCount());
+        m_descriptor_sets.resize(reflectView.GetMaxSetCount());
         VkDescriptorSetAllocateInfo allocInfo{};
         allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
         allocInfo.descriptorPool = m_descriptor_pool;
@@ -49,13 +49,6 @@ namespace rhi
         if ((hr = vkAllocateDescriptorSets(pDevice->GetNativeDevice(), &allocInfo, m_descriptor_sets.data())) != VK_SUCCESS) {
             throw std::runtime_error("failed to allocate descriptor sets!");
         }
-
-        for (int shaderType = 0; shaderType < (int)RHIShaderType::count; shaderType++)
-        {
-            m_reflection_tables[shaderType] = layoutView.GetReflectTableByShaderType((RHIShaderType)shaderType);
-        }
-        m_input_reflection = input_reflect;
-        m_binding_count = m_input_reflection.size();
     }
 
     VulkanResourceBinding::~VulkanResourceBinding()
@@ -66,13 +59,8 @@ namespace rhi
 
     void VulkanResourceBinding::SetTextureView(RHIShaderType shaderType, RHIName name, RHITextureView* view)
     {
-        auto iter = m_reflection_tables[(int)shaderType].find(name);
-        if (iter == m_reflection_tables[(int)shaderType].end())
-        {
-            return;
-        }
-        VulkanResourceBindingVariable& variable = iter->second;
-        if (variable.resourceType != sampled_image && variable.resourceType != separate_images)
+        const VulkanResourceLayoutView::VariableBinding* variable = m_reflect_view.GetVariableBinding(shaderType, name);
+        if (!variable)
         {
             return;
         }
@@ -83,10 +71,10 @@ namespace rhi
 
         VkWriteDescriptorSet write{};
         write.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-        write.dstSet = m_descriptor_sets[variable.setId];
-        write.dstBinding = variable.binding;
+        write.dstSet = m_descriptor_sets[variable->set];
+        write.dstBinding = variable->binding;
         write.dstArrayElement = 0;
-        write.descriptorType = ConvertShaderResourceTypeToDescriptorType(variable.resourceType);
+        write.descriptorType = variable->type;
         write.descriptorCount = 1;
         write.pImageInfo = &imageInfo;
 
@@ -97,13 +85,8 @@ namespace rhi
 
     void VulkanResourceBinding::SetBufferView(RHIShaderType shaderType, RHIName name, RHIBufferView* view)
     {
-        auto iter = m_reflection_tables[(int)shaderType].find(name);
-        if (iter == m_reflection_tables[(int)shaderType].end())
-        {
-            return;
-        }
-        VulkanResourceBindingVariable& variable = iter->second;
-        if (variable.resourceType != uniform_buffer)
+        const VulkanResourceLayoutView::VariableBinding* variable = m_reflect_view.GetVariableBinding(shaderType, name);
+        if (!variable)
         {
             return;
         }
@@ -114,10 +97,10 @@ namespace rhi
 
         VkWriteDescriptorSet write{};
         write.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-        write.dstSet = m_descriptor_sets[variable.setId];
-        write.dstBinding = variable.binding;
+        write.dstSet = m_descriptor_sets[variable->set];
+        write.dstBinding = variable->binding;
         write.dstArrayElement = 0;
-        write.descriptorType = ConvertShaderResourceTypeToDescriptorType(variable.resourceType);
+        write.descriptorType = variable->type;
         write.descriptorCount = 1;
         write.pBufferInfo = &bufferInfo;
 
@@ -126,12 +109,12 @@ namespace rhi
 
     void VulkanResourceBinding::SetVertexBuffer(RHIName name, RHIBuffer* buffer)
     {
-        if (m_input_reflection.find(name) != m_input_reflection.end())
+        int location = m_reflect_view.GetVertexInputLocation(name);
+        if (location >= 0)
         {
-            VulkanInputVertexBindingVariable& binding = m_input_reflection[name];
-            m_vertex_buffers[binding.binding] = VKResourceCast(buffer);
-            m_vertex_vkBuffers[binding.binding] = VKResourceCast(buffer)->GetVkBuffer();
-            m_vertex_bufferOffsets[binding.binding] = 0;
+            m_vertex_buffers[location] = VKResourceCast(buffer);
+            m_vertex_vkBuffers[location] = VKResourceCast(buffer)->GetVkBuffer();
+            m_vertex_bufferOffsets[location] = 0;
         }
     }
 
@@ -142,7 +125,7 @@ namespace rhi
 
     int VulkanResourceBinding::GetVertexBufferCount()
     {
-        return m_binding_count;
+        return m_reflect_view.GetVertexBindingCount();
     }
 
     VulkanBuffer* VulkanResourceBinding::GetVertexBuffer(int index)

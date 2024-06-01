@@ -60,6 +60,20 @@ namespace rhi
         return (ShaderReflect::DataType)-1;
     }
 
+    int ShaderReflect::DataTypeToSize(ShaderReflect::DataType type)
+    {
+        switch (type)
+        {
+        case ShaderReflect::DataType::float_:return 4;
+        case ShaderReflect::DataType::vec2:return 8;
+        case ShaderReflect::DataType::vec3:return 12;
+        case ShaderReflect::DataType::vec4:return 16;
+        case ShaderReflect::DataType::mat4:return 64;
+        }
+        assert(0);
+        return -1;
+    }
+
     RHIShaderType ShaderReflect::ToShaderType(const char* str)
     {
         if (strcmp(str, "vert") == 0) {
@@ -84,6 +98,11 @@ namespace rhi
         return (ShaderReflect::ImageType)-1;
     }
 
+    void ShaderBlob::SetShaderReflect(const ShaderReflect& reflect)
+    {
+        m_reflect = reflect;
+    }
+
     const ShaderReflect& ShaderBlob::GetReflect()
     {
         return m_reflect;
@@ -105,8 +124,7 @@ namespace rhi
         ReadCodeFromFileUrl(url, code);
         code.push_back('\0');
         ShaderBlob blob = CompileFromCodeHLSLToSpirv(shaderType, code.data(), entryName);
-        GetReflectFromSpirv(blob.Data(), blob.Size());
-        SaveToFile((std::string(url) + ".spirv").c_str(), blob.Data(), blob.Size());
+        blob.SetShaderReflect(GetReflectFromSpirv(blob.Data(), blob.Size()));
         return blob;
     }
 
@@ -205,7 +223,7 @@ namespace rhi
                 auto& ubo_json = ubos[index];
                 assert(ubo_json.IsObject());
                 ShaderReflect::UBO ubo{};
-                ubo.m_name = ubo_json["name"].GetString() + 5;//add 5 to errase prefix "type."
+                ubo.m_name = ubo_json["name"].GetString() + 5;//add 5 to erase prefix "type."
                 ubo.m_block_size = ubo_json["block_size"].GetInt();
                 ubo.m_set = ubo_json["set"].GetInt();
                 ubo.m_binding = ubo_json["binding"].GetInt();
@@ -235,7 +253,7 @@ namespace rhi
                 auto& input_json = inputs[index];
                 assert(input_json.IsObject());
                 ShaderReflect::Input input{};
-                input.m_name = input_json["name"].GetString();
+                input.m_name = input_json["name"].GetString() + 7;//add 7 to erase prefix "in.var."
                 input.m_type = ShaderReflect::ToDataType(input_json["type"].GetString());
                 input.m_loacation = input_json["location"].GetInt();
                 reflect.m_inputs.push_back(input);
@@ -250,7 +268,7 @@ namespace rhi
                 auto& output_json = outputs[index];
                 assert(output_json.IsObject());
                 ShaderReflect::Output output{};
-                output.m_name = output_json["name"].GetString();
+                output.m_name = output_json["name"].GetString() + 8;//add 8 to erase prefix "out.var."
                 output.m_type = ShaderReflect::ToDataType(output_json["type"].GetString());
                 output.m_loacation = output_json["location"].GetInt();
                 reflect.m_outputs.push_back(output);

@@ -25,17 +25,6 @@ namespace rhi
         return RHIShaderType::count;
     }
 
-    VkDescriptorType ConvertShaderResourceTypeToDescriptorType(VulkanShaderResourceType shaderType)
-    {
-        switch (shaderType)
-        {
-        case VulkanShaderResourceType::uniform_buffer:return VkDescriptorType::VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-        case VulkanShaderResourceType::sampled_image:return VkDescriptorType::VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;
-        case VulkanShaderResourceType::separate_images:return VkDescriptorType::VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-        }
-        return (VkDescriptorType)0;
-    }
-
     VkBufferUsageFlags ConvertBufferUsageToVkBufferUsage(RHIResourceUsage usage)
     {
         VkBufferUsageFlags flag = 0;
@@ -182,5 +171,18 @@ namespace rhi
         state.writeMask = stencilOpState.writeMask;
         state.reference = stencilOpState.reference;
         return state;
+    }
+
+    VkFormat ConvertDataTypeToVkFormat(ShaderReflect::DataType type)
+    {
+        switch (type)
+        {
+        case ShaderReflect::DataType::float_: return VkFormat::VK_FORMAT_R32_SFLOAT;
+        case ShaderReflect::DataType::vec2: return VkFormat::VK_FORMAT_R32G32_SFLOAT;
+        case ShaderReflect::DataType::vec3: return VkFormat::VK_FORMAT_R32G32B32_SFLOAT;
+        case ShaderReflect::DataType::vec4: return VkFormat::VK_FORMAT_R32G32B32A32_SFLOAT;
+        }
+        assert(0);
+        return VkFormat::VK_FORMAT_UNDEFINED;
     }
 }

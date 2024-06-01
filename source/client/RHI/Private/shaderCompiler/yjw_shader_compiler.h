@@ -72,6 +72,7 @@ namespace rhi
         static DataType ToDataType(const char* str);
         static RHIShaderType ToShaderType(const char* str);
         static ImageType ToImageType(const char* str);
+        static int DataTypeToSize(ShaderReflect::DataType type);
     };
 
     struct ShaderBlob
@@ -81,6 +82,7 @@ namespace rhi
         const void* Data();
         int Size();
         void Release();
+        void SetShaderReflect(const ShaderReflect& reflect);
         const ShaderReflect& GetReflect();
     private:
         void SetBlob(ShaderConductor::Blob* blob);
