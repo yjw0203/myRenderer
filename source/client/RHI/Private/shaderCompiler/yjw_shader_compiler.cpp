@@ -5,6 +5,8 @@
 
 #define SHADER_CONDUCTOR_SOURCE
 #include "ShaderConductor/ShaderConductor.hpp"
+#include "spirv_cross/spirv_reflect.hpp"
+#include "rapidjson/document.h"
 
 #include <cassert>
 
@@ -37,9 +39,64 @@ namespace rhi
         }
     }
 
+    ShaderReflect::DataType ShaderReflect::ToDataType(const char* str)
+    {
+        if (strcmp(str, "float") == 0) {
+            return ShaderReflect::DataType::float_;
+        }
+        else if (strcmp(str, "vec2") == 0){
+            return ShaderReflect::DataType::vec2;
+        }
+        else if (strcmp(str, "vec3") == 0) {
+            return ShaderReflect::DataType::vec3;
+        }
+        else if (strcmp(str, "vec4") == 0) {
+            return ShaderReflect::DataType::vec4;
+        }
+        else if (strcmp(str, "mat4") == 0) {
+            return ShaderReflect::DataType::mat4;
+        }
+        assert(0);
+        return (ShaderReflect::DataType)-1;
+    }
+
+    RHIShaderType ShaderReflect::ToShaderType(const char* str)
+    {
+        if (strcmp(str, "vert") == 0) {
+            return RHIShaderType::vertex;
+        }
+        else if (strcmp(str, "frag") == 0) {
+            return RHIShaderType::fragment;
+        }
+        else if (strcmp(str, "compute") == 0) {
+            return RHIShaderType::compute;
+        }
+        assert(0);
+        return (RHIShaderType)-1;
+    }
+
+    ShaderReflect::ImageType ShaderReflect::ToImageType(const char* str)
+    {
+        if (strcmp(str, "texture2D") == 0){
+            return ShaderReflect::ImageType::texture2D;
+        }
+        assert(0);
+        return (ShaderReflect::ImageType)-1;
+    }
+
+    const ShaderReflect& ShaderBlob::GetReflect()
+    {
+        return m_reflect;
+    }
+
     void ShaderBlob::SetBlob(ShaderConductor::Blob* blob)
     {
         m_blob = blob;
+    }
+
+    void ShaderBlob::SetReflect(const ShaderReflect& reflect)
+    {
+        m_reflect = reflect;
     }
 
     ShaderBlob ShaderCompiler::CompileFromFileHLSLToSpirv(ShaderConductor::ShaderStage shaderType, const char* url, const char* entryName)
@@ -47,7 +104,10 @@ namespace rhi
         std::vector<char> code;
         ReadCodeFromFileUrl(url, code);
         code.push_back('\0');
-        return CompileFromCodeHLSLToSpirv(shaderType, code.data(), entryName);
+        ShaderBlob blob = CompileFromCodeHLSLToSpirv(shaderType, code.data(), entryName);
+        GetReflectFromSpirv(blob.Data(), blob.Size());
+        SaveToFile((std::string(url) + ".spirv").c_str(), blob.Data(), blob.Size());
+        return blob;
     }
 
     ShaderBlob ShaderCompiler::CompileFromCodeHLSLToSpirv(ShaderConductor::ShaderStage shaderType, const char* code, const char* entryName)
@@ -103,6 +163,103 @@ namespace rhi
         }
     }
 
+    ShaderReflect ShaderCompiler::GetReflectFromSpirv(const void* compiledData, int compiledDataSize)
+    {
+        ShaderReflect reflect{};
+        spirv_cross::CompilerReflection reflection((uint32_t*)compiledData, compiledDataSize / sizeof(uint32_t));
+        spirv_cross::ShaderResources resources = reflection.get_shader_resources();
+        std::string reflect_json_str = reflection.compile();
+        rapidjson::Document document;
+        document.Parse(reflect_json_str.c_str());
+        assert(document.IsObject());
+        assert(document.HasMember("entryPoints"));
+        auto& entryPoints = document["entryPoints"][0];
+        assert(entryPoints.HasMember("name"));
+        assert(entryPoints.HasMember("mode"));
+
+        reflect.m_function_name = entryPoints["name"].GetString();
+        reflect.m_shader_type = ShaderReflect::ToShaderType(entryPoints["mode"].GetString());
+
+        if (document.HasMember("separate_images"))
+        {
+            auto& separate_images = document["separate_images"];
+            for (int index = 0; index < separate_images.Size(); index++)
+            {
+                auto& image_json = separate_images[index];
+                assert(image_json.IsObject());
+                ShaderReflect::SeparateImage image{};
+                image.m_name = image_json["name"].GetString();
+                image.m_set = image_json["set"].GetInt();
+                image.m_binding = image_json["binding"].GetInt();
+                image.m_type = ShaderReflect::ToImageType(image_json["type"].GetString());
+                reflect.m_separate_images.push_back(image);
+            }
+        }
+
+        if (document.HasMember("ubos"))
+        {
+            auto& ubos = document["ubos"];
+            auto& types = document["types"];
+            for (int index = 0; index < ubos.Size(); index++)
+            {
+                auto& ubo_json = ubos[index];
+                assert(ubo_json.IsObject());
+                ShaderReflect::UBO ubo{};
+                ubo.m_name = ubo_json["name"].GetString() + 5;//add 5 to errase prefix "type."
+                ubo.m_block_size = ubo_json["block_size"].GetInt();
+                ubo.m_set = ubo_json["set"].GetInt();
+                ubo.m_binding = ubo_json["binding"].GetInt();
+                std::string type_name = ubo_json["type"].GetString();
+                if (types.HasMember(type_name.c_str()))
+                {
+                    auto& type = types[type_name.c_str()]["members"];
+                    for (int index = 0; index < type.Size(); index++)
+                    {
+                        auto& member_json = type[index];
+                        ShaderReflect::UBOMember member;
+                        member.m_name = member_json["name"].GetString();
+                        member.m_offset = member_json["offset"].GetInt();
+                        member.m_type = ShaderReflect::ToDataType(member_json["type"].GetString());
+                        ubo.m_members.push_back(member);
+                    }
+                }
+                reflect.m_ubos.push_back(ubo);
+            }
+        }
+
+        if (document.HasMember("inputs"))
+        {
+            auto& inputs = document["inputs"];
+            for (int index = 0; index < inputs.Size(); index++)
+            {
+                auto& input_json = inputs[index];
+                assert(input_json.IsObject());
+                ShaderReflect::Input input{};
+                input.m_name = input_json["name"].GetString();
+                input.m_type = ShaderReflect::ToDataType(input_json["type"].GetString());
+                input.m_loacation = input_json["location"].GetInt();
+                reflect.m_inputs.push_back(input);
+            }
+        }
+
+        if (document.HasMember("outputs"))
+        {
+            auto& outputs = document["outputs"];
+            for (int index = 0; index < outputs.Size(); index++)
+            {
+                auto& output_json = outputs[index];
+                assert(output_json.IsObject());
+                ShaderReflect::Output output{};
+                output.m_name = output_json["name"].GetString();
+                output.m_type = ShaderReflect::ToDataType(output_json["type"].GetString());
+                output.m_loacation = output_json["location"].GetInt();
+                reflect.m_outputs.push_back(output);
+            }
+        }
+
+        return std::move(reflect);
+    }
+
     void ShaderCompiler::ReadCodeFromFileUrl(const char* url, std::vector<char>& code)
     {
         std::string filename(url);
@@ -118,5 +275,14 @@ namespace rhi
         code.resize(fileSize);
         file.read(code.data(), fileSize);
         file.close();
+    }
+
+    void ShaderCompiler::SaveToFile(const char* fileName, const void* data, int size)
+    {
+        std::ofstream file(fileName, std::ios::out | std::ios::binary);
+        if (file.is_open()) {
+            file.write(static_cast<const char*>(data), size);
+            file.close();
+        }
     }
 }

@@ -16,12 +16,13 @@ namespace rhi
         return RHIShaderType::count;
     }
 
-    VulkanShader::VulkanShader(VulkanDevice* pDevice, const void* binary, int binarySize, const char* entryName)
+    VulkanShader::VulkanShader(VulkanDevice* pDevice, const void* binary, int binarySize, const char* entryName, const ShaderReflect& reflect)
         :VulkanDeviceObject(pDevice)
     {
         m_shader_module = CreateShaderModuleFromBinaryCode(pDevice->GetNativeDevice(), binary, binarySize);
         GenerateReflectionTable(binary, binarySize);
         m_entry_name = std::string(entryName);
+        m_reflect = reflect;
     }
 
     VkShaderModule VulkanShader::GetNativeShaderModule()
@@ -85,6 +86,8 @@ namespace rhi
     {
         spirv_cross::CompilerReflection reflection((uint32_t*)pBinaryCode, code_size/sizeof(uint32_t));
         spirv_cross::ShaderResources resources = reflection.get_shader_resources();
+
+        std::cout << reflection.compile() << std::endl;
 
         spirv_cross::SmallVector<spirv_cross::EntryPoint> entry_points = reflection.get_entry_points_and_stages();
 

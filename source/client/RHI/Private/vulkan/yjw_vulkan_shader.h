@@ -3,6 +3,7 @@
 #include "Public/RHI/rhi/yjw_rhi_common.h"
 #include "Private/vulkan/yjw_vulkan_device.h"
 #include "Private/vulkan/yjw_vulkan_define.h"
+#include "Private/shaderCompiler/yjw_shader_compiler.h"
 #include <unordered_map>
 #include "vulkan/vulkan.h"
 
@@ -17,7 +18,7 @@ namespace rhi
     class VulkanShader : public RHIShader, VulkanDeviceObject
     {
     public:
-        VulkanShader(VulkanDevice* pDevice, const void* binary, int binarySize, const char* entryName);
+        VulkanShader(VulkanDevice* pDevice, const void* binary, int binarySize, const char* entryName, const ShaderReflect& reflect);
         ~VulkanShader();
         VkShaderModule GetNativeShaderModule();
         VulkanReflectTable& GetReflectionTableByEntryName(RHIName name);
@@ -33,5 +34,6 @@ namespace rhi
         VkShaderModule m_shader_module = nullptr;
         std::string m_entry_name = "";
         std::unordered_map<RHIName, VulkanReflectTable> m_entry_reflection_tables;
+        ShaderReflect m_reflect{};
     };
 }

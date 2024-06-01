@@ -29,7 +29,9 @@ set(glm_include ${CMAKE_CURRENT_SOURCE_DIR}/3rd/glm-0.9.9.8)
 set(shaderc_include ${CMAKE_CURRENT_SOURCE_DIR}/3rd/shaderc/include)
 set(shaderc_lib ${CMAKE_CURRENT_SOURCE_DIR}/3rd/shaderc/lib/ShaderConductor.lib)
 
-set(3rd_party_include ${vulkan_include} ${glfw_include} ${stb_include} ${glm_include} ${shaderc_include})
+set(rapid_json_include ${CMAKE_CURRENT_SOURCE_DIR}/3rd/rapidjson/include)
+
+set(3rd_party_include ${vulkan_include} ${glfw_include} ${stb_include} ${glm_include} ${shaderc_include} ${rapid_json_include})
 set(3rd_party_lib ${vulkan_libs} ${glfw_lib} ${shaderc_lib})
 
 add_subdirectory(source)

@@ -6,6 +6,8 @@
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
 #include <glm/glm.hpp>
 
+#include "RHI/rpi/yjw_rpi_header.h"
+
 namespace yjw
 {
     struct MaterialShader
@@ -33,17 +35,25 @@ namespace yjw
 
     class Material
     {
+    public:
+        void BuildPipeline();
+        rpi::RPIPipeline GetPipeline();
     private:
-        MaterialShader vs;
-        MaterialShader ps;
+        MaterialShader m_vs{};
+        MaterialShader m_ps{};
+        rpi::RPIPipeline m_pipeline{};
+        rpi::RPIResourceBinding m_resource_binding{};
         MaterialParameterPool m_parameters_pool;
     };
 
     class MaterialInstance
     {
+    public:
+        MaterialInstance(Material* material);
     private:
         std::weak_ptr<Material> m_material;
         MaterialParameterPool m_parameters_pool;
+        rpi::RPIResourceBinding m_resource_binding{};
     };
 
     class MaterialManager

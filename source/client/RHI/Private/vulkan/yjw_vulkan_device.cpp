@@ -6,6 +6,7 @@
 #include "Private/vulkan/yjw_vulkan_context.h"
 #include "Private/vulkan/yjw_vulkan_buffer.h"
 #include "Private/vulkan/yjw_vulkan_texture.h"
+#include "Private/shaderCompiler/yjw_shader_compiler.h"
 
 #include <vector>
 #include <set>
@@ -137,7 +138,7 @@ namespace rhi
         return new VulkanSwapChain(this, window);
     }
 
-    RHIShader* VulkanDevice::CreateShaderByBinary(const void* binaryData, int size, const char* entryName)
+    RHIShader* VulkanDevice::CreateShaderByBinary(const void* binaryData, int size, const char* entryName,const ShaderReflect& reflect)
     {
         return new VulkanShader(this, binaryData, size, entryName);
     }
