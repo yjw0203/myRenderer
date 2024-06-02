@@ -40,4 +40,9 @@ namespace yjw
         return rpi::RPIBuffer::Null;
     }
 
+    bool InternalShaderParameter::IsShaderParameterNameInternal(const std::string& shaderName)
+    {
+        return !GetGpuBufferByShaderParameterName(shaderName).IsNull();
+    }
+
 }

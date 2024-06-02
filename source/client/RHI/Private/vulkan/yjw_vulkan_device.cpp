@@ -6,7 +6,7 @@
 #include "Private/vulkan/yjw_vulkan_context.h"
 #include "Private/vulkan/yjw_vulkan_buffer.h"
 #include "Private/vulkan/yjw_vulkan_texture.h"
-#include "Private/shaderCompiler/yjw_shader_compiler.h"
+#include "RHI/shaderCompiler/yjw_shader_compiler.h"
 
 #include <vector>
 #include <set>

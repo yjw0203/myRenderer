@@ -1,5 +1,5 @@
 {
     "name": "Model",
-    "dependencys": ["Module","Utils","File","RHI"],
+    "dependencys": [ "Module", "Utils", "File", "RHI", "InternalShaderResource" ],
     "build": "lib"
 }

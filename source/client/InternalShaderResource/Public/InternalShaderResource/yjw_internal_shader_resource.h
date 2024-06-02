@@ -53,6 +53,7 @@ namespace yjw
         void Destroy();
         void FlushCpuDataToGpu();
         rpi::RPIBuffer GetGpuBufferByShaderParameterName(const std::string& shaderName);
+        bool IsShaderParameterNameInternal(const std::string& shaderName);
     public:
         INTERNAL_SHADER_PARAMETER(InternalShaderData::Camera, camera, m_camera);
         INTERNAL_SHADER_PARAMETER(InternalShaderData::Light, light, m_light);

@@ -17,7 +17,7 @@ namespace yjw
         int AddMesh();
         void AddIndexBuffer(int mesh_id, int buffer_view_id,int first_index,int index_count, bool is_indices_16bit = false);
         void AddVertexBuffer(int mesh_id, VertexAttributeType type, int buffer_view_id);
-        int AddMaterial(const Material& material);
+        int AddMaterial(MaterialInstance* material);
         int AddEntity(int mesh_id, int material_id);
     public:
         std::shared_ptr<CPUModel> m_cpu_model;

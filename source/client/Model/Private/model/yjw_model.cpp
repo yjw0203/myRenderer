@@ -17,6 +17,14 @@ namespace yjw
         builder->build(filePath, fileName, format);
         return builder;
     }
+    GPUModel::~GPUModel()
+    {
+        for (MaterialInstance* materialInstance : m_material)
+        {
+            delete materialInstance;
+        }
+        m_material.clear();
+    }
 
     int GPUModel::GetEntityCount()
     {
@@ -30,13 +38,13 @@ namespace yjw
         }
         return &m_meshes[m_entities[entity_id].mesh_id];
     }
-    Material* GPUModel::GetMaterial(int entity_id)
+    MaterialInstance* GPUModel::GetMaterial(int entity_id)
     {
         if (entity_id < 0 || entity_id >= GetEntityCount())
         {
             return nullptr;
         }
-        return &m_material[m_entities[entity_id].material_id];
+        return m_material[m_entities[entity_id].material_id];
     }
 
     void ModelBuilder::build(std::string filePath, std::string fileName, ModelFileFormat format)

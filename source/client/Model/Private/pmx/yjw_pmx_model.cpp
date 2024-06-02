@@ -30,12 +30,9 @@ namespace yjw
 
             std::string texPath8 = filePath + "/" + pmxModel.m_textures[pmxModel.m_materials[i].m_textureIndex].m_textureName;;
             
-            Material material;
-            material.textureShaderResource = AddTexture(texPath8);
-            material.diffuse = pmxModel.m_materials[i].m_diffuse;
-            material.specular = pmxModel.m_materials[i].m_specular;
-            material.specularPower = pmxModel.m_materials[i].m_specularPower;
-            material.ambient = pmxModel.m_materials[i].m_ambient;
+            MaterialInstance* material = new MaterialInstance(&g_pbr_material);
+            material->SetTexture("albedoTex", AddTexture(texPath8));
+            material->SetDataVec2("metallic_roughness", glm::vec2(0.5, 0.5));
             int material_id = AddMaterial(material);
             AddEntity(mesh_id, material_id);
 

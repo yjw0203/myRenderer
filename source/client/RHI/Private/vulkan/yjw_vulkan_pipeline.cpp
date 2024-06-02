@@ -309,6 +309,16 @@ namespace rhi
         return new VulkanResourceBinding(GetDevice(), m_reflect_view, m_descriptor_set_layouts.data(), m_descriptor_set_layouts.size());
     }
 
+    ShaderReflect* VulkanRenderPipeline::GetVSShaderReflect()
+    {
+        return m_descriptor.vs->GetShaderReflect();
+    }
+
+    ShaderReflect* VulkanRenderPipeline::GetPSShaderReflect()
+    {
+        return m_descriptor.ps->GetShaderReflect();
+    }
+
     VulkanRenderPipeline::~VulkanRenderPipeline()
     {
         m_descriptor.vs->release();

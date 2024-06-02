@@ -5,6 +5,7 @@
 #include <unordered_map>
 #include <glm/glm.hpp>
 #include "RHI/rpi/yjw_rpi_header.h"
+#include "Model/yjw_material.h"
 
 namespace yjw
 {
@@ -35,16 +36,6 @@ namespace yjw
 
         MeshVertexBuffer vertex_buffer;
         rpi::RPIBuffer index_buffer;
-    };
-
-    class Material
-    {
-    public:
-        rpi::RPITexture textureShaderResource;
-        glm::vec4    diffuse;
-        glm::vec3    specular;
-        float        specularPower;
-        glm::vec3    ambient;
     };
 
     enum ModelFileFormat
@@ -104,7 +95,7 @@ namespace yjw
         std::vector<Texture> m_pool_textures;
         std::vector<CPUBufferView> m_pool_buffer_views;
         std::vector<CPUMesh> m_meshes;
-        std::vector<Material> m_material;
+        std::vector<MaterialInstance*> m_material;
         std::vector<Entity> m_entities;
     };
 
@@ -137,16 +128,17 @@ namespace yjw
             int material_id;
         };
     public:
+        ~GPUModel();
         int GetEntityCount();
         GPUMesh* GetGPUMesh(int entity_id);
-        Material* GetMaterial(int entity_id);
+        MaterialInstance* GetMaterial(int entity_id);
         
     private:
         std::vector<rpi::RPIBuffer> m_pool_buffers;
         std::vector<rpi::RPIBuffer> m_pool_buffer_views;
         std::vector<Texture> m_pool_textures;
         std::vector<GPUMesh> m_meshes;
-        std::vector<Material> m_material;
+        std::vector<MaterialInstance*> m_material;
         std::vector<Entity> m_entities;
     };
 

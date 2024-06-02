@@ -15,14 +15,6 @@ namespace yjw
         pipelineDesc.ps = ps;
         pipelineDesc.depth_stencil_state = RPIGetDepthStencilState(RPIDepthStencilStateType::default_depth_read_and_write);
         pipeline = RPICreateRenderPipeline(pipelineDesc);
-
-        resource_bindings.resize(100);
-        uniformsBuffers.resize(100);
-        for (int i = 0; i < 100; i++)
-        {
-            resource_bindings[i] = RPICreateResourceBinding(pipeline);
-            uniformsBuffers[i] = RPICreateUploadBuffer(16);
-        }
     }
 
     void ForwardPass::registerTexture(
@@ -35,14 +27,10 @@ namespace yjw
         m_entitys = RenderSystem::get().scene->buildEntitys();
         for (int i = 0; i < m_entitys.size(); i++)
         {
-            resource_bindings[i].SetBuffer(RHIShaderType::vertex, RHIName("camera"), g_internal_shader_parameters.GetGpuBufferByShaderParameterName("camera"));
-            resource_bindings[i].SetBuffer(RHIShaderType::fragment, RHIName("material"), uniformsBuffers[i]);
-            resource_bindings[i].SetBuffer(RHIShaderType::fragment, RHIName("light"), g_internal_shader_parameters.GetGpuBufferByShaderParameterName("light"));
-            resource_bindings[i].SetTexture(RHIShaderType::fragment, RHIName("albedoTex"), m_entitys[i].material->textureShaderResource);
-            resource_bindings[i].SetVertexBuffer(RHIName("POSITION"), m_entitys[i].mesh->vertex_buffers[0].buffer);
-            resource_bindings[i].SetVertexBuffer(RHIName("NORMAL"), m_entitys[i].mesh->vertex_buffers[1].buffer);
-            resource_bindings[i].SetVertexBuffer(RHIName("TEXCOORD0"), m_entitys[i].mesh->vertex_buffers[2].buffer);
-            resource_bindings[i].SetIndexBuffer(m_entitys[i].mesh->index_buffer);
+            m_entitys[i].material->GetResourceBinding().SetVertexBuffer(RHIName("POSITION"), m_entitys[i].mesh->vertex_buffers[0].buffer);
+            m_entitys[i].material->GetResourceBinding().SetVertexBuffer(RHIName("NORMAL"), m_entitys[i].mesh->vertex_buffers[1].buffer);
+            m_entitys[i].material->GetResourceBinding().SetVertexBuffer(RHIName("TEXCOORD0"), m_entitys[i].mesh->vertex_buffers[2].buffer);
+            m_entitys[i].material->GetResourceBinding().SetIndexBuffer(m_entitys[i].mesh->index_buffer);
         }
     }
 
@@ -56,19 +44,18 @@ namespace yjw
     {
         for (int i = 0; i < m_entitys.size(); i++)
         {
-            struct Material
-            {
-                alignas(16) glm::vec2 metallic_roughness;
-            }material_data;
-            material_data.metallic_roughness[0] = m_metallic;
-            material_data.metallic_roughness[1] = m_roughness;
-
-            RPIUpdateBuffer(uniformsBuffers[i], &material_data, 0, sizeof(Material));
+            m_entitys[i].material->SetDataVec2("metallic_roughness", glm::vec2(m_metallic, m_roughness));
         }
     }
 
     void ForwardPass::recordCommand(RPIContext commandBuffer)
     {
+        std::vector<RPIResourceBinding> resource_bindings;
+        resource_bindings.reserve(m_entitys.size());
+        for (int i = 0; i < m_entitys.size(); i++)
+        {
+            resource_bindings.push_back(m_entitys[i].material->GetResourceBinding());
+        }
         RPICmdBeginRenderPass(commandBuffer, renderPass, resource_bindings.data(), m_entitys.size());
         for (int i = 0; i < m_entitys.size(); i++)
         {

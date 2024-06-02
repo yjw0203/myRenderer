@@ -6,7 +6,7 @@
 #include "Private/vulkan/yjw_vulkan_render_pass.h"
 #include <unordered_map>
 #include "vulkan/vulkan.h"
-#include "Private/shaderCompiler/yjw_shader_compiler.h"
+#include "Public/RHI/shaderCompiler/yjw_shader_compiler.h"
 
 namespace rhi
 {
@@ -44,7 +44,8 @@ namespace rhi
         VulkanRenderPipeline(VulkanDevice* device,const RHIRenderPipelineDescriptor& desc);
         ~VulkanRenderPipeline();
         virtual RHIResourceBinding* CreateResourceBinding() override;
-
+        virtual ShaderReflect* GetVSShaderReflect() override;
+        virtual ShaderReflect* GetPSShaderReflect() override;
         VkPipeline GetOrCreateVkPipeline(VulkanRenderPass* renderPass);
         VkPipelineLayout GetOrCreateVkPipelineLayout();
     private:

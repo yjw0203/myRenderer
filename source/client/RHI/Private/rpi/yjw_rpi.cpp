@@ -1,5 +1,5 @@
 #include "Public/RHI/rpi/yjw_rpi.h"
-#include "Private/shaderCompiler/yjw_shader_compiler.h"
+#include "RHI/shaderCompiler/yjw_shader_compiler.h"
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 namespace rpi

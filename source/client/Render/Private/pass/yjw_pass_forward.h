@@ -25,8 +25,6 @@ namespace yjw
         RPIShader vs;
         RPIShader ps;
 
-        std::vector<RPIResourceBinding> resource_bindings;
-        std::vector<RPIBuffer> uniformsBuffers;
         std::vector<RenderEntity> m_entitys;
 
         float m_metallic = 0.5;

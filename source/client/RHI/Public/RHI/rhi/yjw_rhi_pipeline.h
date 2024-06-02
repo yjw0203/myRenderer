@@ -6,17 +6,18 @@
 #include <string>
 namespace rhi
 {
-    class RHIPipeline
+    class RHIPipeline : public RHIObject
     {
     public:
         virtual RHIResourceBinding* CreateResourceBinding() = 0;
+        virtual ShaderReflect* GetVSShaderReflect() = 0;
+        virtual ShaderReflect* GetPSShaderReflect() = 0;
     };
 
-    class RHIRenderPipeline : public RHIPipeline, public RHIObject
+    class RHIRenderPipeline : public RHIPipeline
     {
     public:
         RHIRenderPipeline(const RHIRenderPipelineDescriptor& desc) : m_descriptor(desc) {}
-        virtual RHIResourceBinding* CreateResourceBinding() = 0;
     public:
         RHIRenderPipelineDescriptor m_descriptor{};
     };

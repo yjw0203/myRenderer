@@ -77,7 +77,7 @@ namespace yjw
         m_cpu_model->m_meshes[mesh_id].vertex_buffers.push_back(vertex_buffer);
     }
 
-    int ModelBuildImplement::AddMaterial(const Material& material)
+    int ModelBuildImplement::AddMaterial(MaterialInstance* material)
     {
         int material_id = m_cpu_model->m_material.size();
         m_cpu_model->m_material.push_back(material);

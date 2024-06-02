@@ -3,7 +3,7 @@
 #include "Public/RHI/rhi/yjw_rhi_common.h"
 #include "Private/vulkan/yjw_vulkan_device.h"
 #include "Private/vulkan/yjw_vulkan_define.h"
-#include "Private/shaderCompiler/yjw_shader_compiler.h"
+#include "Public/RHI/shaderCompiler/yjw_shader_compiler.h"
 #include <unordered_map>
 #include "vulkan/vulkan.h"
 
@@ -17,6 +17,7 @@ namespace rhi
         VkShaderModule GetNativeShaderModule();
         const ShaderReflect& GetReflect();
         const char* GetEntryName();
+        virtual ShaderReflect* GetShaderReflect() override;
     private:
         void ReadCodeFromFileUrl(const char* url, std::vector<char>& code);
         VkShaderModule CreateShaderModuleFromBinaryCode(VkDevice device, const void* pCode,int code_size);

@@ -33,6 +33,7 @@ namespace yjw
         RPITexture out_ambient,
         RPITexture depth)
     {
+        /*
         RPITexture texture[5] = { out_abedlo,out_normal ,out_diffuse ,out_specular ,out_ambient };
         renderPass = RPICreateRenderPass(texture, 5, depth);
 
@@ -46,11 +47,12 @@ namespace yjw
             resource_bindings[i].SetVertexBuffer(RHIName("NORMAL"), m_entitys[i].mesh->vertex_buffers[1].buffer);
             resource_bindings[i].SetVertexBuffer(RHIName("TEXCOORD0"), m_entitys[i].mesh->vertex_buffers[2].buffer);
             resource_bindings[i].SetIndexBuffer(m_entitys[i].mesh->index_buffer);
-        }
+        }*/
     }
 
     void GBufferPass::setupData()
     {
+        /*
         for (int i = 0; i < m_entitys.size(); i++)
         {
             struct Material
@@ -65,6 +67,7 @@ namespace yjw
 
             RPIUpdateBuffer(uniformsBuffers[i], &material_data, 0, sizeof(Material));
         }
+        */
     }
 
     void GBufferPass::recordCommand(RPIContext commandBuffer)

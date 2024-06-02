@@ -39,6 +39,11 @@ namespace rhi
         return m_entry_name.c_str();
     }
 
+    ShaderReflect* VulkanShader::GetShaderReflect()
+    {
+        return &m_reflect;
+    }
+
     void VulkanShader::ReadCodeFromFileUrl(const char* url, std::vector<char>& code)
     {
         std::string filename(url);

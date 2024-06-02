@@ -2,7 +2,7 @@
 #include "Private/vulkan/yjw_vulkan_define.h"
 #include "Public/RHI/rhi/yjw_rhi_define.h"
 #include "vulkan/vulkan.h"
-#include "Private/shaderCompiler/yjw_shader_compiler.h"
+#include "RHI/shaderCompiler/yjw_shader_compiler.h"
 
 namespace rhi
 {

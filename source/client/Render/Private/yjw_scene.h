@@ -1,6 +1,7 @@
 #pragma once
 #include "yjw_light.h"
 #include "Model/yjw_model.h"
+#include "Model/yjw_material.h"
 #include <vector>
 #include <memory>
 
@@ -9,7 +10,7 @@ namespace yjw
     struct RenderEntity
     {
         GPUModel::GPUMesh* mesh{};
-        Material* material{};
+        MaterialInstance* material{};
     };
 
     class Scene
