@@ -21,4 +21,14 @@ namespace rhi
     {
         return m_current_resource_binding;
     }
+
+    void VulkanStateCache::SetPrimitiveBinding(VulkanPrimitiveBinding* primitiveBinding)
+    {
+        m_current_primitive_binding = primitiveBinding;
+    }
+
+    VulkanPrimitiveBinding* VulkanStateCache::GetPrimitiveBinding()
+    {
+        return m_current_primitive_binding;
+    }
 }

@@ -5,12 +5,20 @@
 
 namespace rhi
 {
+    struct VkTextureId
+    {
+        VkDescriptorPool m_descriptor_pool{};
+        VkDescriptorSetLayout m_descriptor_set_layout{};
+        VkDescriptorSet m_texture_id{};
+        RHITextureView* m_texture_view{};
+    };
+
     class RHIImguiLayer : public RHILayer
     {
     public:
         RHIImguiLayer(ERHIType rhiType);
         virtual void OnInstanceInit(class RHIInstanceImpl* instance);
-        virtual void OnDeviceInit(class RHIDevice* device);
+        void Init(class RHIDevice* device);
         virtual void OnDeviceShutdown(class RHIDevice* device);
         virtual void OnSwapchainInit(class RHISwapChain* swapchain);
         virtual void OnSwapchainShutdown(class RHISwapChain* swapchain);
@@ -18,11 +26,17 @@ namespace rhi
         void NewFrame(RHIContext* context, RHIRenderPass* renderPass);
         void Render(class RHIContext* context);
 
+        void* RegisterTexture(const char* name, RHITextureView* texture);
+        void* GetImTextureID(const char* name);
+
     private:
         VkDescriptorPool m_descriptor_pool{};
         RHITexture* m_texture = nullptr;
         RHITextureView* m_texture_view = nullptr;
         rpi::RPIRenderPass m_render_pass{};
+        std::unordered_map<std::string, VkTextureId> m_registered_textures;
+
+        RHIDevice* m_device = nullptr;
 
     };
 }

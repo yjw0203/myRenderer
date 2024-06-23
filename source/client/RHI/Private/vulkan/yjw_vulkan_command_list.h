@@ -32,7 +32,7 @@ namespace rhi
         void CmdEndPass();
         void CmdTransitionStateToRender(VulkanResourceBinding* resourceBinding);
         void CmdDraw(int vertexCount, int instanceCount, int firstVertex, int firstInstance);
-        void CmdDrawIndex(int indexCount, int instanceCount, int firstIndex, int vertexOffset, int firstInstance);
+        void CmdDrawIndex(int firstInstance, int instanceCount);
         void Submit();
         void Present(VulkanSwapChain* swapchain, bool bSync);
 

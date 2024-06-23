@@ -126,10 +126,10 @@ namespace rhi
         vkCmdDraw(m_command_list.GetCommandBuffer(), vertexCount, instanceCount, firstVertex, firstInstance);
     }
 
-    void VulkanCommandBuffer::CmdDrawIndex(int indexCount, int instanceCount, int firstIndex, int vertexOffset, int firstInstance)
+    void VulkanCommandBuffer::CmdDrawIndex(int firstInstance, int instanceCount)
     {
         PrepareForRender();
-        vkCmdDrawIndexed(m_command_list.GetCommandBuffer(), indexCount, instanceCount, firstIndex, vertexOffset, firstInstance);
+        vkCmdDrawIndexed(m_command_list.GetCommandBuffer(), m_state_cache.GetPrimitiveBinding()->GetIndexCount(), instanceCount, m_state_cache.GetPrimitiveBinding()->GetIndexStart(), m_state_cache.GetPrimitiveBinding()->GetVertexOffset(), firstInstance);
     }
 
     void VulkanCommandBuffer::Submit()
@@ -204,11 +204,11 @@ namespace rhi
                     m_state_cache.GetResourceBinding()->GetDescriptorSetData(),
                     0,
                     nullptr);
-                if (m_state_cache.GetResourceBinding()->GetIndexBuffer())
+                if (m_state_cache.GetPrimitiveBinding()->GetIndexBuffer())
                 {
-                    vkCmdBindIndexBuffer(m_command_list.GetCommandBuffer(), m_state_cache.GetResourceBinding()->GetIndexBuffer()->GetVkBuffer(), 0, VK_INDEX_TYPE_UINT32);
+                    vkCmdBindIndexBuffer(m_command_list.GetCommandBuffer(), m_state_cache.GetPrimitiveBinding()->GetIndexBuffer()->GetVkBuffer(), 0, VK_INDEX_TYPE_UINT32);
                 }
-                vkCmdBindVertexBuffers(m_command_list.GetCommandBuffer(), 0, m_state_cache.GetResourceBinding()->GetVertexBufferCount(), m_state_cache.GetResourceBinding()->GetVertexVkBuffers(), m_state_cache.GetResourceBinding()->GetVertexVkBufferOffsets());
+                vkCmdBindVertexBuffers(m_command_list.GetCommandBuffer(), 0, m_state_cache.GetPrimitiveBinding()->GetVertexBufferCount(), m_state_cache.GetPrimitiveBinding()->GetVertexVkBuffers(), m_state_cache.GetPrimitiveBinding()->GetVertexVkBufferOffsets());
             }
         }
         //vkCmdSetPrimitiveTopology(m_command_list.GetCommandBuffer(), VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST);

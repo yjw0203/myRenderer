@@ -5,3 +5,4 @@
 #include "RHI/rhi/yjw_rhi_instance.h"
 #include "RHI/rhi/yjw_rhi_pipeline.h"
 #include "RHI/rhi/yjw_rhi_render_pass.h"
+#include "RHI/rhi/yjw_rhi_resource_binding.h"

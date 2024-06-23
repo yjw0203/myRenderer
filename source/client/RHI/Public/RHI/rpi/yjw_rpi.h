@@ -28,17 +28,18 @@ namespace rpi
     RPIPipeline RPICreateRenderPipeline(RPIRenderPipelineDescriptor createInfo);
 
     RPIResourceBinding RPICreateResourceBinding(RPIPipeline pipeline);
-
+    RPIPrimitiveBinding RPICreatePrimitiveBinding(RPIPipeline pipeline);
 
     void RPISubmit(RPIContext context);
     void RPIPresent(RPIContext context, RPIWindow window, RPITexture presentTexture);
 
     void RPICmdSetPipeline(RPIContext context, RPIPipeline pipeline);
     void RPICmdSetResourceBinding(RPIContext context, RPIResourceBinding resourceBinding);
+    void RPICmdSetPrimitiveBinding(RPIContext context, RPIPrimitiveBinding primitiveBinding);
     void RPICmdBeginRenderPass(RPIContext context, RPIRenderPass renderPass, RPIResourceBinding* resourceBinding, int resourceBindingCount);
     void RPICmdEndPass(RPIContext context);
     void RPICmdDraw(RPIContext context, int vertexCount, int instanceCount, int firstVertex, int firstInstance);
-    void RPICmdDrawIndex(RPIContext context, int indexCount, int instanceCount, int firstIndex, int vertexOffset, int firstInstance);
+    void RPICmdDrawIndex(RPIContext context, int firstInstance, int instanceCount);
     void RPICmdClearTexture(RPIContext context, RPITexture texture);
     void RPICmdCopyTexture(RPIContext context, RPITexture srcTexture, RPITexture dstTexture);
     

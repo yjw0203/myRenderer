@@ -30,6 +30,10 @@ namespace yjw
         commandBuffer = RPICreateContext();
 
         m_ui = new EditorUI();
+        ((EditorUI*)m_ui)->m_albedo = dynamic_cast<RHIImguiLayer*>(RPIGetLayer(rhi_layer_imgui))->RegisterTexture("albedo", albedo_image.GetView());
+        ((EditorUI*)m_ui)->m_normal = dynamic_cast<RHIImguiLayer*>(RPIGetLayer(rhi_layer_imgui))->RegisterTexture("normal", normal_image.GetView());
+        ((EditorUI*)m_ui)->m_depth = dynamic_cast<RHIImguiLayer*>(RPIGetLayer(rhi_layer_imgui))->RegisterTexture("depth", depthImage.GetView());
+        ((EditorUI*)m_ui)->m_output = dynamic_cast<RHIImguiLayer*>(RPIGetLayer(rhi_layer_imgui))->RegisterTexture("output", output.GetView());
     }
 
     void DefaultPipeline::config(DefaultPipelineConfig config)

@@ -29,6 +29,7 @@ namespace yjw
         RPIShader ps;
 
         RPIResourceBinding resourceBinding;
+        RPIPrimitiveBinding m_primitive_binding;
 
         RPIBuffer vertex_buffer;
 

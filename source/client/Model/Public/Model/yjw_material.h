@@ -88,7 +88,9 @@ namespace yjw
         void SetDataVec4(const std::string& name, glm::vec4 value);
         void SetDataMat4(const std::string& name, glm::mat4x4 value);
         void SetTexture(const std::string& name, rpi::RPITexture texture);
+        void FlushDataToGpu();
         rpi::RPIResourceBinding& GetResourceBinding();
+        rpi::RPIPipeline GetPipeline();
     private:
         Material* m_material = nullptr;
         MaterialParameterPool m_parameters_pool;

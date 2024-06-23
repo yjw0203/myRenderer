@@ -172,7 +172,7 @@ namespace rpi
         desc.height = texHeight;
         desc.depthOrArraySize = 1;
         desc.miplevels = 1;
-        desc.format = RHIFormat::R8G8B8A8_srgb;
+        desc.format = RHIFormat::R8G8B8A8_unorm;
         desc.usage = (int)RHIResourceUsageBits::allow_transfer_dst;
         desc.memoryType = RHIMemoryType::default_;
         RHITexture* texture = RPIO(device)->CreateTexture(desc);
@@ -182,7 +182,7 @@ namespace rpi
 
         RHITextureViewDescriptor viewDesc{};
         viewDesc.texture = texture;
-        viewDesc.format = RHIFormat::R8G8B8A8_srgb;
+        viewDesc.format = RHIFormat::R8G8B8A8_unorm;
         RHITextureView* textureView = RPIO(device)->CreateTextureView(viewDesc);
 
         return RPITexture(texture, textureView);
@@ -250,6 +250,11 @@ namespace rpi
         return RPIResourceBinding(pipeline->CreateResourceBinding());
     }
 
+    RPIPrimitiveBinding RPICreatePrimitiveBinding(RPIPipeline pipeline)
+    {
+        return RPIPrimitiveBinding(pipeline->CreatePrimitiveBinding());
+    }
+
     void RPISubmit(RPIContext context)
     {
         context->Submit();
@@ -271,6 +276,11 @@ namespace rpi
         context->SetResourceBinding(resourceBinding.GetRHIResourceBinding());
     }
 
+    void RPICmdSetPrimitiveBinding(RPIContext context, RPIPrimitiveBinding primitiveBinding)
+    {
+        context->SetPrimitiveBinding(primitiveBinding.GetRHIPrimitiveBinding());
+    }
+
     void RPICmdBeginRenderPass(RPIContext context, RPIRenderPass renderPass, RPIResourceBinding* resourceBinding, int resourceBindingCount)
     {
         for (int index = 0; index < resourceBindingCount; index++)
@@ -290,9 +300,9 @@ namespace rpi
         context->Draw(vertexCount, instanceCount, firstVertex, firstInstance);
     }
 
-    void RPICmdDrawIndex(RPIContext context, int indexCount, int instanceCount, int firstIndex, int vertexOffset, int firstInstance)
+    void RPICmdDrawIndex(RPIContext context, int firstInstance, int instanceCount)
     {
-        context->DrawIndex(indexCount, instanceCount, firstIndex, vertexOffset, firstInstance);
+        context->DrawIndex(firstInstance, instanceCount);
     }
 
     void RPICmdClearTexture(RPIContext context, RPITexture texture)

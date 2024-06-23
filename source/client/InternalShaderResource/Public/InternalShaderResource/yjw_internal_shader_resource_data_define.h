@@ -16,7 +16,7 @@ namespace yjw
 
         struct alignas(64) Light
         {
-            alignas(16) glm::vec3 lightPos;
+            alignas(16) glm::vec3 lightDirection;
             alignas(16) glm::vec3 lightColor;
         };
 

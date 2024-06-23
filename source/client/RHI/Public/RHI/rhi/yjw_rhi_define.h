@@ -82,6 +82,7 @@ namespace rhi
         R8G8B8A8_srgb,
         R8G8B8A8_sfloat,
         B8G8R8A8_srgb,
+        B8G8R8A8_unorm,
         R32G32B32_sfloat,
         R32G32B32A32_sfloat,
         R32G32_sfloat,

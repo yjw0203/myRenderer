@@ -38,8 +38,8 @@ namespace yjw
         rpiWindow = RPICreateWindow(WindowsManager::get().window);
 
         g_internal_shader_parameters.Initialize();
-        g_internal_shader_parameters.m_light->lightPos = glm::vec3(-3, 15, -8);
-        g_internal_shader_parameters.m_light->lightColor = glm::vec3(2, 2, 2);
+        g_internal_shader_parameters.m_light->lightDirection = glm::vec3(-3, 15, -8);
+        g_internal_shader_parameters.m_light->lightColor = glm::vec3(5, 5, 5);
         g_internal_shader_parameters.m_option->screenSize = glm::vec2(1200, 1200);
         
         //Cube = *Model::load(RESOURCE_FILE(Cube),"Cube.gltf", model_file_format_gltf);

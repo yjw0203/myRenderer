@@ -10,6 +10,7 @@ namespace rhi
     {
     public:
         virtual RHIResourceBinding* CreateResourceBinding() = 0;
+        virtual RHIPrimitiveBinding* CreatePrimitiveBinding() = 0;
         virtual ShaderReflect* GetVSShaderReflect() = 0;
         virtual ShaderReflect* GetPSShaderReflect() = 0;
     };

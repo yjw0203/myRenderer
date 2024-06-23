@@ -24,16 +24,6 @@ namespace rpi
         m_resource_binding->SetTextureView(shaderType, name, texture.GetView());
     }
 
-    void RPIResourceBinding::SetVertexBuffer(RHIName name, RPIBuffer buffer)
-    {
-        m_resource_binding->SetVertexBuffer(name, buffer.GetBuffer());
-    }
-
-    void RPIResourceBinding::SetIndexBuffer(RPIBuffer buffer)
-    {
-        m_resource_binding->SetIndexBuffer(buffer.GetBuffer());
-    }
-
     RHIResourceBinding* RPIResourceBinding::GetRHIResourceBinding()
     {
         return m_resource_binding;
@@ -51,5 +41,44 @@ namespace rpi
     bool RPIResourceBinding::IsNull()
     {
         return m_resource_binding == nullptr;
+    }
+
+    RPIPrimitiveBinding::RPIPrimitiveBinding()
+    {
+        m_primitive_binding = nullptr;
+    }
+
+    RPIPrimitiveBinding::RPIPrimitiveBinding(RHIPrimitiveBinding* rhiPrimitiveBinding)
+    {
+        m_primitive_binding = rhiPrimitiveBinding;
+    }
+
+    void RPIPrimitiveBinding::SetVertexBuffer(RHIName name, RPIBuffer buffer)
+    {
+        m_primitive_binding->SetVertexBuffer(name, buffer.GetBuffer());
+    }
+
+    void RPIPrimitiveBinding::SetIndexBuffer(RPIBuffer buffer, int index_start, int index_count)
+    {
+        m_primitive_binding->SetIndexBuffer(buffer.GetBuffer(),index_start, index_count);
+    }
+
+    RHIPrimitiveBinding* RPIPrimitiveBinding::GetRHIPrimitiveBinding()
+    {
+        return m_primitive_binding;
+    }
+
+    void RPIPrimitiveBinding::Release()
+    {
+        if (m_primitive_binding)
+        {
+            m_primitive_binding->release();
+            m_primitive_binding = nullptr;
+        }
+    }
+
+    bool RPIPrimitiveBinding::IsNull()
+    {
+        return m_primitive_binding == nullptr;
     }
 }

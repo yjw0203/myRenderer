@@ -7,7 +7,7 @@ cbuffer camera
 
 cbuffer light
 {  
-    float3 lightPos;  
+    float3 lightDirection;  
     float3 lightColor;  
 };
   
@@ -129,7 +129,7 @@ float3 calculateLighting(float3 lightDir, float3 viewDir, float3 normal, float3 
 float3 calculateShading(GBufferData gbuffer_data)
 {
     float3 worldSpacePos = gbuffer_data.world_positon;
-    float3 lightDir = normalize(lightPos - worldSpacePos.xyz);
+    float3 lightDir = normalize(lightDirection);
     float3 viewDir = normalize(cameraPos - worldSpacePos.xyz); 
 
     return calculateLighting(lightDir,viewDir,gbuffer_data.normal,gbuffer_data.albedo,gbuffer_data.metallic,gbuffer_data.roughness);

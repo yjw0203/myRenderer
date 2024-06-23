@@ -255,4 +255,9 @@ namespace rhi
     {
         return m_window;
     }
+
+    RHIDevice* VulkanSwapChain::GetRHIDevice()
+    {
+        return GetDevice();
+    }
 }

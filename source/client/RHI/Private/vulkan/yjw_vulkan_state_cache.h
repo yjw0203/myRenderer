@@ -11,9 +11,11 @@ namespace rhi
         VulkanRenderPipeline* GetRenderPipeline();
         void SetResourceBinding(VulkanResourceBinding* resourceBinding);
         VulkanResourceBinding* GetResourceBinding();
-
+        void SetPrimitiveBinding(VulkanPrimitiveBinding* primitiveBinding);
+        VulkanPrimitiveBinding* GetPrimitiveBinding();
     private:
         VulkanRenderPipeline* m_current_render_pipeline = nullptr;
         VulkanResourceBinding* m_current_resource_binding = nullptr;
+        VulkanPrimitiveBinding* m_current_primitive_binding = nullptr;
     };
 }

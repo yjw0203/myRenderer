@@ -34,14 +34,19 @@ namespace rhi
         m_state_cache.SetResourceBinding(VKResourceCast(resourceBinding));
     }
 
+    void VulkanContext::SetPrimitiveBinding(RHIPrimitiveBinding* primitiveBinding)
+    {
+        m_state_cache.SetPrimitiveBinding(VKResourceCast(primitiveBinding));
+    }
+
     void VulkanContext::Draw(int vertexCount, int instanceCount, int firstVertex, int firstInstance)
     {
         m_command_buffer.CmdDraw(vertexCount, instanceCount, firstVertex, firstInstance);
     }
 
-    void VulkanContext::DrawIndex(int indexCount, int instanceCount, int firstIndex, int vertexOffset, int firstInstance)
+    void VulkanContext::DrawIndex(int firstInstance, int instanceCount)
     {
-        m_command_buffer.CmdDrawIndex(indexCount, instanceCount, firstIndex, vertexOffset, firstInstance);
+        m_command_buffer.CmdDrawIndex(firstInstance, instanceCount);
     }
 
     void VulkanContext::Submit()

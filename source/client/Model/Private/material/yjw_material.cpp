@@ -205,10 +205,19 @@ namespace yjw
         m_resource_binding.SetTexture(rpi::RPIShaderType::fragment, name, texture);
     }
 
-    rpi::RPIResourceBinding& MaterialInstance::GetResourceBinding()
+    void MaterialInstance::FlushDataToGpu()
     {
         m_parameters_pool.FlushCpuDataToGpu();
+    }
+
+    rpi::RPIResourceBinding& MaterialInstance::GetResourceBinding()
+    {
         return m_resource_binding;
+    }
+
+    rpi::RPIPipeline MaterialInstance::GetPipeline()
+    {
+        return m_material->GetPipeline();
     }
 
     Material g_pbr_material = Material(SHADER_FILE(forward_pbr.hlsl), "VSMain", SHADER_FILE(forward_pbr.hlsl), "PSMain");

@@ -9,8 +9,9 @@ namespace yjw
 {
     struct RenderEntity
     {
-        GPUModel::GPUMesh* mesh{};
-        MaterialInstance* material{};
+        MaterialInstance* m_material{};
+        rpi::RPIPrimitiveBinding m_primitive_binding{};
+        rpi::RPIResourceBinding m_resource_binding{};
     };
 
     class Scene

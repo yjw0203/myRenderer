@@ -16,6 +16,7 @@ namespace rhi
         virtual RHITextureView* GetBackTextureView() override;
         virtual RHIRenderPass* GetCurrentRenderPass() override;
         virtual void* GetNativeWindow() override;
+        virtual RHIDevice* GetRHIDevice() override;
         void Present(bool bSync);
     private:
         VkSurfaceKHR m_surface = nullptr;

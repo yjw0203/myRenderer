@@ -72,6 +72,7 @@ namespace yjw
 
     void GBufferPass::recordCommand(RPIContext commandBuffer)
     {
+        /*
         RPICmdBeginRenderPass(commandBuffer, renderPass, resource_bindings.data(), m_entitys.size());
         for (int i = 0; i < m_entitys.size(); i++)
         {
@@ -80,6 +81,7 @@ namespace yjw
             RPICmdDrawIndex(commandBuffer, m_entitys[i].mesh->index_count, 1, m_entitys[i].mesh->first_index, 0, 0);
         }
         RPICmdEndPass(commandBuffer);
+        */
     }
 
     void GBufferPass::submit()

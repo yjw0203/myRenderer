@@ -107,46 +107,6 @@ namespace rhi
         vkUpdateDescriptorSets(GetDevice()->GetNativeDevice(), 1, &write, 0, nullptr);
     }
 
-    void VulkanResourceBinding::SetVertexBuffer(RHIName name, RHIBuffer* buffer)
-    {
-        int location = m_reflect_view.GetVertexInputLocation(name);
-        if (location >= 0)
-        {
-            m_vertex_buffers[location] = VKResourceCast(buffer);
-            m_vertex_vkBuffers[location] = VKResourceCast(buffer)->GetVkBuffer();
-            m_vertex_bufferOffsets[location] = 0;
-        }
-    }
-
-    void VulkanResourceBinding::SetIndexBuffer(RHIBuffer* buffer)
-    {
-        m_index_buffer = VKResourceCast(buffer);
-    }
-
-    int VulkanResourceBinding::GetVertexBufferCount()
-    {
-        return m_reflect_view.GetVertexBindingCount();
-    }
-
-    VulkanBuffer* VulkanResourceBinding::GetVertexBuffer(int index)
-    {
-        return m_vertex_buffers[index];
-    }
-
-    VkBuffer* VulkanResourceBinding::GetVertexVkBuffers()
-    {
-        return m_vertex_vkBuffers;
-    }
-    VkDeviceSize* VulkanResourceBinding::GetVertexVkBufferOffsets()
-    {
-        return m_vertex_bufferOffsets;
-    }
-
-    VulkanBuffer* VulkanResourceBinding::GetIndexBuffer()
-    {
-        return m_index_buffer;
-    }
-
     VkDescriptorSet* VulkanResourceBinding::GetDescriptorSetData()
     {
         return m_descriptor_sets.data();
@@ -170,4 +130,72 @@ namespace rhi
             }
         }
     }
+
+    VulkanPrimitiveBinding::VulkanPrimitiveBinding(VulkanDevice* pDevice, VulkanResourceLayoutView& reflectView)
+        :VulkanDeviceObject(pDevice), m_reflect_view(reflectView)
+    {
+    }
+
+    VulkanPrimitiveBinding::~VulkanPrimitiveBinding()
+    {
+
+    }
+
+    void VulkanPrimitiveBinding::SetVertexBuffer(RHIName name, RHIBuffer* buffer)
+    {
+        int location = m_reflect_view.GetVertexInputLocation(name);
+        if (location >= 0)
+        {
+            m_vertex_buffers[location] = VKResourceCast(buffer);
+            m_vertex_vkBuffers[location] = VKResourceCast(buffer)->GetVkBuffer();
+            m_vertex_bufferOffsets[location] = 0;
+        }
+    }
+
+    void VulkanPrimitiveBinding::SetIndexBuffer(RHIBuffer* buffer, int index_start, int index_count)
+    {
+        m_index_buffer = VKResourceCast(buffer);
+        m_index_start = index_start;
+        m_index_count = index_count;
+    }
+
+    int VulkanPrimitiveBinding::GetVertexBufferCount()
+    {
+        return m_reflect_view.GetVertexBindingCount();
+    }
+
+    VulkanBuffer* VulkanPrimitiveBinding::GetVertexBuffer(int index)
+    {
+        return m_vertex_buffers[index];
+    }
+
+    VkBuffer* VulkanPrimitiveBinding::GetVertexVkBuffers()
+    {
+        return m_vertex_vkBuffers;
+    }
+    VkDeviceSize* VulkanPrimitiveBinding::GetVertexVkBufferOffsets()
+    {
+        return m_vertex_bufferOffsets;
+    }
+
+    VulkanBuffer* VulkanPrimitiveBinding::GetIndexBuffer()
+    {
+        return m_index_buffer;
+    }
+
+    int VulkanPrimitiveBinding::GetIndexStart()
+    {
+        return m_index_start;
+    }
+
+    int VulkanPrimitiveBinding::GetIndexCount()
+    {
+        return m_index_count;
+    }
+
+    int VulkanPrimitiveBinding::GetVertexOffset()
+    {
+        return m_vertex_offset;
+    }
+
 }

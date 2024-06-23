@@ -21,6 +21,7 @@ namespace yjw
         pipeline = RPICreateRenderPipeline(pipelineDesc);
 
         resourceBinding = RPICreateResourceBinding(pipeline);
+        m_primitive_binding = RPICreatePrimitiveBinding(pipeline);
     }
 
     void DeferredShadingPass::registerTexture(
@@ -43,7 +44,7 @@ namespace yjw
         resourceBinding.SetTexture(RHIShaderType::fragment, RHIName("specular_map"), in_specular);
         resourceBinding.SetTexture(RHIShaderType::fragment, RHIName("ambient_map"), in_ambient);
         resourceBinding.SetTexture(RHIShaderType::fragment, RHIName("depth_map"), in_depth);
-        resourceBinding.SetVertexBuffer(RHIName("POSITION"), vertex_buffer);
+        m_primitive_binding.SetVertexBuffer(RHIName("POSITION"), vertex_buffer);
     }
 
     void DeferredShadingPass::setupData()
@@ -54,6 +55,7 @@ namespace yjw
     {
         RPICmdBeginRenderPass(commandBuffer, renderPass, &resourceBinding, 1);
         RPICmdSetResourceBinding(commandBuffer, resourceBinding);
+        RPICmdSetPrimitiveBinding(commandBuffer, m_primitive_binding);
         RPICmdSetPipeline(commandBuffer, pipeline);
         RPICmdDraw(commandBuffer, 6, 1, 0, 0);
         RPICmdEndPass(commandBuffer);

@@ -25,13 +25,14 @@ namespace yjw
         pipelineDesc.ps = ps;
         pipeline = RPICreateRenderPipeline(pipelineDesc);
         resourceBinding = RPICreateResourceBinding(pipeline);
+        m_primitive_binding = RPICreatePrimitiveBinding(pipeline);
     }
 
     void ApplyToWindowPass::registerTexture(RPITexture apply_tex)
     {
         resourceBinding.SetBuffer(RHIShaderType::fragment, RHIName("option"), g_internal_shader_parameters.GetGpuBufferByShaderParameterName("option"));
         resourceBinding.SetTexture(RHIShaderType::fragment, RHIName("applyTex"), apply_tex);
-        resourceBinding.SetVertexBuffer(RHIName("POSITION"), vertex_buffer);
+        m_primitive_binding.SetVertexBuffer(RHIName("POSITION"), vertex_buffer);
     }
 
     void ApplyToWindowPass::setupData()
@@ -44,6 +45,7 @@ namespace yjw
         RPICmdBeginRenderPass(commandBuffer, renderPass, &resourceBinding, 1);
         RPICmdSetPipeline(commandBuffer, pipeline);
         RPICmdSetResourceBinding(commandBuffer, resourceBinding);
+        RPICmdSetPrimitiveBinding(commandBuffer, m_primitive_binding);
         RPICmdDraw(commandBuffer, 6, 1, 0, 0);
         RPICmdEndPass(commandBuffer);
     }

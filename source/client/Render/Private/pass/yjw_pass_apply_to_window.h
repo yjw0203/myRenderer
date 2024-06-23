@@ -24,6 +24,7 @@ namespace yjw
         RPIWindow m_window;
 
         RPIResourceBinding resourceBinding;
+        RPIPrimitiveBinding m_primitive_binding;
         RPIBuffer vertex_buffer;
 
     };

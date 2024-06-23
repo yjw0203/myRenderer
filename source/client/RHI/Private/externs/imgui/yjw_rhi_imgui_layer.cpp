@@ -20,14 +20,18 @@ namespace rhi
         io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
         io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
         io.ConfigFlags |= ImGuiConfigFlags_NavEnableSetMousePos;
+        io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+        io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
     }
 
     void RHIImguiLayer::OnInstanceInit(class RHIInstanceImpl* instance)
     {
     }
 
-    void RHIImguiLayer::OnDeviceInit(class RHIDevice* device)
+    void RHIImguiLayer::Init(class RHIDevice* device)
     {
+        m_device = device;
+
         VulkanDevice* vkDevice = (VulkanDevice*)device;
 
         VkDescriptorPoolSize pool_sizes[] =
@@ -96,6 +100,7 @@ namespace rhi
     void RHIImguiLayer::OnSwapchainInit(class RHISwapChain* swapchain)
     {
         ImGui_ImplGlfw_InitForVulkan((GLFWwindow*)swapchain->GetNativeWindow(), true);
+        Init(swapchain->GetRHIDevice());
     }
     void RHIImguiLayer::OnSwapchainShutdown(class RHISwapChain* swapchain)
     {
@@ -104,6 +109,11 @@ namespace rhi
 
     void RHIImguiLayer::NewFrame(RHIContext* context, RHIRenderPass* renderPass)
     {
+        VulkanContext* vkContext = (VulkanContext*)context;
+        for (auto& iter : m_registered_textures)
+        {
+            ((VulkanTextureView*)iter.second.m_texture_view)->GetTexture()->TransitionState(vkContext->GetVkCommandBuffer(), VkImageLayout::VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+        }
         context->BeginPass(renderPass);
         ImGuiIO& io = ImGui::GetIO();
         io.DisplaySize = ImVec2(renderPass->GetWidth(), renderPass->GetHeight());;
@@ -118,5 +128,73 @@ namespace rhi
         ImGui::Render();
         ImGui_ImplVulkan_RenderDrawData(ImGui::GetDrawData(), vkContext->GetVkCommandBuffer());
         context->EndPass();
+        ImGuiIO& io = ImGui::GetIO();
+        if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+        {
+            ImGui::UpdatePlatformWindows();
+            ImGui::RenderPlatformWindowsDefault();
+        }
+    }
+
+    void* RHIImguiLayer::RegisterTexture(const char* name, RHITextureView* texture)
+    {
+        VulkanDevice* vkDevice = (VulkanDevice*)m_device;
+        VkTextureId id{};
+        id.m_texture_view = texture;
+        VkDescriptorPoolSize pool_sizes[] =
+        {
+            { VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1 },
+        };
+        VkDescriptorPoolCreateInfo pool_info = {};
+        pool_info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
+        pool_info.flags = VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT;
+        pool_info.maxSets = 1;
+        pool_info.poolSizeCount = (uint32_t)IM_ARRAYSIZE(pool_sizes);
+        pool_info.pPoolSizes = pool_sizes;
+        vkCreateDescriptorPool(vkDevice->GetNativeDevice(), &pool_info, nullptr, &id.m_descriptor_pool);
+
+        VkDescriptorSetLayoutBinding binding;
+        binding.descriptorCount = 1;
+        binding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+        binding.binding = 0;
+        binding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+        binding.pImmutableSamplers = nullptr;
+
+        VkDescriptorSetLayoutCreateInfo createInfo{};
+        createInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+        createInfo.bindingCount = 1;
+        createInfo.pBindings = &binding;
+        createInfo.flags = 0;
+        createInfo.pNext = nullptr;
+        vkCreateDescriptorSetLayout(vkDevice->GetNativeDevice(), &createInfo, nullptr, &id.m_descriptor_set_layout);
+
+        VkDescriptorSetAllocateInfo allocInfo{};
+        allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+        allocInfo.descriptorPool = id.m_descriptor_pool;
+        allocInfo.descriptorSetCount = 1;
+        allocInfo.pSetLayouts = &id.m_descriptor_set_layout;
+        vkAllocateDescriptorSets(vkDevice->GetNativeDevice(), &allocInfo, &id.m_texture_id);
+
+        VkDescriptorImageInfo imageInfo{};
+        imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+        imageInfo.imageView = VKResourceCast(texture)->GetVkImageView();
+        imageInfo.sampler = vkDevice->m_default_sampler;
+
+        VkWriteDescriptorSet write{};
+        write.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+        write.dstSet = id.m_texture_id;
+        write.dstBinding = 0;
+        write.dstArrayElement = 0;
+        write.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+        write.descriptorCount = 1;
+        write.pImageInfo = &imageInfo;
+        vkUpdateDescriptorSets(vkDevice->GetNativeDevice(), 1, &write, 0, nullptr);
+        m_registered_textures[std::string(name)] = id;
+        return id.m_texture_id;
+    }
+
+    void* RHIImguiLayer::GetImTextureID(const char* name)
+    {
+        return (void*)m_registered_textures[std::string(name)].m_texture_id;
     }
 }

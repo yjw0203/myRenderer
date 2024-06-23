@@ -7,14 +7,6 @@ namespace yjw
 {
     void ForwardPass::buildPSO()
     {
-        vs = RPICreateShader(RPIShaderType::vertex, SHADER_FILE(forward_pbr.hlsl), "VSMain");
-        ps = RPICreateShader(RPIShaderType::fragment, SHADER_FILE(forward_pbr.hlsl), "PSMain");
-
-        RPIRenderPipelineDescriptor pipelineDesc = RPIGetDefaultRenderPipeline();
-        pipelineDesc.vs = vs;
-        pipelineDesc.ps = ps;
-        pipelineDesc.depth_stencil_state = RPIGetDepthStencilState(RPIDepthStencilStateType::default_depth_read_and_write);
-        pipeline = RPICreateRenderPipeline(pipelineDesc);
     }
 
     void ForwardPass::registerTexture(
@@ -23,15 +15,7 @@ namespace yjw
     {
         RPITexture texture[1] = { out_abedlo};
         renderPass = RPICreateRenderPass(texture, 1, depth);
-
         m_entitys = RenderSystem::get().scene->buildEntitys();
-        for (int i = 0; i < m_entitys.size(); i++)
-        {
-            m_entitys[i].material->GetResourceBinding().SetVertexBuffer(RHIName("POSITION"), m_entitys[i].mesh->vertex_buffers[0].buffer);
-            m_entitys[i].material->GetResourceBinding().SetVertexBuffer(RHIName("NORMAL"), m_entitys[i].mesh->vertex_buffers[1].buffer);
-            m_entitys[i].material->GetResourceBinding().SetVertexBuffer(RHIName("TEXCOORD0"), m_entitys[i].mesh->vertex_buffers[2].buffer);
-            m_entitys[i].material->GetResourceBinding().SetIndexBuffer(m_entitys[i].mesh->index_buffer);
-        }
     }
 
     void ForwardPass::setData(float metallic, float roughness)
@@ -44,7 +28,8 @@ namespace yjw
     {
         for (int i = 0; i < m_entitys.size(); i++)
         {
-            m_entitys[i].material->SetDataVec2("metallic_roughness", glm::vec2(m_metallic, m_roughness));
+            m_entitys[i].m_material->SetDataVec2("metallic_roughness", glm::vec2(m_metallic, m_roughness));
+            m_entitys[i].m_material->FlushDataToGpu();
         }
     }
 
@@ -54,14 +39,15 @@ namespace yjw
         resource_bindings.reserve(m_entitys.size());
         for (int i = 0; i < m_entitys.size(); i++)
         {
-            resource_bindings.push_back(m_entitys[i].material->GetResourceBinding());
+            resource_bindings.push_back(m_entitys[i].m_resource_binding);
         }
         RPICmdBeginRenderPass(commandBuffer, renderPass, resource_bindings.data(), m_entitys.size());
         for (int i = 0; i < m_entitys.size(); i++)
         {
-            RPICmdSetResourceBinding(commandBuffer, resource_bindings[i]);
-            RPICmdSetPipeline(commandBuffer, pipeline);
-            RPICmdDrawIndex(commandBuffer, m_entitys[i].mesh->index_count, 1, m_entitys[i].mesh->first_index, 0, 0);
+            RPICmdSetPrimitiveBinding(commandBuffer, m_entitys[i].m_primitive_binding);
+            RPICmdSetResourceBinding(commandBuffer, m_entitys[i].m_resource_binding);
+            RPICmdSetPipeline(commandBuffer, m_entitys[i].m_material->GetPipeline());
+            RPICmdDrawIndex(commandBuffer, 0, 1);
         }
         RPICmdEndPass(commandBuffer);
     }
