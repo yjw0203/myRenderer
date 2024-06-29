@@ -30,8 +30,8 @@ namespace rhi
     public:
         VulkanPrimitiveBinding(VulkanDevice* pDevice, class VulkanResourceLayoutView& reflectView);
         ~VulkanPrimitiveBinding();
-        virtual void SetVertexBuffer(RHIName name, RHIBuffer* buffer) override;
-        virtual void SetIndexBuffer(RHIBuffer* buffer, int intdex_start, int index_count) override;
+        virtual void SetVertexBuffer(RHIName name, RHIBufferView* bufferView) override;
+        virtual void SetIndexBuffer(RHIBufferView* buffer, int intdex_start, int index_count, bool is_index_16bit) override;
 
         int GetVertexBufferCount();
         VulkanBuffer* GetVertexBuffer(int index);
@@ -40,6 +40,7 @@ namespace rhi
         VulkanBuffer* GetIndexBuffer();
         int GetIndexStart();
         int GetIndexCount();
+        bool GetIsIndex16Bit();
         int GetVertexOffset();
     private:
         VulkanResourceLayoutView& m_reflect_view;
@@ -50,6 +51,7 @@ namespace rhi
         VulkanBuffer* m_index_buffer = nullptr;
         int m_index_start = 0;
         int m_index_count = 0;
+        bool m_is_index_16bit = false;
         int m_vertex_offset = 0;
     };
 }

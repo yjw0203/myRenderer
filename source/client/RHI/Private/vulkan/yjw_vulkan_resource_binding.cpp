@@ -141,22 +141,23 @@ namespace rhi
 
     }
 
-    void VulkanPrimitiveBinding::SetVertexBuffer(RHIName name, RHIBuffer* buffer)
+    void VulkanPrimitiveBinding::SetVertexBuffer(RHIName name, RHIBufferView* bufferView)
     {
         int location = m_reflect_view.GetVertexInputLocation(name);
         if (location >= 0)
         {
-            m_vertex_buffers[location] = VKResourceCast(buffer);
-            m_vertex_vkBuffers[location] = VKResourceCast(buffer)->GetVkBuffer();
-            m_vertex_bufferOffsets[location] = 0;
+            m_vertex_buffers[location] = VKResourceCast(bufferView)->GetBuffer();
+            m_vertex_vkBuffers[location] = VKResourceCast(bufferView)->GetBuffer()->GetVkBuffer();
+            m_vertex_bufferOffsets[location] = VKResourceCast(bufferView)->GetOffset();
         }
     }
 
-    void VulkanPrimitiveBinding::SetIndexBuffer(RHIBuffer* buffer, int index_start, int index_count)
+    void VulkanPrimitiveBinding::SetIndexBuffer(RHIBufferView* bufferView, int index_start, int index_count, bool is_index_16bit)
     {
-        m_index_buffer = VKResourceCast(buffer);
-        m_index_start = index_start;
+        m_index_buffer = VKResourceCast(bufferView)->GetBuffer();
+        m_index_start = index_start + VKResourceCast(bufferView)->GetOffset();
         m_index_count = index_count;
+        m_is_index_16bit = is_index_16bit;
     }
 
     int VulkanPrimitiveBinding::GetVertexBufferCount()
@@ -191,6 +192,11 @@ namespace rhi
     int VulkanPrimitiveBinding::GetIndexCount()
     {
         return m_index_count;
+    }
+
+    bool VulkanPrimitiveBinding::GetIsIndex16Bit()
+    {
+        return m_is_index_16bit;
     }
 
     int VulkanPrimitiveBinding::GetVertexOffset()

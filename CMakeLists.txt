@@ -11,6 +11,7 @@ project( "Renderer" VERSION 2023.1.31 LANGUAGES C CXX )
 
 ## language standard
 set(CMAKE_CXX_STANDARD 17)
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 ## 3rd party
 set(vulkan_lib_dir ${CMAKE_CURRENT_SOURCE_DIR}/3rd/VulkanSDK/1.2.198.1/Lib)
@@ -35,3 +36,4 @@ set(3rd_party_include ${vulkan_include} ${glfw_include} ${stb_include} ${glm_inc
 set(3rd_party_lib ${vulkan_libs} ${glfw_lib} ${shaderc_lib})
 
 add_subdirectory(source)
+add_subdirectory(shaders)

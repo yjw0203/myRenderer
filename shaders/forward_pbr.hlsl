@@ -120,10 +120,11 @@ float3 calculateLighting(float3 lightDir, float3 viewDir, float3 normal, float3 
     float3 F = fresnelSchlick(NdotV,F0);
     
     // Final Lighting Calculation
-    float3 diffuse = (diffuseColor / 3.14159265359f) * NdotL;
-    float3 specular = (F * G * NDF) / (4.0f * NdotL * NdotV);
+    float3 diffuse = NdotL == 0.0f ? 0.0f : (diffuseColor / 3.14159265359f) * NdotL;
+    float3 specular = NdotL == 0.0f ? 0.0f : (F * G * NDF) / (4.0f * NdotL * NdotV);
+    float3 environment = float3(0.1f, 0.1f, 0.1f) * albedo;
     
-    return (diffuse + specular) * NdotL * lightColor;
+    return (diffuse + specular) * NdotL * lightColor + environment;
 }
 
 float3 calculateShading(GBufferData gbuffer_data)

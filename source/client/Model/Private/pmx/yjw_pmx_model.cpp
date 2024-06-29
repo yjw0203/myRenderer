@@ -8,6 +8,7 @@ namespace yjw
     {
         int x = 1;
     }
+
     void PMXModelBuilder::FillModelData(const std::string& filePath, const std::string& fileName)
     {
         std::string fileHoleName = filePath + "/" + fileName;
@@ -26,7 +27,7 @@ namespace yjw
             AddIndexBuffer(mesh_id, indices_buffer_view_id, currentOffset, (uint32_t)pmxModel.m_materials[i].m_numFaceVertices);
             AddVertexBuffer(mesh_id, VertexAttributeType::position, positon_buffer_view_id);
             AddVertexBuffer(mesh_id, VertexAttributeType::normal, normal_buffer_view_id);
-            AddVertexBuffer(mesh_id, VertexAttributeType::uv, uv_buffer_view_id);
+            AddVertexBuffer(mesh_id, VertexAttributeType::uv0, uv_buffer_view_id);
 
             std::string texPath8 = filePath + "/" + pmxModel.m_textures[pmxModel.m_materials[i].m_textureIndex].m_textureName;;
             

@@ -29,6 +29,10 @@ foreach(ModuleJsonFile IN LISTS ModuleJsonFileList)
         message(FATAL_ERROR "Unknown BuildOption: ${ModuleBuild}")
     endif()
 
+    set_target_properties(${ModuleName} PROPERTIES FOLDER "Modules")
+
+    target_sources(${ModuleName} PRIVATE ${ModuleJsonFile})
+
     target_include_directories(${ModuleName} PRIVATE ${3rd_party_include})
     target_include_directories(${ModuleName} PRIVATE ${ModulePath}/Public)
     target_include_directories(${ModuleName} PRIVATE ${ModulePath})

@@ -127,6 +127,26 @@ namespace rhi
         return VkFormat::VK_FORMAT_UNDEFINED;
     }
 
+    RHIFormat ConvertVkFormatToRHIFormat(VkFormat format)
+    {
+        switch (format)
+        {
+        case VkFormat::VK_FORMAT_UNDEFINED: return RHIFormat::unknow;
+        case VkFormat::VK_FORMAT_R8G8B8A8_UNORM: return RHIFormat::R8G8B8A8_unorm;
+        case VkFormat::VK_FORMAT_R8G8B8A8_SNORM: return RHIFormat::R8G8B8A8_snorm;
+        case VkFormat::VK_FORMAT_R8G8B8A8_SRGB: return RHIFormat::R8G8B8A8_srgb;
+        case VkFormat::VK_FORMAT_R8G8B8A8_SSCALED: return RHIFormat::R8G8B8A8_sfloat;
+        case VkFormat::VK_FORMAT_B8G8R8A8_SRGB: return RHIFormat::B8G8R8A8_srgb;
+        case VkFormat::VK_FORMAT_B8G8R8A8_UNORM: return RHIFormat::B8G8R8A8_unorm;
+        case VkFormat::VK_FORMAT_R32G32B32_SFLOAT: return RHIFormat::R32G32B32_sfloat;
+        case VkFormat::VK_FORMAT_R32G32B32A32_SFLOAT: return RHIFormat::R32G32B32A32_sfloat;
+        case VkFormat::VK_FORMAT_R32G32_SFLOAT: return RHIFormat::R32G32_sfloat;
+        case VkFormat::VK_FORMAT_D24_UNORM_S8_UINT: return RHIFormat::D24_unorm_S8_uint;
+        }
+        assert(0);
+        return RHIFormat::unknow;
+    }
+
     VkCompareOp ConvertCompareOpToVkCompareOp(RHICompareOp compareOp)
     {
         switch (compareOp)

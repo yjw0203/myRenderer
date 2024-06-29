@@ -142,7 +142,7 @@ namespace rhi
         options.packMatricesInRowMajor = true;
         options.enable16bitTypes = true;
         options.enableDebugInfo = true;
-        options.disableOptimizations = false;
+        options.disableOptimizations = true;
         options.optimizationLevel = 0;
         options.shaderModel = { 6, 2 };
         options.shiftAllTexturesBindings = 0;

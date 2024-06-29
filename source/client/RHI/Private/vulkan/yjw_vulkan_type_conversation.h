@@ -12,6 +12,7 @@ namespace rhi
     VkImageUsageFlags ConvertImageUsageToVkImageUsage(RHIResourceUsage usage);
     VkMemoryPropertyFlags ConvertMemoryTypeToVkMemoryPropertyFlags(RHIMemoryType memoryType);
     VkFormat ConvertFormatToVkFormat(RHIFormat format);
+    RHIFormat ConvertVkFormatToRHIFormat(VkFormat format);
     VkCompareOp ConvertCompareOpToVkCompareOp(RHICompareOp compareOp);
     VkStencilOp ConvertStencilOpToVkStencilOp(RHIStencilOp stencilOp);
     VkStencilOpState ConvertStencilOpStateToVkStencilOpState(RHIStencilOpState stencilOpState);

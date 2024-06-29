@@ -55,12 +55,12 @@ namespace rpi
 
     void RPIPrimitiveBinding::SetVertexBuffer(RHIName name, RPIBuffer buffer)
     {
-        m_primitive_binding->SetVertexBuffer(name, buffer.GetBuffer());
+        m_primitive_binding->SetVertexBuffer(name, buffer.GetView());
     }
 
-    void RPIPrimitiveBinding::SetIndexBuffer(RPIBuffer buffer, int index_start, int index_count)
+    void RPIPrimitiveBinding::SetIndexBuffer(RPIBuffer buffer, int index_start, int index_count, bool is_index_16bit)
     {
-        m_primitive_binding->SetIndexBuffer(buffer.GetBuffer(),index_start, index_count);
+        m_primitive_binding->SetIndexBuffer(buffer.GetView(),index_start, index_count, is_index_16bit);
     }
 
     RHIPrimitiveBinding* RPIPrimitiveBinding::GetRHIPrimitiveBinding()

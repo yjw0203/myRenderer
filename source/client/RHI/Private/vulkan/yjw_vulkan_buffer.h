@@ -25,6 +25,7 @@ namespace rhi
         VulkanBufferView(VulkanDevice* device, const RHIBufferViewDescriptor& desc);
         ~VulkanBufferView();
         VulkanBuffer* GetBuffer();
+        int GetOffset();
     private:
         VkBufferView m_view;
     };

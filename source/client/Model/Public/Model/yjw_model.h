@@ -46,10 +46,14 @@ namespace yjw
 
     enum VertexAttributeType
     {
+        unkown,
         position,
         normal,
-        uv
+        tangent,
+        uv0
     };
+
+    rhi::RHIName CastToRHIName(VertexAttributeType type);
 
     class CPUModel
     {

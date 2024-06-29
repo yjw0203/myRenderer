@@ -17,10 +17,11 @@ namespace yjw
                     entity.m_resource_binding = entity.m_material->GetResourceBinding();
                     entity.m_primitive_binding = rpi::RPICreatePrimitiveBinding(entity.m_material->GetPipeline());
                     GPUModel::GPUMesh* mesh = model_ptr->m_gpu_model->GetGPUMesh(entity_id);
-                    entity.m_primitive_binding.SetVertexBuffer(rhi::RHIName("POSITION"), mesh->vertex_buffers[0].buffer);
-                    entity.m_primitive_binding.SetVertexBuffer(rhi::RHIName("NORMAL"), mesh->vertex_buffers[1].buffer);
-                    entity.m_primitive_binding.SetVertexBuffer(rhi::RHIName("TEXCOORD0"), mesh->vertex_buffers[2].buffer);
-                    entity.m_primitive_binding.SetIndexBuffer(mesh->index_buffer, mesh->first_index, mesh->index_count);
+                    for (GPUModel::VertexBuffer& vertexBuffer : mesh->vertex_buffers)
+                    {
+                        entity.m_primitive_binding.SetVertexBuffer(CastToRHIName(vertexBuffer.type), vertexBuffer.buffer);
+                    }
+                    entity.m_primitive_binding.SetIndexBuffer(mesh->index_buffer, mesh->first_index, mesh->index_count, mesh->is_indices_16bit);
                     res.push_back(entity);
                 }
             }

@@ -42,7 +42,7 @@ namespace yjw
         g_internal_shader_parameters.m_light->lightColor = glm::vec3(5, 5, 5);
         g_internal_shader_parameters.m_option->screenSize = glm::vec2(1200, 1200);
         
-        //Cube = *Model::load(RESOURCE_FILE(Cube),"Cube.gltf", model_file_format_gltf);
+        Cube = *Model::load(RESOURCE_FILE(Cube),"Cube.gltf", model_file_format_gltf);
         naxita = *Model::load(RESOURCE_FILE(cao), "纳西妲.pmx", model_file_format_pmx);
         heita = *Model::load(RESOURCE_FILE(heita),"黑塔.pmx", model_file_format_pmx);
         hutao = *Model::load(RESOURCE_FILE(hutao),"胡桃.pmx", model_file_format_pmx);
@@ -50,6 +50,7 @@ namespace yjw
         scene->models.push_back(naxita);
         //scene.models.push_back(heita);
         //scene.models.push_back(hutao);
+        scene->models.push_back(Cube);
 
         activeCamera->position = glm::vec3(1, 12, -16);
         //activeCamera.direction = glm::vec3(0, 0, 0) - activeCamera.position;

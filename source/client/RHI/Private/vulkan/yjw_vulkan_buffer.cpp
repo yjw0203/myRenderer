@@ -124,4 +124,9 @@ namespace rhi
     {
         return VKResourceCast(GetDesc().buffer);
     }
+
+    int VulkanBufferView::GetOffset()
+    {
+        return GetDesc().offset;
+    }
 }

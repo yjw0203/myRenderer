@@ -11,6 +11,19 @@
 
 namespace yjw
 {
+    rhi::RHIName CastToRHIName(VertexAttributeType type)
+    {
+        switch (type)
+        {
+        case VertexAttributeType::unkown:return rhi::RHIName("UNKOWN");
+        case VertexAttributeType::position:return rhi::RHIName("POSITION");
+        case VertexAttributeType::normal:return rhi::RHIName("NORMAL");
+        case VertexAttributeType::tangent:return rhi::RHIName("TANGENT");
+        case VertexAttributeType::uv0:return rhi::RHIName("TEXCOORD0");
+        }
+        return rhi::RHIName("UNKOWN");
+    }
+
     std::unique_ptr<ModelBuilder> Model::load(std::string filePath, std::string fileName, ModelFileFormat format)
     {
         std::unique_ptr<ModelBuilder> builder = std::make_unique<ModelBuilder>();

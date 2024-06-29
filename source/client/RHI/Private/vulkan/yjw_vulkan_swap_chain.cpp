@@ -1,5 +1,6 @@
 #include "Private/vulkan/yjw_vulkan_swap_chain.h"
 #include "Private/vulkan/yjw_vulkan_command_queue.h"
+#include "Private/vulkan/yjw_vulkan_type_conversation.h"
 #include <vector>
 
 #define GLFW_INCLUDE_VULKAN
@@ -42,7 +43,7 @@ namespace rhi
 
     VkSurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats) {
         for (const auto& availableFormat : availableFormats) {
-            if (availableFormat.format == VK_FORMAT_B8G8R8A8_SRGB && availableFormat.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR) {
+            if (availableFormat.format == VK_FORMAT_B8G8R8A8_UNORM && availableFormat.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR) {
                 return availableFormat;
             }
         }
@@ -105,7 +106,7 @@ namespace rhi
         createInfo.surface = m_surface;
 
         createInfo.minImageCount = imageCount;
-        createInfo.imageFormat = VK_FORMAT_B8G8R8A8_SRGB;
+        createInfo.imageFormat = surfaceFormat.format;
         createInfo.imageColorSpace = surfaceFormat.colorSpace;
         createInfo.imageExtent = extent;
         createInfo.imageArrayLayers = 1;
@@ -152,7 +153,7 @@ namespace rhi
         {
             RHITextureDescriptor textureDesc{};
             textureDesc.resourceType = RHIResourceType::texture2D;
-            textureDesc.format = RHIFormat::B8G8R8A8_srgb;
+            textureDesc.format = ConvertVkFormatToRHIFormat(surfaceFormat.format);
             textureDesc.width = m_swapchainExtent.width;
             textureDesc.height = m_swapchainExtent.height;
             textureDesc.miplevels = 1;
@@ -163,7 +164,7 @@ namespace rhi
 
             RHITextureViewDescriptor viewDesc{};
             viewDesc.texture = m_swapchainImages[i];
-            viewDesc.format = RHIFormat::B8G8R8A8_srgb;
+            viewDesc.format = ConvertVkFormatToRHIFormat(surfaceFormat.format);
             m_swapchainImageViews[i] = new VulkanTextureView(pDevice, viewDesc);
 
             RHIRenderPassDescriptor renderPassDesc{};
