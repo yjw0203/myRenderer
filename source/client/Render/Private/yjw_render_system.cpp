@@ -25,6 +25,7 @@ namespace yjw
     std::shared_ptr<Model> heita;
     std::shared_ptr<Model> hutao;
     std::shared_ptr<Model> Cube;
+    std::shared_ptr<Model> saibo;
 
     RPIWindow rpiWindow;
 
@@ -43,14 +44,16 @@ namespace yjw
         g_internal_shader_parameters.m_option->screenSize = glm::vec2(1200, 1200);
         
         Cube = *Model::load(RESOURCE_FILE(Cube),"Cube.gltf", model_file_format_gltf);
+        saibo = *Model::load(RESOURCE_FILE(saibo),"赛博美女.glb", model_file_format_glb);
         naxita = *Model::load(RESOURCE_FILE(cao), "纳西妲.pmx", model_file_format_pmx);
         heita = *Model::load(RESOURCE_FILE(heita),"黑塔.pmx", model_file_format_pmx);
         hutao = *Model::load(RESOURCE_FILE(hutao),"胡桃.pmx", model_file_format_pmx);
 
-        scene->models.push_back(naxita);
+        //scene->models.push_back(naxita);
         //scene.models.push_back(heita);
         //scene.models.push_back(hutao);
-        scene->models.push_back(Cube);
+        //scene->models.push_back(Cube);
+        scene->models.push_back(saibo);
 
         activeCamera->position = glm::vec3(1, 12, -16);
         //activeCamera.direction = glm::vec3(0, 0, 0) - activeCamera.position;

@@ -206,7 +206,7 @@ namespace rhi
                     nullptr);
                 if (m_state_cache.GetPrimitiveBinding()->GetIndexBuffer())
                 {
-                    vkCmdBindIndexBuffer(m_command_list.GetCommandBuffer(), m_state_cache.GetPrimitiveBinding()->GetIndexBuffer()->GetVkBuffer(), 0, m_state_cache.GetPrimitiveBinding()->GetIsIndex16Bit() ? VkIndexType::VK_INDEX_TYPE_UINT16 : VkIndexType::VK_INDEX_TYPE_UINT32);
+                    vkCmdBindIndexBuffer(m_command_list.GetCommandBuffer(), m_state_cache.GetPrimitiveBinding()->GetIndexBuffer()->GetVkBuffer(), m_state_cache.GetPrimitiveBinding()->GetIndexBufferOffset(), m_state_cache.GetPrimitiveBinding()->GetIsIndex16Bit() ? VkIndexType::VK_INDEX_TYPE_UINT16 : VkIndexType::VK_INDEX_TYPE_UINT32);
                 }
                 vkCmdBindVertexBuffers(m_command_list.GetCommandBuffer(), 0, m_state_cache.GetPrimitiveBinding()->GetVertexBufferCount(), m_state_cache.GetPrimitiveBinding()->GetVertexVkBuffers(), m_state_cache.GetPrimitiveBinding()->GetVertexVkBufferOffsets());
             }

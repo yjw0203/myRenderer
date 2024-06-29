@@ -14,6 +14,8 @@ namespace yjw
         int AddBufferView(int buffer_id);
         int AddBufferView(int buffer_id, int offset, int width);
         rpi::RPITexture AddTexture(const std::string& texture_name);
+        rpi::RPITexture AddTexture(const std::string& texture_name,int width,int height, void* data, int size);
+        rpi::RPITexture GetTexture(int id);
         int AddMesh();
         void AddIndexBuffer(int mesh_id, int buffer_view_id,int first_index,int index_count, bool is_indices_16bit = false);
         void AddVertexBuffer(int mesh_id, VertexAttributeType type, int buffer_view_id);

@@ -54,6 +54,20 @@ namespace yjw
         return m_cpu_model->m_pool_textures.back().texture;
     }
 
+    rpi::RPITexture ModelBuildImplement::AddTexture(const std::string& texture_name, int width, int height, void* data, int size)
+    {
+        m_cpu_model->m_pool_textures.push_back(CPUModel::Texture{});
+        m_cpu_model->m_pool_textures.back().texture_name = texture_name;
+        m_cpu_model->m_pool_textures.back().texture = rpi::RPICreateDefaultTexture2D(width, height,rpi::RPIFormat::R8G8B8A8_unorm);
+        m_cpu_model->m_pool_textures.back().texture.GetTexture()->Update(data, size);
+        return m_cpu_model->m_pool_textures.back().texture;
+    }
+
+    rpi::RPITexture ModelBuildImplement::GetTexture(int id)
+    {
+        return m_cpu_model->m_pool_textures[id].texture;
+    }
+
     int ModelBuildImplement::AddMesh()
     {
         int mesh_id = m_cpu_model->m_meshes.size();

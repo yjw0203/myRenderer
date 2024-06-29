@@ -177,7 +177,10 @@ namespace rpi
         desc.memoryType = RHIMemoryType::default_;
         RHITexture* texture = RPIO(device)->CreateTexture(desc);
         int imageSize = texWidth * texHeight * 4;
-        texture->Update(pixels, imageSize);
+        if (pixels)
+        {
+            texture->Update(pixels, imageSize);
+        }
         stbi_image_free(pixels);
 
         RHITextureViewDescriptor viewDesc{};

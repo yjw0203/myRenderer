@@ -41,7 +41,8 @@ namespace yjw
     enum ModelFileFormat
     {
         model_file_format_pmx,
-        model_file_format_gltf
+        model_file_format_gltf,
+        model_file_format_glb,
     };
 
     enum VertexAttributeType

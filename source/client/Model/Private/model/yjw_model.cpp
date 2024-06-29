@@ -70,7 +70,12 @@ namespace yjw
         }
         else if (format == model_file_format_gltf)
         {
-            GLTFModelBuilder builder;
+            GLTFModelBuilder builder(false);
+            model->m_cpu_model = builder.Build(filePath, fileName);
+        }
+        else if (format == model_file_format_glb)
+        {
+            GLTFModelBuilder builder(true);
             model->m_cpu_model = builder.Build(filePath, fileName);
         }
         model->m_gpu_model = GenerateCPUModelToGPUModel(model->m_cpu_model);

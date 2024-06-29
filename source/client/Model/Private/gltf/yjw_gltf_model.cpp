@@ -5,13 +5,22 @@
 
 namespace yjw
 {
-    bool LoadGLTFModel(tinygltf::Model& model, const char* filename)
+    bool LoadGLTFModel(tinygltf::Model& model, const char* filename,bool isBinary)
     {
         tinygltf::TinyGLTF loader;
         std::string err;
         std::string warn;
 
-        bool res = loader.LoadASCIIFromFile(&model, &err, &warn, filename);
+        bool res;
+        if (isBinary)
+        {
+            res = loader.LoadBinaryFromFile(&model, &err, &warn, filename);
+        }
+        else
+        {
+            res = loader.LoadASCIIFromFile(&model, &err, &warn, filename);
+        }
+        
         if (!warn.empty()) {
             std::cout << "WARN: " << warn << std::endl;
         }
@@ -49,11 +58,16 @@ namespace yjw
         return VertexAttributeType::unkown;
     }
 
+    GLTFModelBuilder::GLTFModelBuilder(bool isBinary)
+    {
+        m_is_binary = isBinary;
+    }
+
     void GLTFModelBuilder::FillModelData(const std::string& filePath, const std::string& fileName)
     {
         tinygltf::Model gltfModel;
         std::string holePath = filePath + "/" + fileName;
-        LoadGLTFModel(gltfModel, holePath.c_str());
+        LoadGLTFModel(gltfModel, holePath.c_str(), m_is_binary);
         for (tinygltf::Buffer& buffer : gltfModel.buffers)
         {
             AddBuffer(buffer.data.data(), buffer.data.size());
@@ -62,10 +76,21 @@ namespace yjw
         {
             AddBufferView(bufferView.buffer, bufferView.byteOffset, bufferView.byteLength);
         }
+        for (tinygltf::Image& gltfImage : gltfModel.images)
+        {
+            AddTexture(gltfImage.name, gltfImage.width, gltfImage.height, gltfImage.image.data(), gltfImage.image.size());
+        }
         for (tinygltf::Material& gmaterial : gltfModel.materials)
         {
             MaterialInstance* material = new MaterialInstance(&g_pbr_material);
-            material->SetTexture("albedoTex", AddTexture(filePath + "/" + gltfModel.images[gltfModel.textures[gmaterial.pbrMetallicRoughness.baseColorTexture.index].source].uri));
+            if (gmaterial.pbrMetallicRoughness.baseColorTexture.index != -1)
+            {
+                material->SetTexture("albedoTex", GetTexture(gltfModel.textures[gmaterial.pbrMetallicRoughness.baseColorTexture.index].source));
+            }
+            else
+            {
+                material->SetTexture("albedoTex", GetTexture(0));
+            }
             material->SetDataVec2("metallic_roughness", glm::vec2(gmaterial.pbrMetallicRoughness.metallicFactor, gmaterial.pbrMetallicRoughness.roughnessFactor));
             int material_id = AddMaterial(material);
         }
@@ -76,10 +101,11 @@ namespace yjw
                 int mesh_id = AddMesh();
                 for (std::pair<const std::string, int>& attribute : gltfPrimitive.attributes)
                 {
-                    AddVertexBuffer(mesh_id, ConvertGLTFVertexAttribute(attribute.first), attribute.second);
+                    AddVertexBuffer(mesh_id, ConvertGLTFVertexAttribute(attribute.first), gltfModel.accessors[attribute.second].bufferView);
                 }
                 tinygltf::Accessor& accessor = gltfModel.accessors[gltfPrimitive.indices];
-                AddIndexBuffer(mesh_id, gltfPrimitive.indices, accessor.byteOffset, accessor.count, gltfModel.bufferViews[accessor.bufferView].byteLength / accessor.count == 2);
+                bool is16Bit = gltfModel.bufferViews[accessor.bufferView].byteLength / accessor.count == 2;
+                AddIndexBuffer(mesh_id, accessor.bufferView, accessor.byteOffset / (is16Bit ? 2 : 4), accessor.count, is16Bit);
                 AddEntity(mesh_id, gltfPrimitive.material);
             }
         }

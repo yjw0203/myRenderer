@@ -155,7 +155,8 @@ namespace rhi
     void VulkanPrimitiveBinding::SetIndexBuffer(RHIBufferView* bufferView, int index_start, int index_count, bool is_index_16bit)
     {
         m_index_buffer = VKResourceCast(bufferView)->GetBuffer();
-        m_index_start = index_start + VKResourceCast(bufferView)->GetOffset();
+        m_index_buffer_offset = VKResourceCast(bufferView)->GetOffset();
+        m_index_start = index_start;
         m_index_count = index_count;
         m_is_index_16bit = is_index_16bit;
     }
@@ -182,6 +183,11 @@ namespace rhi
     VulkanBuffer* VulkanPrimitiveBinding::GetIndexBuffer()
     {
         return m_index_buffer;
+    }
+
+    int VulkanPrimitiveBinding::GetIndexBufferOffset()
+    {
+        return m_index_buffer_offset;
     }
 
     int VulkanPrimitiveBinding::GetIndexStart()

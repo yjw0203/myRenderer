@@ -38,6 +38,7 @@ namespace rhi
         VkBuffer* GetVertexVkBuffers();
         VkDeviceSize* GetVertexVkBufferOffsets();
         VulkanBuffer* GetIndexBuffer();
+        int GetIndexBufferOffset();
         int GetIndexStart();
         int GetIndexCount();
         bool GetIsIndex16Bit();
@@ -49,6 +50,7 @@ namespace rhi
         VkBuffer m_vertex_vkBuffers[VULKAN_MAX_VERTEX_BINDING] = {};
         VkDeviceSize m_vertex_bufferOffsets[VULKAN_MAX_VERTEX_BINDING] = {};
         VulkanBuffer* m_index_buffer = nullptr;
+        int m_index_buffer_offset = 0;
         int m_index_start = 0;
         int m_index_count = 0;
         bool m_is_index_16bit = false;
