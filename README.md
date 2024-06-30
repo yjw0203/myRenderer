@@ -1,20 +1,12 @@
-# myRenderer
-## 序
-先放个项目在这，主要用来练习。
-
+# XXX引擎（开发中，未更名）
+## 特性
+- 模块化
+- vulkan rhi
+- hlsl转spirv
+- 支持引擎内置shader常量，支持材质反射参数
+- imgui docking
+- 支持gltf/glb，pmx模型导入
 ## 待办
-### 开发流程
-- ~用cmake构建项目~
-- ~上传第三方库~
-- rhi资源管理
-- shader反射
-- 绘制流程跑通
-
-
-### 渲染
-- ~~先画第一个三角形~~
-- 渲染mesh
-
-### 三方库
-- vulkan
-- glfw
+- c++ reflection
+- 资产管理
+- 材质系统
