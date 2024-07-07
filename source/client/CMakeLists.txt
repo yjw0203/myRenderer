@@ -25,6 +25,11 @@ foreach(ModuleJsonFile IN LISTS ModuleJsonFileList)
     elseif(ModuleBuild STREQUAL "exe")
         add_executable(${ModuleName} ${all_headers} ${all_sources} ${all_hpps})
         target_link_libraries(${ModuleName} PRIVATE ${3rd_party_lib})
+
+        add_custom_command(TARGET ${ModuleName} POST_BUILD
+                COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                ${3rd_party_dll}
+                $<TARGET_FILE_DIR:${ModuleName}>)
     else()
         message(FATAL_ERROR "Unknown BuildOption: ${ModuleBuild}")
     endif()
