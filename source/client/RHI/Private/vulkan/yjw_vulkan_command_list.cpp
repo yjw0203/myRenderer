@@ -132,6 +132,12 @@ namespace rhi
         vkCmdDrawIndexed(m_command_list.GetCommandBuffer(), m_state_cache.GetPrimitiveBinding()->GetIndexCount(), instanceCount, m_state_cache.GetPrimitiveBinding()->GetIndexStart(), m_state_cache.GetPrimitiveBinding()->GetVertexOffset(), firstInstance);
     }
 
+    void VulkanCommandBuffer::CmdDispatch(int groupCountX, int groupCountY, int groupCountZ)
+    {
+        PrepareForDispatch();
+        vkCmdDispatch(m_command_list.GetCommandBuffer(), groupCountX, groupCountY, groupCountZ);
+    }
+
     void VulkanCommandBuffer::Submit()
     {
         m_command_list.Submit();
@@ -212,6 +218,26 @@ namespace rhi
             }
         }
         //vkCmdSetPrimitiveTopology(m_command_list.GetCommandBuffer(), VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST);
+    }
+
+    void VulkanCommandBuffer::PrepareForDispatch()
+    {
+        if (m_state_cache.GetComputePipeline())
+        {
+            vkCmdBindPipeline(m_command_list.GetCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, m_state_cache.GetComputePipeline()->GetOrCreateVkPipeline());
+            if (m_state_cache.GetResourceBinding())
+            {
+                vkCmdBindDescriptorSets(
+                    m_command_list.GetCommandBuffer(),
+                    VK_PIPELINE_BIND_POINT_COMPUTE,
+                    m_state_cache.GetComputePipeline()->GetOrCreateVkPipelineLayout(),
+                    0,
+                    m_state_cache.GetResourceBinding()->GetDescriptorSetCount(),
+                    m_state_cache.GetResourceBinding()->GetDescriptorSetData(),
+                    0,
+                    nullptr);
+            }
+        }
     }
 
     VkCommandBuffer VulkanCommandBuffer::GetCommandBuffer()

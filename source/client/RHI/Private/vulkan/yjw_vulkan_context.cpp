@@ -24,6 +24,11 @@ namespace rhi
         m_state_cache.SetRenderPipeline(VKResourceCast(pipeline));
     }
 
+    void VulkanContext::SetComputePipeline(RHIComputePipeline* pipeline)
+    {
+        m_state_cache.SetComputePipeline(VKResourceCast(pipeline));
+    }
+
     void VulkanContext::TransitionStateToRender(RHIResourceBinding* resourceBinding)
     {
         m_command_buffer.CmdTransitionStateToRender(VKResourceCast(resourceBinding));
@@ -47,6 +52,11 @@ namespace rhi
     void VulkanContext::DrawIndex(int firstInstance, int instanceCount)
     {
         m_command_buffer.CmdDrawIndex(firstInstance, instanceCount);
+    }
+
+    void VulkanContext::Dispatch(int groupCountX, int groupCountY, int groupCountZ)
+    {
+        m_command_buffer.CmdDispatch(groupCountX, groupCountY, groupCountZ);
     }
 
     void VulkanContext::Submit()

@@ -14,11 +14,13 @@ namespace rhi
         virtual void BeginPass(RHIRenderPass* renderPass) override;
         virtual void EndPass() override;
         virtual void SetRenderPipeline(RHIRenderPipeline* pipeline) override;
+        virtual void SetComputePipeline(RHIComputePipeline* pipeline) override;
         virtual void TransitionStateToRender(RHIResourceBinding* resourceBinding) override;
         virtual void SetResourceBinding(RHIResourceBinding* resourceBinding) override;
         virtual void SetPrimitiveBinding(RHIPrimitiveBinding* resourceBinding) override;
         virtual void Draw(int vertexCount, int instanceCount, int firstVertex, int firstInstance) override;
         virtual void DrawIndex(int firstInstance, int instanceCount) override;
+        virtual void Dispatch(int groupCountX, int groupCountY, int groupCountZ) override;
         virtual void Submit() override;
         virtual void Present(RHISwapChain* swapchain, bool bSync) override;
 

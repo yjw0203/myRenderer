@@ -248,6 +248,11 @@ namespace rpi
         return RPIO(device)->CreateRenderPipeline(createInfo);
     }
 
+    RPIPipeline RPICreateComputePipeline(RPIComputePipelineDescriptor createInfo)
+    {
+        return RPIO(device)->CreateComputePipeline(createInfo);
+    }
+
     RPIResourceBinding RPICreateResourceBinding(RPIPipeline pipeline)
     {
         return RPIResourceBinding(pipeline->CreateResourceBinding());
@@ -306,6 +311,11 @@ namespace rpi
     void RPICmdDrawIndex(RPIContext context, int firstInstance, int instanceCount)
     {
         context->DrawIndex(firstInstance, instanceCount);
+    }
+
+    void RPICmdDispatch(RPIContext context, int GroupCountX, int GroupCountY, int GroupCountZ)
+    {
+        context->Dispatch(GroupCountX, GroupCountY, GroupCountZ);
     }
 
     void RPICmdClearTexture(RPIContext context, RPITexture texture)

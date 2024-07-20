@@ -33,6 +33,7 @@ namespace rhi
         void CmdTransitionStateToRender(VulkanResourceBinding* resourceBinding);
         void CmdDraw(int vertexCount, int instanceCount, int firstVertex, int firstInstance);
         void CmdDrawIndex(int firstInstance, int instanceCount);
+        void CmdDispatch(int groupCountX, int groupCountY, int groupCountZ);
         void Submit();
         void Present(VulkanSwapChain* swapchain, bool bSync);
 
@@ -42,6 +43,7 @@ namespace rhi
         VkCommandBuffer GetCommandBuffer();
     private:
         void PrepareForRender();
+        void PrepareForDispatch();
     private:
         VulkanRenderPass* m_current_render_pass = nullptr;
         VulkanStateCache& m_state_cache;

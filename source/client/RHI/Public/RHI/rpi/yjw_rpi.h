@@ -26,6 +26,7 @@ namespace rpi
 
     RPIRenderPass RPICreateRenderPass(RPITexture* rtvs, int rtvCount, RPITexture dsv);
     RPIPipeline RPICreateRenderPipeline(RPIRenderPipelineDescriptor createInfo);
+    RPIPipeline RPICreateComputePipeline(RPIComputePipelineDescriptor createInfo);
 
     RPIResourceBinding RPICreateResourceBinding(RPIPipeline pipeline);
     RPIPrimitiveBinding RPICreatePrimitiveBinding(RPIPipeline pipeline);
@@ -40,6 +41,7 @@ namespace rpi
     void RPICmdEndPass(RPIContext context);
     void RPICmdDraw(RPIContext context, int vertexCount, int instanceCount, int firstVertex, int firstInstance);
     void RPICmdDrawIndex(RPIContext context, int firstInstance, int instanceCount);
+    void RPICmdDispatch(RPIContext context, int GroupCountX, int GroupCountY, int GroupCountZ);
     void RPICmdClearTexture(RPIContext context, RPITexture texture);
     void RPICmdCopyTexture(RPIContext context, RPITexture srcTexture, RPITexture dstTexture);
     

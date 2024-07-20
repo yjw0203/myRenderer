@@ -18,6 +18,7 @@ namespace rpi
     typedef RHIShaderType RPIShaderType;
 
     typedef RHIRenderPipelineDescriptor RPIRenderPipelineDescriptor;
+    typedef RHIComputePipelineDescriptor RPIComputePipelineDescriptor;
     typedef RHIDepthStencilState RPIDepthStencilState;
 
     struct RPIWindow

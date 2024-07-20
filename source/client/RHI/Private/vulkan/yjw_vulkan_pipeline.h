@@ -55,4 +55,19 @@ namespace rhi
         std::unordered_map<VulkanRenderPass*, VkPipeline> m_pipelines;
         VulkanResourceLayoutView m_reflect_view{};
     };
+
+    class VulkanComputePipeline : public RHIComputePipeline, VulkanDeviceObject
+    {
+    public:
+        VulkanComputePipeline(VulkanDevice* device, const RHIComputePipelineDescriptor& desc);
+        ~VulkanComputePipeline();
+        virtual RHIResourceBinding* CreateResourceBinding() override;
+        VkPipeline GetOrCreateVkPipeline();
+        VkPipelineLayout GetOrCreateVkPipelineLayout();
+    private:
+        VkPipelineLayout m_pipeline_layout = nullptr;
+        std::vector<VkDescriptorSetLayout> m_descriptor_set_layouts;
+        VkPipeline m_pipeline = nullptr;
+        VulkanResourceLayoutView m_reflect_view{};
+    };
 }

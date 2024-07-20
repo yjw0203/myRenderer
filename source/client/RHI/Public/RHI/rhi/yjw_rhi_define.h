@@ -203,4 +203,9 @@ namespace rhi
         RHIShader* ps{};
         std::vector<RHIFormat> vertex_layouts;
     };
+
+    struct RHIComputePipelineDescriptor
+    {
+        RHIShader* cs{};
+    };
 }

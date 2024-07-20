@@ -22,4 +22,15 @@ namespace rhi
     public:
         RHIRenderPipelineDescriptor m_descriptor{};
     };
+
+    class RHIComputePipeline : public RHIPipeline
+    {
+    public:
+        RHIComputePipeline(const RHIComputePipelineDescriptor& desc) : m_descriptor(desc) {}
+        virtual ShaderReflect* GetVSShaderReflect() override { return nullptr; }
+        virtual ShaderReflect* GetPSShaderReflect() override { return nullptr; }
+        virtual RHIPrimitiveBinding* CreatePrimitiveBinding() override { return nullptr; }
+    public:
+        RHIComputePipelineDescriptor m_descriptor{};
+    };
 }

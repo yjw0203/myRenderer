@@ -148,6 +148,11 @@ namespace rhi
         return new VulkanRenderPipeline(this, renderPipelineDescriptor);
     }
 
+    RHIComputePipeline* VulkanDevice::CreateComputePipeline(const RHIComputePipelineDescriptor& computePipelineDescriptor)
+    {
+        return new VulkanComputePipeline(this, computePipelineDescriptor);
+    }
+
     RHIRenderPass* VulkanDevice::CreateRenderPass(const RHIRenderPassDescriptor& renderPassDescriptor)
     {
         return new VulkanRenderPass(this, renderPassDescriptor);

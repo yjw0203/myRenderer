@@ -12,6 +12,16 @@ namespace rhi
         return m_current_render_pipeline;
     }
 
+    void VulkanStateCache::SetComputePipeline(VulkanComputePipeline* pipeline)
+    {
+        m_current_compute_pipeline = pipeline;
+    }
+
+    VulkanComputePipeline* VulkanStateCache::GetComputePipeline()
+    {
+        return m_current_compute_pipeline;
+    }
+
     void VulkanStateCache::SetResourceBinding(VulkanResourceBinding* resourceBinding)
     {
         m_current_resource_binding = resourceBinding;

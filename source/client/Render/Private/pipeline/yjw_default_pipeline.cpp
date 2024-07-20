@@ -5,6 +5,7 @@
 #include "Private/pass/yjw_pass_deferred_shading.h"
 #include "Private/pass/yjw_pass_imgui.h"
 #include "Private/pass/yjw_pass_forward.h"
+#include "Private/pass/yjw_pass_tone_mapping.h"
 
 namespace yjw
 {
@@ -13,6 +14,7 @@ namespace yjw
         RPITexture albedo_image = RPICreateDefaultTexture2D(1200, 1200, RPIFormat::R8G8B8A8_snorm);
         RPITexture normal_image = RPICreateDefaultTexture2D(1200, 1200, RPIFormat::R8G8B8A8_snorm);
         RPITexture depthImage = RPICreateDepthStencilTexture2D(1200, 1200, RPIFormat::D24_unorm_S8_uint);
+        RPITexture shadingResultImage = RPICreateDefaultTexture2D(1200, 1200, RPIFormat::R8G8B8A8_unorm);
         RPITexture colorImage = RPICreateDefaultTexture2D(1200, 1200, RPIFormat::R8G8B8A8_unorm);
         RPITexture diffuseImage = RPICreateDefaultTexture2D(1200, 1200, RPIFormat::R32G32B32A32_sfloat);
         RPITexture specularImage = RPICreateDefaultTexture2D(1200, 1200, RPIFormat::R32G32B32A32_sfloat);
@@ -20,6 +22,7 @@ namespace yjw
         texture_map["albedo"] = Resource{ albedo_image ,true };
         texture_map["normal"] = Resource{ normal_image ,true };
         texture_map["depth"] = Resource{ depthImage ,true };
+        texture_map["shadingResult"] = Resource{ shadingResultImage ,true };
         texture_map["color"] = Resource{ colorImage ,true };
         texture_map["diffuse"] = Resource{ diffuseImage ,true };
         texture_map["specular"] = Resource{ specularImage ,true };
@@ -42,6 +45,7 @@ namespace yjw
         //std::shared_ptr<DeferredShadingPass> deferred_shading_pass = std::make_shared<DeferredShadingPass>();
         forwardPass = std::make_shared<ForwardPass>();
         std::shared_ptr<ApplyToWindowPass> applyToWindowPass = std::make_shared<ApplyToWindowPass>(config.window);
+        std::shared_ptr<ToneMappingPass> toneMappingPass = std::make_shared<ToneMappingPass>();
         std::shared_ptr<DrawImGuiPass> drawImGuiPass = std::make_shared<DrawImGuiPass>();
 
         drawImGuiPass->setData(m_ui);
@@ -49,6 +53,7 @@ namespace yjw
         //passes.push_back(gbuffer_pass);
         //passes.push_back(deferred_shading_pass);
         passes.push_back(forwardPass);
+        passes.push_back(toneMappingPass);
         passes.push_back(drawImGuiPass);
         passes.push_back(applyToWindowPass);
 
@@ -56,7 +61,8 @@ namespace yjw
         {
             pass->buildPSO();
         }
-        forwardPass->registerTexture(texture_map["color"].resource_handle, texture_map["depth"].resource_handle);
+        forwardPass->registerTexture(texture_map["shadingResult"].resource_handle, texture_map["depth"].resource_handle);
+        toneMappingPass->registerTexture(texture_map["shadingResult"].resource_handle, texture_map["color"].resource_handle);
         /*
         gbuffer_pass->registerTexture(
             texture_map["albedo"].resource_handle,

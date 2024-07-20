@@ -7,6 +7,7 @@ namespace rhi
     class VulkanShader;
     class VulkanRenderPass;
     class VulkanRenderPipeline;
+    class VulkanComputePipeline;
     class VulkanBuffer;
     class VulkanBufferView;
     class VulkanTexture;
@@ -33,6 +34,11 @@ namespace rhi
     struct TVulkanResourceTraits<RHIRenderPipeline>
     {
         typedef VulkanRenderPipeline TConcreteType;
+    };
+    template<>
+    struct TVulkanResourceTraits<RHIComputePipeline>
+    {
+        typedef VulkanComputePipeline TConcreteType;
     };
     template<>
     struct TVulkanResourceTraits<RHIBuffer>

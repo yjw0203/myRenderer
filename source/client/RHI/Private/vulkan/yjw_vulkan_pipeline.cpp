@@ -343,5 +343,93 @@ namespace rhi
         vkDestroyPipelineLayout(GetDevice()->GetNativeDevice(), m_pipeline_layout, nullptr);
 
     }
+
+    VulkanComputePipeline::VulkanComputePipeline(VulkanDevice* device, const RHIComputePipelineDescriptor& desc)
+        : RHIComputePipeline(desc), VulkanDeviceObject(device)
+    {
+        desc.cs->retain(this);
+        m_reflect_view.AddReflectionTable(RHIShaderType::compute, VKResourceCast(desc.cs)->GetReflect());
+    }
+
+    RHIResourceBinding* VulkanComputePipeline::CreateResourceBinding()
+    {
+        GetOrCreateVkPipelineLayout();
+        return new VulkanResourceBinding(GetDevice(), m_reflect_view, m_descriptor_set_layouts.data(), m_descriptor_set_layouts.size());
+    }
+
+    VkPipeline VulkanComputePipeline::GetOrCreateVkPipeline()
+    {
+        if (m_pipeline)
+        {
+            return m_pipeline;
+        }
+        VkPipelineShaderStageCreateInfo shaderStageInfo{};
+        shaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+        shaderStageInfo.module = VKResourceCast(m_descriptor.cs)->GetNativeShaderModule();
+        shaderStageInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
+        shaderStageInfo.pName = VKResourceCast(m_descriptor.cs)->GetEntryName();
+
+        VkComputePipelineCreateInfo pipelineCreateInfo{};
+        pipelineCreateInfo.sType = VK_STRUCTURE_TYPE_COMPUTE_PIPELINE_CREATE_INFO;
+        pipelineCreateInfo.stage = shaderStageInfo;
+        pipelineCreateInfo.basePipelineIndex = 0;
+        pipelineCreateInfo.basePipelineHandle = nullptr;
+        pipelineCreateInfo.layout = GetOrCreateVkPipelineLayout();
+        pipelineCreateInfo.pNext = nullptr;
+        pipelineCreateInfo.flags = 0;
+        vkCreateComputePipelines(GetDevice()->GetNativeDevice(), VK_NULL_HANDLE, 1, &pipelineCreateInfo, nullptr, &m_pipeline);
+        return m_pipeline;
+    }
+
+    VkPipelineLayout VulkanComputePipeline::GetOrCreateVkPipelineLayout()
+    {
+        if (m_pipeline_layout)
+        {
+            return m_pipeline_layout;
+        }
+
+        int descriptorSetCount = m_reflect_view.GetMaxSetCount();
+        m_descriptor_set_layouts.resize(descriptorSetCount);
+        for (int setId = 0; setId < descriptorSetCount; setId++)
+        {
+            std::vector<VkDescriptorSetLayoutBinding>& bindings = m_reflect_view.GetBindingsBySetID(setId);
+            VkDescriptorSetLayoutCreateInfo createInfo{};
+            createInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+            createInfo.bindingCount = bindings.size();
+            createInfo.pBindings = bindings.data();
+            createInfo.flags = 0;
+            createInfo.pNext = nullptr;
+            vkCreateDescriptorSetLayout(GetDevice()->GetNativeDevice(), &createInfo, nullptr, &m_descriptor_set_layouts[setId]);
+        }
+
+        VkPipelineLayoutCreateInfo pipelineLayoutInfo;
+        pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+        pipelineLayoutInfo.pNext = nullptr;
+        pipelineLayoutInfo.flags = 0;
+        pipelineLayoutInfo.setLayoutCount = m_descriptor_set_layouts.size();
+        pipelineLayoutInfo.pSetLayouts = m_descriptor_set_layouts.data();
+        pipelineLayoutInfo.pushConstantRangeCount = 0;
+        pipelineLayoutInfo.pPushConstantRanges = nullptr;
+        vkCreatePipelineLayout(GetDevice()->GetNativeDevice(), &pipelineLayoutInfo, nullptr, &m_pipeline_layout);
+
+        return m_pipeline_layout;
+    }
+
+    VulkanComputePipeline::~VulkanComputePipeline()
+    {
+        m_descriptor.cs->release();
+        if (m_pipeline)
+        {
+            vkDestroyPipeline(GetDevice()->GetNativeDevice(), m_pipeline, nullptr);
+            m_pipeline = nullptr;
+        }
+
+        for (int setId = 0; setId < m_descriptor_set_layouts.size(); setId++)
+        {
+            vkDestroyDescriptorSetLayout(GetDevice()->GetNativeDevice(), m_descriptor_set_layouts[setId], nullptr);
+        }
+
+        vkDestroyPipelineLayout(GetDevice()->GetNativeDevice(), m_pipeline_layout, nullptr);
+    }
     
 }
