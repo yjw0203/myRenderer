@@ -28,6 +28,8 @@ namespace rhi
     {
     public:
         VulkanCommandBuffer(VulkanDevice* device, VulkanStateCache& stateCache);
+        void CmdPushEvent(const char* name);
+        void CmdPopEvent();
         void CmdBeginPass(VulkanRenderPass* renderPass);
         void CmdEndPass();
         void CmdTransitionStateToRender(VulkanResourceBinding* resourceBinding);

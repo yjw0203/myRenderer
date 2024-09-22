@@ -4,6 +4,7 @@
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/quaternion.hpp>
 
 //#define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
@@ -13,18 +14,28 @@ namespace yjw
     class RenderCamera
     {
     public:
-        RenderCamera() : position(0.0f, 0.0f, 0.0f), direction(0.0f, 0.0f, 1.0f), up(0.0f, 1.0f, 0.0f), fov(60.0f), zNear(0.01f), zFar(2000.0f), aspectRatio(1.0f) {};
-        glm::vec3 position;
-        glm::vec3 direction;
-        glm::vec3 up;
+        RenderCamera() : m_position(0.0f, 0.0f, 0.0f), m_up(0.0f, 1.0f, 0.0f), m_rotation(0.0f, 0.0f, 0.0f, 1.0f), fov(60.0f), zNear(0.01f), zFar(2000.0f), aspectRatio(1.0f) {};
+        
+        void SetPosition(glm::vec3 position);
+        void SetRotation(glm::quat rotation);
+        glm::vec3 position();
+        glm::quat rotation();
+        glm::vec3 forward() const { return (glm::vec3(0, 0, -1)) * glm::inverse(m_rotation); }
+        glm::vec3 up() const { return (glm::vec3(0, 1, 0)) * glm::inverse(m_rotation); }
+        glm::vec3 right() const { return (glm::vec3(1, 0, 0)) * glm::inverse(m_rotation); }
+        glm::vec3 AbsoluteUp() { return m_up; }
+        glm::mat4x4 getViewMatrix();
+        glm::mat4x4 getProjectionMatrix();
+        glm::mat4x4 getViewProjectionMatrix();
+
+    private:
+        glm::vec3 m_position;
+        glm::quat m_rotation;
+        glm::vec3 m_up;
         float fov = 60.0f;//radians
         float zNear = 0.01f;
         float zFar = 2000.0f;
         float aspectRatio = 1.0f;
-
-        glm::mat4x4 getViewMatrix();
-        glm::mat4x4 getProjectionMatrix();
-        glm::mat4x4 getViewProjectionMatrix();
     };
 
     class RenderCameraInputDispatcher

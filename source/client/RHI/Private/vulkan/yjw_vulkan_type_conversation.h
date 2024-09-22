@@ -17,4 +17,6 @@ namespace rhi
     VkStencilOp ConvertStencilOpToVkStencilOp(RHIStencilOp stencilOp);
     VkStencilOpState ConvertStencilOpStateToVkStencilOpState(RHIStencilOpState stencilOpState);
     VkFormat ConvertDataTypeToVkFormat(ShaderReflect::DataType type);
+    VkCullModeFlags ConvertCullModeToVkCullMode(RHICullMode cullMode);
+    VkPrimitiveTopology ConvertPrimitiveTopologyToVkPrimitiveTopology(RHIPrimitiveTopology cullMode);
 }

@@ -3,17 +3,14 @@
 
 namespace yjw
 {
-    class Application
+    class RenderSystem;
+    class Engine
     {
     public:
+        Engine();
+        ~Engine();
         void run();
         void shutdown();
-
-        static Application& get()
-        {
-            static Application instance;
-            return instance;
-        }
 
     private:
         void initialize();
@@ -22,6 +19,8 @@ namespace yjw
         void loadModules();
     private:
         bool shouldShutdown = false;
+
+        RenderSystem* m_render_system;
     };
 
 }

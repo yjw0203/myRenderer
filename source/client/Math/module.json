@@ -1,0 +1,5 @@
+{
+    "name": "Math",
+    "dependencys": [],
+    "build": "lib"
+}

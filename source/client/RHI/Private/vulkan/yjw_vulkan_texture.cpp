@@ -134,7 +134,7 @@ namespace rhi
         return GetDesc().height;
     }
 
-    void VulkanTexture::Update(void* data, int sizeOfByte)
+    void VulkanTexture::Update(void* data, int sizeOfByte, int arrayLayer, int mipLevel)
     {
         if (GetDesc().memoryType == RHIMemoryType::default_)
         {
@@ -156,13 +156,13 @@ namespace rhi
             {
                 copyRegion.imageSubresource.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT;
             }
-            copyRegion.imageSubresource.mipLevel = 0;
-            copyRegion.imageSubresource.baseArrayLayer = 0;
+            copyRegion.imageSubresource.mipLevel = mipLevel;
+            copyRegion.imageSubresource.baseArrayLayer = arrayLayer;
             copyRegion.imageSubresource.layerCount = 1;
             copyRegion.imageOffset = { 0, 0, 0 };
             copyRegion.imageExtent = {
-                (unsigned int)GetDesc().width,
-                (unsigned int)GetDesc().height,
+                (unsigned int)GetDesc().width >> mipLevel,
+                (unsigned int)GetDesc().height >> mipLevel,
                 1
             };
 

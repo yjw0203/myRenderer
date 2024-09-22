@@ -34,7 +34,7 @@ namespace rhi
         }
         if (!((int)RHIResourceUsageBits::deny_shader_resource & usage))
         {
-            flag |= VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
+            flag |= VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT | VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER;
         }
         if ((int)RHIResourceUsageBits::allow_transfer_src & usage)
         {
@@ -118,6 +118,7 @@ namespace rhi
         case RHIFormat::R8G8B8A8_sfloat: return VkFormat::VK_FORMAT_R8G8B8A8_SSCALED;
         case RHIFormat::B8G8R8A8_srgb: return VkFormat::VK_FORMAT_B8G8R8A8_SRGB;
         case RHIFormat::B8G8R8A8_unorm: return VkFormat::VK_FORMAT_B8G8R8A8_UNORM;
+        case RHIFormat::R32_sfloat: return VkFormat::VK_FORMAT_R32_SFLOAT;
         case RHIFormat::R32G32B32_sfloat: return VkFormat::VK_FORMAT_R32G32B32_SFLOAT;
         case RHIFormat::R32G32B32A32_sfloat: return VkFormat::VK_FORMAT_R32G32B32A32_SFLOAT;
         case RHIFormat::R32G32_sfloat: return VkFormat::VK_FORMAT_R32G32_SFLOAT;
@@ -138,6 +139,7 @@ namespace rhi
         case VkFormat::VK_FORMAT_R8G8B8A8_SSCALED: return RHIFormat::R8G8B8A8_sfloat;
         case VkFormat::VK_FORMAT_B8G8R8A8_SRGB: return RHIFormat::B8G8R8A8_srgb;
         case VkFormat::VK_FORMAT_B8G8R8A8_UNORM: return RHIFormat::B8G8R8A8_unorm;
+        case VkFormat::VK_FORMAT_R32_SFLOAT: return RHIFormat::R32_sfloat;
         case VkFormat::VK_FORMAT_R32G32B32_SFLOAT: return RHIFormat::R32G32B32_sfloat;
         case VkFormat::VK_FORMAT_R32G32B32A32_SFLOAT: return RHIFormat::R32G32B32A32_sfloat;
         case VkFormat::VK_FORMAT_R32G32_SFLOAT: return RHIFormat::R32G32_sfloat;
@@ -202,8 +204,38 @@ namespace rhi
         case ShaderReflect::DataType::vec2: return VkFormat::VK_FORMAT_R32G32_SFLOAT;
         case ShaderReflect::DataType::vec3: return VkFormat::VK_FORMAT_R32G32B32_SFLOAT;
         case ShaderReflect::DataType::vec4: return VkFormat::VK_FORMAT_R32G32B32A32_SFLOAT;
+        case ShaderReflect::DataType::ivec4: return VkFormat::VK_FORMAT_R32G32B32A32_SINT;
+        case ShaderReflect::DataType::int_: return VkFormat::VK_FORMAT_R32_SINT;
         }
         assert(0);
         return VkFormat::VK_FORMAT_UNDEFINED;
+    }
+
+    VkCullModeFlags ConvertCullModeToVkCullMode(RHICullMode cullMode)
+    {
+        switch (cullMode)
+        {
+        case RHICullMode::cull_mode_none: return VkCullModeFlagBits::VK_CULL_MODE_NONE;
+        case RHICullMode::cull_mode_front: return VkCullModeFlagBits::VK_CULL_MODE_FRONT_BIT;
+        case RHICullMode::cull_mode_back: return VkCullModeFlagBits::VK_CULL_MODE_BACK_BIT;
+        case RHICullMode::cull_mode_front_and_back: return VkCullModeFlagBits::VK_CULL_MODE_FRONT_AND_BACK;
+        }
+        assert(0);
+        return VkCullModeFlagBits::VK_CULL_MODE_NONE;
+    }
+
+    VkPrimitiveTopology ConvertPrimitiveTopologyToVkPrimitiveTopology(RHIPrimitiveTopology cullMode)
+    {
+        switch (cullMode)
+        {
+        case RHIPrimitiveTopology::primitive_topology_point_list: return VkPrimitiveTopology::VK_PRIMITIVE_TOPOLOGY_POINT_LIST;
+        case RHIPrimitiveTopology::primitive_topology_line_list: return VkPrimitiveTopology::VK_PRIMITIVE_TOPOLOGY_LINE_LIST;
+        case RHIPrimitiveTopology::primitive_topology_line_strip: return VkPrimitiveTopology::VK_PRIMITIVE_TOPOLOGY_LINE_STRIP;
+        case RHIPrimitiveTopology::primitive_topology_triangle_list: return VkPrimitiveTopology::VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+        case RHIPrimitiveTopology::primitive_topology_triangle_strip: return VkPrimitiveTopology::VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP;
+        case RHIPrimitiveTopology::primitive_topology_triangle_fan: return VkPrimitiveTopology::VK_PRIMITIVE_TOPOLOGY_TRIANGLE_FAN;
+        }
+        assert(0);
+        return VkPrimitiveTopology::VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
     }
 }

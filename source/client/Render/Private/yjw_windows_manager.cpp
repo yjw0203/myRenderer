@@ -1,5 +1,4 @@
 #include "yjw_windows_manager.h"
-#include "Application/yjw_application.h"
 #include "Private/yjw_render_camera.h"
 
 //#define GLFW_INCLUDE_VULKAN

@@ -1,6 +1,7 @@
 #include "Private/vulkan/yjw_vulkan_command_list.h"
 #include "Private/vulkan/yjw_vulkan_command_queue.h"
 #include "Private/vulkan/yjw_vulkan_resource_cast.h"
+#include "Private/vulkan/yjw_vulkan_instance.h"
 #include "vulkan/vulkan.h"
 
 namespace rhi
@@ -79,6 +80,22 @@ namespace rhi
         m_command_list(device),
         m_state_cache(stateCache)
     {}
+
+    void VulkanCommandBuffer::CmdPushEvent(const char* name)
+    {
+        VkDebugUtilsLabelEXT label_info;
+        label_info.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_LABEL_EXT;
+        label_info.pNext = nullptr;
+        label_info.pLabelName = name;
+        for (int i = 0; i < 4; ++i)
+            label_info.color[i] = 1;
+        _vkCmdBeginDebugUtilsLabelEXT(m_command_list.GetCommandBuffer(), &label_info);
+    }
+
+    void VulkanCommandBuffer::CmdPopEvent()
+    {
+        _vkCmdEndDebugUtilsLabelEXT(m_command_list.GetCommandBuffer());
+    }
 
     void VulkanCommandBuffer::CmdBeginPass(VulkanRenderPass* renderPass)
     {
@@ -210,11 +227,17 @@ namespace rhi
                     m_state_cache.GetResourceBinding()->GetDescriptorSetData(),
                     0,
                     nullptr);
+            }
+            if (m_state_cache.GetPrimitiveBinding())
+            {
                 if (m_state_cache.GetPrimitiveBinding()->GetIndexBuffer())
                 {
                     vkCmdBindIndexBuffer(m_command_list.GetCommandBuffer(), m_state_cache.GetPrimitiveBinding()->GetIndexBuffer()->GetVkBuffer(), m_state_cache.GetPrimitiveBinding()->GetIndexBufferOffset(), m_state_cache.GetPrimitiveBinding()->GetIsIndex16Bit() ? VkIndexType::VK_INDEX_TYPE_UINT16 : VkIndexType::VK_INDEX_TYPE_UINT32);
                 }
-                vkCmdBindVertexBuffers(m_command_list.GetCommandBuffer(), 0, m_state_cache.GetPrimitiveBinding()->GetVertexBufferCount(), m_state_cache.GetPrimitiveBinding()->GetVertexVkBuffers(), m_state_cache.GetPrimitiveBinding()->GetVertexVkBufferOffsets());
+                if(m_state_cache.GetPrimitiveBinding()->GetVertexBufferCount())
+                {
+                    vkCmdBindVertexBuffers(m_command_list.GetCommandBuffer(), 0, m_state_cache.GetPrimitiveBinding()->GetVertexBufferCount(), m_state_cache.GetPrimitiveBinding()->GetVertexVkBuffers(), m_state_cache.GetPrimitiveBinding()->GetVertexVkBufferOffsets());
+                }
             }
         }
         //vkCmdSetPrimitiveTopology(m_command_list.GetCommandBuffer(), VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST);

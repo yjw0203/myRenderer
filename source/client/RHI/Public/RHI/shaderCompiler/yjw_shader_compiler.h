@@ -21,7 +21,9 @@ namespace rhi
             vec2,
             vec3,
             vec4,
-            mat4
+            mat4,
+            ivec4,
+            int_
         };
 
         struct UBOMember
@@ -48,6 +50,13 @@ namespace rhi
             int m_binding;
         };
 
+        struct SamplerBuffer
+        {
+            std::string m_name;
+            int m_set;
+            int m_binding;
+        };
+
         struct Input
         {
             DataType m_type;
@@ -66,6 +75,7 @@ namespace rhi
         std::string m_function_name{};
         std::vector<UBO> m_ubos;
         std::vector<SeparateImage> m_separate_images;
+        std::vector<SamplerBuffer> m_sampler_buffers;
         std::vector<Input> m_inputs;
         std::vector<Output> m_outputs;
 

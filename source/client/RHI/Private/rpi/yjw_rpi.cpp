@@ -91,7 +91,7 @@ namespace rpi
         desc.resourceType = rhi::RHIResourceType::buffer;
         desc.memoryType = rhi::RHIMemoryType::upload;
         desc.width = size;
-        desc.usage = (int)RHIResourceUsageBits::allow_indirect_buffer | (int)RHIResourceUsageBits::allow_transfer_src;
+        desc.usage = (int)RHIResourceUsageBits::allow_index_buffer | (int)RHIResourceUsageBits::allow_vertex_buffer | (int)RHIResourceUsageBits::allow_indirect_buffer | (int)RHIResourceUsageBits::allow_transfer_src;
         RHIBuffer* buffer = RPIO(device)->CreateBuffer(desc);
 
         RHIBufferViewDescriptor viewDesc{};
@@ -102,6 +102,26 @@ namespace rpi
 
         return RPIBuffer(buffer, bufferView);
     }
+
+    RPIBuffer RPICreateFormatBuffer(int size, RPIFormat format)
+    {
+        RHIBufferDescriptor desc{};
+        desc.resourceType = rhi::RHIResourceType::buffer;
+        desc.memoryType = rhi::RHIMemoryType::upload;
+        desc.width = size;
+        desc.usage = (int)RHIResourceUsageBits::allow_index_buffer | (int)RHIResourceUsageBits::allow_vertex_buffer | (int)RHIResourceUsageBits::allow_indirect_buffer | (int)RHIResourceUsageBits::allow_transfer_src;
+        RHIBuffer* buffer = RPIO(device)->CreateBuffer(desc);
+
+        RHIBufferViewDescriptor viewDesc{};
+        viewDesc.buffer = buffer;
+        viewDesc.offset = 0;
+        viewDesc.width = size;
+        viewDesc.format = format;
+        RHIBufferView* bufferView = RPIO(device)->CreateBufferView(viewDesc);
+
+        return RPIBuffer(buffer, bufferView);
+    }
+
     RPITexture RPICreateDefaultTexture2D(int width, int height, RPIFormat format, int mipLevels /* = 1*/)
     {
         RHITextureDescriptor desc{};
@@ -274,6 +294,16 @@ namespace rpi
         context->Present(window.swapchain, false);
     }
 
+    void RPICmdPushEvent(RPIContext context, const char* name)
+    {
+        context->PushEvent(name);
+    }
+
+    void RPICmdPopEvent(RPIContext context)
+    {
+        context->PopEvent();
+    }
+
     void RPICmdSetPipeline(RPIContext context, RPIPipeline pipeline)
     {
         context->SetRenderPipeline((RHIRenderPipeline*)pipeline);//todo hack
@@ -328,7 +358,7 @@ namespace rpi
         context->CopyTexture2D(srcTexture.GetTexture(), dstTexture.GetTexture());
     }
 
-    void RPIUpdateBuffer(RPIBuffer buffer, void* data, int offset, int size)
+    void RPIUpdateBuffer(RPIBuffer buffer, const void* data, int offset, int size)
     {
         buffer.GetBuffer()->Update(data, offset, size);
     }

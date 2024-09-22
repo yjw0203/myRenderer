@@ -10,41 +10,21 @@ cbuffer light
     float3 lightDirection;  
     float3 lightColor;  
 };
-  
-struct VS_INPUT  
-{  
-    float3 in_pos : POSITION;  
-    float3 in_normal : NORMAL;  
-    float2 in_uv : TEXCOORD0;  
-};  
-  
-struct VS_OUTPUT  
+
+struct MeshVertexOutput  
 {  
     float4 sv_Position : SV_POSITION;  
-    float3 pos : POSITION;  
+    float3 position : POSITION;  
     float3 normal : NORMAL;  
-    float2 uv : TEXCOORD0;  
+    float2 uv0 : TEXCOORD0;  
 };  
-  
-VS_OUTPUT VSMain(VS_INPUT input)  
-{  
-    VS_OUTPUT output;  
-  
-    output.sv_Position = mul(mul(float4(input.in_pos, 1.0), viewMat), projectMat);  
-  
-    output.pos = input.in_pos;  
-    output.normal = input.in_normal;  
-    output.uv = input.in_uv;  
-  
-    return output;  
-}
   
 cbuffer material : register(b3)  
 {  
     float2 metallic_roughness;
 };  
   
-Texture2D albedoTex : register(t0);
+Texture2D albedoTex : register(t0,space1);
 
 struct PS_OUTPUT  
 {
@@ -136,12 +116,12 @@ float3 calculateShading(GBufferData gbuffer_data)
     return calculateLighting(lightDir,viewDir,gbuffer_data.normal,gbuffer_data.albedo,gbuffer_data.metallic,gbuffer_data.roughness);
 }
   
-PS_OUTPUT PSMain(VS_OUTPUT input)  
+PS_OUTPUT PSMain(MeshVertexOutput input)  
 {  
     SamplerState defaultSampler;
     GBufferData gbuffer_data;
-    gbuffer_data.world_positon = input.pos;
-    gbuffer_data.albedo = albedoTex.Sample(defaultSampler, input.uv).xyz;  
+    gbuffer_data.world_positon = input.position;
+    gbuffer_data.albedo = albedoTex.Sample(defaultSampler, input.uv0).xyz;  
     gbuffer_data.metallic = metallic_roughness.x;
     gbuffer_data.roughness = metallic_roughness.y;
     gbuffer_data.normal = input.normal;

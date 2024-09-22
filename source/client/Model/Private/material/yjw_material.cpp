@@ -220,5 +220,5 @@ namespace yjw
         return m_material->GetPipeline();
     }
 
-    Material g_pbr_material = Material(SHADER_FILE(forward_pbr.hlsl), "VSMain", SHADER_FILE(forward_pbr.hlsl), "PSMain");
+    Material g_pbr_material = Material(SHADER_FILE(MeshVertex.hlsl), "VSMain", SHADER_FILE(forward_pbr.hlsl), "PSMain");
 }

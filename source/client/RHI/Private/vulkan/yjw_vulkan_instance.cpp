@@ -8,6 +8,9 @@
 
 namespace rhi
 {
+    PFN_vkCmdBeginDebugUtilsLabelEXT _vkCmdBeginDebugUtilsLabelEXT;
+    PFN_vkCmdEndDebugUtilsLabelEXT   _vkCmdEndDebugUtilsLabelEXT;
+
     std::vector<const char*> getRequiredExtensions(bool is_debug_mode)
     {
         uint32_t glfwExtensionCount = 0;
@@ -60,6 +63,11 @@ namespace rhi
         if (vkCreateInstance(&createInfo, nullptr, &m_native_instance) != VK_SUCCESS) {
             throw std::runtime_error("failed to create instance!");
         }
+
+        _vkCmdBeginDebugUtilsLabelEXT =
+            (PFN_vkCmdBeginDebugUtilsLabelEXT)vkGetInstanceProcAddr(m_native_instance, "vkCmdBeginDebugUtilsLabelEXT");
+        _vkCmdEndDebugUtilsLabelEXT =
+            (PFN_vkCmdEndDebugUtilsLabelEXT)vkGetInstanceProcAddr(m_native_instance, "vkCmdEndDebugUtilsLabelEXT");
 
         OnInstanceInit(this);
     }

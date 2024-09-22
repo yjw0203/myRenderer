@@ -4,6 +4,9 @@
 
 namespace rhi
 {
+    extern PFN_vkCmdBeginDebugUtilsLabelEXT _vkCmdBeginDebugUtilsLabelEXT;
+    extern PFN_vkCmdEndDebugUtilsLabelEXT   _vkCmdEndDebugUtilsLabelEXT;
+
     class VulkanInstance : public RHIInstanceImpl
     {
     public:

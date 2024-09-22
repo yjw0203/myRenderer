@@ -13,7 +13,7 @@ namespace rhi
     {
         assert(descriptorSetLayoutCount == reflectView.GetMaxSetCount());
         //poor
-        std::array<VkDescriptorType, 3> descriptorType{ VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_DESCRIPTOR_TYPE_STORAGE_IMAGE ,VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER };
+        std::array<VkDescriptorType, 3> descriptorType{ VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER ,VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER };
 
         std::vector<VkDescriptorPoolSize> poolSizes{};
         poolSizes.reserve(5);
@@ -103,6 +103,10 @@ namespace rhi
         write.descriptorType = variable->type;
         write.descriptorCount = 1;
         write.pBufferInfo = &bufferInfo;
+        if (VKResourceCast(view)->GetView())
+        {
+            write.pTexelBufferView = &(VKResourceCast(view)->GetView());
+        }
 
         vkUpdateDescriptorSets(GetDevice()->GetNativeDevice(), 1, &write, 0, nullptr);
     }

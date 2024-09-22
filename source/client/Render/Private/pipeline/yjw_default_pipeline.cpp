@@ -46,6 +46,7 @@ namespace yjw
         forwardPass = std::make_shared<ForwardPass>();
         std::shared_ptr<ApplyToWindowPass> applyToWindowPass = std::make_shared<ApplyToWindowPass>(config.window);
         std::shared_ptr<ToneMappingPass> toneMappingPass = std::make_shared<ToneMappingPass>();
+        debugPass = std::make_shared<DebugPass>();
         std::shared_ptr<DrawImGuiPass> drawImGuiPass = std::make_shared<DrawImGuiPass>();
 
         drawImGuiPass->setData(m_ui);
@@ -55,6 +56,7 @@ namespace yjw
         passes.push_back(forwardPass);
         passes.push_back(toneMappingPass);
         passes.push_back(drawImGuiPass);
+        passes.push_back(debugPass);
         passes.push_back(applyToWindowPass);
 
         for (auto pass : passes)
@@ -81,6 +83,7 @@ namespace yjw
             texture_map["color"].resource_handle);*/
 
         drawImGuiPass->registerTexture(texture_map["color"].resource_handle);
+        debugPass->registerTexture(texture_map["color"].resource_handle);
         applyToWindowPass->registerTexture(texture_map["color"].resource_handle);
     }
 
@@ -100,6 +103,22 @@ namespace yjw
         for (auto pass : passes)
         {
             pass->recordCommand(commandBuffer);
+        }
+    }
+
+    void DefaultPipeline::ClearDebugLine()
+    {
+        if (debugPass)
+        {
+            debugPass->Clear();
+        }
+    }
+
+    void DefaultPipeline::AddDebugLine(glm::vec3 point0, glm::vec3 point1)
+    {
+        if (debugPass)
+        {
+            debugPass->AddLine(point0, point1);
         }
     }
 }

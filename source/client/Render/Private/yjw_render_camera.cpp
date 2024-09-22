@@ -4,9 +4,29 @@
 
 namespace yjw
 {
+    void RenderCamera::SetPosition(glm::vec3 position)
+    {
+        m_position = position;
+    }
+
+    void RenderCamera::SetRotation(glm::quat rotation)
+    {
+        m_rotation = rotation;
+    }
+
+    glm::vec3 RenderCamera::position()
+    {
+        return m_position;
+    }
+
+    glm::quat RenderCamera::rotation()
+    {
+        return m_rotation;
+    }
+
     glm::mat4x4 RenderCamera::getViewMatrix()
     {
-        return glm::lookAt(position, position + direction, up);
+        return glm::lookAt(m_position, m_position + forward(), up());
     }
 
     glm::mat4x4 RenderCamera::getProjectionMatrix()
@@ -16,7 +36,7 @@ namespace yjw
 
     glm::mat4x4 RenderCamera::getViewProjectionMatrix()
     {
-        return getProjectionMatrix() * getViewMatrix();
+        return getViewMatrix() * getProjectionMatrix();
     }
 
     float RenderCameraInputDispatcher::speed = 100;
@@ -54,44 +74,48 @@ namespace yjw
     {
         float deltaTime = RenderSystem::get().deltaTime;
         RenderCamera& camera = *RenderSystem::get().activeCamera;
-        camera.position += glm::normalize(camera.direction) * speed * deltaTime;
+        glm::vec3 relative_pos = glm::vec3(0, 0, -speed * deltaTime) * glm::inverse(camera.rotation());
+        camera.SetPosition(camera.position() + relative_pos);
     }
 
     void RenderCameraInputDispatcher::A()
     {
         float deltaTime = RenderSystem::get().deltaTime;
         RenderCamera& camera = *RenderSystem::get().activeCamera;
-        glm::vec3 right = glm::normalize(glm::cross(camera.direction, camera.up));
-        camera.position += (-right) * speed * deltaTime;
+        glm::vec3 relative_pos = glm::vec3(-speed * deltaTime, 0, 0) * glm::inverse(camera.rotation());
+        camera.SetPosition(camera.position() + relative_pos);
     }
 
     void RenderCameraInputDispatcher::S()
     {
         float deltaTime = RenderSystem::get().deltaTime;
         RenderCamera& camera = *RenderSystem::get().activeCamera;
-        camera.position += glm::normalize(camera.direction) * speed * -1.0f * deltaTime;
+        glm::vec3 relative_pos = glm::vec3(0, 0, speed * deltaTime) * glm::inverse(camera.rotation());
+        camera.SetPosition(camera.position() + relative_pos);
     }
 
     void RenderCameraInputDispatcher::D()
     {
         float deltaTime = RenderSystem::get().deltaTime;
         RenderCamera& camera = *RenderSystem::get().activeCamera;
-        glm::vec3 right = glm::normalize(glm::cross(camera.direction, camera.up));
-        camera.position += right * speed * deltaTime;
+        glm::vec3 relative_pos = glm::vec3(speed * deltaTime, 0, 0) * glm::inverse(camera.rotation());
+        camera.SetPosition(camera.position() + relative_pos);
     }
 
     void RenderCameraInputDispatcher::Q()
     {
         float deltaTime = RenderSystem::get().deltaTime;
         RenderCamera& camera = *RenderSystem::get().activeCamera;
-        camera.position += glm::normalize(camera.up) * speed * -1.0f * deltaTime;
+        glm::vec3 relative_pos = glm::vec3( 0, speed * deltaTime, 0) * glm::inverse(camera.rotation());
+        camera.SetPosition(camera.position() + relative_pos);
     }
 
     void RenderCameraInputDispatcher::E()
     {
         float deltaTime = RenderSystem::get().deltaTime;
         RenderCamera& camera = *RenderSystem::get().activeCamera;
-        camera.position += glm::normalize(camera.up) * speed * deltaTime;
+        glm::vec3 relative_pos = glm::vec3(0, -speed * deltaTime, 0) * glm::inverse(camera.rotation());
+        camera.SetPosition(camera.position() + relative_pos);
     }
 
     void RenderCameraInputDispatcher::RightMouseDown()
@@ -103,22 +127,21 @@ namespace yjw
     {
         if (isRightMouseButton)
         {
-            float deltaX = (lastMouseX - x) * 0.1;
-            float deltaY = (y - lastMouseY) * 0.1;
-
+            float angularVelocity = glm::radians(180.0f);
+            float deltaX = (x - lastMouseX) / 1200;
+            float deltaY = (y - lastMouseY) / 1200;
+            glm::vec2 deltaAngular = glm::vec2(deltaX * angularVelocity, deltaY * angularVelocity);
             RenderCamera& camera = *RenderSystem::get().activeCamera;
 
-            glm::vec3 direction = glm::normalize(camera.direction);
-            glm::vec3 up = glm::normalize(camera.up);
-            glm::vec3 right = glm::cross(camera.direction, camera.up);
-            
-            glm::mat4 rotMat = glm::rotate(glm::mat4(1.0f), glm::radians(deltaY), right);
-            camera.direction = glm::vec3(rotMat * glm::vec4(camera.direction, 0.0f));
-            camera.up = glm::vec3(rotMat * glm::vec4(camera.up, 0.0f));
+            float dot = glm::dot(camera.AbsoluteUp(),(camera.forward()));
+            if ((dot < -0.99f && deltaAngular.y > 0.0f) || // angle nearing 180 degrees
+                (dot > 0.99f && deltaAngular.y < 0.0f))    // angle nearing 0 degrees
+            deltaAngular.y = 0.0f;
 
-            
-            rotMat = glm::rotate(glm::mat4(1.0f), glm::radians(deltaX), up);
-            camera.direction = glm::vec3(rotMat * glm::vec4(camera.direction, 0.0f));
+            glm::vec3 eulerAngle = glm::eulerAngles(camera.rotation());
+
+            eulerAngle += glm::vec3(deltaAngular.y, deltaAngular.x, 0);
+            camera.SetRotation(glm::quat(eulerAngle));
         }
         lastMouseX = x;
         lastMouseY = y;

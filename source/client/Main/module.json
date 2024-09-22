@@ -1,5 +1,5 @@
 {
     "name": "Main",
-    "dependencys": ["Application"],
+    "dependencys": ["Engine"],
     "build": "exe"
 }

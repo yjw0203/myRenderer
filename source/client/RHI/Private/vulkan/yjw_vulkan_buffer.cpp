@@ -62,7 +62,7 @@ namespace rhi
         return m_memory;
     }
 
-    void VulkanBuffer::Update(void* data, int bufferOffset, int sizeOfByte)
+    void VulkanBuffer::Update(const void* data, int bufferOffset, int sizeOfByte)
     {
         if (GetDesc().memoryType == RHIMemoryType::default_)
         {
@@ -100,23 +100,28 @@ namespace rhi
         : VulkanDeviceObject(device)
         , RHIBufferView(desc)
     {
-        /*
-        VkBufferViewCreateInfo createInfo{};
-        createInfo.sType = VK_STRUCTURE_TYPE_BUFFER_VIEW_CREATE_INFO;
-        createInfo.buffer = GetBuffer()->GetVkBuffer();
-        createInfo.format = VK_FORMAT_UNDEFINED;
-        createInfo.pNext = nullptr;
-        createInfo.flags = 0;
-        createInfo.offset = desc.offset;
-        createInfo.range = desc.offset + desc.width;
+        if (desc.format != RHIFormat::unknow)
+        {
+            VkBufferViewCreateInfo createInfo{};
+            createInfo.sType = VK_STRUCTURE_TYPE_BUFFER_VIEW_CREATE_INFO;
+            createInfo.buffer = GetBuffer()->GetVkBuffer();
+            createInfo.format = ConvertFormatToVkFormat(desc.format);
+            createInfo.pNext = nullptr;
+            createInfo.flags = 0;
+            createInfo.offset = desc.offset;
+            createInfo.range = desc.offset + desc.width;
+            vkCreateBufferView(device->GetNativeDevice(), &createInfo, nullptr, &m_view);
+        }
         
-        vkCreateBufferView(device->GetNativeDevice(), &createInfo, nullptr, &m_view);*/
         desc.buffer->retain(this);
     }
 
     VulkanBufferView::~VulkanBufferView()
     {
-        //vkDestroyBufferView(GetDevice()->GetNativeDevice(), m_view, nullptr);
+        if (m_view)
+        {
+            vkDestroyBufferView(GetDevice()->GetNativeDevice(), m_view, nullptr);
+        }
         GetDesc().buffer->release();
     }
 
@@ -128,5 +133,10 @@ namespace rhi
     int VulkanBufferView::GetOffset()
     {
         return GetDesc().offset;
+    }
+
+    VkBufferView& VulkanBufferView::GetView()
+    {
+        return m_view;
     }
 }

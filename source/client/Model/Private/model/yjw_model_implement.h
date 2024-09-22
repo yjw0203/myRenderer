@@ -21,6 +21,8 @@ namespace yjw
         void AddVertexBuffer(int mesh_id, VertexAttributeType type, int buffer_view_id);
         int AddMaterial(MaterialInstance* material);
         int AddEntity(int mesh_id, int material_id);
+        void AddBone(const BoneData& bone);
+        const BoneData& GetBone(int index);
     public:
         std::shared_ptr<CPUModel> m_cpu_model;
     };

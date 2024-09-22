@@ -11,6 +11,8 @@ namespace rhi
     {
     public:
         VulkanContext(VulkanDevice* device);
+        virtual void PushEvent(const char* name) override;
+        virtual void PopEvent() override;
         virtual void BeginPass(RHIRenderPass* renderPass) override;
         virtual void EndPass() override;
         virtual void SetRenderPipeline(RHIRenderPipeline* pipeline) override;

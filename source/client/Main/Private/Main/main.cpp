@@ -1,8 +1,10 @@
 #pragma once
-#include "Application/yjw_application.h"
+#include "Engine/Engine.h"
 
+yjw::Engine engine;
 int main()
 {
-    yjw::Application::get().run();
+    yjw::Engine engine;
+    engine.run();
     return 0;
 }

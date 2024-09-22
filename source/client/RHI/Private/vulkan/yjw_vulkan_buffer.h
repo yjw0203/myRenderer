@@ -13,7 +13,7 @@ namespace rhi
         VkBuffer GetVkBuffer();
         VkDeviceMemory GetVkDeviceMemory();
 
-        virtual void Update(void* data, int bufferOffset, int sizeOfByte) override;
+        virtual void Update(const void* data, int bufferOffset, int sizeOfByte) override;
     private:
         VkBuffer m_buffer;
         VkDeviceMemory m_memory;
@@ -26,6 +26,7 @@ namespace rhi
         ~VulkanBufferView();
         VulkanBuffer* GetBuffer();
         int GetOffset();
+        VkBufferView& GetView();
     private:
         VkBufferView m_view;
     };

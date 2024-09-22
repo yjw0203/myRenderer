@@ -107,4 +107,14 @@ namespace yjw
         return entity_id;
     }
 
+    void ModelBuildImplement::AddBone(const BoneData& bone)
+    {
+        m_cpu_model->m_skeleton_data.bones.push_back(bone);
+    }
+
+    const BoneData& ModelBuildImplement::GetBone(int index)
+    {
+        return m_cpu_model->m_skeleton_data.bones[index];
+    }
+
 }

@@ -17,6 +17,10 @@ namespace rhi
         {
             AddBinding(shaderBits, RHIName(image.m_name), image.m_set, image.m_binding, VkDescriptorType::VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER);
         }
+        for (const ShaderReflect::SamplerBuffer& buffer : reflect.m_sampler_buffers)
+        {
+            AddBinding(shaderBits, RHIName(buffer.m_name), buffer.m_set, buffer.m_binding, VkDescriptorType::VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER);
+        }
         if (shaderType == RHIShaderType::vertex)
         {
             for (const auto& input : reflect.m_inputs)
@@ -160,7 +164,7 @@ namespace rhi
 
         VkPipelineInputAssemblyStateCreateInfo inputAssemblyInfo{};
         inputAssemblyInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
-        inputAssemblyInfo.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+        inputAssemblyInfo.topology = ConvertPrimitiveTopologyToVkPrimitiveTopology(m_descriptor.primitiveTopology);
         inputAssemblyInfo.primitiveRestartEnable = VK_FALSE;
         inputAssemblyInfo.flags = 0;
         inputAssemblyInfo.pNext = nullptr;
@@ -180,8 +184,8 @@ namespace rhi
         rasteriazationStateInfo.rasterizerDiscardEnable = VK_FALSE;
         rasteriazationStateInfo.polygonMode = VK_POLYGON_MODE_FILL;
         rasteriazationStateInfo.lineWidth = 1.0f;
-        rasteriazationStateInfo.cullMode = VK_CULL_MODE_FRONT_BIT;
-        rasteriazationStateInfo.frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE;
+        rasteriazationStateInfo.cullMode = ConvertCullModeToVkCullMode(m_descriptor.rasterization_state.cull_mode);
+        rasteriazationStateInfo.frontFace = VK_FRONT_FACE_CLOCKWISE;
         rasteriazationStateInfo.depthBiasEnable = VK_FALSE;
         rasteriazationStateInfo.depthBiasClamp = 0.0;
         rasteriazationStateInfo.flags = 0;

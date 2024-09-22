@@ -83,9 +83,10 @@ namespace rhi
         R8G8B8A8_sfloat,
         B8G8R8A8_srgb,
         B8G8R8A8_unorm,
+        R32_sfloat,
+        R32G32_sfloat,
         R32G32B32_sfloat,
         R32G32B32A32_sfloat,
-        R32G32_sfloat,
         D24_unorm_S8_uint
     };
 
@@ -115,6 +116,25 @@ namespace rhi
         stencil_op_count
     };
 
+    enum class RHICullMode : char
+    {
+        cull_mode_none,
+        cull_mode_front,
+        cull_mode_back,
+        cull_mode_front_and_back,
+        cull_mode_count
+    };
+
+    enum RHIPrimitiveTopology : char
+    {
+        primitive_topology_point_list,
+        primitive_topology_line_list,
+        primitive_topology_line_strip,
+        primitive_topology_triangle_list,
+        primitive_topology_triangle_strip,
+        primitive_topology_triangle_fan,
+    };
+
     struct RHIBufferDescriptor
     {
         RHIResourceType resourceType;
@@ -128,6 +148,7 @@ namespace rhi
         RHIBuffer* buffer;
         int offset;
         int width;
+        RHIFormat format;
     };
 
     struct RHITextureDescriptor
@@ -191,14 +212,23 @@ namespace rhi
 
     struct RHIRasterizationState
     {
-
+        RHIRasterizationState()
+        {
+            cull_mode = RHICullMode::cull_mode_back;
+        };
+        RHICullMode cull_mode;
     };
 
     struct RHIRenderPipelineDescriptor
     {
+        RHIRenderPipelineDescriptor()
+        {
+            primitiveTopology = RHIPrimitiveTopology::primitive_topology_triangle_list;
+        };
         RHIColorBlendState color_blend_state{};
         RHIDepthStencilState depth_stencil_state{};
         RHIRasterizationState rasterization_state{};
+        RHIPrimitiveTopology primitiveTopology{};
         RHIShader* vs{};
         RHIShader* ps{};
         std::vector<RHIFormat> vertex_layouts;

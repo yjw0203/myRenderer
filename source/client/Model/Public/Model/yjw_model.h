@@ -6,6 +6,7 @@
 #include <glm/glm.hpp>
 #include "RHI/rpi/yjw_rpi_header.h"
 #include "Model/yjw_material.h"
+#include "Animation/AnimationData.h"
 
 namespace yjw
 {
@@ -51,7 +52,10 @@ namespace yjw
         position,
         normal,
         tangent,
-        uv0
+        uv0,
+        blend_indices,
+        blend_weights,
+        blend_type
     };
 
     rhi::RHIName CastToRHIName(VertexAttributeType type);
@@ -102,6 +106,9 @@ namespace yjw
         std::vector<CPUMesh> m_meshes;
         std::vector<MaterialInstance*> m_material;
         std::vector<Entity> m_entities;
+
+    public:
+        SkeletonData m_skeleton_data;
     };
 
     class GPUModel

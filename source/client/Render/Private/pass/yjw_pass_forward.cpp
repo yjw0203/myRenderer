@@ -7,6 +7,7 @@ namespace yjw
 {
     void ForwardPass::buildPSO()
     {
+        m_bone_matrices = RPICreateFormatBuffer(sizeof(Matrix4x4) * m_max_bone_count, RPIFormat::R32G32B32A32_sfloat);
     }
 
     void ForwardPass::registerTexture(
@@ -16,6 +17,10 @@ namespace yjw
         RPITexture texture[1] = { out_abedlo};
         renderPass = RPICreateRenderPass(texture, 1, depth);
         m_entitys = RenderSystem::get().scene->buildEntitys();
+        for (int i = 0; i < m_entitys.size(); i++)
+        {
+            m_entitys[i].m_resource_binding.SetBuffer(RPIShaderType::vertex, RHIName("boneMatrices"), m_bone_matrices);
+        }
     }
 
     void ForwardPass::setData(float metallic, float roughness)
@@ -31,6 +36,11 @@ namespace yjw
             m_entitys[i].m_material->SetDataVec2("metallic_roughness", glm::vec2(m_metallic, m_roughness));
             m_entitys[i].m_material->FlushDataToGpu();
         }
+    }
+
+    void ForwardPass::setBoneMatrices(const std::vector<Matrix4x4>& matrices)
+    {
+        RPIUpdateBuffer(m_bone_matrices, (void*)matrices.data(), 0, matrices.size() * sizeof(Matrix4x4));
     }
 
     void ForwardPass::recordCommand(RPIContext commandBuffer)

@@ -6,8 +6,8 @@
 #include "projectInfo.h"
 #include "rhi/rpi/yjw_rpi_header.h"
 #include <glm/glm.hpp>
-#include "Private/pmx/yjw_pmx_model.h"
-#include "Private/gltf/yjw_gltf_model.h"
+#include "Private/model/yjw_pmx_model.h"
+#include "Private/model/yjw_gltf_model.h"
 
 namespace yjw
 {
@@ -20,6 +20,9 @@ namespace yjw
         case VertexAttributeType::normal:return rhi::RHIName("NORMAL");
         case VertexAttributeType::tangent:return rhi::RHIName("TANGENT");
         case VertexAttributeType::uv0:return rhi::RHIName("TEXCOORD0");
+        case VertexAttributeType::blend_indices:return rhi::RHIName("BLEND_INDICES");
+        case VertexAttributeType::blend_weights:return rhi::RHIName("BLEND_WEIGHTS");
+        case VertexAttributeType::blend_type:return rhi::RHIName("BLEND_TYPE");
         }
         return rhi::RHIName("UNKOWN");
     }

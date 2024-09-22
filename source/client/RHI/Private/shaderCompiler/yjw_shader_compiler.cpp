@@ -56,6 +56,12 @@ namespace rhi
         else if (strcmp(str, "mat4") == 0) {
             return ShaderReflect::DataType::mat4;
         }
+        else if (strcmp(str, "ivec4") == 0) {
+            return ShaderReflect::DataType::ivec4;
+        }
+        else if (strcmp(str, "int") == 0) {
+            return ShaderReflect::DataType::int_;
+        }
         assert(0);
         return (ShaderReflect::DataType)-1;
     }
@@ -69,6 +75,8 @@ namespace rhi
         case ShaderReflect::DataType::vec3:return 12;
         case ShaderReflect::DataType::vec4:return 16;
         case ShaderReflect::DataType::mat4:return 64;
+        case ShaderReflect::DataType::ivec4:return 16;
+        case ShaderReflect::DataType::int_:return 4;
         }
         assert(0);
         return -1;
@@ -205,12 +213,24 @@ namespace rhi
             {
                 auto& image_json = separate_images[index];
                 assert(image_json.IsObject());
-                ShaderReflect::SeparateImage image{};
-                image.m_name = image_json["name"].GetString();
-                image.m_set = image_json["set"].GetInt();
-                image.m_binding = image_json["binding"].GetInt();
-                image.m_type = ShaderReflect::ToImageType(image_json["type"].GetString());
-                reflect.m_separate_images.push_back(image);
+                std::string type_name = image_json["type"].GetString();
+                if (type_name == "samplerBuffer")
+                {
+                    ShaderReflect::SamplerBuffer buffer{};
+                    buffer.m_name = image_json["name"].GetString();
+                    buffer.m_set = image_json["set"].GetInt();
+                    buffer.m_binding = image_json["binding"].GetInt();
+                    reflect.m_sampler_buffers.push_back(buffer);
+                }
+                else
+                {
+                    ShaderReflect::SeparateImage image{};
+                    image.m_name = image_json["name"].GetString();
+                    image.m_set = image_json["set"].GetInt();
+                    image.m_binding = image_json["binding"].GetInt();
+                    image.m_type = ShaderReflect::ToImageType(type_name.c_str());
+                    reflect.m_separate_images.push_back(image);
+                }
             }
         }
 

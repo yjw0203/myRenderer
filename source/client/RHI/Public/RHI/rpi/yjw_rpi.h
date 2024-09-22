@@ -14,6 +14,7 @@ namespace rpi
     RPIBuffer RPICreateGpuIndexBuffer(int size);
     RPIBuffer RPICreateGpuIndirectBuffer(int size);
     RPIBuffer RPICreateUploadBuffer(int size);
+    RPIBuffer RPICreateFormatBuffer(int size, RPIFormat format);
     RPITexture RPICreateDefaultTexture2D(int width, int height, RPIFormat format,int mipLevels = 1);
     RPITexture RPICreateDepthStencilTexture2D(int width, int height, RPIFormat format);
     RPITexture RPICreateUploadTexture2D(int width, int height, RPIFormat format);
@@ -34,6 +35,8 @@ namespace rpi
     void RPISubmit(RPIContext context);
     void RPIPresent(RPIContext context, RPIWindow window, RPITexture presentTexture);
 
+    void RPICmdPushEvent(RPIContext context, const char* name);
+    void RPICmdPopEvent(RPIContext context);
     void RPICmdSetPipeline(RPIContext context, RPIPipeline pipeline);
     void RPICmdSetResourceBinding(RPIContext context, RPIResourceBinding resourceBinding);
     void RPICmdSetPrimitiveBinding(RPIContext context, RPIPrimitiveBinding primitiveBinding);
@@ -45,7 +48,7 @@ namespace rpi
     void RPICmdClearTexture(RPIContext context, RPITexture texture);
     void RPICmdCopyTexture(RPIContext context, RPITexture srcTexture, RPITexture dstTexture);
     
-    void RPIUpdateBuffer(RPIBuffer buffer, void* data,int offset, int size);
+    void RPIUpdateBuffer(RPIBuffer buffer, const void* data,int offset, int size);
 
     RHILayer* RPIGetLayer(RHILayerType type);
 }

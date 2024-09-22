@@ -7,6 +7,7 @@
 #include "Private/yjw_pass.h"
 #include "Private/editorUI/yjw_editor_ui.h"
 #include "Private/pass/yjw_pass_forward.h"
+#include "Private/pass/yjw_pass_debug.h"
 namespace yjw
 {
     using namespace rpi;
@@ -22,8 +23,13 @@ namespace yjw
         void config(DefaultPipelineConfig config);
         virtual void render() override;
 
+        void ClearDebugLine();
+        void AddDebugLine(glm::vec3 point0, glm::vec3 point1);
+
         RPITexture output;
         RPIContext commandBuffer;
+
+        std::shared_ptr<ForwardPass> forwardPass;
     private:
         struct Resource
         {
@@ -31,7 +37,8 @@ namespace yjw
             bool need_clear_pre_render = false;
         };
 
-        std::shared_ptr<ForwardPass> forwardPass;
+
+        std::shared_ptr<DebugPass> debugPass;
 
         std::map<std::string, Resource> texture_map;
         std::vector<std::shared_ptr<Pass> > passes;

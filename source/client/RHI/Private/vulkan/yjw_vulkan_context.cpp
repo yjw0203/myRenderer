@@ -9,6 +9,16 @@ namespace rhi
     {
     }
 
+    void VulkanContext::PushEvent(const char* name)
+    {
+        m_command_buffer.CmdPushEvent(name);
+    }
+
+    void VulkanContext::PopEvent()
+    {
+        m_command_buffer.CmdPopEvent();
+    }
+
     void VulkanContext::BeginPass(RHIRenderPass* renderPass)
     {
         m_command_buffer.CmdBeginPass(VKResourceCast(renderPass));
@@ -17,6 +27,8 @@ namespace rhi
     void VulkanContext::EndPass()
     {
         m_command_buffer.CmdEndPass();
+        m_state_cache.SetResourceBinding(nullptr);
+        m_state_cache.SetPrimitiveBinding(nullptr);
     }
 
     void VulkanContext::SetRenderPipeline(RHIRenderPipeline* pipeline)

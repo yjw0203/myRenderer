@@ -8,6 +8,8 @@ namespace rhi
     class RHIContext : public RHIObject
     {
     public:
+        virtual void PushEvent(const char* name) = 0;
+        virtual void PopEvent() = 0;
         virtual void BeginPass(RHIRenderPass* renderPass) = 0;
         virtual void EndPass() = 0;
         virtual void SetRenderPipeline(RHIRenderPipeline* pipeline) = 0;

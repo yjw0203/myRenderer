@@ -12,6 +12,7 @@ namespace yjw
     public:
         virtual void buildPSO() override;
         virtual void setupData() override;
+        void setBoneMatrices(const std::vector<Matrix4x4>& matrices);
         void setData(float metallic,float roughness);
         virtual void recordCommand(RPIContext commandBuffer) override;
         virtual void submit() override;
@@ -29,5 +30,8 @@ namespace yjw
 
         float m_metallic = 0.5;
         float m_roughness = 0.5;
+
+        RPIBuffer m_bone_matrices;
+        const int m_max_bone_count = 10000;
     };
 }
