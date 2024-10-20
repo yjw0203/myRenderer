@@ -5,40 +5,13 @@
 #include <unordered_map>
 #include <glm/glm.hpp>
 #include "RHI/rpi/yjw_rpi_header.h"
-#include "Model/yjw_material.h"
+#include "Engine/Framework/Material/Material.h"
 #include "Animation/AnimationData.h"
 
 namespace yjw
 {
-    struct MeshVertex {
-        std::vector<glm::vec3> pos;
-        std::vector<glm::vec3> normal;
-        std::vector<glm::vec2> uv;
-    };
-
-    struct MeshVertexBuffer {
-        rpi::RPIBuffer pos;
-        rpi::RPIBuffer normal;
-        rpi::RPIBuffer uv;
-    };
-
-    class Mesh
-    {
-    public:
-        struct SubMesh
-        {
-            uint32_t offset;
-            uint32_t size;
-        };
-
-        std::vector<SubMesh> subMeshes;
-        MeshVertex vertices;
-        std::vector<uint32_t> indices;
-
-        MeshVertexBuffer vertex_buffer;
-        rpi::RPIBuffer index_buffer;
-    };
-
+    class MaterialInstance;
+    class Material;
     enum ModelFileFormat
     {
         model_file_format_pmx,

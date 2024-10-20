@@ -81,3 +81,25 @@ MeshVertexOutput VSMain(MeshVertexInput input)
   
     return output;  
 }
+
+struct SimpleMeshVertexInput
+{
+    float3 positon : POSITION;
+    float3 normal : NORMAL;
+    float2 uv0 : TEXCOORD0;
+};
+
+MeshVertexOutput SimpleVS(SimpleMeshVertexInput input)
+{
+    MeshVertexOutput output;
+    
+    float4 model_position = float4(input.positon, 1.0);
+    
+    output.sv_Position = mul(mul(model_position, viewMat), projectMat);
+  
+    output.position = model_position.xyz;
+    output.normal = input.normal;
+    output.uv0 = input.uv0;
+  
+    return output;
+}

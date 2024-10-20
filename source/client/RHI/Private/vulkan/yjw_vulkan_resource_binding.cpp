@@ -135,9 +135,10 @@ namespace rhi
         }
     }
 
-    VulkanPrimitiveBinding::VulkanPrimitiveBinding(VulkanDevice* pDevice, VulkanResourceLayoutView& reflectView)
-        :VulkanDeviceObject(pDevice), m_reflect_view(reflectView)
+    VulkanPrimitiveBinding::VulkanPrimitiveBinding(VulkanDevice* pDevice, ShaderReflect& reflect)
+        :VulkanDeviceObject(pDevice), m_reflect(reflect)
     {
+
     }
 
     VulkanPrimitiveBinding::~VulkanPrimitiveBinding()
@@ -147,7 +148,7 @@ namespace rhi
 
     void VulkanPrimitiveBinding::SetVertexBuffer(RHIName name, RHIBufferView* bufferView)
     {
-        int location = m_reflect_view.GetVertexInputLocation(name);
+        int location = m_reflect.GetVertexInputLocation(name);
         if (location >= 0)
         {
             m_vertex_buffers[location] = VKResourceCast(bufferView)->GetBuffer();
@@ -167,7 +168,7 @@ namespace rhi
 
     int VulkanPrimitiveBinding::GetVertexBufferCount()
     {
-        return m_reflect_view.GetVertexBindingCount();
+        return m_reflect.GetVertexBindingCount();
     }
 
     VulkanBuffer* VulkanPrimitiveBinding::GetVertexBuffer(int index)

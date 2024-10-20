@@ -1,4 +1,4 @@
-#include "Public/Model/yjw_material.h"
+#include "Engine/Framework/Material/Material.h"
 #include "InternalShaderResource/yjw_internal_shader_resource.h"
 
 namespace yjw
@@ -221,4 +221,5 @@ namespace yjw
     }
 
     Material g_pbr_material = Material(SHADER_FILE(MeshVertex.hlsl), "VSMain", SHADER_FILE(forward_pbr.hlsl), "PSMain");
+    Material g_simple_mesh_pbr_material = Material(SHADER_FILE(MeshVertex.hlsl), "SimpleVS", SHADER_FILE(forward_pbr.hlsl), "PSMain");
 }

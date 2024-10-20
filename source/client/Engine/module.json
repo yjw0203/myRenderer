@@ -1,0 +1,5 @@
+{
+    "name": "Engine",
+  "dependencys": [ "RHI", "InternalShaderResource", "Module", "Render", "File", "Math" ],
+    "build": "lib"
+}

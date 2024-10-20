@@ -37,7 +37,6 @@ namespace yjw
     void RenderSystem::initialize()
     {
         activeCamera = new RenderCamera();
-        scene = new Scene();
 
         WindowsManager::get().initialize();
         RPIInit();
@@ -47,21 +46,24 @@ namespace yjw
         g_internal_shader_parameters.m_light->lightDirection = glm::vec3(-3, 15, -8);
         g_internal_shader_parameters.m_light->lightColor = glm::vec3(5, 5, 5);
         g_internal_shader_parameters.m_option->screenSize = glm::vec2(1200, 1200);
+
+        m_scene = new Scene();
+
         
         //Cube = *Model::load(RESOURCE_FILE(Cube),"Cube.gltf", model_file_format_gltf);
         //saibo = *Model::load(RESOURCE_FILE(saibo),"赛博美女.glb", model_file_format_glb);
-        naxita = *Model::load(RESOURCE_FILE(cao), "纳西妲.pmx", model_file_format_pmx);
+        //naxita = *Model::load(RESOURCE_FILE(cao), "纳西妲.pmx", model_file_format_pmx);
         //heita = *Model::load(RESOURCE_FILE(heita),"黑塔.pmx", model_file_format_pmx);
         //hutao = *Model::load(RESOURCE_FILE(hutao),"胡桃.pmx", model_file_format_pmx);
 
-        naxita_sk = std::make_shared<Skeleton>();
-        naxita_sk->BuildSkeleton(naxita->m_cpu_model->m_skeleton_data);
+        //naxita_sk = std::make_shared<Skeleton>();
+        //naxita_sk->BuildSkeleton(naxita->m_cpu_model->m_skeleton_data);
 
-        naxita_anim.Load(RESOURCE_FILE(cao), "动作.vmd");
+        //naxita_anim.Load(RESOURCE_FILE(cao), "动作.vmd");
 
-        naxita_sk->LoadController(naxita_anim.m_animation->CreateSkeletonController());
+        //naxita_sk->LoadController(naxita_anim.m_animation->CreateSkeletonController());
 
-        scene->models.push_back(naxita);
+        //scene->models.push_back(naxita);
         //scene.models.push_back(heita);
         //scene.models.push_back(hutao);
         //scene->models.push_back(Cube);
@@ -95,16 +97,19 @@ namespace yjw
         deltaTime = delta_time_micro / 1000000.0f;
         currentRealTime = time;
 
-        naxita_sk->Update(currentTime);
-
-        pipeline.forwardPass->setBoneMatrices(naxita_sk->GetBoneMatrices());
-
-        pipeline.ClearDebugLine();
-        for (const Bone& bone : naxita_sk->GetBones())
+        if (naxita_sk)
         {
-            if (bone.m_parent)
+            naxita_sk->Update(currentTime);
+
+            pipeline.forwardPass->setBoneMatrices(naxita_sk->GetBoneMatrices());
+
+            pipeline.ClearDebugLine();
+            for (const Bone& bone : naxita_sk->GetBones())
             {
-                //pipeline.AddDebugLine(bone.m_pose.m_location, bone.m_parent->m_pose.m_location);
+                if (bone.m_parent)
+                {
+                    //pipeline.AddDebugLine(bone.m_pose.m_location, bone.m_parent->m_pose.m_location);
+                }
             }
         }
 
@@ -124,6 +129,11 @@ namespace yjw
     {
         WindowsManager::get().shutdown();
 
+    }
+
+    void RenderSystem::AttachScene(Scene* scene)
+    {
+        m_scene = scene;
     }
 
 }

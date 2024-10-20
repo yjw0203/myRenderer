@@ -1,4 +1,5 @@
 ﻿#include "Private/vulkan/yjw_vulkan_shader.h"
+#include "Private/vulkan/yjw_vulkan_resource_binding.h"
 #include "spirv_cross/spirv_reflect.hpp"
 #include <fstream>
 #include <iostream>
@@ -42,6 +43,11 @@ namespace rhi
     ShaderReflect* VulkanShader::GetShaderReflect()
     {
         return &m_reflect;
+    }
+
+    RHIPrimitiveBinding* VulkanShader::CreatePrimitiveBinding()
+    {
+        return new VulkanPrimitiveBinding(GetDevice(), m_reflect);
     }
 
     void VulkanShader::ReadCodeFromFileUrl(const char* url, std::vector<char>& code)

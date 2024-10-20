@@ -1,5 +1,5 @@
 {
     "name": "Render",
-    "dependencys": ["RHI","Utils","Model","File","Module", "InternalShaderResource","Animation", "Math"],
+    "dependencys": ["Engine","RHI","Utils","Model","File","Module", "InternalShaderResource","Animation", "Math"],
     "build": "lib"
 }

@@ -4,6 +4,7 @@
 namespace yjw
 {
     class RenderSystem;
+    class Scene;
     class Engine
     {
     public:

@@ -1,4 +1,5 @@
 #include "Engine/Engine.h"
+#include "Engine/Framework/Scene/Scene.h"
 #include "File/yjw_file_system_module_header.h"
 #include "Render/yjw_render_system.h"
 

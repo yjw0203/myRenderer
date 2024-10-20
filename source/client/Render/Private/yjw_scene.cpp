@@ -2,6 +2,7 @@
 
 namespace yjw
 {
+    /*
     std::vector<RenderEntity> Scene::buildEntitys()
     {
         std::vector<RenderEntity> res;
@@ -27,5 +28,5 @@ namespace yjw
             }
         }
         return res;
-    }
+    }*/
 }

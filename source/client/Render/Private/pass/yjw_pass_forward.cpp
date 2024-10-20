@@ -16,7 +16,7 @@ namespace yjw
     {
         RPITexture texture[1] = { out_abedlo};
         renderPass = RPICreateRenderPass(texture, 1, depth);
-        m_entitys = RenderSystem::get().scene->buildEntitys();
+        m_entitys = RenderSystem::get().m_scene->buildEntitys();
         for (int i = 0; i < m_entitys.size(); i++)
         {
             m_entitys[i].m_resource_binding.SetBuffer(RPIShaderType::vertex, RHIName("boneMatrices"), m_bone_matrices);

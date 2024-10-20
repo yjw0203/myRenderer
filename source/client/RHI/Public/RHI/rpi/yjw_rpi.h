@@ -30,6 +30,7 @@ namespace rpi
     RPIPipeline RPICreateComputePipeline(RPIComputePipelineDescriptor createInfo);
 
     RPIResourceBinding RPICreateResourceBinding(RPIPipeline pipeline);
+    RPIPrimitiveBinding RPICreatePrimitiveBinding(RPIShader vertex_shader);
     RPIPrimitiveBinding RPICreatePrimitiveBinding(RPIPipeline pipeline);
 
     void RPISubmit(RPIContext context);

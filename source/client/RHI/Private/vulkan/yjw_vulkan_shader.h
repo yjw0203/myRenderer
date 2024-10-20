@@ -18,6 +18,9 @@ namespace rhi
         const ShaderReflect& GetReflect();
         const char* GetEntryName();
         virtual ShaderReflect* GetShaderReflect() override;
+
+        // for vertex shader
+        virtual RHIPrimitiveBinding* CreatePrimitiveBinding() override;
     private:
         void ReadCodeFromFileUrl(const char* url, std::vector<char>& code);
         VkShaderModule CreateShaderModuleFromBinaryCode(VkDevice device, const void* pCode,int code_size);

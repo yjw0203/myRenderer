@@ -28,7 +28,7 @@ namespace rhi
     class VulkanPrimitiveBinding : public RHIPrimitiveBinding, VulkanDeviceObject
     {
     public:
-        VulkanPrimitiveBinding(VulkanDevice* pDevice, class VulkanResourceLayoutView& reflectView);
+        VulkanPrimitiveBinding(VulkanDevice* pDevice, class ShaderReflect& reflect);
         ~VulkanPrimitiveBinding();
         virtual void SetVertexBuffer(RHIName name, RHIBufferView* bufferView) override;
         virtual void SetIndexBuffer(RHIBufferView* buffer, int intdex_start, int index_count, bool is_index_16bit) override;
@@ -44,7 +44,7 @@ namespace rhi
         bool GetIsIndex16Bit();
         int GetVertexOffset();
     private:
-        VulkanResourceLayoutView& m_reflect_view;
+        ShaderReflect& m_reflect;
 
         VulkanBuffer* m_vertex_buffers[VULKAN_MAX_VERTEX_BINDING] = {};
         VkBuffer m_vertex_vkBuffers[VULKAN_MAX_VERTEX_BINDING] = {};

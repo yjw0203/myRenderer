@@ -1,5 +1,0 @@
-{
-    "name": "Scene",
-    "dependencys": ["Math"],
-    "build": "lib"
-}

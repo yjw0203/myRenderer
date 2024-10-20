@@ -283,6 +283,11 @@ namespace rpi
         return RPIPrimitiveBinding(pipeline->CreatePrimitiveBinding());
     }
 
+    RPIPrimitiveBinding RPICreatePrimitiveBinding(RPIShader vertex_shader)
+    {
+        return RPIPrimitiveBinding(vertex_shader->CreatePrimitiveBinding());
+    }
+
     void RPISubmit(RPIContext context)
     {
         context->Submit();

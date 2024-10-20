@@ -315,7 +315,7 @@ namespace rhi
 
     RHIPrimitiveBinding* VulkanRenderPipeline::CreatePrimitiveBinding()
     {
-        return new VulkanPrimitiveBinding(GetDevice(), m_reflect_view);
+        return m_descriptor.vs->CreatePrimitiveBinding();
     }
 
     ShaderReflect* VulkanRenderPipeline::GetVSShaderReflect()

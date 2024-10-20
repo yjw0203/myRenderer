@@ -3,6 +3,7 @@
 #include "rhi/rpi/yjw_rpi_header.h"
 #include "Model/yjw_model.h"
 #include "Private/yjw_scene.h"
+#include "Engine/Framework/Scene/Scene.h"
 
 namespace yjw
 {

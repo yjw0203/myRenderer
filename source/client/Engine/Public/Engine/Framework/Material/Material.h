@@ -98,4 +98,5 @@ namespace yjw
     };
 
     extern Material g_pbr_material;
+    extern Material g_simple_mesh_pbr_material;
 }

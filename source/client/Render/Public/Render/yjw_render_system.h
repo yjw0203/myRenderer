@@ -21,11 +21,13 @@ namespace yjw
         void tick();
         void shutdown();
 
+        void AttachScene(class Scene* scene);
+
         float deltaTime = 0.f;
 
         class RenderCamera* activeCamera = nullptr;
 
-        class Scene* scene = nullptr;
+        class Scene* m_scene = nullptr;
     };
 
 }

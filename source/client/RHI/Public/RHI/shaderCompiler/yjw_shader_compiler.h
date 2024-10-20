@@ -83,6 +83,19 @@ namespace rhi
         static RHIShaderType ToShaderType(const char* str);
         static ImageType ToImageType(const char* str);
         static int DataTypeToSize(ShaderReflect::DataType type);
+
+        int GetVertexBindingCount() { return m_inputs.size(); }
+        int GetVertexInputLocation(const std::string& name)
+        {
+            for (Input& input : m_inputs)
+            {
+                if (name == input.m_name)
+                {
+                    return input.m_loacation;
+                }
+            }
+            return -1;
+        }
     };
 
     struct ShaderBlob
