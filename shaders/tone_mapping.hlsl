@@ -33,5 +33,5 @@ float4 PSMain(VS_OUTPUT input) : SV_Target
 {
     SamplerState defaultSampler;
     float2 uv = (input.pos.xy + float2(1.0, 1.0)) / 2;
-    return float4(ACESFilm(color_map.Sample(defaultSampler, uv).xyz), 0.f);
+    return float4(ACESFilm(color_map.Sample(defaultSampler, uv).xyz), 1.f);
 }
