@@ -33,7 +33,9 @@ set(shaderc_dll ${CMAKE_CURRENT_SOURCE_DIR}/3rd/shaderc/bin/ShaderConductor.dll)
 
 set(rapid_json_include ${CMAKE_CURRENT_SOURCE_DIR}/3rd/rapidjson/include)
 
-set(3rd_party_include ${vulkan_include} ${glfw_include} ${stb_include} ${glm_include} ${shaderc_include} ${rapid_json_include})
+set(json_include ${CMAKE_CURRENT_SOURCE_DIR}/3rd/json/include)
+
+set(3rd_party_include ${vulkan_include} ${glfw_include} ${stb_include} ${glm_include} ${shaderc_include} ${rapid_json_include} ${json_include})
 set(3rd_party_lib ${vulkan_libs} ${glfw_lib} ${shaderc_lib})
 set(3rd_party_dll ${shaderc_dll})
 
