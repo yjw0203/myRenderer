@@ -1,13 +1,24 @@
 #pragma once
-#include "Public/Utils/DataStructure/Binary.h"
+#include "Utils/DataStructure/Binary.h"
+#include <iostream>
 
 namespace yjw
 {
     class Serializable
     {
     public:
-        virtual void Serialize(Binary& binary) = 0;
-        virtual void Unserialize(const Binary& binary, int& cur) = 0;
+        virtual void Serialize(Binary& binary)
+        {
+            binary.resize(sizeof(this));
+            memcpy(binary.data(), this, std::min(binary.size(), sizeof(this)));
+        }
+
+        virtual void Unserialize(const Binary& binary, int& cur)
+        {
+            size_t size = sizeof(this);
+            memcpy(this, binary.data() + cur, std::min(binary.size(), size));
+            cur += size;
+        }
     };
 
     class Stream

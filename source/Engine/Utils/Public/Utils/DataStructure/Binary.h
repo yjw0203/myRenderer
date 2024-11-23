@@ -10,7 +10,8 @@ namespace yjw
         void resize(int sizeByte) { m_data.resize(sizeByte); }
         void clear() { m_data.clear(); }
         char* data() { return m_data.data(); }
-        size_t size() { return m_data.size(); }
+        const char* data() const { return m_data.data(); }
+        size_t size() const { return m_data.size(); }
     private:
         std::vector<char> m_data;
     };
