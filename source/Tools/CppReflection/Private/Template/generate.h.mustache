@@ -1,0 +1,11 @@
+#pragma once
+
+#include "json.hpp"
+
+using json = nlohmann::json;
+
+{{#class_list}}
+class {{class_name}};
+void to_json(json& j, const {{class_name}}& obj);
+void from_json(const json& j, {{class_name}}& obj);
+{{/class_list}}

@@ -1,0 +1,9 @@
+#define PROJECT_PATH "E:/workspace/myRenderer"
+#define SOURCE_PATH "E:/workspace/myRenderer/source"
+#define SHADER_PATH "E:/workspace/myRenderer/shaders"
+#define RESOURCE_PATH "E:/workspace/myRenderer/resource"
+#define SHADER_FILE(T) "E:/workspace/myRenderer/shaders/"#T
+#define RESOURCE_FILE(T) "E:/workspace/myRenderer/resource/"#T
+#define CR_TEMPLATE_FILE(T) "E:/workspace/myRenderer/source/Tools/CppReflection/Private/Template/"#T
+#define CR_GENERATE_PUBLIC_FILE(T) "E:/workspace/myRenderer/source/Generate/Public/Generate/"#T
+#define CR_GENERATE_PRIVATE_FILE(T) "E:/workspace/myRenderer/source/Generate/Private/"#T

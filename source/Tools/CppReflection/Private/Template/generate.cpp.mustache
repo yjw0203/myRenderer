@@ -1,0 +1,21 @@
+{{#include_header_files}}
+#include "{{header_file_name}}"
+{{/include_header_files}}
+
+#include "json.hpp"
+
+using json = nlohmann::json;
+{{#class_list}}
+void to_json(json& j, const {{class_name}}& obj) {
+    j = json{
+        {{#field_list}}
+         {"{{field_name}}", obj.{{field_name}}},
+        {{/field_list}}
+         };
+}
+void from_json(const json& j, {{class_name}}& obj) {
+    {{#field_list}}
+    j.at("{{field_name}}").get_to(obj.{{field_name}});
+    {{/field_list}}
+}
+{{/class_list}}

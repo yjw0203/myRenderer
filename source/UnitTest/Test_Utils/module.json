@@ -1,5 +1,5 @@
 {
     "name": "Test_Utils",
-    "dependencys": ["Utils"],
+    "dependencys": ["Utils", "Generate"],
     "build": "exe"
 }
