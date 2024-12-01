@@ -1,7 +1,7 @@
-#include "Private/vulkan/yjw_vulkan_command_list.h"
-#include "Private/vulkan/yjw_vulkan_command_queue.h"
-#include "Private/vulkan/yjw_vulkan_resource_cast.h"
-#include "Private/vulkan/yjw_vulkan_instance.h"
+#include "Engine/RHI/Private/vulkan/yjw_vulkan_command_list.h"
+#include "Engine/RHI/Private/vulkan/yjw_vulkan_command_queue.h"
+#include "Engine/RHI/Private/vulkan/yjw_vulkan_resource_cast.h"
+#include "Engine/RHI/Private/vulkan/yjw_vulkan_instance.h"
 #include "vulkan/vulkan.h"
 
 namespace rhi

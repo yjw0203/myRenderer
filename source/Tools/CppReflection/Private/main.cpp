@@ -2,7 +2,7 @@
 #include <vector>
 #include <string>
 #include "Parser/Unit.h"
-#include "Private/Generator/CRGenerator.h"
+#include "Tools/CppReflection/Private/Generator/CRGenerator.h"
 #include "projectInfo.h"
 #include <filesystem>
 #include <map>

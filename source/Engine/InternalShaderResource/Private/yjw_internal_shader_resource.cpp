@@ -1,4 +1,4 @@
-#include "Public/InternalShaderResource/yjw_internal_shader_resource.h"
+#include "Engine/InternalShaderResource/Public/yjw_internal_shader_resource.h"
 
 namespace yjw
 {

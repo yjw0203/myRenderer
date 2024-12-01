@@ -1,4 +1,4 @@
-#include "Engine/Framework/Components/SceneComponent.h"
+#include "Engine/Engine/Public/Framework/Components/SceneComponent.h"
 
 namespace yjw
 {

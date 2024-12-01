@@ -1,5 +1,5 @@
 #include "yjw_pmx_model.h"
-#include "Private/3rd/saba/PMXFile.h"
+#include "Engine/Model/Private/3rd/saba/PMXFile.h"
 #include <memory>
 
 namespace yjw

@@ -1,6 +1,6 @@
 #pragma once
-#include "Private/vulkan/yjw_vulkan_pipeline.h"
-#include "Private/vulkan/yjw_vulkan_resource_binding.h"
+#include "Engine/RHI/Private/vulkan/yjw_vulkan_pipeline.h"
+#include "Engine/RHI/Private/vulkan/yjw_vulkan_resource_binding.h"
 
 namespace rhi
 {

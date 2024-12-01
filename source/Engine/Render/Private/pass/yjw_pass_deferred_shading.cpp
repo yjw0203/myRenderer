@@ -1,8 +1,8 @@
 #include "yjw_pass_deferred_shading.h"
-#include "Render/yjw_render_system.h"
+#include "Engine/Render/Public/yjw_render_system.h"
 #include "projectInfo.h"
 #include <memory>
-#include "InternalShaderResource/yjw_internal_shader_resource.h"
+#include "Engine/InternalShaderResource/Public/yjw_internal_shader_resource.h"
 namespace yjw
 {
     void DeferredShadingPass::buildPSO()

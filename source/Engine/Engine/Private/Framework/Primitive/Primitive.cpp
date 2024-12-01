@@ -1,4 +1,4 @@
-#include "Engine/Framework/Primitive/Primitive.h"
+#include "Engine/Engine/Public/Framework/Primitive/Primitive.h"
 #include "projectInfo.h"
 
 namespace yjw

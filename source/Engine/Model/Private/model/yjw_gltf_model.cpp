@@ -1,5 +1,5 @@
 #include "yjw_gltf_model.h"
-#include "Private/3rd/gltf/tiny_gltf.h"
+#include "Engine/Model/Private/3rd/gltf/tiny_gltf.h"
 #include <memory>
 #include <iostream>
 

@@ -1,9 +1,9 @@
 #pragma once
 #include "../yjw_pass.h"
-#include "rhi/rpi/yjw_rpi_header.h"
-#include "Model/yjw_model.h"
-#include "Private/yjw_scene.h"
-#include "Engine/Framework/Scene/Scene.h"
+#include "Engine/RHI/Public/rpi/yjw_rpi_header.h"
+#include "Engine/Model/Public/yjw_model.h"
+#include "Engine/Render/Private/yjw_scene.h"
+#include "Engine/Engine/Public/Framework/Scene/Scene.h"
 
 namespace yjw
 {

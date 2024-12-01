@@ -1,7 +1,7 @@
 #pragma once
 #include "../yjw_pass.h"
-#include "rhi/rpi/yjw_rpi_header.h"
-#include "Model/yjw_model.h"
+#include "Engine/RHI/Public/rpi/yjw_rpi_header.h"
+#include "Engine/Model/Public/yjw_model.h"
 
 namespace yjw
 {

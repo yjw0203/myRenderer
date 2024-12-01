@@ -1,5 +1,5 @@
-#include "Engine/Framework/Material/Material.h"
-#include "InternalShaderResource/yjw_internal_shader_resource.h"
+#include "Engine/Engine/Public/Framework/Material/Material.h"
+#include "Engine/InternalShaderResource/Public/yjw_internal_shader_resource.h"
 
 namespace yjw
 {

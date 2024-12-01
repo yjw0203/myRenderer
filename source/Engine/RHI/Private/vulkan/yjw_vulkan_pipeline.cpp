@@ -1,7 +1,7 @@
-#include "Private/vulkan/yjw_vulkan_pipeline.h".
-#include "Private/vulkan/yjw_vulkan_resource_cast.h"
-#include "Private/vulkan/yjw_vulkan_type_conversation.h"
-#include "Private/vulkan/yjw_vulkan_resource_binding.h"
+#include "Engine/RHI/Private/vulkan/yjw_vulkan_pipeline.h".
+#include "Engine/RHI/Private/vulkan/yjw_vulkan_resource_cast.h"
+#include "Engine/RHI/Private/vulkan/yjw_vulkan_type_conversation.h"
+#include "Engine/RHI/Private/vulkan/yjw_vulkan_resource_binding.h"
 
 namespace rhi
 {

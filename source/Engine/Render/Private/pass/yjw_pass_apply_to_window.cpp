@@ -1,7 +1,7 @@
 #include "yjw_pass_apply_to_window.h"
-#include "Render/yjw_render_system.h"
+#include "Engine/Render/Public/yjw_render_system.h"
 #include "projectInfo.h"
-#include "InternalShaderResource/yjw_internal_shader_resource.h"
+#include "Engine/InternalShaderResource/Public/yjw_internal_shader_resource.h"
 
 namespace yjw
 {

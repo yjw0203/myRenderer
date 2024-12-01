@@ -1,8 +1,8 @@
 #pragma once
-#include "Private/vulkan/yjw_vulkan_define.h"
-#include "Public/RHI/rhi/yjw_rhi_define.h"
+#include "Engine/RHI/Private/vulkan/yjw_vulkan_define.h"
+#include "Engine/RHI/Public/rhi/yjw_rhi_define.h"
 #include "vulkan/vulkan.h"
-#include "RHI/shaderCompiler/yjw_shader_compiler.h"
+#include "Engine/RHI/Public/shaderCompiler/yjw_shader_compiler.h"
 
 namespace rhi
 {

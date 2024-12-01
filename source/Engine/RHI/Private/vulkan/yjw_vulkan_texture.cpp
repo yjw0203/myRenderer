@@ -1,8 +1,8 @@
-#include "Private/vulkan/yjw_vulkan_texture.h"
-#include "Private/vulkan/yjw_vulkan_type_conversation.h"
-#include "Private/vulkan/yjw_vulkan_common.h"
-#include "Private/vulkan/yjw_vulkan_resource_cast.h"
-#include "Private/vulkan/yjw_vulkan_context.h"
+#include "Engine/RHI/Private/vulkan/yjw_vulkan_texture.h"
+#include "Engine/RHI/Private/vulkan/yjw_vulkan_type_conversation.h"
+#include "Engine/RHI/Private/vulkan/yjw_vulkan_common.h"
+#include "Engine/RHI/Private/vulkan/yjw_vulkan_resource_cast.h"
+#include "Engine/RHI/Private/vulkan/yjw_vulkan_context.h"
 #include "vulkan/vulkan.h"
 
 namespace rhi

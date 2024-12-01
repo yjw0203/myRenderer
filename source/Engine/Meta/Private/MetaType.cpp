@@ -1,4 +1,4 @@
-#include "Meta/MetaType.h"
+#include "Engine/Meta/Public/MetaType.h"
 
 namespace meta
 {

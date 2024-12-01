@@ -1,8 +1,8 @@
 #pragma once
-#include "Public/RHI/rhi/yjw_rhi_resource_binding.h"
-#include "Private/vulkan/yjw_vulkan_device.h"
-#include "Private/vulkan/yjw_vulkan_texture.h"
-#include "Private/vulkan/yjw_vulkan_buffer.h"
+#include "Engine/RHI/Public/rhi/yjw_rhi_resource_binding.h"
+#include "Engine/RHI/Private/vulkan/yjw_vulkan_device.h"
+#include "Engine/RHI/Private/vulkan/yjw_vulkan_texture.h"
+#include "Engine/RHI/Private/vulkan/yjw_vulkan_buffer.h"
 
 namespace rhi
 {

@@ -1,5 +1,5 @@
-#include "Private/vulkan/yjw_vulkan_context.h"
-#include "Private/vulkan/yjw_vulkan_resource_cast.h"
+#include "Engine/RHI/Private/vulkan/yjw_vulkan_context.h"
+#include "Engine/RHI/Private/vulkan/yjw_vulkan_resource_cast.h"
 
 namespace rhi
 {

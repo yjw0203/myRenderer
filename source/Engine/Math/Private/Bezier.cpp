@@ -1,4 +1,4 @@
-#include "Math/Bezier.h"
+#include "Engine/Math/Public/Bezier.h"
 
 namespace yjw
 {

@@ -1,6 +1,6 @@
-#include "Private/vulkan/yjw_vulkan_swap_chain.h"
-#include "Private/vulkan/yjw_vulkan_command_queue.h"
-#include "Private/vulkan/yjw_vulkan_type_conversation.h"
+#include "Engine/RHI/Private/vulkan/yjw_vulkan_swap_chain.h"
+#include "Engine/RHI/Private/vulkan/yjw_vulkan_command_queue.h"
+#include "Engine/RHI/Private/vulkan/yjw_vulkan_type_conversation.h"
 #include <vector>
 
 #define GLFW_INCLUDE_VULKAN

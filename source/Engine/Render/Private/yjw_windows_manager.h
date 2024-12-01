@@ -2,7 +2,7 @@
 
 #include <map>
 #include <functional>
-#include "RHI/rpi/yjw_rpi.h"
+#include "Engine/RHI/Public/rpi/yjw_rpi.h"
 struct GLFWwindow;
 
 namespace yjw

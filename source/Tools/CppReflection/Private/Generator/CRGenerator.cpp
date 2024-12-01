@@ -1,4 +1,4 @@
-#include "Private/Generator/CRGenerator.h"
+#include "Tools/CppReflection/Private/Generator/CRGenerator.h"
 #include <fstream>
 #include "mustache.hpp"
 

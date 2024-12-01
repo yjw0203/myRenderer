@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Render/yjw_render_system.h"
-#include "rhi/rpi/yjw_rpi_header.h"
-#include "Private/yjw_windows_manager.h"
+#include "Engine/Render/Public/yjw_render_system.h"
+#include "Engine/RHI/Public/rpi/yjw_rpi_header.h"
+#include "Engine/Render/Private/yjw_windows_manager.h"
 #include "projectInfo.h"
 #include "glm/glm.hpp"
 #include "yjw_render_camera.h"
@@ -13,9 +13,9 @@
 #include "pass/yjw_pass_deferred_shading.h"
 #include "pipeline/yjw_default_pipeline.h"
 
-#include "InternalShaderResource/yjw_internal_shader_resource.h"
-#include "Animation/Skeleton.h"
-#include "Model/AnimationLoader.h"
+#include "Engine/InternalShaderResource/Public/yjw_internal_shader_resource.h"
+#include "Engine/Animation/Public/Skeleton.h"
+#include "Engine/Model/Public/AnimationLoader.h"
 
 namespace yjw
 {

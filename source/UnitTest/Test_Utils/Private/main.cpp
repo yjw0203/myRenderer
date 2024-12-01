@@ -1,9 +1,9 @@
-#include "Utils/Serialize/Stream.h"
-#include "Utils/DataStructure/Binary.h"
+#include "Engine/Utils/Public/Serialize/Stream.h"
+#include "Engine/Utils/Public/DataStructure/Binary.h"
 #include "iostream"
 #include "json.hpp"
 #include "main.h"
-#include "Generate/generate.h"
+#include "Generate/Public/generate.h"
 
 using namespace yjw;
 

@@ -1,6 +1,6 @@
  #pragma once
 #include "Cursor.h"
-#include "Meta/MetaClass.h"
+#include "Engine/Meta/Public/MetaClass.h"
 
 struct CRCondition_IsField
 {

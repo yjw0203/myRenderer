@@ -1,9 +1,9 @@
 #pragma once
-#include "Public/RHI/rhi/yjw_rhi_shader.h"
-#include "Public/RHI/rhi/yjw_rhi_common.h"
-#include "Private/vulkan/yjw_vulkan_device.h"
-#include "Private/vulkan/yjw_vulkan_define.h"
-#include "Public/RHI/shaderCompiler/yjw_shader_compiler.h"
+#include "Engine/RHI/Public/rhi/yjw_rhi_shader.h"
+#include "Engine/RHI/Public/rhi/yjw_rhi_common.h"
+#include "Engine/RHI/Private/vulkan/yjw_vulkan_device.h"
+#include "Engine/RHI/Private/vulkan/yjw_vulkan_define.h"
+#include "Engine/RHI/Public/shaderCompiler/yjw_shader_compiler.h"
 #include <unordered_map>
 #include "vulkan/vulkan.h"
 

@@ -1,7 +1,7 @@
-#include "Private/vulkan/yjw_vulkan_buffer.h"
-#include "Private/vulkan/yjw_vulkan_type_conversation.h"
-#include "Private/vulkan/yjw_vulkan_common.h"
-#include "Private/vulkan/yjw_vulkan_command_list.h"
+#include "Engine/RHI/Private/vulkan/yjw_vulkan_buffer.h"
+#include "Engine/RHI/Private/vulkan/yjw_vulkan_type_conversation.h"
+#include "Engine/RHI/Private/vulkan/yjw_vulkan_common.h"
+#include "Engine/RHI/Private/vulkan/yjw_vulkan_command_list.h"
 
 namespace rhi
 {

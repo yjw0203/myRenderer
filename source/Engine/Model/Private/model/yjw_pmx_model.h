@@ -1,6 +1,6 @@
 #pragma once
-#include "Public/Model/yjw_model.h"
-#include "Private/model/yjw_model_implement.h"
+#include "Engine/Model/Public/yjw_model.h"
+#include "Engine/Model/Private/model/yjw_model_implement.h"
 
 namespace yjw
 {

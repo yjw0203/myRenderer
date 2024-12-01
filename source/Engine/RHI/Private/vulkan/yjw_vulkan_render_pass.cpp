@@ -1,6 +1,6 @@
-#include "Private/vulkan/yjw_vulkan_render_pass.h"
-#include "Private/vulkan/yjw_vulkan_resource_cast.h"
-#include "Private/vulkan/yjw_vulkan_texture.h"
+#include "Engine/RHI/Private/vulkan/yjw_vulkan_render_pass.h"
+#include "Engine/RHI/Private/vulkan/yjw_vulkan_resource_cast.h"
+#include "Engine/RHI/Private/vulkan/yjw_vulkan_texture.h"
 #include <vector>
 #include "vulkan/vulkan.h"
 

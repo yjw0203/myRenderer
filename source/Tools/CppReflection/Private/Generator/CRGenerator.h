@@ -1,5 +1,5 @@
 #pragma once
-#include "Meta/MetaClass.h"
+#include "Engine/Meta/Public/MetaClass.h"
 
 class CRGenerator
 {

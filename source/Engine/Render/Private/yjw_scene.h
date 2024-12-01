@@ -1,7 +1,7 @@
 #pragma once
 #include "yjw_light.h"
-#include "Model/yjw_model.h"
-#include "Engine/Framework/Material/Material.h"
+#include "Engine/Model/Public/yjw_model.h"
+#include "Engine/Engine/Public/Framework/Material/Material.h"
 #include <vector>
 #include <memory>
 

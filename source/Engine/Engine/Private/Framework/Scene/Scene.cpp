@@ -1,6 +1,6 @@
-#include "Engine/Framework/Scene/Scene.h"
-#include "Engine/Framework/Components/MeshComponent.h"
-#include "Engine/Framework/Mesh/Mesh.h"
+#include "Engine/Engine/Public/Framework/Scene/Scene.h"
+#include "Engine/Engine/Public/Framework/Components/MeshComponent.h"
+#include "Engine/Engine/Public/Framework/Mesh/Mesh.h"
 #include <queue>
 
 namespace yjw

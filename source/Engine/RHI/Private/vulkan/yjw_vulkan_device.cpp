@@ -1,12 +1,12 @@
-#include "Private/vulkan/yjw_vulkan_device.h"
-#include "Private/vulkan/yjw_vulkan_command_queue.h"
-#include "Private/vulkan/yjw_vulkan_swap_chain.h"
-#include "Private/vulkan/yjw_vulkan_pipeline.h"
-#include "Private/vulkan/yjw_vulkan_shader.h"
-#include "Private/vulkan/yjw_vulkan_context.h"
-#include "Private/vulkan/yjw_vulkan_buffer.h"
-#include "Private/vulkan/yjw_vulkan_texture.h"
-#include "RHI/shaderCompiler/yjw_shader_compiler.h"
+#include "Engine/RHI/Private/vulkan/yjw_vulkan_device.h"
+#include "Engine/RHI/Private/vulkan/yjw_vulkan_command_queue.h"
+#include "Engine/RHI/Private/vulkan/yjw_vulkan_swap_chain.h"
+#include "Engine/RHI/Private/vulkan/yjw_vulkan_pipeline.h"
+#include "Engine/RHI/Private/vulkan/yjw_vulkan_shader.h"
+#include "Engine/RHI/Private/vulkan/yjw_vulkan_context.h"
+#include "Engine/RHI/Private/vulkan/yjw_vulkan_buffer.h"
+#include "Engine/RHI/Private/vulkan/yjw_vulkan_texture.h"
+#include "Engine/RHI/Public/shaderCompiler/yjw_shader_compiler.h"
 
 #include <vector>
 #include <set>

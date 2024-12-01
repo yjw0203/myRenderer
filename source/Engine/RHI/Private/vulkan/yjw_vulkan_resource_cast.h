@@ -1,6 +1,6 @@
 #pragma once
-#include "Public/RHI/rhi/yjw_rhi_shader.h"
-#include "Private/vulkan/yjw_vulkan_shader.h"
+#include "Engine/RHI/Public/rhi/yjw_rhi_shader.h"
+#include "Engine/RHI/Private/vulkan/yjw_vulkan_shader.h"
 
 namespace rhi
 {

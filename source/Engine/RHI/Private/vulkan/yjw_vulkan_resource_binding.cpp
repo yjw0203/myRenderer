@@ -1,6 +1,6 @@
-#include "Private/vulkan/yjw_vulkan_resource_binding.h"
-#include "Private/vulkan/yjw_vulkan_pipeline.h"
-#include "Private/vulkan/yjw_vulkan_type_conversation.h"
+#include "Engine/RHI/Private/vulkan/yjw_vulkan_resource_binding.h"
+#include "Engine/RHI/Private/vulkan/yjw_vulkan_pipeline.h"
+#include "Engine/RHI/Private/vulkan/yjw_vulkan_type_conversation.h"
 #include "vulkan/vulkan.h"
 #include <array>
 #include <stdexcept>

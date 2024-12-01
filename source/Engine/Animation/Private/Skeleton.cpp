@@ -1,5 +1,5 @@
-#include "Animation/Skeleton.h"
-#include "Utils/Algorithm/Algorithm.h"
+#include "Engine/Animation/Public/Skeleton.h"
+#include "Engine/Utils/Public/Algorithm/Algorithm.h"
 #include <unordered_map>
 
 namespace yjw
