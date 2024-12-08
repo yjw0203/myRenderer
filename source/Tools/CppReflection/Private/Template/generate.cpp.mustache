@@ -15,7 +15,9 @@ void to_json(json& j, const {{class_name}}& obj) {
 }
 void from_json(const json& j, {{class_name}}& obj) {
     {{#field_list}}
-    j.at("{{field_name}}").get_to(obj.{{field_name}});
+    if(j.count("{{field_name}}")){
+        j.at("{{field_name}}").get_to(obj.{{field_name}});
+    }
     {{/field_list}}
 }
 {{/class_list}}

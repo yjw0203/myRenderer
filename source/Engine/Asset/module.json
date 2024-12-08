@@ -1,5 +1,5 @@
 {
     "name": "Asset",
-  "dependencys": [],
+  "dependencys": ["Utils"],
     "build": "lib"
 }
