@@ -17,6 +17,8 @@ int main()
     A* a = ast.GetData();
     a->y = 5;
     a->b.w = 3;
+    a->b_array.push_back(B{ 1, 2, 3 });
+    a->b_array.push_back(B{ 2, 3, 4 });
     ast.Save();
 
     return 0;

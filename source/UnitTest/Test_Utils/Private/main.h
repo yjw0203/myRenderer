@@ -7,6 +7,8 @@
 
 #define Class(...) class Meta(type=class) __VA_ARGS__
 
+#include <vector>
+
 Class(B)
 {
 public:
@@ -20,4 +22,5 @@ Class(A)
 public:
     int y;
     B b;
+    std::vector<B> b_array;
 };

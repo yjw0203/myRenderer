@@ -8,6 +8,14 @@ namespace meta
     class Class
     {
     public:
+        std::string GetClassNameWithNameSpace() const 
+        {
+            if (m_namespace == "")
+            {
+                return m_name;
+            }
+            return m_namespace + "::" + m_name;
+        }
         using List = std::vector<Class>;
         std::string m_namespace;
         std::string m_name;

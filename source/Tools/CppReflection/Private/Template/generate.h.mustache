@@ -5,7 +5,16 @@
 using json = nlohmann::json;
 
 {{#class_list}}
+{{#has_namespace}}
+namespace {{namespace}}
+{
+{{/has_namespace}}
+
 class {{class_name}};
 void to_json(json& j, const {{class_name}}& obj);
 void from_json(const json& j, {{class_name}}& obj);
+
+{{#has_namespace}}
+}
+{{/has_namespace}}
 {{/class_list}}

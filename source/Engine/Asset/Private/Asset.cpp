@@ -48,13 +48,14 @@ namespace yjw
             {
                 m_assets.push_back(AssetInfo{});
                 AssetInfo& asset_info = m_assets.back();
+                asset_info.m_header.m_name = "test_header";
                 asset_info.m_salt = load_info.m_id.m_salt;
                 asset_info.m_url = load_info.m_url;
                 asset_info.m_ref_count.store(load_info.m_ref_count);
                 asset_info.m_destory_func = load_info.m_destory_func;
                 asset_info.m_serialize_func = load_info.m_serialize_func;
                 json j = json::object();
-                LoadAssetFromFile(load_info.m_url.c_str(), j);
+                LoadAssetFromFile(load_info.m_url.c_str(), asset_info.m_header, j);
                 asset_info.m_payload = load_info.m_create_func(&j);
             }
         }
@@ -109,7 +110,7 @@ namespace yjw
         m_reuse_ids.push_back(id.m_id);
     }
 
-    void AssetManagerImplement::LoadAssetFromFile(const char* url, json& json)
+    void AssetManagerImplement::LoadAssetFromFile(const char* url, AssetHeader& header, json& obj)
     {
         std::string filename = std::string("E:/workspace/myRenderer/resource/") + url;
         std::fstream file;
@@ -121,7 +122,10 @@ namespace yjw
 
         try
         {
-            file >> json;
+            json h;
+            file >> h >> obj;
+            void from_json(const json & j, AssetHeader & obj);
+            from_json(h, header);
         }
         catch (...)
         {
@@ -131,7 +135,7 @@ namespace yjw
         file.close();
     }
 
-    void AssetManagerImplement::SaveAssetToFile(const char* url, const json& json)
+    void AssetManagerImplement::SaveAssetToFile(const char* url, const AssetHeader& header, const json& obj)
     {
         std::string filename = std::string("E:/workspace/myRenderer/resource/") + url;
         std::filesystem::path path(filename);
@@ -143,7 +147,10 @@ namespace yjw
             return;
         }
         file.clear();
-        file << json << std::endl;
+        json h;
+        void to_json(json & j, const AssetHeader & obj);
+        to_json(h, header);
+        file << h << obj << std::endl;
         file.flush();
         file.close();
     }

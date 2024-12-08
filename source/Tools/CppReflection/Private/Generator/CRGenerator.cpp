@@ -22,6 +22,9 @@ void GenerateMustanceData(const meta::Field::List& fields, Mustache::data& data)
 void GenerateMustanceData(const meta::Class& class_, Mustache::data& data)
 {
     data.set("class_name", class_.m_name);
+    data.set("class_name_with_namespace", class_.GetClassNameWithNameSpace());
+    data.set("namespace", class_.m_namespace);
+    data.set("has_namespace", !(class_.m_namespace == ""));
     Mustache::data field_list_data(Mustache::data::type::list);
     GenerateMustanceData(class_.m_fields, field_list_data);
     data.set("field_list", field_list_data);

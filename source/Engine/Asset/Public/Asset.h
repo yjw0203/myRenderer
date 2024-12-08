@@ -6,6 +6,14 @@
 #include "Engine/Utils/Public/DesignPatterns/Singleton.h"
 #include "json.hpp"
 
+#if defined(__clang__)
+#define Meta(...) __attribute__((annotate(#__VA_ARGS__)))
+#else
+#define Meta(...)
+#endif
+
+#define Class(...) class Meta(type=class) __VA_ARGS__
+
 using json = nlohmann::json;
 namespace yjw
 {
@@ -13,8 +21,15 @@ namespace yjw
     using AssetDestoryFunc = std::function<void(void*)>;
     using AssetSerializeFunc = std::function<void(void*, json*)>;
 
+    Class(AssetHeader)
+    {
+    public:
+        std::string m_name;
+    };
+
     struct AssetInfo
     {
+        AssetHeader m_header;
         std::string m_url{};
         void* m_payload{nullptr};
         int m_salt;
@@ -24,6 +39,7 @@ namespace yjw
         AssetInfo() {}
 
         AssetInfo(const AssetInfo& other) noexcept {
+            m_header = other.m_header;
             m_url = other.m_url;
             m_payload = other.m_payload;
             m_salt = other.m_salt;
@@ -90,7 +106,7 @@ namespace yjw
                 {
                     json j;
                     m_assets[id.m_id].m_serialize_func(m_assets[id.m_id].m_payload, &j);
-                    SaveAssetToFile(m_assets[id.m_id].m_url.c_str(), j);
+                    SaveAssetToFile(m_assets[id.m_id].m_url.c_str(), m_assets[id.m_id].m_header, j);
                     return;
                 }
             }
@@ -108,8 +124,8 @@ namespace yjw
         AssetID LoadAsset(const char* url, AssetCreateAndDeserializeFunc create_func, AssetDestoryFunc destory_func, AssetSerializeFunc serialize_func);
         AssetID AllocateAssetID();
         void DeallocateAssetID(AssetID id);
-        void LoadAssetFromFile(const char* url, json& json);
-        void SaveAssetToFile(const char* url, const json& json);
+        void LoadAssetFromFile(const char* url, AssetHeader& header, json& obj);
+        void SaveAssetToFile(const char* url, const AssetHeader& header, const json& obj);
     private:
         // ensure thread-safe when use, only modify on exclusive thread, except ref count.
         std::vector<AssetInfo> m_assets;

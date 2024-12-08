@@ -42,8 +42,10 @@ void CRAction_GatherClass::DoAction(CRCursor cursor, CRNamespace& Namespace, int
     CRVisitor<CRCondition_IsMethod, CRAction_GatherMethod> GatherMethodVisitor;
     GatherMethodVisitor.VisitSubTree(parent, Namespace);
 
+    CRNamespace temp_namespace = Namespace;
+    temp_namespace.pop_back();
     meta::Class data;
-    data.m_namespace = CRNamespaceToString(Namespace);
+    data.m_namespace = CRNamespaceToString(temp_namespace);
     data.m_name = parent.GetDisplayName();
     data.m_fields = GatherFieldVisitor.m_result;
     data.m_methods = GatherMethodVisitor.m_result;
