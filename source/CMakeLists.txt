@@ -2,6 +2,8 @@ set(module_name_list "")
 set(module_public_headers_path "")
 set(module_dependencys "")
 
+set(INCLUDE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/generate1" ${3rd_party_include} ${CMAKE_CURRENT_SOURCE_DIR})
+
 file(GLOB_RECURSE ModuleJsonFileList "*/module.json")
 foreach(ModuleJsonFile IN LISTS ModuleJsonFileList)
     file(READ "${ModuleJsonFile}" json_string)

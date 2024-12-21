@@ -1,18 +1,12 @@
 #pragma once
+
 #include <string>
 #include <unordered_map>
 #include <queue>
 #include <functional>
 #include "Engine/Utils/Public/DesignPatterns/Singleton.h"
 #include "json.hpp"
-
-#if defined(__clang__)
-#define Meta(...) __attribute__((annotate(#__VA_ARGS__)))
-#else
-#define Meta(...)
-#endif
-
-#define Class(...) class Meta(type=class) __VA_ARGS__
+#include "Engine/Utils/Public/Define.h"
 
 using json = nlohmann::json;
 namespace yjw
@@ -24,9 +18,9 @@ namespace yjw
     Class(AssetHeader)
     {
     public:
-        std::string m_name;
+        std::string m_type;
     };
-
+    
     struct AssetInfo
     {
         AssetHeader m_header;
@@ -67,7 +61,7 @@ namespace yjw
                 m_assets[id.m_id].m_ref_count.fetch_add(1);
                 return id;
             }
-            return LoadAsset(url, 
+            return LoadAsset(url, GetClassName<T>(),
             [](const json* j) {
                 T* obj = new T();
                 void from_json(const json & j, T& obj);
@@ -121,7 +115,7 @@ namespace yjw
         void process();
 
     private:
-        AssetID LoadAsset(const char* url, AssetCreateAndDeserializeFunc create_func, AssetDestoryFunc destory_func, AssetSerializeFunc serialize_func);
+        AssetID LoadAsset(const char* url, const char* type, AssetCreateAndDeserializeFunc create_func, AssetDestoryFunc destory_func, AssetSerializeFunc serialize_func);
         AssetID AllocateAssetID();
         void DeallocateAssetID(AssetID id);
         void LoadAssetFromFile(const char* url, AssetHeader& header, json& obj);
@@ -135,6 +129,7 @@ namespace yjw
         struct LoadInfo
         {
             AssetID m_id;
+            std::string m_type;
             std::string m_url;
             AssetCreateAndDeserializeFunc m_create_func;
             AssetDestoryFunc m_destory_func;
@@ -144,6 +139,7 @@ namespace yjw
 
             LoadInfo(const LoadInfo& other) noexcept {
                 m_id = other.m_id;
+                m_type = other.m_type;
                 m_url = other.m_url;
                 m_create_func = other.m_create_func;
                 m_destory_func = other.m_destory_func;
@@ -204,5 +200,4 @@ namespace yjw
     private:
         AssetID m_id{};
     };
-
 }

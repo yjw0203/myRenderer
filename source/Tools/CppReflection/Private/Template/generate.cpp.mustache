@@ -20,4 +20,9 @@ void from_json(const json& j, {{class_name_with_namespace}}& obj) {
     }
     {{/field_list}}
 }
+template<>
+const char* GetClassName<{{class_name_with_namespace}}>()
+{
+    return "{{class_name}}";
+}
 {{/class_list}}

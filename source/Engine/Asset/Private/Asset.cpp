@@ -48,7 +48,7 @@ namespace yjw
             {
                 m_assets.push_back(AssetInfo{});
                 AssetInfo& asset_info = m_assets.back();
-                asset_info.m_header.m_name = "test_header";
+                asset_info.m_header.m_type = load_info.m_type;
                 asset_info.m_salt = load_info.m_id.m_salt;
                 asset_info.m_url = load_info.m_url;
                 asset_info.m_ref_count.store(load_info.m_ref_count);
@@ -63,7 +63,7 @@ namespace yjw
 
     }
 
-    AssetID AssetManagerImplement::LoadAsset(const char* url, AssetCreateAndDeserializeFunc create_func, AssetDestoryFunc destory_func, AssetSerializeFunc serialize_func)
+    AssetID AssetManagerImplement::LoadAsset(const char* url, const char* type, AssetCreateAndDeserializeFunc create_func, AssetDestoryFunc destory_func, AssetSerializeFunc serialize_func)
     {
         std::lock_guard guard(m_load_asset_mutex);
         for (int i = 0; i < m_pending_load_assets.size(); i++)
@@ -77,6 +77,7 @@ namespace yjw
         AssetID id = AllocateAssetID();
         LoadInfo info{};
         info.m_id = id;
+        info.m_type = type;
         info.m_url = url;
         info.m_create_func = create_func;
         info.m_destory_func = destory_func;

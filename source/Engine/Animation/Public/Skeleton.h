@@ -1,6 +1,6 @@
 #pragma once
-#include "Bone.h"
-#include "AnimationData.h"
+#include "Engine/Animation/Public/Bone.h"
+#include "Engine/Animation/Public/AnimationData.h"
 #include <vector>
 #include <memory>
 

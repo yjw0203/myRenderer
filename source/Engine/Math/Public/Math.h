@@ -1,7 +1,7 @@
 #pragma once
-#include "Vector.h"
-#include "Transform.h"
-#include "Bezier.h"
+#include "Engine/Math/Public/Vector.h"
+#include "Engine/Math/Public/Transform.h"
+#include "Engine/Math/Public/Bezier.h"
 
 namespace yjw
 {

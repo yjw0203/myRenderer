@@ -1,20 +1,25 @@
 #pragma once
 
 #include "json.hpp"
+#include <string>
 
 using json = nlohmann::json;
+
+template<typename T>
+const char* GetClassName();
 
 {{#class_list}}
 {{#has_namespace}}
 namespace {{namespace}}
 {
 {{/has_namespace}}
-
 class {{class_name}};
-void to_json(json& j, const {{class_name}}& obj);
-void from_json(const json& j, {{class_name}}& obj);
-
 {{#has_namespace}}
 }
 {{/has_namespace}}
+void to_json(json& j, const {{class_name_with_namespace}}& obj);
+void from_json(const json& j, {{class_name_with_namespace}}& obj);
+template<>
+const char* GetClassName<{{class_name_with_namespace}}>();
+
 {{/class_list}}
