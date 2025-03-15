@@ -2,8 +2,7 @@
 #include "../yjw_pass.h"
 #include "Engine/RHI/Public/rpi/yjw_rpi_header.h"
 #include "Engine/Model/Public/yjw_model.h"
-#include "Engine/Render/Private/yjw_scene.h"
-#include "Engine/Engine/Public/Framework/Scene/Scene.h"
+#include "Engine/Engine/Public/Render/Scene.h"
 
 namespace yjw
 {

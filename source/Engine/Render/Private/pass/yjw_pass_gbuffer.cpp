@@ -1,7 +1,6 @@
 #include "yjw_pass_gbuffer.h"
 #include "Engine/Render/Public/yjw_render_system.h"
 #include "projectInfo.h"
-#include "../yjw_scene.h"
 #include "Engine/InternalShaderResource/Public/yjw_internal_shader_resource.h"
 namespace yjw
 {

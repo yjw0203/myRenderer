@@ -7,3 +7,4 @@
 #endif
 
 #define Class(...) class Meta(type=class) __VA_ARGS__
+#define CAsset(...) Class(__VA_ARGS__)

@@ -9,6 +9,9 @@
 
 #include <vector>
 
+namespace yjw
+{
+
 Class(B)
 {
 public:
@@ -24,3 +27,5 @@ public:
     B b;
     std::vector<B> b_array;
 };
+
+}

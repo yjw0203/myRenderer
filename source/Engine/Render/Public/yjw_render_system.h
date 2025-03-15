@@ -15,7 +15,6 @@ namespace yjw
 
         void AttachScene(class Scene* scene);
         void AttachUI(class rhi::ImGuiUI* ui);
-        rpi::RPITexture GetSceneTexture();
 
         class RenderCamera* activeCamera = nullptr;
         class RenderCameraInputDispatcher* m_camera_dispatcher = nullptr;

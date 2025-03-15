@@ -5,7 +5,7 @@
 #include <unordered_map>
 #include <glm/glm.hpp>
 #include "Engine/RHI/Public/rpi/yjw_rpi_header.h"
-#include "Engine/Engine/Public/Framework/Material/Material.h"
+#include "Engine/Engine/Public/Render/Material.h"
 #include "Engine/Animation/Public/AnimationData.h"
 
 namespace yjw

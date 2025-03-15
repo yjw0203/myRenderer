@@ -10,6 +10,14 @@ std::string CRNamespaceToString(const CRNamespace& Namespace)
     return res;
 }
 
+std::string CRClassNamespaceToString(const CRClassNamespace& Namespace)
+{
+    std::string res = "";
+    int first = 1;
+    for (auto& space_name : Namespace)(res += first ? "" : "::") += space_name, first = 0;
+    return res;
+}
+
 CRCursor::CRCursor(const CXCursor& handle)
     : m_handle(handle) { }
 

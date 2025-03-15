@@ -26,9 +26,12 @@ namespace yjw
 
     void DrawImGuiPass::recordCommand(RPIContext commandBuffer)
     {
-        m_imgui_layer->NewFrame(commandBuffer, renderPass);
-        m_ui->DecodeUI();
-        m_imgui_layer->Render(commandBuffer);
+        if (m_ui)
+        {
+            m_imgui_layer->NewFrame(commandBuffer, renderPass);
+            m_ui->DecodeUI();
+            m_imgui_layer->Render(commandBuffer);
+        }
     }
 
     void DrawImGuiPass::submit()

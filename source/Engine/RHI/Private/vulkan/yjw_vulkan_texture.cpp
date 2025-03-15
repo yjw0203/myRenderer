@@ -90,6 +90,10 @@ namespace rhi
         m_b_create_from_exist_image = false;
 
         TransitionState(GetDevice()->GetImmediaCommandList()->GetCommandBuffer(), VK_IMAGE_LAYOUT_GENERAL);
+        if ((createInfo.usage & (VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | VK_IMAGE_USAGE_STORAGE_BIT)) == 0)
+        {
+            TransitionState(GetDevice()->GetImmediaCommandList()->GetCommandBuffer(), VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+        }
         GetDevice()->GetImmediaCommandList()->Submit();
     }
 

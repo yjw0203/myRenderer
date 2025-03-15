@@ -125,7 +125,6 @@ namespace yjw
         {
             json h;
             file >> h >> obj;
-            void from_json(const json & j, AssetHeader & obj);
             from_json(h, header);
         }
         catch (...)

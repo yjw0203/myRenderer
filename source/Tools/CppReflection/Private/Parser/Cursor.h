@@ -3,7 +3,9 @@
 #include <vector>
 #include <string>
 typedef std::vector<std::string> CRNamespace;
+typedef std::vector<std::string> CRClassNamespace;
 std::string CRNamespaceToString(const CRNamespace& Namespace);
+std::string CRClassNamespaceToString(const CRClassNamespace& Namespace);
 
 class CRCursor
 {

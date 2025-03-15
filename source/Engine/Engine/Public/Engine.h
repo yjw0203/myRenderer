@@ -7,6 +7,8 @@ namespace rhi
 
 namespace yjw
 {
+    class IRenderModule;
+    class World;
     class RenderSystem;
     class Scene;
     class Engine
@@ -25,9 +27,10 @@ namespace yjw
     private:
         bool shouldShutdown = false;
 
-        RenderSystem* m_render_system;
-        Scene* m_scene;
+        World* m_world{};
         class ::rhi::ImGuiUI* m_ui;
+
+        IRenderModule* m_render_module = nullptr;
     };
 
 }

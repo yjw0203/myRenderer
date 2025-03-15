@@ -1,21 +1,25 @@
 #include "Engine/Engine/Public/Engine.h"
-#include "Engine/Engine/Public/Framework/Scene/Scene.h"
+#include "Engine/Engine/Public/Render/Scene.h"
 #include "Engine/File/Public/yjw_file_system_module_header.h"
 #include "Engine/Render/Public/yjw_render_system.h"
+#include "Engine/Asset/Public/Asset.h"
 #include "Engine/Engine/Private/Editor/yjw_editor_ui.h"
 #include <chrono>
 #include <ctime>
+#include "Engine/Engine/Public/Framework/World.h"
+#include "Engine/Engine/Public/Framework/Actor.h"
+#include "Engine/Engine/Public/Framework/Level.h"
 
 #include "Engine/RHI/Public/externs/imgui/yjw_rhi_imgui_layer.h"
 #include "Engine/RHI/Public/externs/imgui/yjw_rhi_imgui_window.h"
+#include "Engine/Engine/Public/Module/IRenderModule.h"
 
 namespace yjw
 {
     Engine::Engine()
     {
-        m_render_system = new RenderSystem();
-        m_scene = new Scene();
-        m_ui = new EditorUI();
+        m_world = new World();
+        m_render_module = CreateModule<IRenderModule>();
     }
 
     Engine::~Engine()
@@ -34,18 +38,15 @@ namespace yjw
 
     void Engine::shutdown()
     {
+        m_render_module->Shutdown();
         shouldShutdown = true;
     }
 
     void Engine::initialize()
     {
-        m_render_system->AttachScene(m_scene);
-        m_render_system->AttachUI(m_ui);
-        m_render_system->initialize();
-
-        ((EditorUI*)m_ui)->m_scene_texture = dynamic_cast<rhi::RHIImguiLayer*>(rpi::RPIGetLayer(rhi::rhi_layer_imgui))->RegisterTexture("scene", m_render_system->GetSceneTexture().GetView());
-        ((EditorUI*)m_ui)->m_scene = m_scene;
-        m_scene->addBox();
+        m_render_module->Startup();
+        m_render_module->AttachScene(m_world->GetScene());
+        m_world->GetLevel()->SpawnActor<TestBoxActor>("test box");
     }
     void Engine::mainLoop()
     {
@@ -63,12 +64,14 @@ namespace yjw
         float deltaTime = delta_time_micro / 1000000.0f;
         currentRealTime = time;
 
-        m_render_system->tick(deltaTime);
+        m_render_module->Tick(deltaTime);
+        
+        AssetManager::Get()->process();
 
     }
     void Engine::cleanup()
     {
-        m_render_system->shutdown();
+        
     }
 
     void Engine::loadModules()

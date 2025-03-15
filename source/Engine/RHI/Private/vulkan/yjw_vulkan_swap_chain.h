@@ -14,6 +14,8 @@ namespace rhi
         ~VulkanSwapChain();
         virtual RHITexture* GetBackTexture() override;
         virtual RHITextureView* GetBackTextureView() override;
+        virtual RHITexture* GetDepthTexture() override;
+        virtual RHITextureView* GetDepthTextureView() override;
         virtual RHIRenderPass* GetCurrentRenderPass() override;
         virtual void* GetNativeWindow() override;
         virtual RHIDevice* GetRHIDevice() override;
@@ -25,6 +27,8 @@ namespace rhi
         VkExtent2D m_swapchainExtent{};
         uint32_t m_swapchainImageIndex{};
         uint32_t m_swapchainImageCount{};
+        VulkanTexture* m_depthImage{};
+        VulkanTextureView* m_depthImageView{};
         std::vector<VulkanTexture*> m_swapchainImages;
         std::vector<VulkanTextureView*> m_swapchainImageViews;
         std::vector<VulkanRenderPass*> m_swapchainRenderPasses;

@@ -1,6 +1,7 @@
 #pragma once
-#include "Engine/Engine/Public/Framework/Actor/Actor.h"
+#include "Engine/Engine/Public/Framework/Actor.h"
 #include "Engine/RHI/Public/rpi/yjw_rpi.h"
+#include "Engine/Utils/Public/DesignPatterns/ECS.h"
 #include <vector>
 
 namespace yjw
@@ -17,13 +18,19 @@ namespace yjw
     {
     public:
         Scene();
+
+        void AddMesh(Mesh* mesh);
+        void RemoveMesh(Mesh* mesh);
+
+        std::vector<Mesh*>& GetMeshes();
+
         std::vector<RenderEntity> buildEntitys();
         const std::vector<RenderEntity>& getEntitys();
-        const std::vector<Actor*>& GetActors();
-
-        void addBox();//to delete
+        void Update(float deltaTime);
     private:
-        std::vector<Actor*> m_actors;
+        std::vector<Mesh*> m_meshes;
+        std::vector<Actor*> m_lights;
+        std::vector<Actor*> m_cameras;
 
         std::vector<RenderEntity> m_render_entity;
         bool m_is_scene_dirty = false;

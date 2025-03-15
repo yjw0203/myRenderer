@@ -5,6 +5,8 @@
 #include <unordered_map>
 #include <glm/glm.hpp>
 #include "Engine/RHI/Public/rpi/yjw_rpi.h"
+#include "Engine/Engine/Public/Asset/Mesh.h"
+#include "Engine/Asset/Public/Asset.h"
 
 namespace yjw
 {
@@ -19,6 +21,7 @@ namespace yjw
     class Primitive
     {
     public:
+        Primitive() {}
         void BuildGpuPrimitive();
         rpi::RPIBuffer GetVertexBuffer(VertexType type);
         rpi::RPIBuffer GetIndexBuffer();
@@ -30,9 +33,7 @@ namespace yjw
             uint32_t size;
         };
 
-        std::vector<SubMesh> m_sub_meshes;
-        std::vector<char> m_vertexes[(int)VertexType::count];
-        std::vector<char> m_indices;
+        Asset<MeshAST> m_mesh_ast;
 
         rpi::RPIBuffer m_vertex_buffers[(int)VertexType::count];
         rpi::RPIBuffer m_index_buffer;

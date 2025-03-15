@@ -7,10 +7,11 @@
 #include "Engine/Utils/Public/DesignPatterns/Singleton.h"
 #include "json.hpp"
 #include "Engine/Utils/Public/Define.h"
+#include "Generate/Public/generate.h"
 
-using json = nlohmann::json;
 namespace yjw
 {
+    using json = nlohmann::json;
     using AssetCreateAndDeserializeFunc = std::function<void* (const json*)>;
     using AssetDestoryFunc = std::function<void(void*)>;
     using AssetSerializeFunc = std::function<void(void*, json*)>;
@@ -89,7 +90,6 @@ namespace yjw
                     return;
                 }
             }
-            assert(0);
         }
 
         void SaveAsset(AssetID id)
@@ -104,7 +104,6 @@ namespace yjw
                     return;
                 }
             }
-            assert(0);
         }
 
         const AssetInfo* GetAssetInfo(AssetID id);
@@ -161,6 +160,7 @@ namespace yjw
     class Asset
     {
     public:
+        Asset() : m_id{ -1, -1 } {}
         Asset(const char* url)
         {
             m_id = AssetManager::Get()->RegisterAsset<T>(url);
@@ -171,6 +171,11 @@ namespace yjw
         }
         Asset(Asset&& other) noexcept {
             m_id = other.m_id;
+        }
+        void SetURL(const char* url)
+        {
+            AssetManager::Get()->UnregisterAsset(m_id);
+            m_id = AssetManager::Get()->RegisterAsset<T>(url);
         }
         const AssetInfo* GetInfo()
         {
@@ -199,5 +204,30 @@ namespace yjw
 
     private:
         AssetID m_id{};
+    };
+
+    Class(AssetReferece)
+    {
+    public:
+        std::string m_url;
+
+
+        // todo: add bool m_is_loaded after reflection support not reflection filed.
+        template<typename T>
+        Asset<T> GetAsset()
+        {
+            return Asset<T>(m_url.c_str());
+        }
+
+        template<typename T>
+        void LoadAsset()
+        {
+            AssetManager::Get()->RegisterAsset<T>(m_url.c_str());
+        }
+
+        void UnloadAsset()
+        {
+            //AssetManager::Get()->UnregisterAsset(m_id);
+        }
     };
 }

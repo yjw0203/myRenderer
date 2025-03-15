@@ -1,0 +1,40 @@
+#pragma once
+#include "Engine/Utils/Public/DesignPatterns/ECS.h"
+#include "Engine/Engine/Public/Framework/Actor.h"
+#include "Engine/Engine/Public/Framework/World.h"
+namespace yjw
+{
+    class Level
+    {
+    public:
+        Level(World* world);
+
+        World* GetWorld() { return m_world; }
+
+        const std::vector<Actor*>& GetActors();
+        void Update(float deltaTime);
+
+        template<typename T>
+        Actor* SpawnActor(const char* name)
+        {
+            Entity entity = m_ecs_manager.GetEntityManager().CreateEntity();
+            Actor* actor = new T();
+            actor->SetName(name);
+            actor->SetEntity(entity);
+            actor->OnSpawned();
+            m_actors.push_back(actor);
+            if (MeshComponent* mesh_component = actor->GetEntity().GetComponent<MeshComponent>())
+            {
+                GetWorld()->GetScene()->AddMesh(mesh_component->GetMesh());
+            }
+
+            return actor;
+        }
+    private:
+        std::vector<Actor*> m_actors;
+
+        ECSManager m_ecs_manager;
+
+        World* m_world{};
+    };
+}

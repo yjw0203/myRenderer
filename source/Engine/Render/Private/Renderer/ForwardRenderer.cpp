@@ -1,0 +1,82 @@
+#include "Engine/Render/Private/Renderer/ForwardRenderer.h"
+
+namespace yjw
+{
+    void ForwardRenderer::Initialize()
+    {
+        m_context = RPICreateContext();
+    }
+
+    void ForwardRenderer::Destroy()
+    {
+        m_context->release();
+    }
+
+    void ForwardRenderer::SetOutput(RPITexture output_color, RPITexture output_depth)
+    {
+        m_output_color = output_color;
+        m_output_depth = output_depth;
+        RPITexture texture[1] = { m_output_color };
+        if (m_render_pass)
+        {
+            m_render_pass->release();
+        }
+        m_render_pass = RPICreateRenderPass(texture, 1, m_output_depth);
+    }
+
+    void ForwardRenderer::SetRenderPass(RPIRenderPass render_pass)
+    {
+        if (m_render_pass)
+        {
+            m_render_pass->release();
+        }
+        m_render_pass = render_pass;
+        m_render_pass->retain(nullptr);
+        m_output_color = RPITexture::Null;
+        m_output_depth = RPITexture::Null;
+    }
+
+    void ForwardRenderer::SetSceneProxy(RenderSceneProxy proxy)
+    {
+        m_scene_proxy = proxy;
+    }
+
+    void ForwardRenderer::BeginFrame()
+    {
+        if(m_output_color)RPICmdClearTexture(m_context, m_output_color);
+        if(m_output_depth)RPICmdClearTexture(m_context, m_output_depth);
+    }
+
+    void ForwardRenderer::RenderFrame()
+    {
+        SubmitOpacue();
+        SubmitTransparent();
+    }
+
+    void ForwardRenderer::EndFrame()
+    {
+        RPISubmit(m_context);
+    }
+
+    void ForwardRenderer::SubmitOpacue()
+    {
+        RPICmdPushEvent(m_context, "Opacue");
+        RPICmdBeginRenderPass(m_context, m_render_pass);
+        m_scene_proxy.SubmitOpaque(this);
+        RPICmdEndPass(m_context);
+        RPICmdPopEvent(m_context);
+    }
+
+    void ForwardRenderer::Submit(RenderEntity* entity)
+    {
+        RPICmdSetPrimitiveBinding(m_context, entity->m_primitive_binding);
+        RPICmdSetResourceBinding(m_context, entity->m_resource_binding);
+        RPICmdSetPipeline(m_context, entity->m_material->GetPipeline());
+        RPICmdDrawIndex(m_context, 0, 1);
+    }
+
+    void ForwardRenderer::SubmitTransparent()
+    {
+
+    }
+}

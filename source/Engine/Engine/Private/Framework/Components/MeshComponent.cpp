@@ -7,6 +7,11 @@ namespace yjw
         m_mesh = mesh;
     }
 
+    Mesh* MeshComponent::GetMesh()
+    {
+        return m_mesh;
+    }
+
     Primitive* MeshComponent::GetPrimitive()
     {
         return m_mesh->GetPrimitive();

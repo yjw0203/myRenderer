@@ -324,12 +324,16 @@ namespace rpi
         context->SetPrimitiveBinding(primitiveBinding.GetRHIPrimitiveBinding());
     }
 
-    void RPICmdBeginRenderPass(RPIContext context, RPIRenderPass renderPass, RPIResourceBinding* resourceBinding, int resourceBindingCount)
+    void RPICmdTransitionStateToRender(RPIContext context, RPIResourceBinding* resourceBinding, int resourceBindingCount)
     {
         for (int index = 0; index < resourceBindingCount; index++)
         {
             context->TransitionStateToRender(resourceBinding[index].GetRHIResourceBinding());
         }
+    }
+
+    void RPICmdBeginRenderPass(RPIContext context, RPIRenderPass renderPass)
+    {
         context->BeginPass(renderPass);
     }
 
@@ -361,6 +365,12 @@ namespace rpi
     void RPICmdCopyTexture(RPIContext context, RPITexture srcTexture, RPITexture dstTexture)
     {
         context->CopyTexture2D(srcTexture.GetTexture(), dstTexture.GetTexture());
+    }
+
+    void RPICmdClearBackBuffer(RPIContext context, RPIWindow window)
+    {
+        context->ClearTexture2D(window.swapchain->GetBackTexture());
+        context->ClearTexture2D(window.swapchain->GetDepthTexture());
     }
 
     void RPIUpdateBuffer(RPIBuffer buffer, const void* data, int offset, int size)

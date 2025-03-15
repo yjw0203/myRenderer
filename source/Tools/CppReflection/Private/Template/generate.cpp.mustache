@@ -6,6 +6,11 @@
 
 using json = nlohmann::json;
 {{#class_list}}
+
+{{#has_namespace}}
+namespace {{namespace}}
+{
+{{/has_namespace}}
 void to_json(json& j, const {{class_name_with_namespace}}& obj) {
     j = json{
         {{#field_list}}
@@ -20,9 +25,12 @@ void from_json(const json& j, {{class_name_with_namespace}}& obj) {
     }
     {{/field_list}}
 }
+{{#has_namespace}}
+}
 template<>
 const char* GetClassName<{{class_name_with_namespace}}>()
 {
     return "{{class_name}}";
 }
+{{/has_namespace}}
 {{/class_list}}

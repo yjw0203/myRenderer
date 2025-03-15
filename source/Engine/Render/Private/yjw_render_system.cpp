@@ -6,7 +6,6 @@
 #include "projectInfo.h"
 #include "glm/glm.hpp"
 #include "yjw_render_camera.h"
-#include "yjw_scene.h"
 #include <chrono>
 #include <ctime>
 #include "pass/yjw_pass_gbuffer.h"
@@ -17,11 +16,11 @@
 #include "Engine/Animation/Public/Skeleton.h"
 #include "Engine/Model/Public/AnimationLoader.h"
 
+#include "Engine/Render/Private/Renderer/ForwardRenderer.h"
+
 namespace yjw
 {
     using namespace rpi;
-
-    DefaultPipeline pipeline;
 
     std::shared_ptr<Model> naxita;
     std::shared_ptr<Skeleton> naxita_sk;
@@ -31,6 +30,10 @@ namespace yjw
     std::shared_ptr<Model> saibo;
 
     VMD naxita_anim;
+
+    RPIContext g_context;
+
+    ForwardRenderer* renderer = new ForwardRenderer();
 
     void RenderSystem::initialize()
     {
@@ -48,16 +51,12 @@ namespace yjw
         activeCamera->SetPosition(glm::vec3(7.9, 14, -13));
         activeCamera->SetRotation(glm::quat(0.2, -0.93, 0.04, -0.3));
 
-        pipeline.AttachScene(m_scene);
-        pipeline.AttachUI(m_ui);
-        pipeline.initializeResource();
-        DefaultPipelineConfig config;
-        config.window = m_window->GetRPIWindow();
-        pipeline.config(config);
-
         m_camera_dispatcher = new RenderCameraInputDispatcher(this);
         m_camera_dispatcher->Register();
 
+        renderer->Initialize();
+
+        g_context = RPICreateContext();
     }
     
     void RenderSystem::tick(float deltaTime)
@@ -69,13 +68,25 @@ namespace yjw
 
         g_internal_shader_parameters.FlushCpuDataToGpu();
 
-        pipeline.render();
-        m_window->Present(pipeline.commandBuffer);
+        //pipeline.render();
+        //m_window->Present(pipeline.commandBuffer);
+        RPICmdClearBackBuffer(g_context, m_window->GetRPIWindow());
+        RPISubmit(g_context);
+
+        renderer->SetRenderPass(m_window->GetRPIWindow().swapchain->GetCurrentRenderPass());
+        renderer->SetSceneProxy(RenderSceneProxy(m_scene));
+
+        renderer->BeginFrame();
+        renderer->RenderFrame();
+        renderer->EndFrame();
+
+        m_window->Present(g_context);
 
         Window::PoolEvents();
     }
     void RenderSystem::shutdown()
     {
+        renderer->Destroy();
         Window::Shutdown();
     }
 
@@ -87,11 +98,6 @@ namespace yjw
     void RenderSystem::AttachUI(rhi::ImGuiUI* ui)
     {
         m_ui = ui;
-    }
-
-    rpi::RPITexture RenderSystem::GetSceneTexture()
-    {
-        return pipeline.m_scene_texture;
     }
 
 }

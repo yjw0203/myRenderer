@@ -42,7 +42,8 @@ namespace yjw
 
     void ApplyToWindowPass::recordCommand(RPIContext commandBuffer)
     {
-        RPICmdBeginRenderPass(commandBuffer, renderPass, &resourceBinding, 1);
+        RPICmdTransitionStateToRender(commandBuffer, &resourceBinding, 1);
+        RPICmdBeginRenderPass(commandBuffer, renderPass);
         RPICmdSetPipeline(commandBuffer, pipeline);
         RPICmdSetResourceBinding(commandBuffer, resourceBinding);
         RPICmdSetPrimitiveBinding(commandBuffer, m_primitive_binding);

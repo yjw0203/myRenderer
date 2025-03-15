@@ -1,6 +1,7 @@
 #pragma once
-#include "Engine/Engine/Public/Framework/Material/Material.h"
-#include "Engine/Engine/Public/Framework/Primitive/Primitive.h"
+#include "Engine/Engine/Public/Render/Material.h"
+#include "Engine/Engine/Public/Render/Primitive.h"
+#include "Engine/Utils/Public/Define.h"
 
 namespace yjw
 {

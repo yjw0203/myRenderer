@@ -27,7 +27,7 @@ namespace yjw
 
     void DrawTrianglePass::recordCommand(RPIContext commandBuffer)
     {
-        RPICmdBeginRenderPass(commandBuffer, renderPass, nullptr, 0);
+        RPICmdBeginRenderPass(commandBuffer, renderPass);
         RPICmdSetPipeline(commandBuffer, pipeline);
         RPICmdDraw(commandBuffer, 6, 1, 0, 0);
         RPICmdEndPass(commandBuffer);

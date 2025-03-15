@@ -1,5 +1,5 @@
 #include "yjw_editor_ui.h"
-#include "Engine/Engine/Public/Framework/Scene/Scene.h"
+#include "Engine/Engine/Public/Render/Scene.h"
 #include <array>
 
 namespace yjw
@@ -172,10 +172,7 @@ namespace yjw
     {
         if (ImGui::TreeNode("ActorList"))
         {
-            for (const Actor* actor : m_scene->GetActors())
-            {
-                ImGui::Text(actor->GetName());
-            }
+            
             ImGui::TreePop();
         }
     }

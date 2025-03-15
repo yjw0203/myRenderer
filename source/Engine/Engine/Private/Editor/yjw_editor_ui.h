@@ -9,7 +9,7 @@ namespace yjw
 
     public:
         void* m_scene_texture = nullptr;
-        class Scene* m_scene = nullptr;
+        class World* m_world = nullptr;
 
     private:
         void ShowMenuBar();

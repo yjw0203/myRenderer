@@ -1,4 +1,4 @@
-#include "Engine/Engine/Public/Framework/Material/Material.h"
+#include "Engine/Engine/Public/Render/Material.h"
 #include "Engine/InternalShaderResource/Public/yjw_internal_shader_resource.h"
 
 namespace yjw

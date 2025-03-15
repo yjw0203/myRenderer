@@ -53,7 +53,8 @@ namespace yjw
 
     void DeferredShadingPass::recordCommand(RPIContext commandBuffer)
     {
-        RPICmdBeginRenderPass(commandBuffer, renderPass, &resourceBinding, 1);
+        RPICmdTransitionStateToRender(commandBuffer, &resourceBinding, 1);
+        RPICmdBeginRenderPass(commandBuffer, renderPass);
         RPICmdSetResourceBinding(commandBuffer, resourceBinding);
         RPICmdSetPrimitiveBinding(commandBuffer, m_primitive_binding);
         RPICmdSetPipeline(commandBuffer, pipeline);

@@ -14,11 +14,11 @@ namespace {{namespace}}
 {
 {{/has_namespace}}
 class {{class_name}};
+void to_json(json& j, const {{class_name_with_namespace}}& obj);
+void from_json(const json& j, {{class_name_with_namespace}}& obj);
 {{#has_namespace}}
 }
 {{/has_namespace}}
-void to_json(json& j, const {{class_name_with_namespace}}& obj);
-void from_json(const json& j, {{class_name_with_namespace}}& obj);
 template<>
 const char* GetClassName<{{class_name_with_namespace}}>();
 

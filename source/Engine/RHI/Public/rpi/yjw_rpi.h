@@ -41,13 +41,15 @@ namespace rpi
     void RPICmdSetPipeline(RPIContext context, RPIPipeline pipeline);
     void RPICmdSetResourceBinding(RPIContext context, RPIResourceBinding resourceBinding);
     void RPICmdSetPrimitiveBinding(RPIContext context, RPIPrimitiveBinding primitiveBinding);
-    void RPICmdBeginRenderPass(RPIContext context, RPIRenderPass renderPass, RPIResourceBinding* resourceBinding, int resourceBindingCount);
+    void RPICmdTransitionStateToRender(RPIContext context, RPIResourceBinding* resourceBinding, int resourceBindingCount);
+    void RPICmdBeginRenderPass(RPIContext context, RPIRenderPass renderPass);
     void RPICmdEndPass(RPIContext context);
     void RPICmdDraw(RPIContext context, int vertexCount, int instanceCount, int firstVertex, int firstInstance);
     void RPICmdDrawIndex(RPIContext context, int firstInstance, int instanceCount);
     void RPICmdDispatch(RPIContext context, int GroupCountX, int GroupCountY, int GroupCountZ);
     void RPICmdClearTexture(RPIContext context, RPITexture texture);
     void RPICmdCopyTexture(RPIContext context, RPITexture srcTexture, RPITexture dstTexture);
+    void RPICmdClearBackBuffer(RPIContext context, RPIWindow window);
     
     void RPIUpdateBuffer(RPIBuffer buffer, const void* data,int offset, int size);
 

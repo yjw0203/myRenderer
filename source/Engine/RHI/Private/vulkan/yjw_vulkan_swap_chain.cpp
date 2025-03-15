@@ -143,6 +143,22 @@ namespace rhi
         images.resize(imageCount);
         vkGetSwapchainImagesKHR(pDevice->GetNativeDevice(), m_native_swapchain, &imageCount, images.data());
 
+        RHITextureDescriptor textureDesc{};
+        textureDesc.resourceType = RHIResourceType::texture2D;
+        textureDesc.format = RHIFormat::D24_unorm_S8_uint;
+        textureDesc.width = m_swapchainExtent.width;
+        textureDesc.height = m_swapchainExtent.height;
+        textureDesc.miplevels = 1;
+        textureDesc.depthOrArraySize = 1;
+        textureDesc.usage = (int)RHIResourceUsageBits::allow_depth_stencil | (int)RHIResourceUsageBits::deny_shader_resource;
+        textureDesc.memoryType = RHIMemoryType::default_;
+        m_depthImage = new VulkanTexture(pDevice, textureDesc);
+
+        RHITextureViewDescriptor depthViewDesc{};
+        depthViewDesc.texture = m_depthImage;
+        depthViewDesc.format = RHIFormat::D24_unorm_S8_uint;
+        m_depthImageView = new VulkanTextureView(pDevice, depthViewDesc);
+
         m_swapchainImageCount = imageCount;
         //create swapchain image view
         m_swapchainImages.resize(imageCount);
@@ -170,7 +186,7 @@ namespace rhi
             RHIRenderPassDescriptor renderPassDesc{};
             renderPassDesc.colorAttachments[0] = m_swapchainImageViews[i];
             renderPassDesc.colorAttachmentCount = 1;
-            renderPassDesc.depthStencilAttachment = nullptr;
+            renderPassDesc.depthStencilAttachment = m_depthImageView;
             m_swapchainRenderPasses[i] = new VulkanRenderPass(pDevice, renderPassDesc);
         }
 
@@ -191,6 +207,8 @@ namespace rhi
     VulkanSwapChain::~VulkanSwapChain()
     {
         GetDevice()->GetParentInstance()->OnSwapchainShutdown(this);
+        m_depthImage->release();
+        m_depthImageView->release();
         for (int i = 0; i < m_swapchainImages.size(); i++)
         {
             m_swapchainImages[i]->release();
@@ -245,6 +263,16 @@ namespace rhi
     RHITextureView* VulkanSwapChain::GetBackTextureView()
     {
         return m_swapchainImageViews[m_swapchainImageIndex];
+    }
+
+    RHITexture* VulkanSwapChain::GetDepthTexture()
+    {
+        return m_depthImage;
+    }
+
+    RHITextureView* VulkanSwapChain::GetDepthTextureView()
+    {
+        return m_depthImageView;
     }
 
     RHIRenderPass* VulkanSwapChain::GetCurrentRenderPass()

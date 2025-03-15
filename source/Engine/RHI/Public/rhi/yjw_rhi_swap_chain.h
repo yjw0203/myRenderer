@@ -10,6 +10,8 @@ namespace rhi
     public:
         virtual RHITexture* GetBackTexture() = 0;
         virtual RHITextureView* GetBackTextureView() = 0;
+        virtual RHITexture* GetDepthTexture() = 0;
+        virtual RHITextureView* GetDepthTextureView() = 0;
         virtual RHIRenderPass* GetCurrentRenderPass() = 0;
         virtual void* GetNativeWindow() = 0;
         virtual class RHIDevice* GetRHIDevice() = 0;

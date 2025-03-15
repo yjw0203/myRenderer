@@ -1,4 +1,4 @@
-#include "Engine/Engine/Public/Framework/Primitive/Primitive.h"
+#include "Engine/Engine/Public/Render/Primitive.h"
 #include "projectInfo.h"
 
 namespace yjw
@@ -20,8 +20,8 @@ namespace yjw
     {
         if (m_vertex_buffers[(int)type].IsNull())
         {
-            m_vertex_buffers[(int)type] = rpi::RPICreateGpuVertexBuffer(m_vertexes[(int)type].size());
-            rpi::RPIUpdateBuffer(m_vertex_buffers[(int)type], m_vertexes[(int)type].data(), 0, m_vertexes[(int)type].size());
+            m_vertex_buffers[(int)type] = rpi::RPICreateGpuVertexBuffer(m_mesh_ast.GetData()->m_vertexes[(int)type].size());
+            rpi::RPIUpdateBuffer(m_vertex_buffers[(int)type], m_mesh_ast.GetData()->m_vertexes[(int)type].data(), 0, m_mesh_ast.GetData()->m_vertexes[(int)type].size());
         }
         return m_vertex_buffers[(int)type];
     }
@@ -30,8 +30,8 @@ namespace yjw
     {
         if (m_index_buffer.IsNull())
         {
-            m_index_buffer = rpi::RPICreateGpuVertexBuffer(m_indices.size());
-            rpi::RPIUpdateBuffer(m_index_buffer, m_indices.data(), 0, m_indices.size());
+            m_index_buffer = rpi::RPICreateGpuVertexBuffer(m_mesh_ast.GetData()->m_indices.size());
+            rpi::RPIUpdateBuffer(m_index_buffer, m_mesh_ast.GetData()->m_indices.data(), 0, m_mesh_ast.GetData()->m_indices.size());
         }
         return m_index_buffer;
     }
@@ -40,13 +40,19 @@ namespace yjw
     {
         if (m_primitive_binding.IsNull())
         {
-            BuildGpuPrimitive();
+            if (m_mesh_ast.GetData())
+            {
+                BuildGpuPrimitive();
+            }
         }
         return m_primitive_binding;
     }
 
     BoxPrimitive::BoxPrimitive()
     {
+        m_mesh_ast.SetURL("Content/box.mesh.ast");
+
+        /*
         std::vector<glm::vec3> posiitons;
         std::vector<glm::vec3> normals;
         std::vector<glm::vec2> uvs;
@@ -83,17 +89,24 @@ namespace yjw
             indices.push_back(i);
         }
 
-        m_vertexes[(int)VertexType::postion].resize(sizeof(glm::vec3) * posiitons.size());
-        memcpy(m_vertexes[(int)VertexType::postion].data(), posiitons.data(), sizeof(glm::vec3) * posiitons.size());
+        if (m_mesh_ast.GetData())
+        {
+            m_mesh_ast.GetData()->m_vertexes.resize((int)VertexType::count);
+            m_mesh_ast.GetData()->m_vertexes[(int)VertexType::postion].resize(sizeof(glm::vec3) * posiitons.size());
+            memcpy(m_mesh_ast.GetData()->m_vertexes[(int)VertexType::postion].data(), posiitons.data(), sizeof(glm::vec3) * posiitons.size());
 
-        m_vertexes[(int)VertexType::normal].resize(sizeof(glm::vec3) * normals.size());
-        memcpy(m_vertexes[(int)VertexType::normal].data(), normals.data(), sizeof(glm::vec3) * normals.size());
+            m_mesh_ast.GetData()->m_vertexes[(int)VertexType::normal].resize(sizeof(glm::vec3) * normals.size());
+            memcpy(m_mesh_ast.GetData()->m_vertexes[(int)VertexType::normal].data(), normals.data(), sizeof(glm::vec3) * normals.size());
 
-        m_vertexes[(int)VertexType::uv].resize(sizeof(glm::vec2) * uvs.size());
-        memcpy(m_vertexes[(int)VertexType::uv].data(), uvs.data(), sizeof(glm::vec2) * uvs.size());
+            m_mesh_ast.GetData()->m_vertexes[(int)VertexType::uv].resize(sizeof(glm::vec2) * uvs.size());
+            memcpy(m_mesh_ast.GetData()->m_vertexes[(int)VertexType::uv].data(), uvs.data(), sizeof(glm::vec2) * uvs.size());
 
-        m_indices.resize(sizeof(int32_t) * indices.size());
-        memcpy(m_indices.data(), indices.data(), sizeof(int32_t) * indices.size());
+            m_mesh_ast.GetData()->m_indices.resize(sizeof(int32_t) * indices.size());
+            memcpy(m_mesh_ast.GetData()->m_indices.data(), indices.data(), sizeof(int32_t) * indices.size());
+
+            m_mesh_ast.Save();
+        }
+        */
     }
 
     SpherePrimitive::SpherePrimitive()

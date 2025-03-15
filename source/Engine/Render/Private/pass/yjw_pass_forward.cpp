@@ -1,7 +1,6 @@
 #include "yjw_pass_forward.h"
 #include "Engine/Render/Public/yjw_render_system.h"
 #include "projectInfo.h"
-#include "../yjw_scene.h"
 #include "Engine/InternalShaderResource/Public/yjw_internal_shader_resource.h"
 namespace yjw
 {
@@ -51,7 +50,8 @@ namespace yjw
         {
             resource_bindings.push_back(m_entitys[i].m_resource_binding);
         }
-        RPICmdBeginRenderPass(commandBuffer, renderPass, resource_bindings.data(), m_entitys.size());
+        RPICmdTransitionStateToRender(commandBuffer, resource_bindings.data(), m_entitys.size());
+        RPICmdBeginRenderPass(commandBuffer, renderPass);
         for (int i = 0; i < m_entitys.size(); i++)
         {
             RPICmdSetPrimitiveBinding(commandBuffer, m_entitys[i].m_primitive_binding);
