@@ -1,15 +1,4 @@
-cbuffer camera
-{  
-    float4x4 viewMat;  
-    float4x4 projectMat;  
-    float3 cameraPos;
-};  
-
-cbuffer light
-{  
-    float3 lightDirection;  
-    float3 lightColor;  
-};
+#include "Global.hlsli"
 
 struct MeshVertexOutput  
 {  
@@ -125,7 +114,7 @@ PS_OUTPUT PSMain(MeshVertexOutput input)
     gbuffer_data.metallic = metallic_roughness.x;
     gbuffer_data.roughness = metallic_roughness.y;
     gbuffer_data.normal = input.normal;
-  
+    
     PS_OUTPUT output;  
     output.color = float4(calculateShading(gbuffer_data),1);
     return output;  

@@ -1,14 +1,21 @@
 #include "Engine/Render/Private/Renderer/ForwardRenderer.h"
+#include "Engine/Render/Private/Pass/SkyBoxPass.h"
+#include "projectInfo.h"
 
 namespace yjw
 {
     void ForwardRenderer::Initialize()
     {
         m_context = RPICreateContext();
+        m_sky_box_pass = new SkyBoxPass();
+        m_sky_box_pass->Initialize();
+        m_sky_box_pass->LoadResource(RESOURCE_FILE(skybox/6));
     }
 
     void ForwardRenderer::Destroy()
     {
+        m_sky_box_pass->Destroy();
+        delete m_sky_box_pass;
         m_context->release();
     }
 
@@ -49,8 +56,11 @@ namespace yjw
 
     void ForwardRenderer::RenderFrame()
     {
+        RPICmdBeginRenderPass(m_context, m_render_pass);
         SubmitOpacue();
+        m_sky_box_pass->Submit(m_context);
         SubmitTransparent();
+        RPICmdEndPass(m_context);
     }
 
     void ForwardRenderer::EndFrame()
@@ -61,9 +71,7 @@ namespace yjw
     void ForwardRenderer::SubmitOpacue()
     {
         RPICmdPushEvent(m_context, "Opacue");
-        RPICmdBeginRenderPass(m_context, m_render_pass);
         m_scene_proxy.SubmitOpaque(this);
-        RPICmdEndPass(m_context);
         RPICmdPopEvent(m_context);
     }
 

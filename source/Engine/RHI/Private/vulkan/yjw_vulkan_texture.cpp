@@ -27,6 +27,7 @@ namespace rhi
 
         VkImageCreateInfo createInfo{};
         createInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
+        createInfo.flags = 0;
         switch (desc.resourceType)
         {
         case RHIResourceType::texture1D:
@@ -56,6 +57,7 @@ namespace rhi
             createInfo.extent.height = desc.height;
             createInfo.extent.depth = 1;
             createInfo.arrayLayers = 6;
+            createInfo.flags |= VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT;
             break;
         case RHIResourceType::texture2DArray:
             createInfo.imageType = VK_IMAGE_TYPE_2D;
@@ -63,6 +65,7 @@ namespace rhi
             createInfo.extent.height = desc.height;
             createInfo.extent.depth = 1;
             createInfo.arrayLayers = desc.depthOrArraySize;
+            createInfo.flags |= VK_IMAGE_CREATE_2D_ARRAY_COMPATIBLE_BIT;
             break;
         }
         createInfo.mipLevels = desc.miplevels;
@@ -136,6 +139,27 @@ namespace rhi
     int VulkanTexture::GetHeight()
     {
         return GetDesc().height;
+    }
+
+    int VulkanTexture::GetLayerCount()
+    {
+        if (GetDesc().resourceType == RHIResourceType::textureCube)
+        {
+            return 6;
+        }
+        else if (GetDesc().resourceType == RHIResourceType::texture2D || GetDesc().resourceType == RHIResourceType::texture1D)
+        {
+            return 1;
+        }
+        else
+        {
+            return GetDesc().depthOrArraySize;
+        }
+    }
+
+    int VulkanTexture::GetMipCount()
+    {
+        return GetDesc().miplevels;
     }
 
     void VulkanTexture::Update(void* data, int sizeOfByte, int arrayLayer, int mipLevel)
@@ -216,9 +240,9 @@ namespace rhi
         }
 
         barrier.subresourceRange.baseMipLevel = 0;
-        barrier.subresourceRange.levelCount = 1;
+        barrier.subresourceRange.levelCount = GetMipCount();
         barrier.subresourceRange.baseArrayLayer = 0;
-        barrier.subresourceRange.layerCount = 1;
+        barrier.subresourceRange.layerCount = GetLayerCount();
 
         VkPipelineStageFlags sourceStage;
         VkPipelineStageFlags destinationStage;
@@ -262,16 +286,35 @@ namespace rhi
         VkImageViewCreateInfo createInfo{};
         createInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
         createInfo.image = GetTexture()->GetVkImage();
-        createInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
+        if (desc.resourceType == RHIResourceType::texture2DArray)
+        {
+            createInfo.viewType = VK_IMAGE_VIEW_TYPE_2D_ARRAY;
+        }
+        else if (desc.resourceType == RHIResourceType::texture1D)
+        {
+            createInfo.viewType = VK_IMAGE_VIEW_TYPE_1D;
+        }
+        else if (desc.resourceType == RHIResourceType::texture3D)
+        {
+            createInfo.viewType = VK_IMAGE_VIEW_TYPE_3D;
+        }
+        else if (desc.resourceType == RHIResourceType::textureCube)
+        {
+            createInfo.viewType = VK_IMAGE_VIEW_TYPE_CUBE;
+        }
+        else
+        {
+            createInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
+        }
         createInfo.format = ConvertFormatToVkFormat(desc.format);
         createInfo.components.r = VK_COMPONENT_SWIZZLE_IDENTITY;
         createInfo.components.g = VK_COMPONENT_SWIZZLE_IDENTITY;
         createInfo.components.b = VK_COMPONENT_SWIZZLE_IDENTITY;
         createInfo.components.a = VK_COMPONENT_SWIZZLE_IDENTITY;
-        createInfo.subresourceRange.baseMipLevel = 0;
-        createInfo.subresourceRange.levelCount = 1;
-        createInfo.subresourceRange.baseArrayLayer = 0;
-        createInfo.subresourceRange.layerCount = 1;
+        createInfo.subresourceRange.baseMipLevel = desc.baseMip;
+        createInfo.subresourceRange.levelCount = desc.mipCount;
+        createInfo.subresourceRange.baseArrayLayer = desc.baseLayer;
+        createInfo.subresourceRange.layerCount = desc.layerCount;
         if (createInfo.format == VK_FORMAT_D24_UNORM_S8_UINT)
         {
             createInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT;

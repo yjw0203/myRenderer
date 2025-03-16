@@ -7,6 +7,7 @@
 #include "ShaderConductor/ShaderConductor.hpp"
 #include "spirv_cross/spirv_reflect.hpp"
 #include "rapidjson/document.h"
+#include "projectInfo.h"
 
 #include <cassert>
 
@@ -102,6 +103,9 @@ namespace rhi
         if (strcmp(str, "texture2D") == 0){
             return ShaderReflect::ImageType::texture2D;
         }
+        if (strcmp(str, "textureCube") == 0) {
+            return ShaderReflect::ImageType::textureCube;
+        }
         assert(0);
         return (ShaderReflect::ImageType)-1;
     }
@@ -114,6 +118,11 @@ namespace rhi
     const ShaderReflect& ShaderBlob::GetReflect()
     {
         return m_reflect;
+    }
+
+    ShaderConductor::Blob* ShaderBlob::GetBlob()
+    {
+        return m_blob;
     }
 
     void ShaderBlob::SetBlob(ShaderConductor::Blob* blob)
@@ -138,6 +147,19 @@ namespace rhi
 
     ShaderBlob ShaderCompiler::CompileFromCodeHLSLToSpirv(ShaderConductor::ShaderStage shaderType, const char* code, const char* entryName)
     {
+        std::vector<Blob*> blob_to_delete;
+
+        auto loadIncludeCallback = [&](const char* includeName)
+        {
+            std::string url = std::string("") + SHADER_PATH + "/" + includeName;
+            std::vector<char> code;
+            ReadCodeFromFileUrl(url.c_str(), code);
+            code.push_back('\0');
+            Blob* blob = CreateBlob(code.data(), code.size());
+            blob_to_delete.push_back(blob);
+            return blob;
+        };
+
         Compiler compiler;
         Compiler::SourceDesc sourceDesc{};
         sourceDesc.source = code;
@@ -145,6 +167,7 @@ namespace rhi
         sourceDesc.stage = shaderType;
         sourceDesc.defines = nullptr;
         sourceDesc.numDefines = 0;
+        sourceDesc.loadIncludeCallback = loadIncludeCallback;
 
         Compiler::Options options{};
         options.packMatricesInRowMajor = true;
@@ -164,6 +187,7 @@ namespace rhi
         targetDesc.asModule = true;
 
         Compiler::ResultDesc result = compiler.Compile(sourceDesc, options, targetDesc);
+
         if (result.errorWarningMsg)
         {
             std::vector<char> errorMsg;

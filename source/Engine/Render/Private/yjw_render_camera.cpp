@@ -24,6 +24,11 @@ namespace yjw
         return m_rotation;
     }
 
+    glm::mat4x4 RenderCamera::getViewMatrixWithoutTranslation()
+    {
+        return glm::lookAt(glm::vec3(0,0,0), forward(), up());
+    }
+
     glm::mat4x4 RenderCamera::getViewMatrix()
     {
         return glm::lookAt(m_position, m_position + forward(), up());
@@ -123,20 +128,20 @@ namespace yjw
         if (isRightMouseButton)
         {
             float angularVelocity = glm::radians(180.0f);
-            float deltaX = (x - lastMouseX) / 1200;
-            float deltaY = (y - lastMouseY) / 1200;
-            glm::vec2 deltaAngular = glm::vec2(deltaX * angularVelocity, deltaY * angularVelocity);
+            float deltaX = (x - lastMouseX) / 1200 * angularVelocity;
+            float deltaY = (y - lastMouseY) / 1200 * angularVelocity;
             RenderCamera& camera = *m_render_system->activeCamera;
+            glm::quat camera_rot = camera.rotation();
 
-            float dot = glm::dot(camera.AbsoluteUp(),(camera.forward()));
-            if ((dot < -0.99f && deltaAngular.y > 0.0f) || // angle nearing 180 degrees
-                (dot > 0.99f && deltaAngular.y < 0.0f))    // angle nearing 0 degrees
-            deltaAngular.y = 0.0f;
+            glm::vec3 XAxis = glm::vec3(1, 0, 0);
+            glm::vec3 pitchAxis = XAxis;
+            camera_rot = glm::rotate(camera_rot, deltaY, pitchAxis);
 
-            glm::vec3 eulerAngle = glm::eulerAngles(camera.rotation());
+            glm::vec3 YAxis = glm::vec3(0, 1, 0) * camera_rot;
+            glm::vec3 yawAxis = YAxis;
+            camera_rot = glm::rotate(camera_rot, deltaX, yawAxis);
 
-            eulerAngle += glm::vec3(deltaAngular.y, deltaAngular.x, 0);
-            camera.SetRotation(glm::quat(eulerAngle));
+            camera.SetRotation(camera_rot);
         }
         lastMouseX = x;
         lastMouseY = y;

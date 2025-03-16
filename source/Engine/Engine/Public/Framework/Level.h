@@ -23,9 +23,9 @@ namespace yjw
             actor->SetEntity(entity);
             actor->OnSpawned();
             m_actors.push_back(actor);
-            if (MeshComponent* mesh_component = actor->GetEntity().GetComponent<MeshComponent>())
+            if (StaticMeshComponent* mesh_component = actor->GetEntity().GetComponent<StaticMeshComponent>())
             {
-                GetWorld()->GetScene()->AddMesh(mesh_component->GetMesh());
+                GetWorld()->GetScene()->AddPrimitiveComponent(mesh_component);
             }
 
             return actor;

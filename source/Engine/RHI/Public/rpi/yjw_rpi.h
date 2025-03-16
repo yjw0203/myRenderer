@@ -19,6 +19,7 @@ namespace rpi
     RPITexture RPICreateDepthStencilTexture2D(int width, int height, RPIFormat format);
     RPITexture RPICreateUploadTexture2D(int width, int height, RPIFormat format);
     RPITexture RPICreateTexture2DFromFile(const char* filePath);
+    RPITexture RPICreateTextureCubeFromFile(const char* file[6]);// X, -X, Y, -Y, Z, -Z
 
     RPITexture RPICreateTextureView(RPITexture texture, RPIFormat format);
     RPIBuffer RPICreateBufferView(RPIBuffer buffer, int offset, int width);

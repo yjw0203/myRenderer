@@ -10,6 +10,7 @@ namespace yjw
         struct alignas(64) Camera
         {
             glm::mat4x4 viewMat;
+            glm::mat4x4 viewMatWithoutTranslation;
             glm::mat4x4 projectMat;
             alignas(16) glm::vec3 cameraPos;
         };

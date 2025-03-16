@@ -53,42 +53,86 @@ namespace yjw
         m_mesh_ast.SetURL("Content/box.mesh.ast");
 
         /*
-        std::vector<glm::vec3> posiitons;
-        std::vector<glm::vec3> normals;
-        std::vector<glm::vec2> uvs;
-        std::vector<glm::int32_t> indices;
+        std::vector<glm::vec3> posiitons = {
+            glm::vec3(0, 0, 0),
+            glm::vec3(0, 0, 1),
+            glm::vec3(0, 1, 0),
+            glm::vec3(0, 1, 1),
 
-        glm::vec2 temps[6] = { {0,0},{0,1},{1,1},{0,0},{1,1},{1,0} };
-        for (int i = 0; i < 3; i++)
-        {
-            for (int j = i + 1; j < 3; j++)
-            {
-                int k = 3 - i - j;
-                for (int n = -1; n <= 1; n += 2)
-                {
-                    for (int t = 0; t < 6; t++)
-                    {
-                        glm::vec2 uv = temps[t];
-                        glm::vec3 normal = {};
-                        normal[k] = (float)n;
-                        glm::vec3 position = {};
-                        position[i] = uv[0] * 2 - 1;
-                        position[j] = uv[1] * 2 - 1;
-                        position[k] = (float)n;
-                    
-                        posiitons.push_back(position);
-                        normals.push_back(normal);
-                        uvs.push_back(uv);
-                    }
-                }
+            glm::vec3(1, 0, 0),
+            glm::vec3(1, 0, 1),
+            glm::vec3(1, 1, 0),
+            glm::vec3(1, 1, 1),
 
-            }
-        }
-        for (int i = 0; i < 36; i++)
-        {
-            indices.push_back(i);
-        }
+            glm::vec3(0, 0, 0),
+            glm::vec3(0, 0, 1),
+            glm::vec3(1, 0, 0),
+            glm::vec3(1, 0, 1),
 
+            glm::vec3(0, 1, 0),
+            glm::vec3(0, 1, 1),
+            glm::vec3(1, 1, 0),
+            glm::vec3(1, 1, 1),
+
+            glm::vec3(0, 0, 0),
+            glm::vec3(0, 1, 0),
+            glm::vec3(1, 0, 0),
+            glm::vec3(1, 1, 0),
+
+            glm::vec3(0, 0, 1),
+            glm::vec3(0, 1, 1),
+            glm::vec3(1, 0, 1),
+            glm::vec3(1, 1, 1),
+        };
+        std::vector<glm::vec2> uvs = {
+            glm::vec2(0, 0),
+            glm::vec2(1, 0),
+            glm::vec2(1, 1),
+            glm::vec2(0, 1),
+
+            glm::vec2(0, 1),
+            glm::vec2(1, 1),
+            glm::vec2(1, 0),
+            glm::vec2(0, 0),
+
+            glm::vec2(0, 0),
+            glm::vec2(1, 0),
+            glm::vec2(0, 1),
+            glm::vec2(1, 1),
+
+            glm::vec2(1, 1),
+            glm::vec2(0, 1),
+            glm::vec2(1, 0),
+            glm::vec2(0, 0),
+
+            glm::vec2(0, 0),
+            glm::vec2(1, 1),
+            glm::vec2(0, 1),
+            glm::vec2(1, 0),
+
+            glm::vec2(1, 0),
+            glm::vec2(0, 1),
+            glm::vec2(1, 1),
+            glm::vec2(0, 0),
+        };
+        std::vector<glm::vec3> normals = {
+            glm::vec3(-1,0,0),glm::vec3(-1,0,0),glm::vec3(-1,0,0),glm::vec3(-1,0,0),
+            glm::vec3(1,0,0),glm::vec3(1,0,0),glm::vec3(1,0,0),glm::vec3(1,0,0),
+            glm::vec3(0,-1,0),glm::vec3(0,-1,0),glm::vec3(0,-1,0),glm::vec3(0,-1,0),
+            glm::vec3(0,1,0),glm::vec3(0,1,0),glm::vec3(0,1,0),glm::vec3(0,1,0),
+            glm::vec3(0,0,-1),glm::vec3(0,0,-1),glm::vec3(0,0,-1),glm::vec3(0,0,-1),
+            glm::vec3(0,0,1),glm::vec3(0,0,1),glm::vec3(0,0,1),glm::vec3(0,0,1),
+        };
+        std::vector<glm::int32_t> indices = {
+            0,1,3,0,3,2,
+            4,6,7,4,7,5,
+            8,11,9,8,10,11,
+            14,12,13,14,13,15,
+            16,17,19,16,19,18,
+            20,22,21,22,23,21
+        };
+
+        AssetManager::Get()->process();
         if (m_mesh_ast.GetData())
         {
             m_mesh_ast.GetData()->m_vertexes.resize((int)VertexType::count);

@@ -1,6 +1,5 @@
 #include "Engine/Engine/Public/Render/Scene.h"
 #include "Engine/Engine/Public/Framework/World.h"
-#include "Engine/Engine/Public/Framework/Components/MeshComponent.h"
 #include "Engine/Engine/Public/Render/Mesh.h"
 #include "Engine/Engine/Public/Framework/Actor.h"
 #include "Engine/Engine/Public/Framework/Level.h"

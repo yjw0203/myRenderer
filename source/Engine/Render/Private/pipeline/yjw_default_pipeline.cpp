@@ -1,11 +1,11 @@
 #include "yjw_default_pipeline.h"
-#include "Engine/Render/Private/pass/yjw_pass_draw_triangle.h"
-#include "Engine/Render/Private/pass/yjw_pass_gbuffer.h"
-#include "Engine/Render/Private/pass/yjw_pass_apply_to_window.h"
-#include "Engine/Render/Private/pass/yjw_pass_deferred_shading.h"
-#include "Engine/Render/Private/pass/yjw_pass_imgui.h"
-#include "Engine/Render/Private/pass/yjw_pass_forward.h"
-#include "Engine/Render/Private/pass/yjw_pass_tone_mapping.h"
+#include "Engine/Render/Private/pass1/yjw_pass_draw_triangle.h"
+#include "Engine/Render/Private/pass1/yjw_pass_gbuffer.h"
+#include "Engine/Render/Private/pass1/yjw_pass_apply_to_window.h"
+#include "Engine/Render/Private/pass1/yjw_pass_deferred_shading.h"
+#include "Engine/Render/Private/pass1/yjw_pass_imgui.h"
+#include "Engine/Render/Private/pass1/yjw_pass_forward.h"
+#include "Engine/Render/Private/pass1/yjw_pass_tone_mapping.h"
 
 
 namespace yjw

@@ -136,6 +136,7 @@ namespace rpi
         RHITexture* texture = RPIO(device)->CreateTexture(desc);
 
         RHITextureViewDescriptor viewDesc{};
+        viewDesc.resourceType = RHIResourceType::texture2D;
         viewDesc.texture = texture;
         viewDesc.format = format;
         RHITextureView* textureView = RPIO(device)->CreateTextureView(viewDesc);
@@ -156,6 +157,7 @@ namespace rpi
         RHITexture* texture = RPIO(device)->CreateTexture(desc);
 
         RHITextureViewDescriptor viewDesc{};
+        viewDesc.resourceType = RHIResourceType::texture2D;
         viewDesc.texture = texture;
         viewDesc.format = format;
         RHITextureView* textureView = RPIO(device)->CreateTextureView(viewDesc);
@@ -176,6 +178,7 @@ namespace rpi
         RHITexture* texture = RPIO(device)->CreateTexture(desc);
 
         RHITextureViewDescriptor viewDesc{};
+        viewDesc.resourceType = RHIResourceType::texture2D;
         viewDesc.texture = texture;
         viewDesc.format = format;
         RHITextureView* textureView = RPIO(device)->CreateTextureView(viewDesc);
@@ -204,8 +207,54 @@ namespace rpi
         stbi_image_free(pixels);
 
         RHITextureViewDescriptor viewDesc{};
+        viewDesc.resourceType = RHIResourceType::texture2D;
         viewDesc.texture = texture;
         viewDesc.format = RHIFormat::R8G8B8A8_unorm;
+        RHITextureView* textureView = RPIO(device)->CreateTextureView(viewDesc);
+
+        return RPITexture(texture, textureView);
+    }
+
+    RPITexture RPICreateTextureCubeFromFile(const char* file[6])
+    {
+        int texWidth[6] = {}, texHeight[6] = {}, texChannels[6] = {};
+        stbi_uc* pixels[6] = {};
+        for (int i = 0; i < 6; i++)
+        {
+            pixels[i] = stbi_load(file[i], &texWidth[i], &texHeight[i], &texChannels[i], STBI_rgb_alpha);
+        }
+        for (int i = 1; i < 6; i++)
+        {
+            assert(texWidth[i] == texWidth[i - 1]);
+            assert(texHeight[i] == texHeight[i - 1]);
+            assert(texChannels[i] == texChannels[i - 1]);
+        }
+        RHITextureDescriptor desc{};
+        desc.resourceType = RHIResourceType::textureCube;
+        desc.width = texWidth[0];
+        desc.height = texHeight[0];
+        desc.depthOrArraySize = 1;
+        desc.miplevels = 1;
+        desc.format = RHIFormat::R8G8B8A8_unorm;
+        desc.usage = (int)RHIResourceUsageBits::allow_transfer_dst;
+        desc.memoryType = RHIMemoryType::default_;
+        RHITexture* texture = RPIO(device)->CreateTexture(desc);
+        for (int i = 0; i < 6; i++)
+        {
+            int imageSize = texWidth[i] * texHeight[i] * 4;
+            if (pixels[i])
+            {
+                texture->Update(pixels[i], imageSize, i, 0);
+            }
+            stbi_image_free(pixels[i]);
+        }
+
+        RHITextureViewDescriptor viewDesc{};
+        viewDesc.resourceType = RHIResourceType::textureCube;
+        viewDesc.texture = texture;
+        viewDesc.format = RHIFormat::R8G8B8A8_unorm;
+        viewDesc.baseLayer = 0;
+        viewDesc.layerCount = 6;
         RHITextureView* textureView = RPIO(device)->CreateTextureView(viewDesc);
 
         return RPITexture(texture, textureView);
@@ -214,6 +263,7 @@ namespace rpi
     RPITexture RPICreateTextureView(RPITexture texture, RPIFormat format)
     {
         RHITextureViewDescriptor viewDesc{};
+        viewDesc.resourceType = RHIResourceType::texture2D;
         viewDesc.texture = texture.GetTexture();
         viewDesc.format = format;
         RHITextureView* textureView = RPIO(device)->CreateTextureView(viewDesc);

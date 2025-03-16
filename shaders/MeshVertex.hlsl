@@ -1,9 +1,4 @@
-cbuffer camera
-{  
-    float4x4 viewMat;  
-    float4x4 projectMat;  
-    float3 cameraPos;
-};  
+#include "Global.hlsli"
 
 struct MeshVertexInput  
 {  

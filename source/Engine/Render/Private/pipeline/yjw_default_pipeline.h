@@ -5,8 +5,8 @@
 #include <memory>
 #include "Engine/RHI/Public/rpi/yjw_rpi_header.h"
 #include "Engine/Render/Private/yjw_pass.h"
-#include "Engine/Render/Private/pass/yjw_pass_forward.h"
-#include "Engine/Render/Private/pass/yjw_pass_debug.h"
+#include "Engine/Render/Private/pass1/yjw_pass_forward.h"
+#include "Engine/Render/Private/pass1/yjw_pass_debug.h"
 
 #include "Engine/RHI/Public/externs/imgui/yjw_rhi_imgui_layer.h"
 #include "Engine/RHI/Public/externs/imgui/yjw_rhi_imgui_window.h"

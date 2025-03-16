@@ -165,8 +165,13 @@ namespace rhi
 
     struct RHITextureViewDescriptor
     {
+        RHIResourceType resourceType;
         RHITexture* texture;
         RHIFormat format;
+        int baseMip{ 0 };
+        int mipCount{ 1 };
+        int baseLayer{ 0 };
+        int layerCount{ 1 };
     };
 
     struct RHISamplerDescriptor

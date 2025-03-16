@@ -1,6 +1,6 @@
 #pragma once
 #include "Engine/Utils/Public/DesignPatterns/ECS.h"
-#include "Engine/Engine/Public/Framework/Components/MeshComponent.h"
+#include "Engine/Engine/Public/Framework/Components/StaticMeshComponent.h"
 #include "Engine/Engine/Public/Render/Mesh.h"
 
 namespace yjw
@@ -29,7 +29,7 @@ namespace yjw
             rpi::RPITexture texture = rpi::RPICreateTexture2DFromFile(RESOURCE_FILE(cao/tex/髮1.png));
             material_instance->SetTexture("albedoTex", texture);
             Mesh* mesh = new Mesh(&g_box_primitive, material_instance);
-            GetEntity().AddComponent<MeshComponent>()->SetMesh(mesh);
+            GetEntity().AddComponent<StaticMeshComponent>()->SetMesh(mesh);
         }
     };
 }

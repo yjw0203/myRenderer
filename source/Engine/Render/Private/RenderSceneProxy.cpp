@@ -5,7 +5,7 @@ namespace yjw
 {
     void RenderSceneProxy::SubmitOpaque(IRenderer* renderer)
     {
-        for (Mesh* mesh : m_scene->GetMeshes())
+        for (PrimitiveComponent* mesh : m_scene->GetMeshes())
         {
             RenderEntity entity{};
             entity.m_material = mesh->GetMaterialInstance();

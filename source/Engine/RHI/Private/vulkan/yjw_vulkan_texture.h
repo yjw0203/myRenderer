@@ -14,6 +14,8 @@ namespace rhi
         VkDeviceMemory GetVkDeviceMemory();
         int GetWidth();
         int GetHeight();
+        int GetLayerCount();
+        int GetMipCount();
         virtual void Update(void* data, int sizeOfByte, int arrayLayer = 0, int mipLevel = 0) override;
         void TransitionState(VkCommandBuffer commandBuffer, VkImageLayout newLayout);// to be multi thread
         void TransitionState(VkCommandBuffer commandBuffer, VkImageLayout oldLayout, VkImageLayout newLayout);

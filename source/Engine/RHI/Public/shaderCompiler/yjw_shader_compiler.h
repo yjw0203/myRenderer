@@ -107,6 +107,7 @@ namespace rhi
         void Release();
         void SetShaderReflect(const ShaderReflect& reflect);
         const ShaderReflect& GetReflect();
+        ShaderConductor::Blob* GetBlob();
     private:
         void SetBlob(ShaderConductor::Blob* blob);
         void SetReflect(const ShaderReflect& reflect);

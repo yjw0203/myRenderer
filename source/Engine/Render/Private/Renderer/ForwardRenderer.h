@@ -6,6 +6,7 @@
 namespace yjw
 {
     using namespace rpi;
+    class SkyBoxPass;
     class ForwardRenderer : public IRenderer
     {
     public:
@@ -32,5 +33,7 @@ namespace yjw
         RPITexture m_output_color{};
         RPITexture m_output_depth{};
         RPIRenderPass m_render_pass{};
+
+        SkyBoxPass* m_sky_box_pass{};
     };
 }

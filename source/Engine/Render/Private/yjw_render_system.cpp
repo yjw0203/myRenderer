@@ -8,8 +8,8 @@
 #include "yjw_render_camera.h"
 #include <chrono>
 #include <ctime>
-#include "pass/yjw_pass_gbuffer.h"
-#include "pass/yjw_pass_deferred_shading.h"
+#include "pass1/yjw_pass_gbuffer.h"
+#include "pass1/yjw_pass_deferred_shading.h"
 #include "pipeline/yjw_default_pipeline.h"
 
 #include "Engine/InternalShaderResource/Public/yjw_internal_shader_resource.h"
@@ -49,7 +49,8 @@ namespace yjw
         g_internal_shader_parameters.m_option->screenSize = glm::vec2(1200, 1200);
 
         activeCamera->SetPosition(glm::vec3(7.9, 14, -13));
-        activeCamera->SetRotation(glm::quat(0.2, -0.93, 0.04, -0.3));
+        //activeCamera->SetRotation(glm::quat(0.2, -0.93, 0.04, -0.3));
+        activeCamera->SetRotation(glm::quat(0,0,0,1));
 
         m_camera_dispatcher = new RenderCameraInputDispatcher(this);
         m_camera_dispatcher->Register();
@@ -63,6 +64,7 @@ namespace yjw
     {
         m_delta_time = deltaTime;
         g_internal_shader_parameters.m_camera->viewMat = activeCamera->getViewMatrix();
+        g_internal_shader_parameters.m_camera->viewMatWithoutTranslation = activeCamera->getViewMatrixWithoutTranslation();
         g_internal_shader_parameters.m_camera->projectMat = activeCamera->getProjectionMatrix();
         g_internal_shader_parameters.m_camera->cameraPos = glm::vec4(activeCamera->position(), 1);
 

@@ -1,23 +1,23 @@
-#include "Engine/Engine/Public/Framework/Components/MeshComponent.h"
+#include "Engine/Engine/Public/Framework/Components/StaticMeshComponent.h"
 
 namespace yjw
 {
-    void MeshComponent::SetMesh(Mesh* mesh)
+    void StaticMeshComponent::SetMesh(Mesh* mesh)
     {
         m_mesh = mesh;
     }
 
-    Mesh* MeshComponent::GetMesh()
+    Mesh* StaticMeshComponent::GetMesh()
     {
         return m_mesh;
     }
 
-    Primitive* MeshComponent::GetPrimitive()
+    Primitive* StaticMeshComponent::GetPrimitive()
     {
         return m_mesh->GetPrimitive();
     }
 
-    MaterialInstance* MeshComponent::GetMaterialInstance()
+    MaterialInstance* StaticMeshComponent::GetMaterialInstance()
     {
         if (m_override_material)
         {

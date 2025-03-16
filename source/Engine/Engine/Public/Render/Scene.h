@@ -14,21 +14,20 @@ namespace yjw
         rpi::RPIResourceBinding m_resource_binding{};
     };
 
+    class PrimitiveComponent;
     class Scene
     {
     public:
         Scene();
 
-        void AddMesh(Mesh* mesh);
-        void RemoveMesh(Mesh* mesh);
+        void AddPrimitiveComponent(PrimitiveComponent* mesh);
+        void RemovePrimitiveComponent(PrimitiveComponent* mesh);
 
-        std::vector<Mesh*>& GetMeshes();
+        std::vector<PrimitiveComponent*>& GetMeshes();
 
-        std::vector<RenderEntity> buildEntitys();
-        const std::vector<RenderEntity>& getEntitys();
         void Update(float deltaTime);
     private:
-        std::vector<Mesh*> m_meshes;
+        std::vector<PrimitiveComponent*> m_meshes;
         std::vector<Actor*> m_lights;
         std::vector<Actor*> m_cameras;
 

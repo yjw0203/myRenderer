@@ -24,7 +24,7 @@ namespace yjw
 
     void ForwardPass::setData()
     {
-        m_entitys = m_scene->buildEntitys();
+        //m_entitys = m_scene->buildEntitys();
     }
 
     void ForwardPass::setupData()
