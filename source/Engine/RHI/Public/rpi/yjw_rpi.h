@@ -30,7 +30,9 @@ namespace rpi
     RPIPipeline RPICreateRenderPipeline(RPIRenderPipelineDescriptor createInfo);
     RPIPipeline RPICreateComputePipeline(RPIComputePipelineDescriptor createInfo);
 
-    RPIResourceBinding RPICreateResourceBinding(RPIPipeline pipeline);
+    RPIResourceBinding RPICreateResourceBinding();
+    RPIResourceSet     RPICreateResourceSet(RPIResourceSetType type ,RPIShaderReflect reflect);
+
     RPIPrimitiveBinding RPICreatePrimitiveBinding(RPIShader vertex_shader);
     RPIPrimitiveBinding RPICreatePrimitiveBinding(RPIPipeline pipeline);
 
@@ -42,7 +44,7 @@ namespace rpi
     void RPICmdSetPipeline(RPIContext context, RPIPipeline pipeline);
     void RPICmdSetResourceBinding(RPIContext context, RPIResourceBinding resourceBinding);
     void RPICmdSetPrimitiveBinding(RPIContext context, RPIPrimitiveBinding primitiveBinding);
-    void RPICmdTransitionStateToRender(RPIContext context, RPIResourceBinding* resourceBinding, int resourceBindingCount);
+    void RPICmdTransitionStateToRender(RPIContext context, RPIResourceSet resourceSet);
     void RPICmdBeginRenderPass(RPIContext context, RPIRenderPass renderPass);
     void RPICmdEndPass(RPIContext context);
     void RPICmdDraw(RPIContext context, int vertexCount, int instanceCount, int firstVertex, int firstInstance);

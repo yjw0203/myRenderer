@@ -1,5 +1,12 @@
 #include "Global.hlsli"
 
+CBUFFER(material, PS, 0)  
+{  
+    float2 metallic_roughness;
+};  
+  
+TEXTURE2D(albedoTex, PS);
+
 struct MeshVertexOutput  
 {  
     float4 sv_Position : SV_POSITION;  
@@ -8,13 +15,6 @@ struct MeshVertexOutput
     float2 uv0 : TEXCOORD0;  
 };  
   
-cbuffer material : register(b3)  
-{  
-    float2 metallic_roughness;
-};  
-  
-Texture2D albedoTex : register(t0,space1);
-
 struct PS_OUTPUT  
 {
     float4 color : SV_TARGET0;

@@ -12,6 +12,7 @@ namespace rpi
     typedef RHIPipeline* RPIPipeline;
     typedef RHIRenderPass* RPIRenderPass;
     typedef RHIShader* RPIShader;
+    typedef ShaderReflect* RPIShaderReflect;
     typedef RHISwapChain* RPISwapChain;
 
     typedef RHIFormat RPIFormat;

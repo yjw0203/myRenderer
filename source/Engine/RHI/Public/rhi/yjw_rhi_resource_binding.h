@@ -6,11 +6,19 @@
 #include <string>
 namespace rhi
 {
+    class RHIResourceSet : public RHIObject
+    {
+    public:
+        virtual ~RHIResourceSet() {};
+        virtual void SetTextureView(RHIName name, RHITextureView* view) = 0;
+        virtual void SetBufferView(RHIName name, RHIBufferView* view) = 0;
+    };
+
     class RHIResourceBinding : public RHIObject
     {
     public:
-        virtual void SetTextureView(RHIShaderType shaderType, RHIName name, RHITextureView* view) = 0;
-        virtual void SetBufferView(RHIShaderType shaderType, RHIName name, RHIBufferView* view) = 0;
+        virtual ~RHIResourceBinding() {};
+        virtual void SetResourceSet(int set_id, RHIResourceSet* set) = 0;
     };
 
     class RHIPrimitiveBinding : public RHIObject

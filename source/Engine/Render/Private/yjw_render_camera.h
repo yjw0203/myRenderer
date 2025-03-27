@@ -46,7 +46,7 @@ namespace yjw
         void Register();
 
     private:
-        float speed = 100.0f;
+        float speed = 500.0f;
         float lastMouseX = 0.0f;
         float lastMouseY = 0.0f;
         bool isRightMouseButton = false;

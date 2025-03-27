@@ -176,9 +176,9 @@ namespace rhi
         options.disableOptimizations = true;
         options.optimizationLevel = 0;
         options.shaderModel = { 6, 2 };
-        options.shiftAllTexturesBindings = 0;
-        options.shiftAllSamplersBindings = 16;
-        options.shiftAllCBuffersBindings = 32;
+        options.shiftAllCBuffersBindings = 0;
+        options.shiftAllTexturesBindings = 16;
+        options.shiftAllSamplersBindings = 32;
         options.shiftAllUABuffersBindings = 48;
 
         Compiler::TargetDesc targetDesc{};

@@ -200,6 +200,16 @@ namespace rhi
             }
         }
 
+        m_imageCompleteSemaphore.resize(m_maxFrameInFlight);
+        for (int i = 0; i < m_maxFrameInFlight; i++)
+        {
+            VkSemaphoreCreateInfo semaphoreInfo{};
+            semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
+            if (vkCreateSemaphore(pDevice->GetNativeDevice(), &semaphoreInfo, nullptr, &m_imageCompleteSemaphore[i]) != VK_SUCCESS) {
+                throw std::runtime_error("failed to create texture sampler!");
+            }
+        }
+
         vkAcquireNextImageKHR(GetDevice()->GetNativeDevice(), m_native_swapchain, UINT64_MAX, m_imageAvailableSemaphore[m_currentFlightFrame], VK_NULL_HANDLE, &m_swapchainImageIndex);
         GetDevice()->GetParentInstance()->OnSwapchainInit(this);
     }
@@ -240,8 +250,8 @@ namespace rhi
         VkPresentInfoKHR presentInfo{};
         presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
 
-        presentInfo.waitSemaphoreCount = 1;;
-        presentInfo.pWaitSemaphores = &m_imageAvailableSemaphore[m_currentFlightFrame];
+        presentInfo.waitSemaphoreCount = 1;
+        presentInfo.pWaitSemaphores = &m_imageCompleteSemaphore[m_currentFlightFrame];
 
         VkSwapchainKHR swapChains[] = { m_native_swapchain };
         presentInfo.swapchainCount = 1;
@@ -250,9 +260,18 @@ namespace rhi
         presentInfo.pImageIndices = &m_swapchainImageIndex;
 
         vkQueuePresentKHR(GetDevice()->GetCommandQueue()->GetPresentQueue(), &presentInfo);
-        vkAcquireNextImageKHR(GetDevice()->GetNativeDevice(), m_native_swapchain, UINT64_MAX, m_imageAvailableSemaphore[(m_swapchainImageIndex + 1) % m_swapchainImageCount], VK_NULL_HANDLE, &m_swapchainImageIndex);
-    
+        VkResult result = vkAcquireNextImageKHR(GetDevice()->GetNativeDevice(), m_native_swapchain, UINT64_MAX, m_imageAvailableSemaphore[(m_swapchainImageIndex + 1) % m_swapchainImageCount], VK_NULL_HANDLE, &m_swapchainImageIndex);
         m_currentFlightFrame = (m_currentFlightFrame + 1) % m_maxFrameInFlight;
+    }
+
+    VkSemaphore* VulkanSwapChain::GetCurrentImageCompleteSemaphore()
+    {
+        return &m_imageCompleteSemaphore[m_currentFlightFrame];
+    }
+
+    VkSemaphore* VulkanSwapChain::GetCurrentImageAvailableSemaphore()
+    {
+        return &m_imageAvailableSemaphore[m_currentFlightFrame];
     }
 
     RHITexture* VulkanSwapChain::GetBackTexture()

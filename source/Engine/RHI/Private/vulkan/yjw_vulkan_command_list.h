@@ -14,6 +14,7 @@ namespace rhi
         ~VulkanCommandList();
         VkCommandBuffer GetCommandBuffer();
         void Submit();
+        void Submit(VkSubmitInfo* submitInfo);
     private:
         void NextCommandBuffer();
     private:
@@ -32,7 +33,7 @@ namespace rhi
         void CmdPopEvent();
         void CmdBeginPass(VulkanRenderPass* renderPass);
         void CmdEndPass();
-        void CmdTransitionStateToRender(VulkanResourceBinding* resourceBinding);
+        void CmdTransitionStateToRender(VulkanResourceSet* resourceSet);
         void CmdDraw(int vertexCount, int instanceCount, int firstVertex, int firstInstance);
         void CmdDrawIndex(int firstInstance, int instanceCount);
         void CmdDispatch(int groupCountX, int groupCountY, int groupCountZ);

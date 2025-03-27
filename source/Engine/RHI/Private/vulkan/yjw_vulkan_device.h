@@ -24,6 +24,8 @@ namespace rhi
         virtual RHIContext* CreateContext() override;
         virtual RHISwapChain* CreateSwapchain(void* window) override;
         virtual RHIShader* CreateShaderByBinary(const void* binaryData, int size, const char* entryName, const ShaderReflect& reflect) override;
+        virtual RHIResourceSet* CreateResourceSet(int set_id, const ShaderReflect& reflect) override;
+        virtual RHIResourceBinding* CreateResourceBinding() override;
         virtual RHIRenderPipeline* CreateRenderPipeline(const RHIRenderPipelineDescriptor& renderPipelineDescriptor) override;
         virtual RHIComputePipeline* CreateComputePipeline(const RHIComputePipelineDescriptor& computePipelineDescriptor) override;
         virtual RHIRenderPass* CreateRenderPass(const RHIRenderPassDescriptor& renderPassDescriptor) override;
@@ -51,6 +53,9 @@ namespace rhi
     /***************** to be delete ***************/
     public:
         VkSampler m_default_sampler = nullptr;
+        VkDescriptorSetLayout m_default_descriptor_layout = nullptr;
+        VkDescriptorPool m_default_descriptor_pool = nullptr;
+        VkDescriptorSet m_default_descriptor_set = nullptr;
     /***************** to be delete ***************/
     };
 

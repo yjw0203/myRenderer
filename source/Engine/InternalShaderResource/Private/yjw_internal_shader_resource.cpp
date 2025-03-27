@@ -10,6 +10,23 @@ namespace yjw
         m_gpu_data = rpi::RPICreateUploadBuffer(m_total_size);
         m_cpu_data = malloc(m_total_size);
         InternalLinkType<1>::Initialize(this);
+
+        rpi::ShaderReflect reflect{};
+        for (InternalShaderParameterLayout& layout : m_shader_parameter_layouts)
+        {
+            rhi::ShaderReflect::UBO ubo{};
+            ubo.m_binding = layout.binding_id;
+            ubo.m_block_size = layout.width;
+            ubo.m_name = layout.name;
+            ubo.m_set = rpi::RPIGetResourceSetIDByType(rpi::RPIResourceSetType::common);
+            reflect.m_ubos.push_back(ubo);
+        }
+        m_common_resource_set = rpi::RPICreateResourceSet(rpi::RPIResourceSetType::common, &reflect);
+        for (InternalShaderParameterLayout& layout : m_shader_parameter_layouts)
+        {
+            m_common_resource_set.SetBuffer(layout.name, layout.gpuData);
+        }
+        
     }
 
     void InternalShaderParameter::Destroy()
@@ -45,4 +62,8 @@ namespace yjw
         return !GetGpuBufferByShaderParameterName(shaderName).IsNull();
     }
 
+    rpi::RPIResourceSet InternalShaderParameter::GetCommonResourceSet()
+    {
+        return m_common_resource_set;
+    }
 }

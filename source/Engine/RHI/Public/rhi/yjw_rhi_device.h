@@ -15,6 +15,8 @@ namespace rhi
         virtual RHIContext* CreateContext() = 0;
         virtual RHISwapChain* CreateSwapchain(void* window) = 0;
         virtual RHIShader* CreateShaderByBinary(const void* binaryData, int size, const char* entryName, const struct ShaderReflect& reflect) = 0;
+        virtual RHIResourceSet* CreateResourceSet(int set_id, const ShaderReflect& reflect) = 0;
+        virtual RHIResourceBinding* CreateResourceBinding() = 0;
         virtual RHIRenderPipeline* CreateRenderPipeline(const RHIRenderPipelineDescriptor& renderPipelineDescriptor) = 0;
         virtual RHIComputePipeline* CreateComputePipeline(const RHIComputePipelineDescriptor& computePipelineDescriptor) = 0;
         virtual RHIRenderPass* CreateRenderPass(const RHIRenderPassDescriptor& renderPassDescriptor) = 0;

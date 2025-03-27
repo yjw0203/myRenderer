@@ -36,7 +36,7 @@ namespace rhi
         VkDescriptorSetLayoutBinding decriptorBinding{};
         decriptorBinding.binding = binding;
         decriptorBinding.descriptorCount = 1;
-        decriptorBinding.stageFlags = shaderBits;
+        decriptorBinding.stageFlags = VK_SHADER_STAGE_ALL;
         decriptorBinding.pImmutableSamplers = nullptr;
         decriptorBinding.descriptorType = descriptorType;
         for (int i = 0; i <= m_sets[set].size(); i++)
@@ -307,12 +307,6 @@ namespace rhi
         return m_pipeline_layout;
     }
 
-    RHIResourceBinding* VulkanRenderPipeline::CreateResourceBinding()
-    {
-        GetOrCreateVkPipelineLayout();
-        return new VulkanResourceBinding(GetDevice(), m_reflect_view, m_descriptor_set_layouts.data(), m_descriptor_set_layouts.size());
-    }
-
     RHIPrimitiveBinding* VulkanRenderPipeline::CreatePrimitiveBinding()
     {
         return m_descriptor.vs->CreatePrimitiveBinding();
@@ -353,12 +347,6 @@ namespace rhi
     {
         desc.cs->retain(this);
         m_reflect_view.AddReflectionTable(RHIShaderType::compute, VKResourceCast(desc.cs)->GetReflect());
-    }
-
-    RHIResourceBinding* VulkanComputePipeline::CreateResourceBinding()
-    {
-        GetOrCreateVkPipelineLayout();
-        return new VulkanResourceBinding(GetDevice(), m_reflect_view, m_descriptor_set_layouts.data(), m_descriptor_set_layouts.size());
     }
 
     VkPipeline VulkanComputePipeline::GetOrCreateVkPipeline()

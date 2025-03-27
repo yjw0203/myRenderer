@@ -22,10 +22,13 @@ namespace yjw
     {
     public:
         Primitive() {}
+        ~Primitive();
         void BuildGpuPrimitive();
         rpi::RPIBuffer GetVertexBuffer(VertexType type);
         rpi::RPIBuffer GetIndexBuffer();
         rpi::RPIPrimitiveBinding GetPrimitiveBinding();
+        rpi::RPIShader GetVertexShader();
+        rpi::RPIResourceSet GetVSResourceSet();
     protected:
         struct SubMesh
         {
@@ -41,8 +44,8 @@ namespace yjw
         //todo : sub mesh
         rpi::RPIPrimitiveBinding m_primitive_binding{};
 
-        //todo : remove
-        rpi::RPIShader vs;
+        rpi::RPIResourceSet m_vs_resource_set{};
+        rpi::RPIShader m_vertex_shader;
     };
 
     class BoxPrimitive : public Primitive

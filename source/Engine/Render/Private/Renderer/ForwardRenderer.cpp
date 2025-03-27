@@ -79,7 +79,7 @@ namespace yjw
     {
         RPICmdSetPrimitiveBinding(m_context, entity->m_primitive_binding);
         RPICmdSetResourceBinding(m_context, entity->m_resource_binding);
-        RPICmdSetPipeline(m_context, entity->m_material->GetPipeline());
+        RPICmdSetPipeline(m_context, entity->m_pipeline);
         RPICmdDrawIndex(m_context, 0, 1);
     }
 

@@ -14,6 +14,7 @@ namespace rhi
     class VulkanTextureView;
     class VulkanSwapChain;
     class VulkanResourceBinding;
+    class VulkanResourceSet;
     class VulkanPrimitiveBinding;
 
     template<class T>
@@ -69,6 +70,11 @@ namespace rhi
     struct TVulkanResourceTraits<RHIResourceBinding>
     {
         typedef VulkanResourceBinding TConcreteType;
+    };
+    template<>
+    struct TVulkanResourceTraits<RHIResourceSet>
+    {
+        typedef VulkanResourceSet TConcreteType;
     };
     template<>
     struct TVulkanResourceTraits<RHIPrimitiveBinding>

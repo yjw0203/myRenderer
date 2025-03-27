@@ -323,9 +323,14 @@ namespace rpi
         return RPIO(device)->CreateComputePipeline(createInfo);
     }
 
-    RPIResourceBinding RPICreateResourceBinding(RPIPipeline pipeline)
+    RPIResourceBinding RPICreateResourceBinding()
     {
-        return RPIResourceBinding(pipeline->CreateResourceBinding());
+        return RPIResourceBinding(RPIO(device)->CreateResourceBinding());
+    }
+
+    RPIResourceSet RPICreateResourceSet(RPIResourceSetType type, RPIShaderReflect reflect)
+    {
+        return RPIResourceSet(RPIO(device)->CreateResourceSet((int)type, *reflect));
     }
 
     RPIPrimitiveBinding RPICreatePrimitiveBinding(RPIPipeline pipeline)
@@ -374,12 +379,9 @@ namespace rpi
         context->SetPrimitiveBinding(primitiveBinding.GetRHIPrimitiveBinding());
     }
 
-    void RPICmdTransitionStateToRender(RPIContext context, RPIResourceBinding* resourceBinding, int resourceBindingCount)
+    void RPICmdTransitionStateToRender(RPIContext context, RPIResourceSet resourceSet)
     {
-        for (int index = 0; index < resourceBindingCount; index++)
-        {
-            context->TransitionStateToRender(resourceBinding[index].GetRHIResourceBinding());
-        }
+        context->TransitionStateToRender(resourceSet.GetRHIResourceSet());
     }
 
     void RPICmdBeginRenderPass(RPIContext context, RPIRenderPass renderPass)

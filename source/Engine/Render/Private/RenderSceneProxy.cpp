@@ -5,15 +5,12 @@ namespace yjw
 {
     void RenderSceneProxy::SubmitOpaque(IRenderer* renderer)
     {
-        for (PrimitiveComponent* mesh : m_scene->GetMeshes())
+        for (RenderEntity* entity : m_scene->GetMeshes())
         {
-            RenderEntity entity{};
-            entity.m_material = mesh->GetMaterialInstance();
-            entity.m_resource_binding = mesh->GetMaterialInstance()->GetResourceBinding();
-            entity.m_primitive_binding = mesh->GetPrimitive()->GetPrimitiveBinding();
-            if (entity.m_material && entity.m_resource_binding && entity.m_primitive_binding)
+            entity->Build();
+            if (entity->ReadyRender())
             {
-                renderer->Submit(&entity);
+                renderer->Submit(entity);
             }
         }
     }

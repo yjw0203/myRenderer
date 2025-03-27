@@ -128,6 +128,36 @@ namespace rhi
         if (vkCreateSampler(m_native_device, &samplerInfo, nullptr, &m_default_sampler) != VK_SUCCESS) {
             throw std::runtime_error("failed to create texture sampler!");
         }
+
+        VkDescriptorSetLayoutCreateInfo dsl_createInfo{};
+        dsl_createInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+        dsl_createInfo.bindingCount = 0;
+        dsl_createInfo.pBindings = nullptr;
+        dsl_createInfo.flags = 0;
+        dsl_createInfo.pNext = nullptr;
+        vkCreateDescriptorSetLayout(m_native_device, &dsl_createInfo, nullptr, &m_default_descriptor_layout);
+
+        VkDescriptorPoolCreateInfo poolInfo{};
+        poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
+        poolInfo.poolSizeCount = 0;
+        poolInfo.pPoolSizes = nullptr;
+        poolInfo.maxSets = 1;
+
+        if (vkCreateDescriptorPool(m_native_device, &poolInfo, nullptr, &m_default_descriptor_pool) != VK_SUCCESS) {
+            throw std::runtime_error("failed to create descriptor pool!");
+        }
+
+
+        VkDescriptorSetAllocateInfo allocInfo{};
+        allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+        allocInfo.descriptorPool = m_default_descriptor_pool;
+        allocInfo.descriptorSetCount = 1;
+        allocInfo.pSetLayouts = &m_default_descriptor_layout;
+
+        VkResult hr;
+        if ((hr = vkAllocateDescriptorSets(m_native_device, &allocInfo, &m_default_descriptor_set)) != VK_SUCCESS) {
+            throw std::runtime_error("failed to allocate descriptor sets!");
+        }
         /***************** to be delete ***************/
 
         GetParentInstance()->OnDeviceInit(this);
@@ -141,6 +171,16 @@ namespace rhi
     RHIShader* VulkanDevice::CreateShaderByBinary(const void* binaryData, int size, const char* entryName,const ShaderReflect& reflect)
     {
         return new VulkanShader(this, binaryData, size, entryName, reflect);
+    }
+
+    RHIResourceSet* VulkanDevice::CreateResourceSet(int set_id, const ShaderReflect& reflect)
+    {
+        return new VulkanResourceSet(this, set_id, reflect);
+    }
+
+    RHIResourceBinding* VulkanDevice::CreateResourceBinding()
+    {
+        return new VulkanResourceBinding(this);
     }
 
     RHIRenderPipeline* VulkanDevice::CreateRenderPipeline(const RHIRenderPipelineDescriptor& renderPipelineDescriptor)

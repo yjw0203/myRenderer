@@ -3,3 +3,4 @@ source/generate/
 3rd/VulkanSDK/1.2.198.1/Lib/
 *.generate.cpp
 *.generate.h
+tmp/

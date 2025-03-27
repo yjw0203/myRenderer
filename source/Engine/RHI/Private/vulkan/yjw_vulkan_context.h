@@ -17,7 +17,7 @@ namespace rhi
         virtual void EndPass() override;
         virtual void SetRenderPipeline(RHIRenderPipeline* pipeline) override;
         virtual void SetComputePipeline(RHIComputePipeline* pipeline) override;
-        virtual void TransitionStateToRender(RHIResourceBinding* resourceBinding) override;
+        virtual void TransitionStateToRender(RHIResourceSet* resourceBinding) override;
         virtual void SetResourceBinding(RHIResourceBinding* resourceBinding) override;
         virtual void SetPrimitiveBinding(RHIPrimitiveBinding* resourceBinding) override;
         virtual void Draw(int vertexCount, int instanceCount, int firstVertex, int firstInstance) override;

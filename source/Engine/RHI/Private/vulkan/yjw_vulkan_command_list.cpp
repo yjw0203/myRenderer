@@ -62,6 +62,18 @@ namespace rhi
         NextCommandBuffer();
     }
 
+    void VulkanCommandList::Submit(VkSubmitInfo* submitInfo)
+    {
+        vkEndCommandBuffer(m_command_buffer[m_current_command_buffer_index]);
+
+        submitInfo->sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+        submitInfo->commandBufferCount = 1;
+        submitInfo->pCommandBuffers = &m_command_buffer[m_current_command_buffer_index];
+        vkQueueSubmit(GetDevice()->GetCommandQueue()->GetGraphicsQueue(), 1, submitInfo, m_fence[m_current_command_buffer_index]);
+
+        NextCommandBuffer();
+    }
+
     void VulkanCommandList::NextCommandBuffer()
     {
         m_current_command_buffer_index = (m_current_command_buffer_index + 1) % k_max_command_buffer_count;
@@ -132,9 +144,9 @@ namespace rhi
         vkCmdEndRenderPass(m_command_list.GetCommandBuffer());
     }
 
-    void VulkanCommandBuffer::CmdTransitionStateToRender(VulkanResourceBinding* resourceBinding)
+    void VulkanCommandBuffer::CmdTransitionStateToRender(VulkanResourceSet* resourceSet)
     {
-        resourceBinding->TransitionStateToRender(m_command_list.GetCommandBuffer());
+        resourceSet->TransitionStateToRender(m_command_list.GetCommandBuffer());
     }
 
     void VulkanCommandBuffer::CmdDraw(int vertexCount, int instanceCount, int firstVertex, int firstInstance)
@@ -163,7 +175,14 @@ namespace rhi
     void VulkanCommandBuffer::Present(VulkanSwapChain* swapchain, bool bSync)
     {
         VKResourceCast(swapchain->GetBackTexture())->TransitionState(m_command_list.GetCommandBuffer(), VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
-        Submit();
+        VkSubmitInfo submit_info{};
+        submit_info.pSignalSemaphores = swapchain->GetCurrentImageCompleteSemaphore();
+        submit_info.signalSemaphoreCount = 1;
+        submit_info.pWaitSemaphores = swapchain->GetCurrentImageAvailableSemaphore();
+        submit_info.waitSemaphoreCount = 1;
+        VkPipelineStageFlags waitStage = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+        submit_info.pWaitDstStageMask = &waitStage;
+        m_command_list.Submit(&submit_info);
         swapchain->Present(bSync);
     }
 

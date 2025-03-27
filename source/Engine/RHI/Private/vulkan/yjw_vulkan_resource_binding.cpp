@@ -8,12 +8,71 @@
 
 namespace rhi
 {
-    VulkanResourceBinding::VulkanResourceBinding(VulkanDevice* pDevice, VulkanResourceLayoutView& reflectView, VkDescriptorSetLayout* pDescriptorSetLayout, int descriptorSetLayoutCount)
-        :VulkanDeviceObject(pDevice),m_reflect_view(reflectView)
+    VulkanResourceSet::VulkanResourceSet(VulkanDevice* pDevice, int set_id, const ShaderReflect& reflection)
+        :VulkanDeviceObject(pDevice)
     {
-        assert(descriptorSetLayoutCount == reflectView.GetMaxSetCount());
-        //poor
+        std::vector<VkDescriptorSetLayoutBinding> bindings;
+        bindings.reserve(5);
+
+        int descriptor_uniform_buffer_count = 0;
+        for (const ShaderReflect::UBO& ubo : reflection.m_ubos)
+        {
+            if (ubo.m_set == set_id)
+            {
+                m_resource_table[RHIName(ubo.m_name)] = VariableBinding{ VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER , ubo.m_set, ubo.m_binding };
+                VkDescriptorSetLayoutBinding binding{};
+                binding.binding = ubo.m_binding;
+                binding.descriptorCount = 1;
+                binding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+                binding.pImmutableSamplers = nullptr;
+                binding.stageFlags = VK_SHADER_STAGE_ALL;
+                bindings.push_back(binding);
+                descriptor_uniform_buffer_count++;
+            }
+        }
+        int descriptor_combined_image_count = 0;
+        for (const ShaderReflect::SeparateImage& image : reflection.m_separate_images)
+        {
+            if (image.m_set == set_id)
+            {
+                m_resource_table[RHIName(image.m_name)] = VariableBinding{ VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER , image.m_set, image.m_binding };
+                VkDescriptorSetLayoutBinding binding{};
+                binding.binding = image.m_binding;
+                binding.descriptorCount = 1;
+                binding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+                binding.pImmutableSamplers = nullptr;
+                binding.stageFlags = VK_SHADER_STAGE_ALL;
+                bindings.push_back(binding);
+                descriptor_combined_image_count++;
+            }
+        }
+        int descriptor_uniform_texel_buffer_count = 0;
+        for (const ShaderReflect::SamplerBuffer& buffer : reflection.m_sampler_buffers)
+        {
+            if (buffer.m_set == set_id)
+            {
+                m_resource_table[RHIName(buffer.m_name)] = VariableBinding{ VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER , buffer.m_set, buffer.m_binding };
+                VkDescriptorSetLayoutBinding binding{};
+                binding.binding = buffer.m_binding;
+                binding.descriptorCount = 1;
+                binding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER;
+                binding.pImmutableSamplers = nullptr;
+                binding.stageFlags = VK_SHADER_STAGE_ALL;
+                bindings.push_back(binding);
+                descriptor_uniform_texel_buffer_count++;
+            }
+        }
+
+        VkDescriptorSetLayoutCreateInfo createInfo{};
+        createInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+        createInfo.bindingCount = bindings.size();
+        createInfo.pBindings = bindings.data();
+        createInfo.flags = 0;
+        createInfo.pNext = nullptr;
+        vkCreateDescriptorSetLayout(GetDevice()->GetNativeDevice(), &createInfo, nullptr, &m_descriptor_set_layout);
+
         std::array<VkDescriptorType, 3> descriptorType{ VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER ,VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER };
+        std::array<int, 3> descriptorCount{ descriptor_combined_image_count, descriptor_uniform_buffer_count ,descriptor_uniform_texel_buffer_count };
 
         std::vector<VkDescriptorPoolSize> poolSizes{};
         poolSizes.reserve(5);
@@ -21,7 +80,7 @@ namespace rhi
         {
             VkDescriptorPoolSize poolSize{};
             poolSize.type = descriptorType[index];
-            poolSize.descriptorCount = reflectView.GetDescriptorCount(descriptorType[index]);
+            poolSize.descriptorCount = descriptorCount[index];
             if (poolSize.descriptorCount > 0)
             {
                 poolSizes.push_back(poolSize);
@@ -30,36 +89,37 @@ namespace rhi
 
         VkDescriptorPoolCreateInfo poolInfo{};
         poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
-        poolInfo.poolSizeCount = static_cast<uint32_t>(poolSizes.size());
+        poolInfo.poolSizeCount = poolSizes.size();
         poolInfo.pPoolSizes = poolSizes.data();
-        poolInfo.maxSets = reflectView.GetMaxSetCount();
+        poolInfo.maxSets = 1;
 
         if (vkCreateDescriptorPool(pDevice->GetNativeDevice(), &poolInfo, nullptr, &m_descriptor_pool) != VK_SUCCESS) {
             throw std::runtime_error("failed to create descriptor pool!");
         }
 
-        m_descriptor_sets.resize(reflectView.GetMaxSetCount());
+
         VkDescriptorSetAllocateInfo allocInfo{};
         allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
         allocInfo.descriptorPool = m_descriptor_pool;
-        allocInfo.descriptorSetCount = descriptorSetLayoutCount;
-        allocInfo.pSetLayouts = pDescriptorSetLayout;
+        allocInfo.descriptorSetCount = 1;
+        allocInfo.pSetLayouts = &m_descriptor_set_layout;
 
         VkResult hr;
-        if ((hr = vkAllocateDescriptorSets(pDevice->GetNativeDevice(), &allocInfo, m_descriptor_sets.data())) != VK_SUCCESS) {
+        if ((hr = vkAllocateDescriptorSets(pDevice->GetNativeDevice(), &allocInfo, &m_descriptor_set)) != VK_SUCCESS) {
             throw std::runtime_error("failed to allocate descriptor sets!");
         }
     }
 
-    VulkanResourceBinding::~VulkanResourceBinding()
+    VulkanResourceSet::~VulkanResourceSet()
     {
-        vkFreeDescriptorSets(GetDevice()->GetNativeDevice(), m_descriptor_pool, m_descriptor_sets.size(), m_descriptor_sets.data());
+        vkFreeDescriptorSets(GetDevice()->GetNativeDevice(), m_descriptor_pool, 1, &m_descriptor_set);
         vkDestroyDescriptorPool(GetDevice()->GetNativeDevice(), m_descriptor_pool, nullptr);
+        vkDestroyDescriptorSetLayout(GetDevice()->GetNativeDevice(), m_descriptor_set_layout, nullptr);
     }
 
-    void VulkanResourceBinding::SetTextureView(RHIShaderType shaderType, RHIName name, RHITextureView* view)
+    void VulkanResourceSet::SetTextureView(RHIName name, RHITextureView* view)
     {
-        const VulkanResourceLayoutView::VariableBinding* variable = m_reflect_view.GetVariableBinding(shaderType, name);
+        const VulkanResourceSet::VariableBinding* variable = GetVariableBinding(name);
         if (!variable)
         {
             return;
@@ -71,7 +131,7 @@ namespace rhi
 
         VkWriteDescriptorSet write{};
         write.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-        write.dstSet = m_descriptor_sets[variable->set];
+        write.dstSet = m_descriptor_set;
         write.dstBinding = variable->binding;
         write.dstArrayElement = 0;
         write.descriptorType = variable->type;
@@ -80,12 +140,12 @@ namespace rhi
 
         vkUpdateDescriptorSets(GetDevice()->GetNativeDevice(), 1, &write, 0, nullptr);
 
-        m_binding_textures[(int)shaderType][name] = VKResourceCast(view);
+        m_binding_textures[name] = VKResourceCast(view);
     }
 
-    void VulkanResourceBinding::SetBufferView(RHIShaderType shaderType, RHIName name, RHIBufferView* view)
+    void VulkanResourceSet::SetBufferView(RHIName name, RHIBufferView* view)
     {
-        const VulkanResourceLayoutView::VariableBinding* variable = m_reflect_view.GetVariableBinding(shaderType, name);
+        const VulkanResourceSet::VariableBinding* variable = GetVariableBinding(name);
         if (!variable)
         {
             return;
@@ -97,7 +157,7 @@ namespace rhi
 
         VkWriteDescriptorSet write{};
         write.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-        write.dstSet = m_descriptor_sets[variable->set];
+        write.dstSet = m_descriptor_set;
         write.dstBinding = variable->binding;
         write.dstArrayElement = 0;
         write.descriptorType = variable->type;
@@ -111,6 +171,58 @@ namespace rhi
         vkUpdateDescriptorSets(GetDevice()->GetNativeDevice(), 1, &write, 0, nullptr);
     }
 
+    VkDescriptorSet VulkanResourceSet::GetDescriptorSet()
+    {
+        return m_descriptor_set;
+    }
+
+    void VulkanResourceSet::TransitionStateToRender(VkCommandBuffer commandBuffer)
+    {
+        for (auto& iter : m_binding_textures)
+        {
+            if (iter.second)
+            {
+                iter.second->GetTexture()->TransitionState(commandBuffer, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+            }
+        }
+    }
+
+    const VulkanResourceSet::VariableBinding* VulkanResourceSet::GetVariableBinding(RHIName name)
+    {
+        if (m_resource_table.find(name) == m_resource_table.end())
+        {
+            return nullptr;
+        }
+        return &m_resource_table[name];
+    }
+
+    VulkanResourceBinding::VulkanResourceBinding(VulkanDevice* pDevice)
+        :VulkanDeviceObject(pDevice)
+    {
+    }
+
+    VulkanResourceBinding::~VulkanResourceBinding()
+    {
+    }
+
+    void VulkanResourceBinding::SetResourceSet(int set_id, RHIResourceSet* set)
+    {
+        if (m_descriptor_sets.size() <= set_id)
+        {
+            m_descriptor_sets.resize(set_id + 1, GetDevice()->m_default_descriptor_set);
+            m_resource_set_handles.resize(set_id + 1);
+        }
+        if (m_resource_set_handles[set_id] != nullptr)
+        {
+            m_resource_set_handles[set_id]->release();
+            m_resource_set_handles[set_id] = nullptr;
+            m_descriptor_sets[set_id] = nullptr;
+        }
+        m_descriptor_sets[set_id] = ((VulkanResourceSet*)set)->GetDescriptorSet();
+        m_resource_set_handles[set_id] = (VulkanResourceSet*)set;
+        set->retain(this);
+    }
+
     VkDescriptorSet* VulkanResourceBinding::GetDescriptorSetData()
     {
         return m_descriptor_sets.data();
@@ -121,29 +233,13 @@ namespace rhi
         return m_descriptor_sets.size();
     }
 
-    void VulkanResourceBinding::TransitionStateToRender(VkCommandBuffer commandBuffer)
-    {
-        for (int shaderType = 0; shaderType < (int)RHIShaderType::count; shaderType++)
-        {
-            for (auto& iter : m_binding_textures[shaderType])
-            {
-                if (iter.second)
-                {
-                    iter.second->GetTexture()->TransitionState(commandBuffer, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
-                }
-            }
-        }
-    }
-
     VulkanPrimitiveBinding::VulkanPrimitiveBinding(VulkanDevice* pDevice, ShaderReflect& reflect)
         :VulkanDeviceObject(pDevice), m_reflect(reflect)
     {
-
     }
 
     VulkanPrimitiveBinding::~VulkanPrimitiveBinding()
     {
-
     }
 
     void VulkanPrimitiveBinding::SetVertexBuffer(RHIName name, RHIBufferView* bufferView)

@@ -63,18 +63,16 @@ namespace yjw
     {
         friend class MaterialInstance;
     public:
-        Material(const char* vs, const char* vs_entry, const char* ps, const char* ps_entry);
+        Material(const char* ps, const char* ps_entry);
         ~Material();
-        rpi::RPIPipeline GetPipeline();
+        rpi::RPIShader GetPixelShader();
     private:
-        void BuildPipeline();
+        void Build();
     private:
-        MaterialShader m_vs{};
         MaterialShader m_ps{};
-        rhi::ShaderReflect* m_vs_reflect{};
+        rpi::RPIShader m_pixel_shader{};
         rhi::ShaderReflect* m_ps_reflect{};
-        rpi::RPIPipeline m_pipeline{};
-        bool m_pipeline_builded = false;
+        bool m_builded = false;
     };
 
     class MaterialInstance
@@ -89,12 +87,12 @@ namespace yjw
         void SetDataMat4(const std::string& name, glm::mat4x4 value);
         void SetTexture(const std::string& name, rpi::RPITexture texture);
         void FlushDataToGpu();
-        rpi::RPIResourceBinding& GetResourceBinding();
-        rpi::RPIPipeline GetPipeline();
+        rpi::RPIResourceSet& GetResourceSet();
+        rpi::RPIShader GetPixelShader();
     private:
         Material* m_material = nullptr;
         MaterialParameterPool m_parameters_pool;
-        rpi::RPIResourceBinding m_resource_binding{};
+        rpi::RPIResourceSet m_ps_resource_set{};
     };
 
     extern Material g_pbr_material;

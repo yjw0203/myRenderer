@@ -8,9 +8,7 @@
 #include "yjw_render_camera.h"
 #include <chrono>
 #include <ctime>
-#include "pass1/yjw_pass_gbuffer.h"
-#include "pass1/yjw_pass_deferred_shading.h"
-#include "pipeline/yjw_default_pipeline.h"
+#include "Engine/Model/Public/yjw_model.h"
 
 #include "Engine/InternalShaderResource/Public/yjw_internal_shader_resource.h"
 #include "Engine/Animation/Public/Skeleton.h"

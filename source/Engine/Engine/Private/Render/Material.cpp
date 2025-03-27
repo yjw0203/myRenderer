@@ -28,11 +28,14 @@ namespace yjw
     void MaterialParameterPool::FlushLayoutSet()
     {
         Clear();
-        m_data = malloc(m_size);
-        m_gpu_data = rpi::RPICreateUploadBuffer(m_size);
-        for (const UBOBinding& ubo_binding : m_ubo_bindings)
+        if (m_size > 0)
         {
-            m_gpu_views.push_back(rpi::RPICreateBufferView(m_gpu_data, ubo_binding.offset, ubo_binding.block_size));
+            m_data = malloc(m_size);
+            m_gpu_data = rpi::RPICreateUploadBuffer(m_size);
+            for (const UBOBinding& ubo_binding : m_ubo_bindings)
+            {
+                m_gpu_views.push_back(rpi::RPICreateBufferView(m_gpu_data, ubo_binding.offset, ubo_binding.block_size));
+            }
         }
     }
 
@@ -97,71 +100,47 @@ namespace yjw
         }
     }
 
-    Material::Material(const char* vs, const char* vs_entry, const char* ps, const char* ps_entry)
+    Material::Material(const char* ps, const char* ps_entry)
     {
-        m_vs.shader_path = vs;
-        m_vs.entry_name = vs_entry;
         m_ps.shader_path = ps;
         m_ps.entry_name = ps_entry;
     }
 
     Material::~Material()
     {
-        m_pipeline->release();
+        m_pixel_shader->release();
     }
 
-    void Material::BuildPipeline()
+    rpi::RPIShader Material::GetPixelShader()
     {
-        if (m_pipeline_builded == false)
+        return m_pixel_shader;
+    }
+
+    void Material::Build()
+    {
+        if (m_builded == false)
         {
             using namespace rpi;
-            RPIShader vs = RPICreateShader(RPIShaderType::vertex, m_vs.shader_path.c_str(), m_vs.entry_name.c_str());
-            RPIShader ps = RPICreateShader(RPIShaderType::fragment, m_ps.shader_path.c_str(), m_ps.entry_name.c_str());
-            RPIRenderPipelineDescriptor pipelineDesc = RPIGetDefaultRenderPipeline();
-            pipelineDesc.vs = vs;
-            pipelineDesc.ps = ps;
-            pipelineDesc.depth_stencil_state = RPIGetDepthStencilState(RPIDepthStencilStateType::default_depth_read_and_write);
-            m_pipeline = RPICreateRenderPipeline(pipelineDesc);
-            vs->release();
-            ps->release();
-            m_vs_reflect = m_pipeline->GetVSShaderReflect();
-            m_ps_reflect = m_pipeline->GetPSShaderReflect();
-            m_pipeline_builded = true;
+            m_pixel_shader = RPICreateShader(RPIShaderType::fragment, m_ps.shader_path.c_str(), m_ps.entry_name.c_str());
+            m_ps_reflect = m_pixel_shader->GetShaderReflect();
+            m_builded = true;
         }
-    }
-
-    rpi::RPIPipeline Material::GetPipeline()
-    {
-        return m_pipeline;
     }
 
     MaterialInstance::MaterialInstance(Material* material)
     {
         using namespace rpi;
         m_material = material;
-        m_material->BuildPipeline();
-        m_resource_binding = RPICreateResourceBinding(m_material->m_pipeline);
+        m_material->Build();
         m_parameters_pool.Clear();
-        for (rhi::ShaderReflect::UBO& ubo : m_material->m_vs_reflect->m_ubos)
-        {
-            if (!g_internal_shader_parameters.IsShaderParameterNameInternal(ubo.m_name))
-            {
-                m_parameters_pool.AddUBOLayout(rpi::RPIShaderType::vertex, ubo);
-            }
-            else
-            {
-                m_resource_binding.SetBuffer(rpi::RPIShaderType::vertex, RHIName(ubo.m_name), g_internal_shader_parameters.GetGpuBufferByShaderParameterName(ubo.m_name));
-            }
-        }
+
+        m_ps_resource_set = RPICreateResourceSet(RPIResourceSetType::ps, m_material->m_ps_reflect);
+
         for (rhi::ShaderReflect::UBO& ubo : m_material->m_ps_reflect->m_ubos)
         {
-            if (!g_internal_shader_parameters.IsShaderParameterNameInternal(ubo.m_name))
+            if (RPICheckResourceSetTypeID(ubo.m_set, RPIResourceSetType::ps))
             {
                 m_parameters_pool.AddUBOLayout(rpi::RPIShaderType::fragment, ubo);
-            }
-            else
-            {
-                m_resource_binding.SetBuffer(rpi::RPIShaderType::fragment, RHIName(ubo.m_name), g_internal_shader_parameters.GetGpuBufferByShaderParameterName(ubo.m_name));
             }
         }
         m_parameters_pool.FlushLayoutSet();
@@ -169,7 +148,7 @@ namespace yjw
         {
             const MaterialParameterPool::UBOBinding& ubo_binding = m_parameters_pool.m_ubo_bindings[index];
             rpi::RPIBuffer gpu_view = m_parameters_pool.m_gpu_views[index];
-            m_resource_binding.SetBuffer(ubo_binding.shaderType, ubo_binding.name, gpu_view);
+            m_ps_resource_set.SetBuffer(ubo_binding.name, gpu_view);
         }
     }
 
@@ -201,8 +180,7 @@ namespace yjw
 
     void MaterialInstance::SetTexture(const std::string& name, rpi::RPITexture texture)
     {
-        m_resource_binding.SetTexture(rpi::RPIShaderType::vertex, name, texture);
-        m_resource_binding.SetTexture(rpi::RPIShaderType::fragment, name, texture);
+        m_ps_resource_set.SetTexture(name, texture);
     }
 
     void MaterialInstance::FlushDataToGpu()
@@ -210,16 +188,16 @@ namespace yjw
         m_parameters_pool.FlushCpuDataToGpu();
     }
 
-    rpi::RPIResourceBinding& MaterialInstance::GetResourceBinding()
+    rpi::RPIResourceSet& MaterialInstance::GetResourceSet()
     {
-        return m_resource_binding;
+        return m_ps_resource_set;
     }
 
-    rpi::RPIPipeline MaterialInstance::GetPipeline()
+    rpi::RPIShader MaterialInstance::GetPixelShader()
     {
-        return m_material->GetPipeline();
+        return m_material->m_pixel_shader;
     }
 
-    Material g_pbr_material = Material(SHADER_FILE(MeshVertex.hlsl), "VSMain", SHADER_FILE(ForwardPBR.hlsl), "PSMain");
-    Material g_simple_mesh_pbr_material = Material(SHADER_FILE(MeshVertex.hlsl), "SimpleVS", SHADER_FILE(ForwardPBR.hlsl), "PSMain");
+    Material g_pbr_material = Material(SHADER_FILE(ForwardPBR.hlsl), "PSMain");
+    Material g_simple_mesh_pbr_material = Material(SHADER_FILE(ForwardPBR.hlsl), "PSMain");
 }

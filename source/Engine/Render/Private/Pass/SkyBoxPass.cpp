@@ -41,13 +41,15 @@ namespace yjw
         pipelineDesc.depth_stencil_state = RPIGetDepthStencilState(RPIDepthStencilStateType::default_depth_read);
         m_pipeline = RPICreateRenderPipeline(pipelineDesc);
 
-        m_resource_binding = RPICreateResourceBinding(m_pipeline);
+        m_resource_binding = RPICreateResourceBinding();
+        m_custom_ps_resource_set = RPICreateResourceSet(RPIResourceSetType::ps, m_ps->GetShaderReflect());
+        m_resource_binding.SetResourceSet(RPIResourceSetType::common, g_internal_shader_parameters.GetCommonResourceSet());
+        m_resource_binding.SetResourceSet(RPIResourceSetType::ps, m_custom_ps_resource_set);
+
         m_primitive_binding = RPICreatePrimitiveBinding(m_pipeline);
 
         m_primitive_binding.SetVertexBuffer(RHIName("POSITION"), m_vertex_buffer);
         m_primitive_binding.SetIndexBuffer(m_index_buffer, 0, 36, true);
-
-        m_resource_binding.SetBuffer(RHIShaderType::vertex, RHIName("camera"), g_internal_shader_parameters.GetGpuBufferByShaderParameterName("camera"));
     }
 
     void SkyBoxPass::LoadResource(const char* sky_box_path)
@@ -73,7 +75,7 @@ namespace yjw
             str[5].c_str(),
         };
         m_sky_box = RPICreateTextureCubeFromFile(files);
-        m_resource_binding.SetTexture(RHIShaderType::fragment, RHIName("skybox"), m_sky_box);
+        m_custom_ps_resource_set.SetTexture(RHIName("skybox"), m_sky_box);
     }
 
     void SkyBoxPass::Destroy()

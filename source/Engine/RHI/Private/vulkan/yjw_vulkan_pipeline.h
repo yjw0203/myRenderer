@@ -43,7 +43,6 @@ namespace rhi
     public:
         VulkanRenderPipeline(VulkanDevice* device,const RHIRenderPipelineDescriptor& desc);
         ~VulkanRenderPipeline();
-        virtual RHIResourceBinding* CreateResourceBinding() override;
         virtual RHIPrimitiveBinding* CreatePrimitiveBinding() override;
         virtual ShaderReflect* GetVSShaderReflect() override;
         virtual ShaderReflect* GetPSShaderReflect() override;
@@ -61,7 +60,6 @@ namespace rhi
     public:
         VulkanComputePipeline(VulkanDevice* device, const RHIComputePipelineDescriptor& desc);
         ~VulkanComputePipeline();
-        virtual RHIResourceBinding* CreateResourceBinding() override;
         VkPipeline GetOrCreateVkPipeline();
         VkPipelineLayout GetOrCreateVkPipelineLayout();
     private:

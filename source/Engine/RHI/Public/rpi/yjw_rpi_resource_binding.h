@@ -4,16 +4,42 @@
 
 namespace rpi
 {
+    enum RPIResourceSetType
+    {
+        vs = 0,
+        ps = 1,
+        cs = 2,
+        common = 3,
+    };
+
+    bool RPICheckResourceSetTypeID(int set_id, RPIResourceSetType type);
+    int RPIGetResourceSetIDByType(RPIResourceSetType type);
+
     class RPIBuffer;
     class RPITexture;
+    class RPIResourceSet
+    {
+    public:
+        static RPIResourceSet Null;
+        RPIResourceSet();
+        RPIResourceSet(RHIResourceSet* rhiResourceSet);
+        void SetBuffer(RHIName name, RPIBuffer buffer);
+        void SetTexture(RHIName name, RPITexture texture);
+        RHIResourceSet* GetRHIResourceSet();
+        void Release();
+        bool IsNull();
+        operator bool() { return !IsNull(); }
+    private:
+        RHIResourceSet* m_resource_set = nullptr;
+    };
+
     class RPIResourceBinding
     {
     public:
         static RPIResourceBinding Null;
         RPIResourceBinding();
         RPIResourceBinding(RHIResourceBinding* rhiResourceBinding);
-        void SetBuffer(RPIShaderType shaderType, RHIName name, RPIBuffer buffer);
-        void SetTexture(RHIShaderType shaderType, RHIName name, RPITexture texture);
+        void SetResourceSet(RPIResourceSetType type, RPIResourceSet set);
         RHIResourceBinding* GetRHIResourceBinding();
         void Release();
         bool IsNull();

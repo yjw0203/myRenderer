@@ -41,7 +41,7 @@ namespace rhi
         m_state_cache.SetComputePipeline(VKResourceCast(pipeline));
     }
 
-    void VulkanContext::TransitionStateToRender(RHIResourceBinding* resourceBinding)
+    void VulkanContext::TransitionStateToRender(RHIResourceSet* resourceBinding)
     {
         m_command_buffer.CmdTransitionStateToRender(VKResourceCast(resourceBinding));
     }

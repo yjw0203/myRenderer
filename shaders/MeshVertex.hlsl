@@ -18,7 +18,7 @@ struct MeshVertexOutput
     float2 uv0 : TEXCOORD0;  
 };  
   
-Buffer<float4> boneMatrices : register(t3);
+Buffer<float4> boneMatrices : register(t3,space0);
 
 float4x4 GetBoneMatrix(int index)
 {

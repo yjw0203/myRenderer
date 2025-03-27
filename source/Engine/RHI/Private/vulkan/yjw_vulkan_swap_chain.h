@@ -20,6 +20,8 @@ namespace rhi
         virtual void* GetNativeWindow() override;
         virtual RHIDevice* GetRHIDevice() override;
         void Present(bool bSync);
+        VkSemaphore* GetCurrentImageCompleteSemaphore();
+        VkSemaphore* GetCurrentImageAvailableSemaphore();
     private:
         VkSurfaceKHR m_surface = nullptr;
         VkSwapchainKHR m_native_swapchain = nullptr;
@@ -32,6 +34,7 @@ namespace rhi
         std::vector<VulkanTexture*> m_swapchainImages;
         std::vector<VulkanTextureView*> m_swapchainImageViews;
         std::vector<VulkanRenderPass*> m_swapchainRenderPasses;
+        std::vector<VkSemaphore> m_imageCompleteSemaphore;
         std::vector<VkSemaphore> m_imageAvailableSemaphore;
         int m_maxFrameInFlight = 3;
         int m_currentFlightFrame = 0;

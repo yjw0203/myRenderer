@@ -21,7 +21,8 @@ VS_OUTPUT VSMain(VS_INPUT input)
     return output;  
 }
 
-TextureCube skybox : register(t1, space1);
+TEXTURECUBE(skybox, PS);
+
 float4 PSMain(VS_OUTPUT ps_in) : SV_Target
 {
     SamplerState defaultSampler;

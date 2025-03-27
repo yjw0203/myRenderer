@@ -5,14 +5,29 @@ namespace yjw
 {
     void Primitive::BuildGpuPrimitive()
     {
-        if (m_primitive_binding.IsNull())
+        if (m_primitive_binding.IsNull() && m_mesh_ast.GetData())
         {
-            rpi::RPIShader vs = rpi::RPICreateShader(rpi::RPIShaderType::vertex, SHADER_FILE(MeshVertex.hlsl), "SimpleVS");
-            m_primitive_binding = rpi::RPICreatePrimitiveBinding(vs);
+            m_vertex_shader = rpi::RPICreateShader(rpi::RPIShaderType::vertex, SHADER_FILE(MeshVertex.hlsl), "SimpleVS");
+            m_vs_resource_set = rpi::RPICreateResourceSet(rpi::RPIResourceSetType::vs, m_vertex_shader->GetShaderReflect());
+            m_primitive_binding = rpi::RPICreatePrimitiveBinding(m_vertex_shader);
             m_primitive_binding.SetVertexBuffer(rhi::RHIName("POSITION"), GetVertexBuffer(VertexType::postion));
             m_primitive_binding.SetVertexBuffer(rhi::RHIName("NORMAL"), GetVertexBuffer(VertexType::normal));
             m_primitive_binding.SetVertexBuffer(rhi::RHIName("TEXCOORD0"), GetVertexBuffer(VertexType::uv));
             m_primitive_binding.SetIndexBuffer(m_index_buffer, 0, GetIndexBuffer().GetBuffer()->GetDesc().width / (m_is_indices_16bit ? 2 : 4), m_is_indices_16bit);
+        }
+    }
+
+    Primitive::~Primitive()
+    {
+        m_vertex_shader->release();
+        m_vs_resource_set.Release();
+        m_primitive_binding.Release();
+        for (int i = 0; i < (int)VertexType::count; i++)
+        {
+            if (m_vertex_buffers[i])
+            {
+                m_vertex_buffers[i].Release();
+            }
         }
     }
 
@@ -46,6 +61,16 @@ namespace yjw
             }
         }
         return m_primitive_binding;
+    }
+
+    rpi::RPIShader Primitive::GetVertexShader()
+    {
+        return m_vertex_shader;
+    }
+
+    rpi::RPIResourceSet Primitive::GetVSResourceSet()
+    {
+        return m_vs_resource_set;
     }
 
     BoxPrimitive::BoxPrimitive()

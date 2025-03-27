@@ -6,23 +6,45 @@
 
 namespace rhi
 {
+    class VulkanResourceSet : public RHIResourceSet, VulkanDeviceObject
+    {
+    public:
+        struct VariableBinding
+        {
+            VkDescriptorType type;
+            int set;
+            int binding;
+        };
+        VulkanResourceSet(VulkanDevice* pDevice, int set_id, const ShaderReflect& reflection);
+        ~VulkanResourceSet();
+        virtual void SetTextureView(RHIName name, RHITextureView* view) override;
+        virtual void SetBufferView(RHIName name, RHIBufferView* view) override;
+        VkDescriptorSet GetDescriptorSet();
+
+        void TransitionStateToRender(VkCommandBuffer commandBuffer);
+    private:
+        const VariableBinding* GetVariableBinding(RHIName name);
+    private:
+        VkDescriptorSetLayout m_descriptor_set_layout;
+        VkDescriptorPool m_descriptor_pool;
+        VkDescriptorSet m_descriptor_set;
+        std::unordered_map<RHIName, VariableBinding> m_resource_table;
+        std::unordered_map<RHIName, VulkanTextureView*> m_binding_textures;
+    };
+
     class VulkanResourceBinding : public RHIResourceBinding, VulkanDeviceObject
     {
     public:
-        VulkanResourceBinding(VulkanDevice* pDevice, class VulkanResourceLayoutView& reflectView, VkDescriptorSetLayout* pDescriptorSetLayout,int descriptorSetLayoutCount);
+        VulkanResourceBinding(VulkanDevice* pDevice);
         ~VulkanResourceBinding();
-        virtual void SetTextureView(RHIShaderType shaderType, RHIName name, RHITextureView* view) override;
-        virtual void SetBufferView(RHIShaderType shaderType, RHIName name, RHIBufferView* view) override;
+
+        virtual void SetResourceSet(int set_id, RHIResourceSet* set) override;
 
         VkDescriptorSet* GetDescriptorSetData();
         int GetDescriptorSetCount();
-        void TransitionStateToRender(VkCommandBuffer commandBuffer);
     private:
-        VulkanResourceLayoutView& m_reflect_view;
-
-        VkDescriptorPool m_descriptor_pool;
         std::vector<VkDescriptorSet> m_descriptor_sets;
-        std::unordered_map<RHIName, VulkanTextureView*> m_binding_textures[(int)RHIShaderType::count];
+        std::vector<VulkanResourceSet*> m_resource_set_handles;
     };
 
     class VulkanPrimitiveBinding : public RHIPrimitiveBinding, VulkanDeviceObject

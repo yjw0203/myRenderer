@@ -22,5 +22,8 @@ namespace yjw
         RPIShader m_ps{};
         RPIResourceBinding m_resource_binding{};
         RPIPrimitiveBinding m_primitive_binding{};
+        RPIResourceSet m_global_resource_set{};
+        RPIResourceSet m_custom_vs_resource_set{};
+        RPIResourceSet m_custom_ps_resource_set{};
     };
 }

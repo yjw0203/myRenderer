@@ -2,33 +2,74 @@
 
 namespace rpi
 {
-    RPIResourceBinding RPIResourceBinding::Null = RPIResourceBinding(nullptr);
-
-    RPIResourceBinding::RPIResourceBinding()
+    bool RPICheckResourceSetTypeID(int set_id, RPIResourceSetType type)
     {
-        m_resource_binding = nullptr;
+        return set_id == (int)type;
     }
 
+    int RPIGetResourceSetIDByType(RPIResourceSetType type)
+    {
+        return (int)type;
+    }
+
+    RPIResourceSet RPIResourceSet::Null = RPIResourceSet(nullptr);
+
+    RPIResourceSet::RPIResourceSet()
+    {
+        m_resource_set = nullptr;
+    }
+
+    RPIResourceSet::RPIResourceSet(RHIResourceSet* rhiResourceSet)
+    {
+        m_resource_set = rhiResourceSet;
+    }
+
+    void RPIResourceSet::SetBuffer(RHIName name, RPIBuffer buffer)
+    {
+        m_resource_set->SetBufferView(name, buffer.GetView());
+    }
+
+    void RPIResourceSet::SetTexture(RHIName name, RPITexture texture)
+    {
+        m_resource_set->SetTextureView(name, texture.GetView());
+    }
+
+    RHIResourceSet* RPIResourceSet::GetRHIResourceSet()
+    {
+        return m_resource_set;
+    }
+
+    void RPIResourceSet::Release()
+    {
+        if (m_resource_set)
+        {
+            m_resource_set->release();
+            m_resource_set = nullptr;
+        }
+    }
+
+    bool RPIResourceSet::IsNull()
+    {
+        return m_resource_set == nullptr;
+    }
+
+    RPIResourceBinding::RPIResourceBinding()
+    {}
     RPIResourceBinding::RPIResourceBinding(RHIResourceBinding* rhiResourceBinding)
     {
         m_resource_binding = rhiResourceBinding;
     }
-
-    void RPIResourceBinding::SetBuffer(RPIShaderType shaderType, RHIName name, RPIBuffer buffer)
+    void RPIResourceBinding::SetResourceSet(RPIResourceSetType type, RPIResourceSet set)
     {
-        m_resource_binding->SetBufferView(shaderType, name, buffer.GetView());
+        if (m_resource_binding)
+        {
+            m_resource_binding->SetResourceSet((int)type, set.GetRHIResourceSet());
+        }
     }
-
-    void RPIResourceBinding::SetTexture(RHIShaderType shaderType, RHIName name, RPITexture texture)
-    {
-        m_resource_binding->SetTextureView(shaderType, name, texture.GetView());
-    }
-
     RHIResourceBinding* RPIResourceBinding::GetRHIResourceBinding()
     {
         return m_resource_binding;
     }
-
     void RPIResourceBinding::Release()
     {
         if (m_resource_binding)
@@ -37,11 +78,11 @@ namespace rpi
             m_resource_binding = nullptr;
         }
     }
-
     bool RPIResourceBinding::IsNull()
     {
         return m_resource_binding == nullptr;
     }
+
 
     RPIPrimitiveBinding::RPIPrimitiveBinding()
     {

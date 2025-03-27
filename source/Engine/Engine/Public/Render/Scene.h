@@ -7,11 +7,21 @@
 namespace yjw
 {
     class MaterialInstance;
-    struct RenderEntity
+    class RenderEntity
     {
+    public:
+        RenderEntity();
+        ~RenderEntity();
+        bool ReadyRender();
+        void Build();
+
+        bool m_builded = false;
+        PrimitiveComponent* m_primitive_ptr{};
+        Primitive* m_primitive{};
         MaterialInstance* m_material{};
         rpi::RPIPrimitiveBinding m_primitive_binding{};
         rpi::RPIResourceBinding m_resource_binding{};
+        rpi::RPIPipeline m_pipeline{};
     };
 
     class PrimitiveComponent;
@@ -23,11 +33,11 @@ namespace yjw
         void AddPrimitiveComponent(PrimitiveComponent* mesh);
         void RemovePrimitiveComponent(PrimitiveComponent* mesh);
 
-        std::vector<PrimitiveComponent*>& GetMeshes();
+        std::vector<RenderEntity*>& GetMeshes();
 
         void Update(float deltaTime);
     private:
-        std::vector<PrimitiveComponent*> m_meshes;
+        std::vector<RenderEntity*> m_meshes;
         std::vector<Actor*> m_lights;
         std::vector<Actor*> m_cameras;
 
