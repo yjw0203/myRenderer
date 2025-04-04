@@ -28,7 +28,7 @@ namespace rhi
     {
         m_command_buffer.CmdEndPass();
         m_state_cache.SetResourceBinding(nullptr);
-        m_state_cache.SetPrimitiveBinding(nullptr);
+        m_state_cache.SetPrimitiveBinding(nullptr, 0);
     }
 
     void VulkanContext::SetRenderPipeline(RHIRenderPipeline* pipeline)
@@ -51,9 +51,9 @@ namespace rhi
         m_state_cache.SetResourceBinding(VKResourceCast(resourceBinding));
     }
 
-    void VulkanContext::SetPrimitiveBinding(RHIPrimitiveBinding* primitiveBinding)
+    void VulkanContext::SetPrimitiveBinding(RHIPrimitiveBinding* primitiveBinding,int sub_id)
     {
-        m_state_cache.SetPrimitiveBinding(VKResourceCast(primitiveBinding));
+        m_state_cache.SetPrimitiveBinding(VKResourceCast(primitiveBinding),sub_id);
     }
 
     void VulkanContext::Draw(int vertexCount, int instanceCount, int firstVertex, int firstInstance)

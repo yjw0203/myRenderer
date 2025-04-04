@@ -84,6 +84,7 @@ namespace yjw
         info.m_serialize_func = serialize_func;
         info.m_ref_count.store(1);
         m_pending_load_assets.push_back(info);
+        process();//load imidiately now
         return id;
     }
 

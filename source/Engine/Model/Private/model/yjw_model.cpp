@@ -19,7 +19,7 @@ namespace yjw
         case VertexAttributeType::position:return rhi::RHIName("POSITION");
         case VertexAttributeType::normal:return rhi::RHIName("NORMAL");
         case VertexAttributeType::tangent:return rhi::RHIName("TANGENT");
-        case VertexAttributeType::uv0:return rhi::RHIName("TEXCOORD0");
+        case VertexAttributeType::uv0:return rhi::RHIName("UV0");
         case VertexAttributeType::blend_indices:return rhi::RHIName("BLEND_INDICES");
         case VertexAttributeType::blend_weights:return rhi::RHIName("BLEND_WEIGHTS");
         case VertexAttributeType::blend_type:return rhi::RHIName("BLEND_TYPE");

@@ -32,13 +32,19 @@ namespace rhi
         return m_current_resource_binding;
     }
 
-    void VulkanStateCache::SetPrimitiveBinding(VulkanPrimitiveBinding* primitiveBinding)
+    void VulkanStateCache::SetPrimitiveBinding(VulkanPrimitiveBinding* primitiveBinding, int sub_id)
     {
         m_current_primitive_binding = primitiveBinding;
+        m_current_sub_primitive_binding_id = sub_id;
     }
 
     VulkanPrimitiveBinding* VulkanStateCache::GetPrimitiveBinding()
     {
         return m_current_primitive_binding;
+    }
+
+    int VulkanStateCache::GetPrimitiveBindingSubID()
+    {
+        return m_current_sub_primitive_binding_id;
     }
 }

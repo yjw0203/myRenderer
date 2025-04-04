@@ -6,6 +6,7 @@
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
 #include <glm/glm.hpp>
 
+#include "Engine/Render/Private/RenderResource.h"
 #include "Engine/RHI/Public/rpi/yjw_rpi_header.h"
 #include "Engine/RHI/Public/shaderCompiler/yjw_shader_compiler.h"
 #include "projectInfo.h"
@@ -59,7 +60,7 @@ namespace yjw
         bool m_cpu_data_dirty = false;
     };
 
-    class Material
+    class Material : public RenderResource
     {
         friend class MaterialInstance;
     public:
@@ -75,7 +76,7 @@ namespace yjw
         bool m_builded = false;
     };
 
-    class MaterialInstance
+    class MaterialInstance : public RenderResource
     {
     public:
         MaterialInstance(Material* material);
@@ -97,4 +98,7 @@ namespace yjw
 
     extern Material g_pbr_material;
     extern Material g_simple_mesh_pbr_material;
+
+    extern Material g_default_material;
+    extern MaterialInstance* g_default_material_instance;
 }

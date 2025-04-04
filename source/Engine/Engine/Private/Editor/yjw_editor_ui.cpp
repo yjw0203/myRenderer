@@ -1,5 +1,5 @@
 #include "yjw_editor_ui.h"
-#include "Engine/Engine/Public/Render/Scene.h"
+#include "Engine/Render/Private/Scene.h"
 #include <array>
 
 namespace yjw

@@ -16,7 +16,7 @@ namespace rhi
         virtual void SetComputePipeline(RHIComputePipeline* pipeline) = 0;
         virtual void TransitionStateToRender(RHIResourceSet* resourceBinding) = 0;
         virtual void SetResourceBinding(RHIResourceBinding* resourceBinding) = 0;
-        virtual void SetPrimitiveBinding(RHIPrimitiveBinding* resourceBinding) = 0;
+        virtual void SetPrimitiveBinding(RHIPrimitiveBinding* resourceBinding,int sub_id) = 0;
         virtual void Draw(int vertexCount, int instanceCount, int firstVertex, int firstInstance) = 0;
         virtual void DrawIndex(int firstInstance, int instanceCount) = 0;
         virtual void Dispatch(int groupCountX, int groupCountY, int groupCountZ) = 0;

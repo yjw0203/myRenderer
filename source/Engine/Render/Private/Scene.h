@@ -2,6 +2,7 @@
 #include "Engine/Engine/Public/Framework/Actor.h"
 #include "Engine/RHI/Public/rpi/yjw_rpi.h"
 #include "Engine/Utils/Public/DesignPatterns/ECS.h"
+#include "Engine/Render/Private/Primitive.h"
 #include <vector>
 
 namespace yjw

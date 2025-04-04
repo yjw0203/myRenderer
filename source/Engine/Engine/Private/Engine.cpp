@@ -1,5 +1,5 @@
 #include "Engine/Engine/Public/Engine.h"
-#include "Engine/Engine/Public/Render/Scene.h"
+#include "Engine/Render/Private/Scene.h"
 #include "Engine/File/Public/yjw_file_system_module_header.h"
 #include "Engine/Render/Public/yjw_render_system.h"
 #include "Engine/Asset/Public/Asset.h"

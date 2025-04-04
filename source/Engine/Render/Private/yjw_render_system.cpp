@@ -39,6 +39,8 @@ namespace yjw
         Window::Initialize();
         RPIInit();
         
+        g_default_material_instance = new MaterialInstance(&g_default_material);
+
         m_window = new Window();
 
         g_internal_shader_parameters.Initialize();

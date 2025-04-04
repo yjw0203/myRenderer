@@ -1,7 +1,7 @@
 #pragma once
 #include "Engine/Utils/Public/DesignPatterns/ECS.h"
 #include "Engine/Engine/Public/Framework/Components/StaticMeshComponent.h"
-#include "Engine/Engine/Public/Render/Mesh.h"
+#include "Engine/Render/Private/Mesh.h"
 
 namespace yjw
 {

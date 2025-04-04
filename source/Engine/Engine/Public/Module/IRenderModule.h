@@ -1,5 +1,5 @@
 #pragma once
-#include "Engine/Engine/Public/Render/Scene.h"
+#include "Engine/Render/Private/Scene.h"
 #include "Engine/Engine/Public/Module/IModule.h"
 namespace yjw
 {

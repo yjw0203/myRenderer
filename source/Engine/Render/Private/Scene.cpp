@@ -1,6 +1,6 @@
-#include "Engine/Engine/Public/Render/Scene.h"
+#include "Engine/Render/Private/Scene.h"
 #include "Engine/Engine/Public/Framework/Components/PrimitiveComponent.h"
-#include "Engine/Engine/Public/Render/Mesh.h"
+#include "Engine/Render/Private/Mesh.h"
 #include "Engine/InternalShaderResource/Public/yjw_internal_shader_resource.h"
 #include <queue>
 

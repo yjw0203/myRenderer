@@ -1,18 +1,11 @@
 #include "Global.hlsli"
 
-CBUFFER(material, PS, 0)  
-{  
-    float2 metallic_roughness;
-};  
-  
-TEXTURE2D(albedoTex, PS);
-
 struct MeshVertexOutput  
 {  
     float4 sv_Position : SV_POSITION;  
     float3 position : POSITION;  
     float3 normal : NORMAL;  
-    float2 uv0 : UV0; 
+    float2 uv0 : UV0;  
 };  
   
 struct PS_OUTPUT  
@@ -110,9 +103,9 @@ PS_OUTPUT PSMain(MeshVertexOutput input)
     SamplerState defaultSampler;
     GBufferData gbuffer_data;
     gbuffer_data.world_positon = input.position;
-    gbuffer_data.albedo = albedoTex.Sample(defaultSampler, input.uv0).xyz;  
-    gbuffer_data.metallic = metallic_roughness.x;
-    gbuffer_data.roughness = metallic_roughness.y;
+    gbuffer_data.albedo = float3(1,0,0);  
+    gbuffer_data.metallic = 0.5;
+    gbuffer_data.roughness = 0.5;
     gbuffer_data.normal = input.normal;
     
     PS_OUTPUT output;  

@@ -374,9 +374,9 @@ namespace rpi
         context->SetResourceBinding(resourceBinding.GetRHIResourceBinding());
     }
 
-    void RPICmdSetPrimitiveBinding(RPIContext context, RPIPrimitiveBinding primitiveBinding)
+    void RPICmdSetPrimitiveBinding(RPIContext context, RPIPrimitiveBinding primitiveBinding, int sub_id)
     {
-        context->SetPrimitiveBinding(primitiveBinding.GetRHIPrimitiveBinding());
+        context->SetPrimitiveBinding(primitiveBinding.GetRHIPrimitiveBinding(), sub_id);
     }
 
     void RPICmdTransitionStateToRender(RPIContext context, RPIResourceSet resourceSet)

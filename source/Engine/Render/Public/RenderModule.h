@@ -3,6 +3,7 @@
 
 namespace yjw
 {
+    class Scene;
     class RenderSystem;
     class RenderModule : public IRenderModule
     {

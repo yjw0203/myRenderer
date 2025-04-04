@@ -253,13 +253,16 @@ namespace rhi
         }
     }
 
-    void VulkanPrimitiveBinding::SetIndexBuffer(RHIBufferView* bufferView, int index_start, int index_count, bool is_index_16bit)
+    int VulkanPrimitiveBinding::AddIndexBuffer(RHIBufferView* bufferView, int index_start, int index_count, bool is_index_16bit)
     {
-        m_index_buffer = VKResourceCast(bufferView)->GetBuffer();
-        m_index_buffer_offset = VKResourceCast(bufferView)->GetOffset();
-        m_index_start = index_start;
-        m_index_count = index_count;
-        m_is_index_16bit = is_index_16bit;
+        int id = m_sub_primitive_binding.size();
+        m_sub_primitive_binding.push_back(SubPrimitiveBinding{});
+        m_sub_primitive_binding.back().m_index_buffer = VKResourceCast(bufferView)->GetBuffer();
+        m_sub_primitive_binding.back().m_index_buffer_offset = VKResourceCast(bufferView)->GetOffset();
+        m_sub_primitive_binding.back().m_index_start = index_start;
+        m_sub_primitive_binding.back().m_index_count = index_count;
+        m_sub_primitive_binding.back().m_is_index_16bit = is_index_16bit;
+        return id;
     }
 
     int VulkanPrimitiveBinding::GetVertexBufferCount()
@@ -281,29 +284,29 @@ namespace rhi
         return m_vertex_bufferOffsets;
     }
 
-    VulkanBuffer* VulkanPrimitiveBinding::GetIndexBuffer()
+    VulkanBuffer* VulkanPrimitiveBinding::GetIndexBuffer(int id)
     {
-        return m_index_buffer;
+        return m_sub_primitive_binding[id].m_index_buffer;
     }
 
-    int VulkanPrimitiveBinding::GetIndexBufferOffset()
+    int VulkanPrimitiveBinding::GetIndexBufferOffset(int id)
     {
-        return m_index_buffer_offset;
+        return m_sub_primitive_binding[id].m_index_buffer_offset;
     }
 
-    int VulkanPrimitiveBinding::GetIndexStart()
+    int VulkanPrimitiveBinding::GetIndexStart(int id)
     {
-        return m_index_start;
+        return m_sub_primitive_binding[id].m_index_start;
     }
 
-    int VulkanPrimitiveBinding::GetIndexCount()
+    int VulkanPrimitiveBinding::GetIndexCount(int id)
     {
-        return m_index_count;
+        return m_sub_primitive_binding[id].m_index_count;
     }
 
-    bool VulkanPrimitiveBinding::GetIsIndex16Bit()
+    bool VulkanPrimitiveBinding::GetIsIndex16Bit(int id)
     {
-        return m_is_index_16bit;
+        return m_sub_primitive_binding[id].m_is_index_16bit;
     }
 
     int VulkanPrimitiveBinding::GetVertexOffset()

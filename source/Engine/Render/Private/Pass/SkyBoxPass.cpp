@@ -49,7 +49,7 @@ namespace yjw
         m_primitive_binding = RPICreatePrimitiveBinding(m_pipeline);
 
         m_primitive_binding.SetVertexBuffer(RHIName("POSITION"), m_vertex_buffer);
-        m_primitive_binding.SetIndexBuffer(m_index_buffer, 0, 36, true);
+        m_primitive_binding.AddIndexBuffer(m_index_buffer, 0, 36, true);
     }
 
     void SkyBoxPass::LoadResource(const char* sky_box_path)
@@ -93,7 +93,7 @@ namespace yjw
     {
         RPICmdPushEvent(context, "SkyBoxPass");
         RPICmdSetResourceBinding(context, m_resource_binding);
-        RPICmdSetPrimitiveBinding(context, m_primitive_binding);
+        RPICmdSetPrimitiveBinding(context, m_primitive_binding, 0);
         RPICmdSetPipeline(context, m_pipeline);
         RPICmdDrawIndex(context, 0, 1);
         RPICmdPopEvent(context);

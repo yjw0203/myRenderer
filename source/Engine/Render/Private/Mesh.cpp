@@ -1,4 +1,4 @@
-#include "Engine/Engine/Public/Render/Mesh.h"
+#include "Engine/Render/Private/Mesh.h"
 
 namespace yjw
 {

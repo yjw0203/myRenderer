@@ -19,7 +19,7 @@ namespace rhi
         virtual void SetComputePipeline(RHIComputePipeline* pipeline) override;
         virtual void TransitionStateToRender(RHIResourceSet* resourceBinding) override;
         virtual void SetResourceBinding(RHIResourceBinding* resourceBinding) override;
-        virtual void SetPrimitiveBinding(RHIPrimitiveBinding* resourceBinding) override;
+        virtual void SetPrimitiveBinding(RHIPrimitiveBinding* resourceBinding,int sub_id) override;
         virtual void Draw(int vertexCount, int instanceCount, int firstVertex, int firstInstance) override;
         virtual void DrawIndex(int firstInstance, int instanceCount) override;
         virtual void Dispatch(int groupCountX, int groupCountY, int groupCountZ) override;

@@ -13,12 +13,14 @@ namespace rhi
         VulkanComputePipeline* GetComputePipeline();
         void SetResourceBinding(VulkanResourceBinding* resourceBinding);
         VulkanResourceBinding* GetResourceBinding();
-        void SetPrimitiveBinding(VulkanPrimitiveBinding* primitiveBinding);
+        void SetPrimitiveBinding(VulkanPrimitiveBinding* primitiveBinding,int sub_id);
         VulkanPrimitiveBinding* GetPrimitiveBinding();
+        int GetPrimitiveBindingSubID();
     private:
         VulkanRenderPipeline* m_current_render_pipeline = nullptr;
         VulkanComputePipeline* m_current_compute_pipeline = nullptr;
         VulkanResourceBinding* m_current_resource_binding = nullptr;
         VulkanPrimitiveBinding* m_current_primitive_binding = nullptr;
+        int m_current_sub_primitive_binding_id{};
     };
 }

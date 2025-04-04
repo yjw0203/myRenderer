@@ -99,9 +99,9 @@ namespace rpi
         m_primitive_binding->SetVertexBuffer(name, buffer.GetView());
     }
 
-    void RPIPrimitiveBinding::SetIndexBuffer(RPIBuffer buffer, int index_start, int index_count, bool is_index_16bit)
+    int RPIPrimitiveBinding::AddIndexBuffer(RPIBuffer buffer, int index_start, int index_count, bool is_index_16bit)
     {
-        m_primitive_binding->SetIndexBuffer(buffer.GetView(),index_start, index_count, is_index_16bit);
+        return m_primitive_binding->AddIndexBuffer(buffer.GetView(),index_start, index_count, is_index_16bit);
     }
 
     RHIPrimitiveBinding* RPIPrimitiveBinding::GetRHIPrimitiveBinding()

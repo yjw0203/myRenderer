@@ -25,6 +25,6 @@ namespace rhi
     {
     public:
         virtual void SetVertexBuffer(RHIName name, RHIBufferView* buffer) = 0;
-        virtual void SetIndexBuffer(RHIBufferView* buffer, int intdex_start, int index_count, bool is_index_16bit) = 0;
+        virtual int AddIndexBuffer(RHIBufferView* buffer, int intdex_start, int index_count, bool is_index_16bit) = 0;
     };
 }

@@ -4,7 +4,7 @@ struct MeshVertexInput
 {  
     float3 positon : POSITION;
     float3 normal : NORMAL;
-    float2 uv0 : TEXCOORD0;
+    float2 uv0 : UV0;
     int4 blend_indices : BLEND_INDICES;
     float4 blend_weights : BLEND_WEIGHTS;
     int blend_type : BLEND_TYPE;
@@ -15,7 +15,7 @@ struct MeshVertexOutput
     float4 sv_Position : SV_POSITION;  
     float3 position : POSITION;  
     float3 normal : NORMAL;  
-    float2 uv0 : TEXCOORD0;  
+    float2 uv0 : UV0;  
 };  
   
 Buffer<float4> boneMatrices : register(t3,space0);
@@ -81,7 +81,7 @@ struct SimpleMeshVertexInput
 {
     float3 positon : POSITION;
     float3 normal : NORMAL;
-    float2 uv0 : TEXCOORD0;
+    float2 uv0 : UV0;
 };
 
 MeshVertexOutput SimpleVS(SimpleMeshVertexInput input)

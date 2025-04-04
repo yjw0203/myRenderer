@@ -53,17 +53,17 @@ namespace rhi
         VulkanPrimitiveBinding(VulkanDevice* pDevice, class ShaderReflect& reflect);
         ~VulkanPrimitiveBinding();
         virtual void SetVertexBuffer(RHIName name, RHIBufferView* bufferView) override;
-        virtual void SetIndexBuffer(RHIBufferView* buffer, int intdex_start, int index_count, bool is_index_16bit) override;
+        virtual int AddIndexBuffer(RHIBufferView* buffer, int intdex_start, int index_count, bool is_index_16bit) override;
 
         int GetVertexBufferCount();
         VulkanBuffer* GetVertexBuffer(int index);
         VkBuffer* GetVertexVkBuffers();
         VkDeviceSize* GetVertexVkBufferOffsets();
-        VulkanBuffer* GetIndexBuffer();
-        int GetIndexBufferOffset();
-        int GetIndexStart();
-        int GetIndexCount();
-        bool GetIsIndex16Bit();
+        VulkanBuffer* GetIndexBuffer(int id);
+        int GetIndexBufferOffset(int id);
+        int GetIndexStart(int id);
+        int GetIndexCount(int id);
+        bool GetIsIndex16Bit(int id);
         int GetVertexOffset();
     private:
         ShaderReflect& m_reflect;
@@ -71,11 +71,16 @@ namespace rhi
         VulkanBuffer* m_vertex_buffers[VULKAN_MAX_VERTEX_BINDING] = {};
         VkBuffer m_vertex_vkBuffers[VULKAN_MAX_VERTEX_BINDING] = {};
         VkDeviceSize m_vertex_bufferOffsets[VULKAN_MAX_VERTEX_BINDING] = {};
-        VulkanBuffer* m_index_buffer = nullptr;
-        int m_index_buffer_offset = 0;
-        int m_index_start = 0;
-        int m_index_count = 0;
-        bool m_is_index_16bit = false;
         int m_vertex_offset = 0;
+
+        struct SubPrimitiveBinding
+        {
+            VulkanBuffer* m_index_buffer = nullptr;
+            int m_index_buffer_offset = 0;
+            int m_index_start = 0;
+            int m_index_count = 0;
+            bool m_is_index_16bit = false;
+        };
+        std::vector<SubPrimitiveBinding> m_sub_primitive_binding;
     };
 }

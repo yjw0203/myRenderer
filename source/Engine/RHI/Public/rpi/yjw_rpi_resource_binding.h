@@ -55,7 +55,7 @@ namespace rpi
         RPIPrimitiveBinding();
         RPIPrimitiveBinding(RHIPrimitiveBinding* rhiPrimitiveBinding);
         void SetVertexBuffer(RHIName name, RPIBuffer buffer);
-        void SetIndexBuffer(RPIBuffer buffer, int index_start, int index_count, bool is_index_16bit);
+        int AddIndexBuffer(RPIBuffer buffer, int index_start, int index_count, bool is_index_16bit);
         RHIPrimitiveBinding* GetRHIPrimitiveBinding();
         void Release();
         bool IsNull();

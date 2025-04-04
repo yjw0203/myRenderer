@@ -43,7 +43,7 @@ namespace rpi
     void RPICmdPopEvent(RPIContext context);
     void RPICmdSetPipeline(RPIContext context, RPIPipeline pipeline);
     void RPICmdSetResourceBinding(RPIContext context, RPIResourceBinding resourceBinding);
-    void RPICmdSetPrimitiveBinding(RPIContext context, RPIPrimitiveBinding primitiveBinding);
+    void RPICmdSetPrimitiveBinding(RPIContext context, RPIPrimitiveBinding primitiveBinding,int sub_id);
     void RPICmdTransitionStateToRender(RPIContext context, RPIResourceSet resourceSet);
     void RPICmdBeginRenderPass(RPIContext context, RPIRenderPass renderPass);
     void RPICmdEndPass(RPIContext context);

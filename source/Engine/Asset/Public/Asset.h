@@ -172,6 +172,10 @@ namespace yjw
         Asset(Asset&& other) noexcept {
             m_id = other.m_id;
         }
+        Asset& operator = (const Asset& other) {
+            m_id = other.m_id;
+            return *this;
+        }
         void SetURL(const char* url)
         {
             AssetManager::Get()->UnregisterAsset(m_id);
@@ -206,28 +210,37 @@ namespace yjw
         AssetID m_id{};
     };
 
-    Class(AssetReferece)
+    template<typename T>
+    class AssetReferece
     {
     public:
-        std::string m_url;
-
-
-        // todo: add bool m_is_loaded after reflection support not reflection filed.
-        template<typename T>
-        Asset<T> GetAsset()
-        {
-            return Asset<T>(m_url.c_str());
+        AssetReferece() {}
+        AssetReferece(AssetReferece&& other) noexcept {
+            m_asset = other.m_asset;
+            m_url = other.m_url;
         }
-
-        template<typename T>
-        void LoadAsset()
-        {
-            AssetManager::Get()->RegisterAsset<T>(m_url.c_str());
+        AssetReferece& operator = (const AssetReferece& other) {
+            m_asset = other.m_asset;
+            m_url = other.m_url;
+            return *this;
         }
-
-        void UnloadAsset()
-        {
-            //AssetManager::Get()->UnregisterAsset(m_id);
-        }
+        std::string m_url{};
+        Asset<T> m_asset{};
     };
+
+    template<typename T>
+    void to_json(json& j, const yjw::AssetReferece<T>& obj) {
+        j = json{
+             {"m_url", obj.m_url}
+        };
+    }
+
+    template<typename T>
+    void from_json(const json& j, yjw::AssetReferece<T>& obj) {
+        if (j.count("m_url")) {
+            j.at("m_url").get_to(obj.m_url);
+        }
+        obj.m_asset.SetURL(obj.m_url.c_str());
+    }
+
 }
