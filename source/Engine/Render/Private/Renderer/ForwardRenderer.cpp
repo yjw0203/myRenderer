@@ -1,5 +1,6 @@
 #include "Engine/Render/Private/Renderer/ForwardRenderer.h"
 #include "Engine/Render/Private/Pass/SkyBoxPass.h"
+#include "Engine/Render/Private/Pass/ImGUIPass.h"
 #include "projectInfo.h"
 
 namespace yjw
@@ -10,6 +11,8 @@ namespace yjw
         m_sky_box_pass = new SkyBoxPass();
         m_sky_box_pass->Initialize();
         m_sky_box_pass->LoadResource(RESOURCE_FILE(skybox/6));
+        m_imgui_pass = new ImGuiPass();
+        m_imgui_pass->Initialize();
     }
 
     void ForwardRenderer::Destroy()
@@ -48,6 +51,11 @@ namespace yjw
         m_scene_proxy = proxy;
     }
 
+    void ForwardRenderer::SetUI(rhi::ImGuiUI* ui)
+    {
+        m_imgui_pass->LoadResource(ui);
+    }
+
     void ForwardRenderer::BeginFrame()
     {
         if(m_output_color)RPICmdClearTexture(m_context, m_output_color);
@@ -60,6 +68,7 @@ namespace yjw
         SubmitOpacue();
         m_sky_box_pass->Submit(m_context);
         SubmitTransparent();
+        m_imgui_pass->Submit(m_context);
         RPICmdEndPass(m_context);
     }
 

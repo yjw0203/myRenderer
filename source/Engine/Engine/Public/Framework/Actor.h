@@ -20,6 +20,26 @@ namespace yjw
         std::string m_name;
     };
 
+    class MeshActor : public Actor
+    {
+    public:
+        MeshActor(const char* name)
+        {
+            m_primitive = new Primitive(name);
+        }
+        virtual void OnSpawned()
+        {
+            MaterialInstance* material_instance = new MaterialInstance(&g_simple_mesh_pbr_material);
+            rpi::RPITexture texture = rpi::RPICreateTexture2DFromFile(RESOURCE_FILE(cao / tex / 髮1.png));
+            material_instance->SetTexture("albedoTex", texture);
+            //Mesh* mesh = new Mesh(&g_box_primitive, material_instance);
+            Mesh* mesh = new Mesh(m_primitive, material_instance);
+            GetEntity().AddComponent<StaticMeshComponent>()->SetMesh(mesh);
+        }
+    private:
+        Primitive* m_primitive{};
+    };
+
     class TestBoxActor : public Actor
     {
     public:
@@ -28,7 +48,8 @@ namespace yjw
             MaterialInstance* material_instance = new MaterialInstance(&g_simple_mesh_pbr_material);
             rpi::RPITexture texture = rpi::RPICreateTexture2DFromFile(RESOURCE_FILE(cao/tex/髮1.png));
             material_instance->SetTexture("albedoTex", texture);
-            Mesh* mesh = new Mesh(&g_box_primitive, material_instance);
+            //Mesh* mesh = new Mesh(&g_box_primitive, material_instance);
+            Mesh* mesh = new Mesh(new Primitive("naxita/纳西妲.mesh.ast"), material_instance);
             GetEntity().AddComponent<StaticMeshComponent>()->SetMesh(mesh);
         }
     };

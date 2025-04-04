@@ -1,5 +1,5 @@
-#include "Model/AnimationLoader.h"
-#include "Private/3rd/saba/VMDFile.h"
+#include "Engine/Model/Public/AnimationLoader.h"
+#include "Engine/Model/Private/3rd/saba/VMDFile.h"
 
 namespace yjw
 {

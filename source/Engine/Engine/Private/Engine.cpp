@@ -19,6 +19,7 @@ namespace yjw
     Engine::Engine()
     {
         m_world = new World();
+        m_ui = new EditorUI(m_world);
         m_render_module = CreateModule<IRenderModule>();
     }
 
@@ -46,7 +47,8 @@ namespace yjw
     {
         m_render_module->Startup();
         m_render_module->AttachScene(m_world->GetScene());
-        m_world->GetLevel()->SpawnActor<TestBoxActor>("test box");
+        m_render_module->AttachUI(m_ui);
+        //m_world->GetLevel()->SpawnActor<TestBoxActor>("test box");
     }
     void Engine::mainLoop()
     {

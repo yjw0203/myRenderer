@@ -2,7 +2,8 @@
 
 CBUFFER(material, PS, 0)  
 {  
-    float2 metallic_roughness;
+    float metallic;
+    float roughness;
 };  
   
 TEXTURE2D(albedoTex, PS);
@@ -111,8 +112,8 @@ PS_OUTPUT PSMain(MeshVertexOutput input)
     GBufferData gbuffer_data;
     gbuffer_data.world_positon = input.position;
     gbuffer_data.albedo = albedoTex.Sample(defaultSampler, input.uv0).xyz;  
-    gbuffer_data.metallic = metallic_roughness.x;
-    gbuffer_data.roughness = metallic_roughness.y;
+    gbuffer_data.metallic = metallic;
+    gbuffer_data.roughness = roughness;
     gbuffer_data.normal = input.normal;
     
     PS_OUTPUT output;  

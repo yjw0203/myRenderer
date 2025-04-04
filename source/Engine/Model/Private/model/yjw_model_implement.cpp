@@ -20,10 +20,11 @@ namespace yjw
         return buffer_view_id;
     }
 
-    int ModelBuildImplement::AddBuffer(void* data, int width)
+    int ModelBuildImplement::AddBuffer(MeshVertexType type, void* data, int width)
     {
         int buffer_id = m_cpu_model->m_pool_buffers.size();
         m_cpu_model->m_pool_buffers.push_back(CPUModel::CPUBuffer{});
+        m_cpu_model->m_pool_buffers.back().type = type;
         m_cpu_model->m_pool_buffers.back().buffer.resize(width);
         memcpy(m_cpu_model->m_pool_buffers.back().buffer.data(), data, width);
         return buffer_id;
@@ -39,33 +40,37 @@ namespace yjw
         return buffer_view_id;
     }
 
-    rpi::RPITexture ModelBuildImplement::AddTexture(const std::string& texture_name)
+    int ModelBuildImplement::GetBufferIDFromBufferView(int buffer_view_id)
+    {
+        return m_cpu_model->m_pool_buffer_views[buffer_view_id].buffer_id;
+    }
+
+    void ModelBuildImplement::SetBufferType(int buffer_id, MeshVertexType type)
+    {
+        m_cpu_model->m_pool_buffers[buffer_id].type = type;
+    }
+
+    int ModelBuildImplement::AddTexture(const std::string& texture_name)
     {
         for (int id = 0; id < m_cpu_model->m_pool_textures.size(); id++)
         {
             if (texture_name == m_cpu_model->m_pool_textures[id].texture_name)
             {
-                return m_cpu_model->m_pool_textures[id].texture;
+                return id;
             }
         }
+        int id = m_cpu_model->m_pool_textures.size();
         m_cpu_model->m_pool_textures.push_back(CPUModel::Texture{});
         m_cpu_model->m_pool_textures.back().texture_name = texture_name;
-        m_cpu_model->m_pool_textures.back().texture = rpi::RPICreateTexture2DFromFile(texture_name.c_str());;
-        return m_cpu_model->m_pool_textures.back().texture;
+        return id;
     }
 
-    rpi::RPITexture ModelBuildImplement::AddTexture(const std::string& texture_name, int width, int height, void* data, int size)
+    int ModelBuildImplement::AddTexture(const std::string& texture_name, int width, int height, void* data, int size)
     {
+        int id = m_cpu_model->m_pool_textures.size();
         m_cpu_model->m_pool_textures.push_back(CPUModel::Texture{});
         m_cpu_model->m_pool_textures.back().texture_name = texture_name;
-        m_cpu_model->m_pool_textures.back().texture = rpi::RPICreateDefaultTexture2D(width, height,rpi::RPIFormat::R8G8B8A8_unorm);
-        m_cpu_model->m_pool_textures.back().texture.GetTexture()->Update(data, size);
-        return m_cpu_model->m_pool_textures.back().texture;
-    }
-
-    rpi::RPITexture ModelBuildImplement::GetTexture(int id)
-    {
-        return m_cpu_model->m_pool_textures[id].texture;
+        return id;
     }
 
     int ModelBuildImplement::AddMesh()
@@ -83,7 +88,7 @@ namespace yjw
         m_cpu_model->m_meshes[mesh_id].is_indices_16bit = is_indices_16bit;
     }
 
-    void ModelBuildImplement::AddVertexBuffer(int mesh_id, VertexAttributeType type, int buffer_view_id)
+    void ModelBuildImplement::AddVertexBuffer(int mesh_id, MeshVertexType type, int buffer_view_id)
     {
         CPUModel::VertexBuffer vertex_buffer{};
         vertex_buffer.buffer = buffer_view_id;
@@ -91,10 +96,17 @@ namespace yjw
         m_cpu_model->m_meshes[mesh_id].vertex_buffers.push_back(vertex_buffer);
     }
 
-    int ModelBuildImplement::AddMaterial(MaterialInstance* material)
+    int ModelBuildImplement::AddMaterial(const CPUModel::Material& material)
     {
         int material_id = m_cpu_model->m_material.size();
         m_cpu_model->m_material.push_back(material);
+        return material_id;
+    }
+
+    int ModelBuildImplement::AddMaterialInstance(const CPUModel::MaterialIns& material_instance)
+    {
+        int material_id = m_cpu_model->m_material_instances.size();
+        m_cpu_model->m_material_instances.push_back(material_instance);
         return material_id;
     }
 
@@ -103,7 +115,7 @@ namespace yjw
         int entity_id = m_cpu_model->m_entities.size();
         m_cpu_model->m_entities.push_back(CPUModel::Entity{});
         m_cpu_model->m_entities.back().mesh_id = mesh_id;
-        m_cpu_model->m_entities.back().material_id = material_id;
+        m_cpu_model->m_entities.back().material_ins_id = material_id;
         return entity_id;
     }
 

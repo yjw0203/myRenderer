@@ -5,6 +5,7 @@ namespace yjw
     class EditorUI : public rhi::ImGuiUI
     {
     public:
+        EditorUI(class World* world) { m_world = world; };
         virtual void DecodeUI() override;
 
     public:
@@ -12,10 +13,6 @@ namespace yjw
         class World* m_world = nullptr;
 
     private:
-        void ShowMenuBar();
-        void ShowWorldObject();
-        void ShowMenu();
-        void ShowActorList();
-        void ShowViewport();
+        void ShowOption();
     };
 }

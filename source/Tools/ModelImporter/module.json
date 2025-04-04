@@ -1,0 +1,5 @@
+{
+    "name": "ModelImporter",
+    "dependencys": ["Model", "Engine"],
+    "build": "lib"
+}

@@ -23,7 +23,7 @@ namespace rhi
         virtual void OnSwapchainInit(class RHISwapChain* swapchain);
         virtual void OnSwapchainShutdown(class RHISwapChain* swapchain);
 
-        void NewFrame(RHIContext* context, RHIRenderPass* renderPass);
+        void NewFrame();
         void Render(class RHIContext* context);
 
         void* RegisterTexture(const char* name, RHITextureView* texture);

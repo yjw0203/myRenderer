@@ -15,6 +15,7 @@ namespace yjw
         case MeshVertexType::TARGENT:return "TARGENT";
         case MeshVertexType::UV0:return "UV0";
         case MeshVertexType::UV1:return "UV1";
+        case MeshVertexType::BLEND_INDICES:return "BLEND_INDICES";
         case MeshVertexType::BLEND_WEIGHTS:return "BLEND_WEIGHTS";
         case MeshVertexType::BLEND_TYPE:return "BLEND_TYPE";
         }
@@ -49,14 +50,14 @@ namespace yjw
             std::map<std::string, int> material_slot_index;
             for (std::pair<const std::string, AssetReferece<MaterialInstanceAST>>& itr : mesh_ptr->m_materials)
             {
-                MaterialInstanceAST* mi_ast = itr.second.m_asset.GetData();
+                MaterialInstanceAST* mi_ast = itr.second.GetData();
                 if (mi_ast)
                 {
-                   MaterialAST* m_ast = mi_ast->m_material_template.m_asset.GetData();
+                   MaterialAST* m_ast = mi_ast->m_material_template.GetData();
                    if (m_ast)
                    {
                        material_slot_index[itr.first] = m_materials.size();
-                       m_materials.push_back(new Material(m_ast->m_shader.c_str(), m_ast->m_entry.c_str()));
+                       m_materials.push_back(new Material((std::string{} + SHADER_PATH + "/" + m_ast->m_shader).c_str(), m_ast->m_entry.c_str()));
                        m_material_instances.push_back(new MaterialInstance(m_materials.back()));
                        for (std::pair<const std::string, float>& param : mi_ast->m_float_params)
                        {

@@ -56,6 +56,10 @@ namespace yjw
         template<typename T>
         AssetID RegisterAsset(const char* url)
         {
+            if (std::string(url) == "")
+            {
+                return AssetID{};
+            }
             if (m_asset_ids.find(std::string(url)) != m_asset_ids.end())
             {
                 AssetID id = m_asset_ids[std::string(url)];
@@ -70,8 +74,11 @@ namespace yjw
                 return (void*)obj;
             },
             [](void* obj) {
-                T* t = (T*)obj;
-                delete t;
+                if (obj)
+                {
+                    T* t = (T*)obj;
+                    delete t;
+                }
             },
             [](void* obj, json* j) {
                 void to_json(json & j, const T & obj);
@@ -176,6 +183,13 @@ namespace yjw
             m_id = other.m_id;
             return *this;
         }
+        Asset& operator = (Asset&& other) noexcept {
+            if (this != &other) {
+                m_id = other.m_id;
+            }
+            return *this;
+        }
+
         void SetURL(const char* url)
         {
             AssetManager::Get()->UnregisterAsset(m_id);
@@ -206,6 +220,11 @@ namespace yjw
             AssetManager::Get()->SaveAsset(m_id);
         }
 
+        bool IsEmpty()
+        {
+            return m_id.m_id == -1;
+        }
+
     private:
         AssetID m_id{};
     };
@@ -225,6 +244,15 @@ namespace yjw
             return *this;
         }
         std::string m_url{};
+        T* GetData()
+        {
+            if (m_asset.IsEmpty())
+            {
+                m_asset.SetURL(m_url.c_str());
+            }
+            return m_asset.GetData();
+        }
+    private:
         Asset<T> m_asset{};
     };
 
@@ -240,7 +268,6 @@ namespace yjw
         if (j.count("m_url")) {
             j.at("m_url").get_to(obj.m_url);
         }
-        obj.m_asset.SetURL(obj.m_url.c_str());
     }
 
 }

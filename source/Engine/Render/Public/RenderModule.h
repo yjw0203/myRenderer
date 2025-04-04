@@ -10,7 +10,8 @@ namespace yjw
     public:
         virtual void Startup();
         virtual void Shutdown();
-        virtual void AttachScene(Scene* scene);
+        virtual void AttachScene(Scene* scene) override;
+        virtual void AttachUI(rhi::ImGuiUI* ui) override;
         virtual void Tick(float deltaTime);
 
     private:

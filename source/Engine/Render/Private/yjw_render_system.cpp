@@ -77,6 +77,7 @@ namespace yjw
 
         renderer->SetRenderPass(m_window->GetRPIWindow().swapchain->GetCurrentRenderPass());
         renderer->SetSceneProxy(RenderSceneProxy(m_scene));
+        renderer->SetUI(m_ui);
 
         renderer->BeginFrame();
         renderer->RenderFrame();

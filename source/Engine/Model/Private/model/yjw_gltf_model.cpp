@@ -2,6 +2,7 @@
 #include "Engine/Model/Private/3rd/gltf/tiny_gltf.h"
 #include <memory>
 #include <iostream>
+#include "Engine/Engine/Public/Asset/Mesh.h"
 
 namespace yjw
 {
@@ -37,25 +38,25 @@ namespace yjw
         return res;
     }
 
-    VertexAttributeType ConvertGLTFVertexAttribute(const std::string& attribute)
+    MeshVertexType ConvertGLTFVertexAttribute(const std::string& attribute)
     {
         if (attribute == "POSITION")
         {
-            return VertexAttributeType::position;
+            return MeshVertexType::POSITION;
         }
         if (attribute == "NORMAL")
         {
-            return VertexAttributeType::normal;
+            return MeshVertexType::NORMAL;
         }
         if (attribute == "TANGENT")
         {
-            return VertexAttributeType::tangent;
+            return MeshVertexType::TARGENT;
         }
         if (attribute == "TEXCOORD_0")
         {
-            return VertexAttributeType::uv0;
+            return MeshVertexType::UV0;
         }
-        return VertexAttributeType::unkown;
+        return MeshVertexType::UNKNOW;
     }
 
     GLTFModelBuilder::GLTFModelBuilder(bool isBinary)
@@ -70,7 +71,7 @@ namespace yjw
         LoadGLTFModel(gltfModel, holePath.c_str(), m_is_binary);
         for (tinygltf::Buffer& buffer : gltfModel.buffers)
         {
-            AddBuffer(buffer.data.data(), buffer.data.size());
+            AddBuffer(MeshVertexType::UNKNOW ,buffer.data.data(), buffer.data.size());
         }
         for (tinygltf::BufferView& bufferView : gltfModel.bufferViews)
         {
@@ -80,19 +81,27 @@ namespace yjw
         {
             AddTexture(gltfImage.name, gltfImage.width, gltfImage.height, gltfImage.image.data(), gltfImage.image.size());
         }
+
+        CPUModel::Material material_ast{};
+        material_ast.m_shader = "ForwardPBR.hlsl";
+        material_ast.m_entry = "PSMain";
+        int mat_id = AddMaterial(material_ast);
+
         for (tinygltf::Material& gmaterial : gltfModel.materials)
         {
-            MaterialInstance* material = new MaterialInstance(&g_pbr_material);
+            CPUModel::MaterialIns mat_ins{};
+            mat_ins.material_id = mat_id;
             if (gmaterial.pbrMetallicRoughness.baseColorTexture.index != -1)
             {
-                material->SetTexture("albedoTex", GetTexture(gltfModel.textures[gmaterial.pbrMetallicRoughness.baseColorTexture.index].source));
+                mat_ins.m_texture_params["albedoTex"] = gltfModel.textures[gmaterial.pbrMetallicRoughness.baseColorTexture.index].source;
             }
             else
             {
-                material->SetTexture("albedoTex", GetTexture(0));
+                mat_ins.m_texture_params["albedoTex"] = 0;
             }
-            material->SetDataVec2("metallic_roughness", glm::vec2(gmaterial.pbrMetallicRoughness.metallicFactor, gmaterial.pbrMetallicRoughness.roughnessFactor));
-            int material_id = AddMaterial(material);
+            mat_ins.m_float_params["metallic"] = gmaterial.pbrMetallicRoughness.metallicFactor;
+            mat_ins.m_float_params["roughness"] = gmaterial.pbrMetallicRoughness.roughnessFactor;
+            int mat_ins_id = AddMaterialInstance(mat_ins);
         }
         for (tinygltf::Mesh& gltfMesh : gltfModel.meshes)
         {
@@ -101,6 +110,7 @@ namespace yjw
                 int mesh_id = AddMesh();
                 for (std::pair<const std::string, int>& attribute : gltfPrimitive.attributes)
                 {
+                    SetBufferType(GetBufferIDFromBufferView(gltfModel.accessors[attribute.second].bufferView), ConvertGLTFVertexAttribute(attribute.first));
                     AddVertexBuffer(mesh_id, ConvertGLTFVertexAttribute(attribute.first), gltfModel.accessors[attribute.second].bufferView);
                 }
                 tinygltf::Accessor& accessor = gltfModel.accessors[gltfPrimitive.indices];

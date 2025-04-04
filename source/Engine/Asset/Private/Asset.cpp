@@ -27,11 +27,12 @@ namespace yjw
         for (int index = 0; index < m_assets.size(); index++)
         {
             assert(m_assets[index].m_ref_count.load() >= 0);
-            if (m_assets[index].m_ref_count.load() == 0)
+            if (m_assets[index].m_ref_count.load() == 0 && m_assets[index].m_salt != 0)
             {
                 m_assets[index].m_destory_func(m_assets[index].m_payload);
                 m_asset_ids.erase(std::string(m_assets[index].m_url));
                 DeallocateAssetID(AssetID{ index,m_assets[index].m_salt });
+                m_assets[index].m_header = AssetHeader{};
                 m_assets[index].m_url = "";
                 m_assets[index].m_salt = 0;
                 m_assets[index].m_ref_count.store(0);
@@ -40,32 +41,28 @@ namespace yjw
             }
         }
 
-        for (int index = 0; index < m_pending_load_assets.size(); index++)
-        {
-            LoadInfo& load_info = m_pending_load_assets[index];
-            m_asset_ids[load_info.m_url] = load_info.m_id;
-            while (m_assets.size() <= load_info.m_id.m_id)
-            {
-                m_assets.push_back(AssetInfo{});
-                AssetInfo& asset_info = m_assets.back();
-                asset_info.m_header.m_type = load_info.m_type;
-                asset_info.m_salt = load_info.m_id.m_salt;
-                asset_info.m_url = load_info.m_url;
-                asset_info.m_ref_count.store(load_info.m_ref_count);
-                asset_info.m_destory_func = load_info.m_destory_func;
-                asset_info.m_serialize_func = load_info.m_serialize_func;
-                json j = json::object();
-                LoadAssetFromFile(load_info.m_url.c_str(), asset_info.m_header, j);
-                asset_info.m_payload = load_info.m_create_func(&j);
-            }
-        }
+        std::vector<LoadInfo> pending_load_asset = m_pending_load_assets;
         m_pending_load_assets.clear();
-
+        for (int index = 0; index < pending_load_asset.size(); index++)
+        {
+            LoadInfo& load_info = pending_load_asset[index];
+            m_asset_ids[load_info.m_url] = load_info.m_id;
+            while (m_assets.size() <= load_info.m_id.m_id)m_assets.push_back(AssetInfo{});
+            AssetInfo& asset_info = m_assets[load_info.m_id.m_id];
+            asset_info.m_header.m_type = load_info.m_type;
+            asset_info.m_salt = load_info.m_id.m_salt;
+            asset_info.m_url = load_info.m_url;
+            asset_info.m_ref_count.store(load_info.m_ref_count);
+            asset_info.m_destory_func = load_info.m_destory_func;
+            asset_info.m_serialize_func = load_info.m_serialize_func;
+            json j = json::object();
+            LoadAssetFromFile(load_info.m_url.c_str(), asset_info.m_header, j);
+            asset_info.m_payload = load_info.m_create_func(&j);
+        }
     }
 
     AssetID AssetManagerImplement::LoadAsset(const char* url, const char* type, AssetCreateAndDeserializeFunc create_func, AssetDestoryFunc destory_func, AssetSerializeFunc serialize_func)
     {
-        std::lock_guard guard(m_load_asset_mutex);
         for (int i = 0; i < m_pending_load_assets.size(); i++)
         {
             if (m_pending_load_assets[i].m_url == url)

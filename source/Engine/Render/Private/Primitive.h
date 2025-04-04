@@ -24,6 +24,7 @@ namespace yjw
     {
     public:
         Primitive() {}
+        Primitive(const char* mesh) { m_mesh_ast.SetURL(mesh); }
         ~Primitive();
         void BuildGpuPrimitive();
         rpi::RPIPrimitiveBinding GetPrimitiveBinding();

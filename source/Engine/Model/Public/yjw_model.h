@@ -7,6 +7,8 @@
 #include "Engine/RHI/Public/rpi/yjw_rpi_header.h"
 #include "Engine/Render/Private/Material.h"
 #include "Engine/Animation/Public/AnimationData.h"
+#include "Engine/Engine/Public/Asset/Material.h"
+#include "Engine/Engine/Public/Asset/Mesh.h"
 
 namespace yjw
 {
@@ -19,20 +21,6 @@ namespace yjw
         model_file_format_glb,
     };
 
-    enum VertexAttributeType
-    {
-        unkown,
-        position,
-        normal,
-        tangent,
-        uv0,
-        blend_indices,
-        blend_weights,
-        blend_type
-    };
-
-    rhi::RHIName CastToRHIName(VertexAttributeType type);
-
     class CPUModel
     {
         friend class ModelBuildImplement;
@@ -41,6 +29,7 @@ namespace yjw
         typedef int BufferViewId;
         struct CPUBuffer
         {
+            MeshVertexType type;
             std::vector<char> buffer;
         };
         struct CPUBufferView
@@ -51,7 +40,7 @@ namespace yjw
         };
         struct VertexBuffer
         {
-            VertexAttributeType type;
+            MeshVertexType type;
             BufferViewId buffer;
         };
         struct CPUMesh
@@ -65,66 +54,45 @@ namespace yjw
         struct Texture
         {
             std::string texture_name;
-            rpi::RPITexture texture;
+
+            std::string m_imported_name;
         };
         struct Entity
         {
             int mesh_id;
-            int material_id;
+            int material_ins_id;
         };
-    private:
+
+        struct Material
+        {
+            std::string m_shader;
+            std::string m_entry;
+        };
+
+        struct MaterialIns
+        {
+            int material_id;
+            std::map<std::string, float> m_float_params;
+            std::map<std::string, glm::vec2> m_vec2_params;
+            std::map<std::string, glm::vec3> m_vec3_params;
+            std::map<std::string, glm::vec4> m_vec4_params;
+            std::map<std::string, glm::mat4x4> m_mat4x4_params;
+            std::map<std::string, int> m_texture_params;
+
+            std::string m_imported_mat_name;
+            std::map<std::string, std::string> m_decided_texture_params;
+        };
+
+    public:
         std::vector<CPUBuffer> m_pool_buffers;
         std::vector<Texture> m_pool_textures;
         std::vector<CPUBufferView> m_pool_buffer_views;
         std::vector<CPUMesh> m_meshes;
-        std::vector<MaterialInstance*> m_material;
+        std::vector<Material> m_material;
+        std::vector<MaterialIns> m_material_instances;
         std::vector<Entity> m_entities;
 
-    public:
         SkeletonData m_skeleton_data;
-    };
-
-    class GPUModel
-    {
-        friend class ModelBuilder;
-    public:
-        typedef int BufferViewId;
-        struct VertexBuffer
-        {
-            VertexAttributeType type;
-            rpi::RPIBuffer buffer;
-        };
-        struct GPUMesh
-        {
-            int first_index;
-            int index_count;
-            rpi::RPIBuffer index_buffer;
-            std::vector<VertexBuffer> vertex_buffers;
-            bool is_indices_16bit{ false };
-        };
-        struct Texture
-        {
-            std::string texture_name;
-            rpi::RPITexture texture;
-        };
-        struct Entity
-        {
-            int mesh_id;
-            int material_id;
-        };
-    public:
-        ~GPUModel();
-        int GetEntityCount();
-        GPUMesh* GetGPUMesh(int entity_id);
-        MaterialInstance* GetMaterial(int entity_id);
-        
-    private:
-        std::vector<rpi::RPIBuffer> m_pool_buffers;
-        std::vector<rpi::RPIBuffer> m_pool_buffer_views;
-        std::vector<Texture> m_pool_textures;
-        std::vector<GPUMesh> m_meshes;
-        std::vector<MaterialInstance*> m_material;
-        std::vector<Entity> m_entities;
     };
 
     class ModelBuilder;
@@ -133,10 +101,9 @@ namespace yjw
         friend class ModelBuilder;
     public:
         Model() {};
-        static std::unique_ptr<ModelBuilder> load(std::string filePath, std::string fileName, ModelFileFormat format);
+        static std::unique_ptr<ModelBuilder> load(std::string filePath);
         
         std::shared_ptr<CPUModel> m_cpu_model;
-        std::shared_ptr<GPUModel> m_gpu_model;
     };
 
     class ModelBuilder
@@ -146,7 +113,6 @@ namespace yjw
         operator std::shared_ptr<Model>() const { return std::move(model); }
         void build(std::string filePath, std::string fileName, ModelFileFormat format);
     private:
-        std::shared_ptr<GPUModel> GenerateCPUModelToGPUModel(std::shared_ptr<CPUModel> cpu_model);
         std::shared_ptr<Model> model;
     };
 

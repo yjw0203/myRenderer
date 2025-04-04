@@ -20,6 +20,11 @@ namespace yjw
         m_render_system->initialize();
     }
 
+    void RenderModule::AttachUI(rhi::ImGuiUI* ui)
+    {
+        m_render_system->AttachUI(ui);
+    }
+
     void RenderModule::Tick(float deltaTime)
     {
         m_render_system->tick(deltaTime);

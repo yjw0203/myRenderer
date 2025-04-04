@@ -5,7 +5,7 @@
 #include "main.h"
 #include "Generate/Public/generate.h"
 #include "Engine/Asset/Public/Asset.h"
-#include "Engine/Engine/Public/Framework/Asset/Mesh.h"
+#include "Engine/Engine/Public/Asset/Mesh.h"
 
 using namespace yjw;
 

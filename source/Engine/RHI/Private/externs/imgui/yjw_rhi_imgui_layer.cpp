@@ -107,16 +107,10 @@ namespace rhi
         ImGui_ImplGlfw_Shutdown();
     }
 
-    void RHIImguiLayer::NewFrame(RHIContext* context, RHIRenderPass* renderPass)
+    void RHIImguiLayer::NewFrame()
     {
-        VulkanContext* vkContext = (VulkanContext*)context;
-        for (auto& iter : m_registered_textures)
-        {
-            ((VulkanTextureView*)iter.second.m_texture_view)->GetTexture()->TransitionState(vkContext->GetVkCommandBuffer(), VkImageLayout::VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
-        }
-        context->BeginPass(renderPass);
         ImGuiIO& io = ImGui::GetIO();
-        io.DisplaySize = ImVec2(renderPass->GetWidth(), renderPass->GetHeight());;
+        //io.DisplaySize = ImVec2(renderPass->GetWidth(), renderPass->GetHeight());;
         ImGui_ImplVulkan_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
@@ -127,7 +121,6 @@ namespace rhi
         VulkanContext* vkContext = (VulkanContext*)context;
         ImGui::Render();
         ImGui_ImplVulkan_RenderDrawData(ImGui::GetDrawData(), vkContext->GetVkCommandBuffer());
-        context->EndPass();
         ImGuiIO& io = ImGui::GetIO();
         if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
         {
