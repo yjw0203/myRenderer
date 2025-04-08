@@ -100,15 +100,12 @@ namespace yjw
         }
     }
 
-    Material::Material(const char* ps, const char* ps_entry)
-    {
-        m_ps.shader_path = ps;
-        m_ps.entry_name = ps_entry;
-    }
+    Material::Material()
+    {}
 
     Material::~Material()
     {
-        m_pixel_shader->release();
+        Destroy();
     }
 
     rpi::RPIShader Material::GetPixelShader()
@@ -116,26 +113,51 @@ namespace yjw
         return m_pixel_shader;
     }
 
-    void Material::Build()
+    void Material::Build(const char* shader, const char* entry)
     {
-        if (m_builded == false)
+        Destroy();
+        m_ps.shader_path = shader;
+        m_ps.entry_name = entry;
+        using namespace rpi;
+        m_pixel_shader = RPICreateShader(RPIShaderType::fragment, m_ps.shader_path.c_str(), m_ps.entry_name.c_str());
+        m_ps_reflect = m_pixel_shader->GetShaderReflect();
+    }
+
+    void Material::Build(const char* url)
+    {
+        Destroy();
+        m_asset.SetURL(url);
+        m_ps.shader_path = m_asset.GetData()->m_shader;
+        m_ps.entry_name = m_asset.GetData()->m_entry;
+        using namespace rpi;
+        m_pixel_shader = RPICreateShader(RPIShaderType::fragment, m_ps.shader_path.c_str(), m_ps.entry_name.c_str());
+        m_ps_reflect = m_pixel_shader->GetShaderReflect();
+    }
+
+    void Material::Destroy()
+    {
+        if (m_pixel_shader)
         {
-            using namespace rpi;
-            m_pixel_shader = RPICreateShader(RPIShaderType::fragment, m_ps.shader_path.c_str(), m_ps.entry_name.c_str());
-            m_ps_reflect = m_pixel_shader->GetShaderReflect();
-            m_builded = true;
+            m_pixel_shader->release();
         }
     }
 
-    MaterialInstance::MaterialInstance(Material* material)
+    MaterialInstance::MaterialInstance()
+    {
+    }
+
+    MaterialInstance::~MaterialInstance()
+    {
+        Destroy();
+    }
+
+    void MaterialInstance::Build(Material* material)
     {
         using namespace rpi;
         m_material = material;
-        m_material->Build();
+
         m_parameters_pool.Clear();
-
         m_ps_resource_set = RPICreateResourceSet(RPIResourceSetType::ps, m_material->m_ps_reflect);
-
         for (rhi::ShaderReflect::UBO& ubo : m_material->m_ps_reflect->m_ubos)
         {
             if (RPICheckResourceSetTypeID(ubo.m_set, RPIResourceSetType::ps))
@@ -152,9 +174,52 @@ namespace yjw
         }
     }
 
-    MaterialInstance::~MaterialInstance()
+    void MaterialInstance::Build(const char* url)
+    {
+        m_asset.SetURL(url);
+
+        using namespace rpi;
+        m_material = new Material();
+        m_material->Build(m_asset.GetData()->m_material_template.m_url.c_str());
+
+        m_parameters_pool.Clear();
+        m_ps_resource_set = RPICreateResourceSet(RPIResourceSetType::ps, m_material->m_ps_reflect);
+        for (rhi::ShaderReflect::UBO& ubo : m_material->m_ps_reflect->m_ubos)
+        {
+            if (RPICheckResourceSetTypeID(ubo.m_set, RPIResourceSetType::ps))
+            {
+                m_parameters_pool.AddUBOLayout(rpi::RPIShaderType::fragment, ubo);
+            }
+        }
+        m_parameters_pool.FlushLayoutSet();
+        for (int index = 0; index < m_parameters_pool.m_ubo_bindings.size(); index++)
+        {
+            const MaterialParameterPool::UBOBinding& ubo_binding = m_parameters_pool.m_ubo_bindings[index];
+            rpi::RPIBuffer gpu_view = m_parameters_pool.m_gpu_views[index];
+            m_ps_resource_set.SetBuffer(ubo_binding.name, gpu_view);
+        }
+
+        for (auto itr : m_asset.GetData()->m_float_params)
+        {
+            SetDataFloat(itr.first, itr.second);
+        }
+
+        for (auto itr : m_asset.GetData()->m_texture_params)
+        {
+            RPITexture texture = RPICreateTexture2DFromFile(itr.second.c_str());
+            SetTexture(itr.first, texture);
+        }
+
+        FlushDataToGpu();
+    }
+
+    void MaterialInstance::Destroy()
     {
         m_parameters_pool.Clear();
+        if (m_ps_resource_set)
+        {
+            m_ps_resource_set.Release();
+        }
     }
 
     void MaterialInstance::SetDataFloat(const std::string& name, float value)
@@ -198,8 +263,5 @@ namespace yjw
         return m_material->m_pixel_shader;
     }
 
-    Material g_pbr_material = Material(SHADER_FILE(ForwardPBR.hlsl), "PSMain");
-    Material g_simple_mesh_pbr_material = Material(SHADER_FILE(ForwardPBR.hlsl), "PSMain");
-    Material g_default_material = Material(SHADER_FILE(Default.hlsl), "PSMain");
     MaterialInstance* g_default_material_instance{};
 }

@@ -9,14 +9,11 @@ namespace yjw
     class StaticMeshComponent : public PrimitiveComponent
     {
     public:
-        void SetMesh(Mesh* mesh);
-        Mesh* GetMesh();
+        void SetPrimitive(const char* url);
         
-        virtual Primitive* GetPrimitive() override;
-        virtual MaterialInstance* GetMaterialInstance() override;
+        virtual const char* GetPrimitive() override;
 
     private:
-        Mesh* m_mesh = nullptr;
-        MaterialInstance* m_override_material = nullptr;
+        std::string m_mesh_url{};
     };
 }

@@ -22,6 +22,12 @@ namespace yjw
         return "UNKNOW";
     }
 
+    void Primitive::Build(const char* url)
+    {
+        m_mesh_ast.SetURL(url);
+        BuildGpuPrimitive();
+    }
+
     void Primitive::BuildGpuPrimitive()
     {
         MeshAST* mesh_ptr = m_mesh_ast.GetData();
@@ -57,8 +63,12 @@ namespace yjw
                    if (m_ast)
                    {
                        material_slot_index[itr.first] = m_materials.size();
-                       m_materials.push_back(new Material((std::string{} + SHADER_PATH + "/" + m_ast->m_shader).c_str(), m_ast->m_entry.c_str()));
-                       m_material_instances.push_back(new MaterialInstance(m_materials.back()));
+                       Material* material = new Material();
+                       material->Build((std::string{} + SHADER_PATH + "/" + m_ast->m_shader).c_str(), m_ast->m_entry.c_str());
+                       m_materials.push_back(material);
+                       MaterialInstance* material_instance = new MaterialInstance();
+                       material_instance->Build(m_materials.back());
+                       m_material_instances.push_back(material_instance);
                        for (std::pair<const std::string, float>& param : mi_ast->m_float_params)
                        {
                            m_material_instances.back()->SetDataFloat(param.first, param.second);
@@ -95,7 +105,7 @@ namespace yjw
                 pipelineDesc.ps = sub_primitive.m_material->GetPixelShader();
                 pipelineDesc.depth_stencil_state = rpi::RPIGetDepthStencilState(rpi::RPIDepthStencilStateType::default_depth_read_and_write);
                 sub_primitive.m_pipeline = rpi::RPICreateRenderPipeline(pipelineDesc);
-
+                sub_primitive.m_material_slot = sub_mesh.m_material_slot;
                 m_sub_primitives.push_back(sub_primitive);
             }
         }

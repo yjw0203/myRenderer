@@ -6,6 +6,7 @@
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
 #include <glm/glm.hpp>
 
+#include "Engine/Engine/Public/Asset/Material.h"
 #include "Engine/Render/Private/RenderResource.h"
 #include "Engine/RHI/Public/rpi/yjw_rpi_header.h"
 #include "Engine/RHI/Public/shaderCompiler/yjw_shader_compiler.h"
@@ -64,23 +65,29 @@ namespace yjw
     {
         friend class MaterialInstance;
     public:
-        Material(const char* ps, const char* ps_entry);
+        Material();
         ~Material();
         rpi::RPIShader GetPixelShader();
+        void Build(const char* shader, const char* entry);
+        void Build(const char* url);
     private:
-        void Build();
+        void Destroy();
     private:
         MaterialShader m_ps{};
         rpi::RPIShader m_pixel_shader{};
         rhi::ShaderReflect* m_ps_reflect{};
-        bool m_builded = false;
+
+        Asset<MaterialAST> m_asset{};
     };
 
     class MaterialInstance : public RenderResource
     {
     public:
-        MaterialInstance(Material* material);
+        MaterialInstance();
         ~MaterialInstance();
+        void Build(Material* material);
+        void Build(const char* url);
+        void Destroy();
         void SetDataFloat(const std::string& name, float value);
         void SetDataVec2(const std::string& name, glm::vec2 value);
         void SetDataVec3(const std::string& name, glm::vec3 value);
@@ -94,11 +101,9 @@ namespace yjw
         Material* m_material = nullptr;
         MaterialParameterPool m_parameters_pool;
         rpi::RPIResourceSet m_ps_resource_set{};
+
+        Asset<MaterialInstanceAST> m_asset;
     };
 
-    extern Material g_pbr_material;
-    extern Material g_simple_mesh_pbr_material;
-
-    extern Material g_default_material;
     extern MaterialInstance* g_default_material_instance;
 }

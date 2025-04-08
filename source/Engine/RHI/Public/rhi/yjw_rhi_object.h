@@ -7,8 +7,8 @@ namespace rhi
     {
     public:
         virtual ~RHIObject(){}
-        void retain(RHIObject* byWhich);
-        void release();
+        int retain(RHIObject* byWhich);
+        int release();
     private:
         std::atomic<int> m_ref_count{ 1 };
     };

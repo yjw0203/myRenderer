@@ -5,6 +5,7 @@
 #include "Engine/Render/Private/Scene.h"
 namespace yjw
 {
+    class Actor;
     class Level
     {
     public:
@@ -26,7 +27,10 @@ namespace yjw
             m_actors.push_back(actor);
             if (StaticMeshComponent* mesh_component = actor->GetEntity().GetComponent<StaticMeshComponent>())
             {
-                GetWorld()->GetScene()->AddPrimitiveComponent(mesh_component);
+                EntityHandle entity_handle = GetWorld()->GetScene()->AddEntity();
+                actor->SetSceneEntity(entity_handle);
+                MeshHandle mesh_handle = GetModule<IRenderModule>()->LoadMesh(mesh_component->GetPrimitive());
+                GetWorld()->GetScene()->UpdateEntityMesh(entity_handle, mesh_handle);
             }
 
             return actor;

@@ -2,7 +2,8 @@
 #include "Engine/Utils/Public/DesignPatterns/ECS.h"
 #include "Engine/Engine/Public/Framework/Components/StaticMeshComponent.h"
 #include "Engine/Render/Private/Mesh.h"
-
+#include "Engine/Engine/Public/Framework/Level.h"
+#include "Engine/Engine/Public/Framework/Render/Entity.h"
 namespace yjw
 {
     class Actor
@@ -15,7 +16,12 @@ namespace yjw
         const char* GetName() const { return m_name.c_str(); };
         Entity GetEntity() { return m_entity; }
         virtual void OnSpawned() {}
+        void SetSceneEntity(EntityHandle handle) { m_entity_handle = handle; }
+        EntityHandle GetSceneEntity() { return m_entity_handle; }
     private:
+
+        EntityHandle m_entity_handle{};
+
         Entity m_entity{};
         std::string m_name;
     };
@@ -25,19 +31,14 @@ namespace yjw
     public:
         MeshActor(const char* name)
         {
-            m_primitive = new Primitive(name);
+            m_primitive_url = name;
         }
         virtual void OnSpawned()
         {
-            MaterialInstance* material_instance = new MaterialInstance(&g_simple_mesh_pbr_material);
-            rpi::RPITexture texture = rpi::RPICreateTexture2DFromFile(RESOURCE_FILE(cao / tex / 髮1.png));
-            material_instance->SetTexture("albedoTex", texture);
-            //Mesh* mesh = new Mesh(&g_box_primitive, material_instance);
-            Mesh* mesh = new Mesh(m_primitive, material_instance);
-            GetEntity().AddComponent<StaticMeshComponent>()->SetMesh(mesh);
+            GetEntity().AddComponent<StaticMeshComponent>()->SetPrimitive(m_primitive_url.c_str());
         }
     private:
-        Primitive* m_primitive{};
+        std::string m_primitive_url{};
     };
 
     class TestBoxActor : public Actor
@@ -45,12 +46,7 @@ namespace yjw
     public:
         virtual void OnSpawned()
         {
-            MaterialInstance* material_instance = new MaterialInstance(&g_simple_mesh_pbr_material);
-            rpi::RPITexture texture = rpi::RPICreateTexture2DFromFile(RESOURCE_FILE(cao/tex/髮1.png));
-            material_instance->SetTexture("albedoTex", texture);
-            //Mesh* mesh = new Mesh(&g_box_primitive, material_instance);
-            Mesh* mesh = new Mesh(new Primitive("naxita/纳西妲.mesh.ast"), material_instance);
-            GetEntity().AddComponent<StaticMeshComponent>()->SetMesh(mesh);
+            GetEntity().AddComponent<StaticMeshComponent>()->SetPrimitive("naxita/纳西妲.mesh.ast");
         }
     };
 }

@@ -12,7 +12,7 @@
 
 #include "Engine/RHI/Public/externs/imgui/yjw_rhi_imgui_layer.h"
 #include "Engine/RHI/Public/externs/imgui/yjw_rhi_imgui_window.h"
-#include "Engine/Engine/Public/Module/IRenderModule.h"
+#include "Engine/Engine/Public/Framework/Render/IRenderModule.h"
 
 namespace yjw
 {
@@ -20,7 +20,6 @@ namespace yjw
     {
         m_world = new World();
         m_ui = new EditorUI(m_world);
-        m_render_module = CreateModule<IRenderModule>();
     }
 
     Engine::~Engine()
@@ -39,15 +38,15 @@ namespace yjw
 
     void Engine::shutdown()
     {
-        m_render_module->Shutdown();
+        GetModule<IRenderModule>()->Shutdown();
         shouldShutdown = true;
     }
 
     void Engine::initialize()
     {
-        m_render_module->Startup();
-        m_render_module->AttachScene(m_world->GetScene());
-        m_render_module->AttachUI(m_ui);
+        GetModule<IRenderModule>()->Startup();
+        GetModule<IRenderModule>()->AttachScene(m_world->GetScene());
+        GetModule<IRenderModule>()->AttachUI(m_ui);
         //m_world->GetLevel()->SpawnActor<TestBoxActor>("test box");
     }
     void Engine::mainLoop()
@@ -66,7 +65,7 @@ namespace yjw
         float deltaTime = delta_time_micro / 1000000.0f;
         currentRealTime = time;
 
-        m_render_module->Tick(deltaTime);
+        GetModule<IRenderModule>()->Tick(deltaTime);
         
         AssetManager::Get()->process();
 

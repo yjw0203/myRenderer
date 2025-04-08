@@ -18,21 +18,22 @@ namespace yjw
         MaterialInstance* m_material{};
         rpi::RPIResourceBinding m_resource_binding{};
         rpi::RPIPipeline m_pipeline{};
+        std::string m_material_slot{};
     };
 
     class Primitive : public RenderResource
     {
     public:
         Primitive() {}
-        Primitive(const char* mesh) { m_mesh_ast.SetURL(mesh); }
         ~Primitive();
-        void BuildGpuPrimitive();
+        void Build(const char* url);
         rpi::RPIPrimitiveBinding GetPrimitiveBinding();
         rpi::RPIShader GetVertexShader();
         rpi::RPIResourceSet GetVSResourceSet();
         const std::vector<SubPrimitive>& GetSubPrimitive();
 
     protected:
+        void BuildGpuPrimitive();
         Asset<MeshAST> m_mesh_ast;
         
         std::vector<SubPrimitive> m_sub_primitives;

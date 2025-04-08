@@ -24,7 +24,7 @@ namespace yjw
         void RenderFrame();
         void EndFrame();
 
-        virtual void Submit(RenderEntity* entity) override;
+        virtual void Submit(DrawItem* item) override;
     private:
         void SubmitOpacue();
         void SubmitTransparent();

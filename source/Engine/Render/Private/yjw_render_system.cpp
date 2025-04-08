@@ -20,15 +20,6 @@ namespace yjw
 {
     using namespace rpi;
 
-    std::shared_ptr<Model> naxita;
-    std::shared_ptr<Skeleton> naxita_sk;
-    std::shared_ptr<Model> heita;
-    std::shared_ptr<Model> hutao;
-    std::shared_ptr<Model> Cube;
-    std::shared_ptr<Model> saibo;
-
-    VMD naxita_anim;
-
     RPIContext g_context;
 
     ForwardRenderer* renderer = new ForwardRenderer();
@@ -38,8 +29,6 @@ namespace yjw
         activeCamera = new RenderCamera();
         Window::Initialize();
         RPIInit();
-        
-        g_default_material_instance = new MaterialInstance(&g_default_material);
 
         m_window = new Window();
 

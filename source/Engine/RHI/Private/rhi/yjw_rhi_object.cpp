@@ -4,16 +4,18 @@
 namespace rhi
 {
 
-    void RHIObject::retain(RHIObject* byWhich)
+    int RHIObject::retain(RHIObject* byWhich)
     {
-        m_ref_count.fetch_add(1);
+        return m_ref_count.fetch_add(1);
     }
 
-    void RHIObject::release()
+    int RHIObject::release()
     {
-        if (m_ref_count.fetch_sub(1) == 1)
+        int ref = m_ref_count.fetch_sub(1);
+        if (ref == 0)
         {
             delete this;
         }
+        return ref;
     }
 }

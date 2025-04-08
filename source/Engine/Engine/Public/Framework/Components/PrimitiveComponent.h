@@ -9,7 +9,6 @@ namespace yjw
     class PrimitiveComponent : public SceneRootComponent
     {
     public:
-        virtual Primitive* GetPrimitive() { return nullptr; };
-        virtual MaterialInstance* GetMaterialInstance() { return nullptr; };
+        virtual const char* GetPrimitive() { return ""; }
     };
 }

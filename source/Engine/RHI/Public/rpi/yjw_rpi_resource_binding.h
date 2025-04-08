@@ -42,6 +42,7 @@ namespace rpi
         void SetResourceSet(RPIResourceSetType type, RPIResourceSet set);
         RHIResourceBinding* GetRHIResourceBinding();
         void Release();
+        void Retain();
         bool IsNull();
         operator bool() { return !IsNull(); }
     private:
@@ -58,6 +59,7 @@ namespace rpi
         int AddIndexBuffer(RPIBuffer buffer, int index_start, int index_count, bool is_index_16bit);
         RHIPrimitiveBinding* GetRHIPrimitiveBinding();
         void Release();
+        void Retain();
         bool IsNull();
         operator bool() { return !IsNull(); }
     private:

@@ -12,5 +12,5 @@ namespace yjw
     };
 
     template<typename T>
-    T* CreateModule();
+    T* GetModule();
 }

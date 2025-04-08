@@ -2,27 +2,13 @@
 
 namespace yjw
 {
-    void StaticMeshComponent::SetMesh(Mesh* mesh)
+    void StaticMeshComponent::SetPrimitive(const char* url)
     {
-        m_mesh = mesh;
+        m_mesh_url = url;
     }
 
-    Mesh* StaticMeshComponent::GetMesh()
+    const char* StaticMeshComponent::GetPrimitive()
     {
-        return m_mesh;
-    }
-
-    Primitive* StaticMeshComponent::GetPrimitive()
-    {
-        return m_mesh->GetPrimitive();
-    }
-
-    MaterialInstance* StaticMeshComponent::GetMaterialInstance()
-    {
-        if (m_override_material)
-        {
-            return m_override_material;
-        }
-        return m_mesh->GetMaterialInstance();
+        return m_mesh_url.c_str();
     }
 }

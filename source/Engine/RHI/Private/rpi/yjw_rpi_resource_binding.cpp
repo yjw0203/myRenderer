@@ -74,10 +74,22 @@ namespace rpi
     {
         if (m_resource_binding)
         {
-            m_resource_binding->release();
-            m_resource_binding = nullptr;
+            int ref = m_resource_binding->release();
+            if (ref == 0)
+            {
+                m_resource_binding = nullptr;
+            }
         }
     }
+
+    void RPIResourceBinding::Retain()
+    {
+        if (m_resource_binding)
+        {
+            m_resource_binding->retain(nullptr);
+        }
+    }
+
     bool RPIResourceBinding::IsNull()
     {
         return m_resource_binding == nullptr;
@@ -113,8 +125,19 @@ namespace rpi
     {
         if (m_primitive_binding)
         {
-            m_primitive_binding->release();
-            m_primitive_binding = nullptr;
+            int ref = m_primitive_binding->release();
+            if (ref == 0)
+            {
+                m_primitive_binding = nullptr;
+            }
+        }
+    }
+
+    void RPIPrimitiveBinding::Retain()
+    {
+        if (m_primitive_binding)
+        {
+            m_primitive_binding->retain(nullptr);
         }
     }
 

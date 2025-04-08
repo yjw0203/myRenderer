@@ -3,7 +3,7 @@
 namespace yjw
 {
     class Level;
-    class Scene;
+    class SceneInterface;
     class World
     {
     public:
@@ -12,10 +12,10 @@ namespace yjw
         void InitWorld();
         void DestroyWorld();
         Level* GetLevel() { return m_level; }
-        Scene* GetScene() { return m_scene; }
+        SceneInterface* GetScene() { return m_scene; }
 
     private:
         Level* m_level = nullptr;
-        Scene* m_scene = nullptr;
+        SceneInterface* m_scene = nullptr;
     };
 }

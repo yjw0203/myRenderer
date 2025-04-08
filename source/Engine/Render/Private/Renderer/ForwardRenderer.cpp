@@ -84,15 +84,12 @@ namespace yjw
         RPICmdPopEvent(m_context);
     }
 
-    void ForwardRenderer::Submit(RenderEntity* entity)
+    void ForwardRenderer::Submit(DrawItem* item)
     {
-        for (const SubPrimitive& sub_primitive : entity->m_primitive->GetSubPrimitive())
-        {
-            RPICmdSetPrimitiveBinding(m_context, entity->m_primitive->GetPrimitiveBinding(), sub_primitive.m_sub_primitive_id);
-            RPICmdSetResourceBinding(m_context, sub_primitive.m_resource_binding);
-            RPICmdSetPipeline(m_context, sub_primitive.m_pipeline);
-            RPICmdDrawIndex(m_context, 0, 1);
-        }
+        RPICmdSetPrimitiveBinding(m_context, item->m_primitive_binding, item->m_sub_primitive_id);
+        RPICmdSetResourceBinding(m_context, item->m_resource_binding);
+        RPICmdSetPipeline(m_context, item->m_pipeline);
+        RPICmdDrawIndex(m_context, 0, 1);
     }
 
     void ForwardRenderer::SubmitTransparent()

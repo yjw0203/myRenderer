@@ -10,7 +10,7 @@ namespace yjw
     void World::InitWorld()
     {
         m_level = new Level(this);
-        m_scene = new Scene();
+        m_scene = GetModule<IRenderModule>()->CreateScene();
     }
 
     void World::DestroyWorld()
