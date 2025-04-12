@@ -13,16 +13,8 @@ namespace yjw
         void tick(float deltaTime);
         void shutdown();
 
-        void AttachScene(class Scene* scene);
-        void AttachUI(class rhi::ImGuiUI* ui);
-
         class RenderCamera* activeCamera = nullptr;
         class RenderCameraInputDispatcher* m_camera_dispatcher = nullptr;
-
-        class Scene* m_scene = nullptr;
-        class rhi::ImGuiUI* m_ui = nullptr;
-
-        class Window* m_window = nullptr;
 
         float m_delta_time;
 

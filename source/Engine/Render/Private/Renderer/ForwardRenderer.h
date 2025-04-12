@@ -3,12 +3,14 @@
 #include "Engine/RHI/Public/rpi/yjw_rpi_header.h"
 #include "Engine/Render/Private/Renderer/IRenderer.h"
 #include "Engine/RHI/Public/externs/imgui/yjw_rhi_imgui_window.h"
+#include "Engine/Render/Private/View.h"
 
 namespace yjw
 {
     using namespace rpi;
     class SkyBoxPass;
     class ImGuiPass;
+    class PickPass;
     class ForwardRenderer : public IRenderer
     {
     public:
@@ -17,20 +19,21 @@ namespace yjw
         void Destroy();
         void SetOutput(RPITexture output_color, RPITexture output_depth);
         void SetRenderPass(RPIRenderPass render_pass);
-        void SetSceneProxy(RenderSceneProxy proxy);
-        void SetUI(rhi::ImGuiUI* ui);
+        void SetView(RView* view);
+
+        void Render();
+    private:
 
         void BeginFrame();
         void RenderFrame();
         void EndFrame();
 
-        virtual void Submit(DrawItem* item) override;
-    private:
+        void Submit(DrawItem* item);
         void SubmitOpacue();
         void SubmitTransparent();
 
     private:
-        RenderSceneProxy m_scene_proxy{};
+        RView* m_view{};
         RPIContext m_context{};
 
         RPITexture m_output_color{};
@@ -39,5 +42,6 @@ namespace yjw
 
         SkyBoxPass* m_sky_box_pass{};
         ImGuiPass* m_imgui_pass{};
+        PickPass* m_pick_pass{};
     };
 }

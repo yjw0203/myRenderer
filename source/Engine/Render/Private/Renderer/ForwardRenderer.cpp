@@ -1,6 +1,7 @@
 #include "Engine/Render/Private/Renderer/ForwardRenderer.h"
 #include "Engine/Render/Private/Pass/SkyBoxPass.h"
 #include "Engine/Render/Private/Pass/ImGUIPass.h"
+#include "Engine/Render/Private/Pass/PickPass.h"
 #include "projectInfo.h"
 
 namespace yjw
@@ -13,6 +14,8 @@ namespace yjw
         m_sky_box_pass->LoadResource(RESOURCE_FILE(skybox/6));
         m_imgui_pass = new ImGuiPass();
         m_imgui_pass->Initialize();
+        m_pick_pass = new PickPass();
+        m_pick_pass->Initialize();
     }
 
     void ForwardRenderer::Destroy()
@@ -46,18 +49,27 @@ namespace yjw
         m_output_depth = RPITexture::Null;
     }
 
-    void ForwardRenderer::SetSceneProxy(RenderSceneProxy proxy)
+    void ForwardRenderer::SetView(RView* view)
     {
-        m_scene_proxy = proxy;
+        m_view = view;
     }
 
-    void ForwardRenderer::SetUI(rhi::ImGuiUI* ui)
+    void ForwardRenderer::Render()
     {
-        m_imgui_pass->LoadResource(ui);
+        if (m_view)
+        {
+            BeginFrame();
+            RenderFrame();
+            EndFrame();
+        }
     }
 
     void ForwardRenderer::BeginFrame()
     {
+        RPICmdClearBackBuffer(m_context, m_view->GetWindow());
+
+        m_imgui_pass->LoadResource(m_view->GetUI());
+        SetRenderPass(m_view->GetRenderPass());
         if(m_output_color)RPICmdClearTexture(m_context, m_output_color);
         if(m_output_depth)RPICmdClearTexture(m_context, m_output_depth);
     }
@@ -75,12 +87,13 @@ namespace yjw
     void ForwardRenderer::EndFrame()
     {
         RPISubmit(m_context);
+        m_view->Present(m_context);
     }
 
     void ForwardRenderer::SubmitOpacue()
     {
         RPICmdPushEvent(m_context, "Opacue");
-        m_scene_proxy.SubmitOpaque(this);
+        RenderSceneProxy(m_view->GetScene()).SubmitOpaque(this, &ForwardRenderer::Submit);
         RPICmdPopEvent(m_context);
     }
 

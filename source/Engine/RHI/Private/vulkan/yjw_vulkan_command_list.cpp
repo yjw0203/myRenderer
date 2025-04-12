@@ -258,6 +258,11 @@ namespace rhi
                     vkCmdBindVertexBuffers(m_command_list.GetCommandBuffer(), 0, m_state_cache.GetPrimitiveBinding()->GetVertexBufferCount(), m_state_cache.GetPrimitiveBinding()->GetVertexVkBuffers(), m_state_cache.GetPrimitiveBinding()->GetVertexVkBufferOffsets());
                 }
             }
+            if (m_state_cache.IsPushConstantsDirty())
+            {
+                vkCmdPushConstants(m_command_list.GetCommandBuffer(), m_state_cache.GetRenderPipeline()->GetOrCreateVkPipelineLayout(), VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0, m_state_cache.GetPushConstantsSize(), m_state_cache.GetPushConstantsData());
+                m_state_cache.ClearPushConstantsDirty();
+            }
         }
         //vkCmdSetPrimitiveTopology(m_command_list.GetCommandBuffer(), VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST);
     }
@@ -278,6 +283,12 @@ namespace rhi
                     m_state_cache.GetResourceBinding()->GetDescriptorSetData(),
                     0,
                     nullptr);
+
+                if (m_state_cache.IsPushConstantsDirty())
+                {
+                    vkCmdPushConstants(m_command_list.GetCommandBuffer(), m_state_cache.GetComputePipeline()->GetOrCreateVkPipelineLayout(), VK_SHADER_STAGE_COMPUTE_BIT, 0, m_state_cache.GetPushConstantsSize(), m_state_cache.GetPushConstantsData());
+                    m_state_cache.ClearPushConstantsDirty();
+                }
             }
         }
     }

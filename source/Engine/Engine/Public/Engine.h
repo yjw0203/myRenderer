@@ -30,7 +30,10 @@ namespace yjw
         World* m_world{};
         class ::rhi::ImGuiUI* m_ui;
 
-        IRenderModule* m_render_module = nullptr;
+        class Window* m_window = nullptr;
+        class ViewProxy* m_view = nullptr;
+
+        class MajorEditor* m_editor = nullptr;
     };
 
 }

@@ -3,13 +3,5 @@
 
 namespace yjw
 {
-    void RenderSceneProxy::SubmitOpaque(IRenderer* renderer)
-    {
-        std::vector<DrawItem> draw_items;
-        m_scene->GetDrawItems(draw_items);
-        for (DrawItem& item : draw_items)
-        {
-            renderer->Submit(&item);
-        }
-    }
+    
 }

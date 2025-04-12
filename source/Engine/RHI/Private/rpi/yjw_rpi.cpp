@@ -369,6 +369,11 @@ namespace rpi
         context->SetRenderPipeline((RHIRenderPipeline*)pipeline);//todo hack
     }
 
+    void RPICmdPushConstants(RPIContext context, void* data, int offset, int size)
+    {
+        context->SetPushConstants(data, offset, size);
+    }
+
     void RPICmdSetResourceBinding(RPIContext context, RPIResourceBinding resourceBinding)
     {
         context->SetResourceBinding(resourceBinding.GetRHIResourceBinding());

@@ -16,11 +16,19 @@ namespace rhi
         void SetPrimitiveBinding(VulkanPrimitiveBinding* primitiveBinding,int sub_id);
         VulkanPrimitiveBinding* GetPrimitiveBinding();
         int GetPrimitiveBindingSubID();
+
+        void SetPushConstants(void* data, int offset, int size);
+        void* GetPushConstantsData();
+        int GetPushConstantsSize();
+        bool IsPushConstantsDirty();
+        void ClearPushConstantsDirty();
     private:
         VulkanRenderPipeline* m_current_render_pipeline = nullptr;
         VulkanComputePipeline* m_current_compute_pipeline = nullptr;
         VulkanResourceBinding* m_current_resource_binding = nullptr;
         VulkanPrimitiveBinding* m_current_primitive_binding = nullptr;
         int m_current_sub_primitive_binding_id{};
+        char m_push_constants[128] = {};
+        bool m_push_constants_dirty = false;
     };
 }

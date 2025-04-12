@@ -47,4 +47,33 @@ namespace rhi
     {
         return m_current_sub_primitive_binding_id;
     }
+
+    void VulkanStateCache::SetPushConstants(void* data, int offset, int size)
+    {
+        if (offset + size <= 128)
+        {
+            memcpy(m_push_constants + offset, data, size);
+            m_push_constants_dirty = true;
+        }
+    }
+
+    void* VulkanStateCache::GetPushConstantsData()
+    {
+        return m_push_constants;
+    }
+
+    int VulkanStateCache::GetPushConstantsSize()
+    {
+        return 128;
+    }
+
+    bool VulkanStateCache::IsPushConstantsDirty()
+    {
+        return m_push_constants_dirty;
+    }
+
+    void VulkanStateCache::ClearPushConstantsDirty()
+    {
+        m_push_constants_dirty = false;
+    }
 }

@@ -2,7 +2,6 @@
 
 #include "Engine/Render/Public/yjw_render_system.h"
 #include "Engine/RHI/Public/rpi/yjw_rpi_header.h"
-#include "Engine/Render/Private/yjw_windows_manager.h"
 #include "projectInfo.h"
 #include "glm/glm.hpp"
 #include "yjw_render_camera.h"
@@ -20,17 +19,10 @@ namespace yjw
 {
     using namespace rpi;
 
-    RPIContext g_context;
-
-    ForwardRenderer* renderer = new ForwardRenderer();
-
     void RenderSystem::initialize()
     {
         activeCamera = new RenderCamera();
-        Window::Initialize();
         RPIInit();
-
-        m_window = new Window();
 
         g_internal_shader_parameters.Initialize();
         g_internal_shader_parameters.m_light->lightDirection = glm::vec3(-3, 15, -8);
@@ -43,10 +35,6 @@ namespace yjw
 
         m_camera_dispatcher = new RenderCameraInputDispatcher(this);
         m_camera_dispatcher->Register();
-
-        renderer->Initialize();
-
-        g_context = RPICreateContext();
     }
     
     void RenderSystem::tick(float deltaTime)
@@ -59,37 +47,9 @@ namespace yjw
 
         g_internal_shader_parameters.FlushCpuDataToGpu();
 
-        //pipeline.render();
-        //m_window->Present(pipeline.commandBuffer);
-        RPICmdClearBackBuffer(g_context, m_window->GetRPIWindow());
-        RPISubmit(g_context);
-
-        renderer->SetRenderPass(m_window->GetRPIWindow().swapchain->GetCurrentRenderPass());
-        renderer->SetSceneProxy(RenderSceneProxy(m_scene));
-        renderer->SetUI(m_ui);
-
-        renderer->BeginFrame();
-        renderer->RenderFrame();
-        renderer->EndFrame();
-
-        m_window->Present(g_context);
-
-        Window::PoolEvents();
     }
     void RenderSystem::shutdown()
     {
-        renderer->Destroy();
-        Window::Shutdown();
-    }
-
-    void RenderSystem::AttachScene(Scene* scene)
-    {
-        m_scene = scene;
-    }
-
-    void RenderSystem::AttachUI(rhi::ImGuiUI* ui)
-    {
-        m_ui = ui;
     }
 
 }

@@ -42,6 +42,7 @@ namespace rpi
     void RPICmdPushEvent(RPIContext context, const char* name);
     void RPICmdPopEvent(RPIContext context);
     void RPICmdSetPipeline(RPIContext context, RPIPipeline pipeline);
+    void RPICmdPushConstants(RPIContext context, void* data, int offset, int size);
     void RPICmdSetResourceBinding(RPIContext context, RPIResourceBinding resourceBinding);
     void RPICmdSetPrimitiveBinding(RPIContext context, RPIPrimitiveBinding primitiveBinding,int sub_id);
     void RPICmdTransitionStateToRender(RPIContext context, RPIResourceSet resourceSet);

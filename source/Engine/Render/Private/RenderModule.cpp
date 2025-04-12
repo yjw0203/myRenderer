@@ -2,14 +2,24 @@
 #include "Engine/Render/Public/yjw_render_system.h"
 #include "Engine/Render/Private/MaterialManager.h"
 #include "Engine/Render/Private/PrimitiveManager.h"
+#include "Engine/Render/Private/View.h"
+#include "Engine/Render/Private/Renderer/ForwardRenderer.h"
 
 namespace yjw
 {
+    ForwardRenderer* renderer = new ForwardRenderer();
+
+    RPIContext g_context;
     void RenderModule::Startup()
     {
         m_render_system = new RenderSystem();
         m_material_manager = new MaterialManager();
         m_primitive_manager = new PrimitiveManager();
+
+        m_render_system->initialize();
+        renderer->Initialize();
+
+        g_context = RPICreateContext();
     }
 
     void RenderModule::Shutdown()
@@ -20,20 +30,10 @@ namespace yjw
         delete m_primitive_manager;
     }
 
-    void RenderModule::AttachScene(SceneInterface* scene)
-    {
-        m_render_system->AttachScene((Scene*)scene);
-        m_render_system->initialize();
-    }
-
-    void RenderModule::AttachUI(rhi::ImGuiUI* ui)
-    {
-        m_render_system->AttachUI(ui);
-    }
-
     void RenderModule::Tick(float deltaTime)
     {
         m_render_system->tick(deltaTime);
+        renderer->Render();
     }
 
     SceneInterface* RenderModule::CreateScene()
@@ -59,6 +59,30 @@ namespace yjw
     void RenderModule::UnloadMesh(MeshHandle handle)
     {
         m_primitive_manager->UnloadMesh(handle);
+    }
+
+    ViewProxy* RenderModule::CreateView(void* window)
+    {
+        return new RViewProxy(window);
+    }
+
+    void RenderModule::Destroy(ViewProxy* view)
+    {
+        delete view;
+    }
+
+    void RenderModule::AttachView(ViewProxy* view)
+    {
+        DettachView(view);
+        m_views.push_back((RViewProxy*)view);
+        renderer->SetView(((RViewProxy*)view)->GetView());
+    }
+
+    void RenderModule::DettachView(ViewProxy* view)
+    {
+        m_views.erase(std::remove_if(m_views.begin(), m_views.end(), 
+            [&view](const RViewProxy* p) {return p == (RViewProxy*)view; }), 
+            m_views.end());
     }
 
     template<>

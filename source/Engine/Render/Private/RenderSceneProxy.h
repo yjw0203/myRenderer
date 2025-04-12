@@ -1,5 +1,6 @@
 #pragma once
 #include "Engine/Render/Private/Scene.h"
+#include <functional>
 
 namespace yjw
 {
@@ -9,7 +10,18 @@ namespace yjw
     public:
         RenderSceneProxy() {}
         RenderSceneProxy(Scene* scene) : m_scene(scene) {}
-        void SubmitOpaque(IRenderer* renderer);
+
+        template<typename T,typename Func>
+        void SubmitOpaque(T* This ,Func func)
+        {
+            std::vector<DrawItem> draw_items;
+            m_scene->GetDrawItems(draw_items);
+            for (DrawItem& item : draw_items)
+            {
+                auto bfunc = std::bind(func, This, &item);
+                bfunc();
+            }
+        }
     private:
         Scene* m_scene{};
     };

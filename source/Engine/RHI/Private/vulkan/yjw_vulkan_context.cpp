@@ -41,6 +41,11 @@ namespace rhi
         m_state_cache.SetComputePipeline(VKResourceCast(pipeline));
     }
 
+    void VulkanContext::SetPushConstants(void* data, int offset, int size)
+    {
+        m_state_cache.SetPushConstants(data, offset, size);
+    }
+
     void VulkanContext::TransitionStateToRender(RHIResourceSet* resourceBinding)
     {
         m_command_buffer.CmdTransitionStateToRender(VKResourceCast(resourceBinding));

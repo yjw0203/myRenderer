@@ -13,13 +13,18 @@
 #include "Engine/RHI/Public/externs/imgui/yjw_rhi_imgui_layer.h"
 #include "Engine/RHI/Public/externs/imgui/yjw_rhi_imgui_window.h"
 #include "Engine/Engine/Public/Framework/Render/IRenderModule.h"
+#include "Engine/Engine/Public/Window.h"
+#include "Engine/Engine/Private/Editor/MajorEditor.h"
 
 namespace yjw
 {
     Engine::Engine()
     {
+        Window::Initialize();
         m_world = new World();
         m_ui = new EditorUI(m_world);
+        m_window = new Window();
+        m_editor = new MajorEditor();
     }
 
     Engine::~Engine()
@@ -32,6 +37,7 @@ namespace yjw
         initialize();
         while (!shouldShutdown) {
             mainLoop();
+            Window::PoolEvents();
         }
         cleanup();
     }
@@ -39,15 +45,23 @@ namespace yjw
     void Engine::shutdown()
     {
         GetModule<IRenderModule>()->Shutdown();
+        Window::Shutdown();
         shouldShutdown = true;
     }
 
     void Engine::initialize()
     {
         GetModule<IRenderModule>()->Startup();
-        GetModule<IRenderModule>()->AttachScene(m_world->GetScene());
-        GetModule<IRenderModule>()->AttachUI(m_ui);
-        //m_world->GetLevel()->SpawnActor<TestBoxActor>("test box");
+
+        m_view = GetModule<IRenderModule>()->CreateView(m_window->GetWindowHandle());
+        m_view->AttachScene(m_world->GetScene());
+        m_view->AttachUI(m_ui);
+
+        GetModule<IRenderModule>()->AttachView(m_view);
+
+        m_editor->Startup();
+
+        m_world->GetLevel()->SpawnActor<MeshActor>("naxita", "naxita/naxita.mesh.ast");
     }
     void Engine::mainLoop()
     {

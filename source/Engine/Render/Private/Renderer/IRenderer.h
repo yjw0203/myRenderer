@@ -6,6 +6,5 @@ namespace yjw
     {
     public:
         IRenderer() {}
-        virtual void Submit(class DrawItem* entity) = 0;
     };
 }

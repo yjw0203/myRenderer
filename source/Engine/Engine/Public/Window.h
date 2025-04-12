@@ -1,10 +1,9 @@
 #pragma once
-
 #include <map>
 #include <functional>
-#include "Engine/RHI/Public/rpi/yjw_rpi.h"
-struct GLFWwindow;
+#include <GLFW/glfw3.h>
 
+class GLFWwindow;
 namespace yjw
 {
     class Window
@@ -12,20 +11,12 @@ namespace yjw
     public:
         Window();
         ~Window();
+        void* GetWindowHandle();
         static void Initialize();
         static void PoolEvents();
         static void Shutdown();
-        rpi::RPIWindow GetRPIWindow();
-        void Present(rpi::RPIContext context);
     private:
         GLFWwindow* m_glfw_window = nullptr;
-        rpi::RPIWindow m_rpi_window;
-    };
-
-    class View
-    {
-    public:
-
     };
 
     class InputDispatcher

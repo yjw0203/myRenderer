@@ -17,6 +17,7 @@ namespace rhi
         virtual void EndPass() override;
         virtual void SetRenderPipeline(RHIRenderPipeline* pipeline) override;
         virtual void SetComputePipeline(RHIComputePipeline* pipeline) override;
+        virtual void SetPushConstants(void* data, int offset, int size) override;
         virtual void TransitionStateToRender(RHIResourceSet* resourceBinding) override;
         virtual void SetResourceBinding(RHIResourceBinding* resourceBinding) override;
         virtual void SetPrimitiveBinding(RHIPrimitiveBinding* resourceBinding,int sub_id) override;

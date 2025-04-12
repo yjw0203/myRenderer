@@ -1,9 +1,19 @@
 #pragma once
 #include "Engine/Engine/Public/Framework/Render/Entity.h"
+#include "Engine/RHI/Public/externs/imgui/yjw_rhi_imgui_window.h"
 #include <string>
 
 namespace yjw
 {
+    class SceneInterface;
+    class ViewProxy
+    {
+    public:
+        virtual ~ViewProxy() {}
+        virtual void AttachScene(SceneInterface* scene) = 0;
+        virtual void AttachUI(class rhi::ImGuiUI* ui) = 0;
+    };
+
     class SceneInterface
     {
     public:

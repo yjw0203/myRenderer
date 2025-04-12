@@ -1,6 +1,6 @@
 #include "yjw_render_camera.h"
 #include "Engine/Render/Public/yjw_render_system.h"
-#include "Engine/Render/Private/yjw_windows_manager.h"
+#include "Engine/Engine/Public/Window.h"
 
 namespace yjw
 {

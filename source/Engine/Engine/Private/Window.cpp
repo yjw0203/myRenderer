@@ -1,6 +1,4 @@
-#include "yjw_windows_manager.h"
-#include "Engine/Render/Private/yjw_render_camera.h"
-
+#include "Engine/Engine/Public/Window.h"
 //#define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 
@@ -20,13 +18,16 @@ namespace yjw
         glfwSetMouseButtonCallback(m_glfw_window, InputDispatcher::mouseButtonCallback);
         glfwSetCursorPosCallback(m_glfw_window, InputDispatcher::mousePosCallback);
         glfwSetScrollCallback(m_glfw_window, InputDispatcher::mouseScollCallback);
-        m_rpi_window = rpi::RPICreateWindow(m_glfw_window);
     }
 
     Window::~Window()
     {
-        RPIDestroyWindow(m_rpi_window);
         glfwDestroyWindow(m_glfw_window);
+    }
+
+    void* Window::GetWindowHandle()
+    {
+        return m_glfw_window;
     }
 
     void Window::Initialize()
@@ -44,16 +45,6 @@ namespace yjw
         glfwTerminate();
     }
 
-    rpi::RPIWindow Window::GetRPIWindow()
-    {
-        return m_rpi_window;
-    }
-
-    void Window::Present(rpi::RPIContext context)
-    {
-        rpi::RPIPresent(context, m_rpi_window);
-    }
-
     std::map< long long, std::vector<std::function<void(void)>> > InputDispatcher::keyFunctions = std::map< long long, std::vector<std::function<void(void)>> >();
     std::map< long long, std::vector<std::function<void(void)>> > InputDispatcher::mouseButtonFunctions = std::map< long long, std::vector<std::function<void(void)>> >();
     std::vector<std::function<void(float, float)>> InputDispatcher::mousePosFunctions = std::vector<std::function<void(float, float)>>();
@@ -61,7 +52,7 @@ namespace yjw
 
     void InputDispatcher::Register()
     {
-        
+
     }
 
     void InputDispatcher::keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
@@ -86,7 +77,7 @@ namespace yjw
 
     void InputDispatcher::mousePosCallback(GLFWwindow* window, double xpos, double ypos)
     {
-        for (std::function<void(float,float)>& func : mousePosFunctions)
+        for (std::function<void(float, float)>& func : mousePosFunctions)
         {
             func(xpos, ypos);
         }
@@ -121,5 +112,4 @@ namespace yjw
     {
         mouseScrollFunctions.push_back(func);
     }
-
 }
