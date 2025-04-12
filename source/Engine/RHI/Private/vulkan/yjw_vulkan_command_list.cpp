@@ -235,15 +235,15 @@ namespace rhi
         if (m_state_cache.GetRenderPipeline())
         {
             vkCmdBindPipeline(m_command_list.GetCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, m_state_cache.GetRenderPipeline()->GetOrCreateVkPipeline(m_current_render_pass));
-            if (m_state_cache.GetResourceBinding())
+            if (m_state_cache.GetDescriptorSetCount())
             {
                 vkCmdBindDescriptorSets(
                     m_command_list.GetCommandBuffer(),
                     VK_PIPELINE_BIND_POINT_GRAPHICS,
                     m_state_cache.GetRenderPipeline()->GetOrCreateVkPipelineLayout(),
                     0,
-                    m_state_cache.GetResourceBinding()->GetDescriptorSetCount(),
-                    m_state_cache.GetResourceBinding()->GetDescriptorSetData(),
+                    m_state_cache.GetDescriptorSetCount(),
+                    m_state_cache.GetDescriptorSetData(),
                     0,
                     nullptr);
             }
@@ -272,15 +272,15 @@ namespace rhi
         if (m_state_cache.GetComputePipeline())
         {
             vkCmdBindPipeline(m_command_list.GetCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, m_state_cache.GetComputePipeline()->GetOrCreateVkPipeline());
-            if (m_state_cache.GetResourceBinding())
+            if (m_state_cache.GetDescriptorSetCount())
             {
                 vkCmdBindDescriptorSets(
                     m_command_list.GetCommandBuffer(),
                     VK_PIPELINE_BIND_POINT_COMPUTE,
                     m_state_cache.GetComputePipeline()->GetOrCreateVkPipelineLayout(),
                     0,
-                    m_state_cache.GetResourceBinding()->GetDescriptorSetCount(),
-                    m_state_cache.GetResourceBinding()->GetDescriptorSetData(),
+                    m_state_cache.GetDescriptorSetCount(),
+                    m_state_cache.GetDescriptorSetData(),
                     0,
                     nullptr);
 

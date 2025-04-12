@@ -36,17 +36,12 @@ namespace yjw
         m_ps = RPICreateShader(RPIShaderType::fragment, SHADER_FILE(SkyBox.hlsl), "PSMain");
 
         RPIRenderPipelineDescriptor pipelineDesc = RPIGetDefaultRenderPipeline();
-        pipelineDesc.vs = m_vs;
-        pipelineDesc.ps = m_ps;
         pipelineDesc.depth_stencil_state = RPIGetDepthStencilState(RPIDepthStencilStateType::default_depth_read);
         m_pipeline = RPICreateRenderPipeline(pipelineDesc);
 
-        m_resource_binding = RPICreateResourceBinding();
         m_custom_ps_resource_set = RPICreateResourceSet(RPIResourceSetType::ps, m_ps->GetShaderReflect());
-        m_resource_binding.SetResourceSet(RPIResourceSetType::common, g_internal_shader_parameters.GetCommonResourceSet());
-        m_resource_binding.SetResourceSet(RPIResourceSetType::ps, m_custom_ps_resource_set);
 
-        m_primitive_binding = RPICreatePrimitiveBinding(m_pipeline);
+        m_primitive_binding = RPICreatePrimitiveBinding(m_vs);
 
         m_primitive_binding.SetVertexBuffer(RHIName("POSITION"), m_vertex_buffer);
         m_primitive_binding.AddIndexBuffer(m_index_buffer, 0, 36, true);
@@ -84,17 +79,15 @@ namespace yjw
         m_vertex_buffer.Release();
         m_vs->release();
         m_ps->release();
-        m_pipeline->release();
-        m_resource_binding.Release();
         m_primitive_binding.Release();
     }
 
     void SkyBoxPass::Submit(RPIContext context)
     {
         RPICmdPushEvent(context, "SkyBoxPass");
-        RPICmdSetResourceBinding(context, m_resource_binding);
+        RPICmdSetResourceSet(context, RPIResourceSetType::ps, m_custom_ps_resource_set);
         RPICmdSetPrimitiveBinding(context, m_primitive_binding, 0);
-        RPICmdSetPipeline(context, m_pipeline);
+        RPICmdSetRenderPipeline(context, m_pipeline, m_primitive_binding.GetVertexShader(), m_ps);
         RPICmdDrawIndex(context, 0, 1);
         RPICmdPopEvent(context);
     }

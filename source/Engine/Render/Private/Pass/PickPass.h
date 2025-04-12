@@ -14,9 +14,8 @@ namespace yjw
     private:
         RPITexture m_pick_texture{};
 
-        RPIPipeline m_pipeline{};
+        RPIRenderPipeline m_pipeline{};
         RPIShader m_ps{};
-        RPIResourceBinding m_resource_binding{};
         RPIResourceSet m_global_resource_set{};
         RPIResourceSet m_custom_vs_resource_set{};
         RPIResourceSet m_custom_ps_resource_set{};

@@ -84,10 +84,10 @@ namespace rhi
         static ImageType ToImageType(const char* str);
         static int DataTypeToSize(ShaderReflect::DataType type);
 
-        int GetVertexBindingCount() { return m_inputs.size(); }
-        int GetVertexInputLocation(const std::string& name)
+        int GetVertexBindingCount() const { return m_inputs.size(); }
+        int GetVertexInputLocation(const std::string& name) const
         {
-            for (Input& input : m_inputs)
+            for (const Input& input : m_inputs)
             {
                 if (name == input.m_name)
                 {

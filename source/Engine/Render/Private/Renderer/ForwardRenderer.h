@@ -40,6 +40,8 @@ namespace yjw
         RPITexture m_output_depth{};
         RPIRenderPass m_render_pass{};
 
+        RPIRenderPipeline m_opacue_pipeline{};
+
         SkyBoxPass* m_sky_box_pass{};
         ImGuiPass* m_imgui_pass{};
         PickPass* m_pick_pass{};

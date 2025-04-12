@@ -9,7 +9,7 @@ namespace rpi
     typedef RHIInstance* RPIInstance;
     typedef RHIDevice* RPIDevice;
     typedef RHIContext* RPIContext;
-    typedef RHIPipeline* RPIPipeline;
+    typedef RHIComputePipeline* RPIComputePipeline;
     typedef RHIRenderPass* RPIRenderPass;
     typedef RHIShader* RPIShader;
     typedef ShaderReflect* RPIShaderReflect;
@@ -18,7 +18,6 @@ namespace rpi
     typedef RHIFormat RPIFormat;
     typedef RHIShaderType RPIShaderType;
 
-    typedef RHIRenderPipelineDescriptor RPIRenderPipelineDescriptor;
     typedef RHIComputePipelineDescriptor RPIComputePipelineDescriptor;
     typedef RHIDepthStencilState RPIDepthStencilState;
 

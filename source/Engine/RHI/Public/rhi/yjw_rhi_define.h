@@ -236,7 +236,6 @@ namespace rhi
         RHIPrimitiveTopology primitiveTopology{};
         RHIShader* vs{};
         RHIShader* ps{};
-        std::vector<RHIFormat> vertex_layouts;
     };
 
     struct RHIComputePipelineDescriptor

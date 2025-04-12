@@ -13,9 +13,8 @@ namespace yjw
     struct DrawItem
     {
         int m_sub_primitive_id{};
-        rpi::RPIPrimitiveBinding m_primitive_binding{};
-        rpi::RPIResourceBinding m_resource_binding{};
-        rpi::RPIPipeline m_pipeline{};
+        Primitive* m_primitive{};
+        MaterialInstance* m_material{};
     };
 
     class RenderEntity

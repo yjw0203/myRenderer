@@ -16,8 +16,6 @@ namespace yjw
     {
         int m_sub_primitive_id{};
         MaterialInstance* m_material{};
-        rpi::RPIResourceBinding m_resource_binding{};
-        rpi::RPIPipeline m_pipeline{};
         std::string m_material_slot{};
     };
 

@@ -178,11 +178,6 @@ namespace rhi
         return new VulkanResourceSet(this, set_id, reflect);
     }
 
-    RHIResourceBinding* VulkanDevice::CreateResourceBinding()
-    {
-        return new VulkanResourceBinding(this);
-    }
-
     RHIRenderPipeline* VulkanDevice::CreateRenderPipeline(const RHIRenderPipelineDescriptor& renderPipelineDescriptor)
     {
         return new VulkanRenderPipeline(this, renderPipelineDescriptor);

@@ -47,7 +47,7 @@ namespace rhi
 
     RHIPrimitiveBinding* VulkanShader::CreatePrimitiveBinding()
     {
-        return new VulkanPrimitiveBinding(GetDevice(), m_reflect);
+        return new VulkanPrimitiveBinding(GetDevice(), this);
     }
 
     void VulkanShader::ReadCodeFromFileUrl(const char* url, std::vector<char>& code)

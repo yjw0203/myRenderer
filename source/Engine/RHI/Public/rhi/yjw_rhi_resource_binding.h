@@ -14,16 +14,10 @@ namespace rhi
         virtual void SetBufferView(RHIName name, RHIBufferView* view) = 0;
     };
 
-    class RHIResourceBinding : public RHIObject
-    {
-    public:
-        virtual ~RHIResourceBinding() {};
-        virtual void SetResourceSet(int set_id, RHIResourceSet* set) = 0;
-    };
-
     class RHIPrimitiveBinding : public RHIObject
     {
     public:
+        virtual RHIShader* GetVertexShader() = 0;
         virtual void SetVertexBuffer(RHIName name, RHIBufferView* buffer) = 0;
         virtual int AddIndexBuffer(RHIBufferView* buffer, int intdex_start, int index_count, bool is_index_16bit) = 0;
     };

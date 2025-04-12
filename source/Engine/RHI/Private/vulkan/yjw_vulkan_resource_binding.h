@@ -32,26 +32,12 @@ namespace rhi
         std::unordered_map<RHIName, VulkanTextureView*> m_binding_textures;
     };
 
-    class VulkanResourceBinding : public RHIResourceBinding, VulkanDeviceObject
-    {
-    public:
-        VulkanResourceBinding(VulkanDevice* pDevice);
-        ~VulkanResourceBinding();
-
-        virtual void SetResourceSet(int set_id, RHIResourceSet* set) override;
-
-        VkDescriptorSet* GetDescriptorSetData();
-        int GetDescriptorSetCount();
-    private:
-        std::vector<VkDescriptorSet> m_descriptor_sets;
-        std::vector<VulkanResourceSet*> m_resource_set_handles;
-    };
-
     class VulkanPrimitiveBinding : public RHIPrimitiveBinding, VulkanDeviceObject
     {
     public:
-        VulkanPrimitiveBinding(VulkanDevice* pDevice, class ShaderReflect& reflect);
+        VulkanPrimitiveBinding(VulkanDevice* pDevice, VulkanShader* vs);
         ~VulkanPrimitiveBinding();
+        virtual RHIShader* GetVertexShader() override;
         virtual void SetVertexBuffer(RHIName name, RHIBufferView* bufferView) override;
         virtual int AddIndexBuffer(RHIBufferView* buffer, int intdex_start, int index_count, bool is_index_16bit) override;
 
@@ -66,7 +52,7 @@ namespace rhi
         bool GetIsIndex16Bit(int id);
         int GetVertexOffset();
     private:
-        ShaderReflect& m_reflect;
+        VulkanShader* m_vs{};
 
         VulkanBuffer* m_vertex_buffers[VULKAN_MAX_VERTEX_BINDING] = {};
         VkBuffer m_vertex_vkBuffers[VULKAN_MAX_VERTEX_BINDING] = {};

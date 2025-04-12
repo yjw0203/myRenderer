@@ -86,7 +86,6 @@ namespace yjw
             for (SubMeshInfo& sub_mesh : mesh_ptr->m_sub_meshes)
             {
                 SubPrimitive sub_primitive{};
-                sub_primitive.m_resource_binding = rpi::RPICreateResourceBinding();
                 sub_primitive.m_sub_primitive_id = m_primitive_binding.AddIndexBuffer(m_index_buffer.m_buffer, sub_mesh.m_start_index, sub_mesh.m_index_count, m_index_buffer.m_is_indices_16bit);
                 if (material_slot_index.find(sub_mesh.m_material_slot) != material_slot_index.end())
                 {
@@ -96,15 +95,7 @@ namespace yjw
                 {
                     sub_primitive.m_material = g_default_material_instance;
                 }
-                sub_primitive.m_resource_binding.SetResourceSet(rpi::RPIResourceSetType::vs, m_vs_resource_set);
-                sub_primitive.m_resource_binding.SetResourceSet(rpi::RPIResourceSetType::ps, sub_primitive.m_material->GetResourceSet());
-                sub_primitive.m_resource_binding.SetResourceSet(rpi::RPIResourceSetType::common, g_internal_shader_parameters.GetCommonResourceSet());
 
-                rpi::RPIRenderPipelineDescriptor pipelineDesc = rpi::RPIGetDefaultRenderPipeline();
-                pipelineDesc.vs = m_vertex_shader;
-                pipelineDesc.ps = sub_primitive.m_material->GetPixelShader();
-                pipelineDesc.depth_stencil_state = rpi::RPIGetDepthStencilState(rpi::RPIDepthStencilStateType::default_depth_read_and_write);
-                sub_primitive.m_pipeline = rpi::RPICreateRenderPipeline(pipelineDesc);
                 sub_primitive.m_material_slot = sub_mesh.m_material_slot;
                 m_sub_primitives.push_back(sub_primitive);
             }

@@ -27,23 +27,21 @@ namespace rpi
     RPIShader RPICreateShader(RPIShaderType shaderType, const char* name, const char* entryName);
 
     RPIRenderPass RPICreateRenderPass(RPITexture* rtvs, int rtvCount, RPITexture dsv);
-    RPIPipeline RPICreateRenderPipeline(RPIRenderPipelineDescriptor createInfo);
-    RPIPipeline RPICreateComputePipeline(RPIComputePipelineDescriptor createInfo);
+    RPIRenderPipeline RPICreateRenderPipeline(RPIRenderPipelineDescriptor createInfo);
+    RPIComputePipeline RPICreateComputePipeline(RPIComputePipelineDescriptor createInfo);
 
-    RPIResourceBinding RPICreateResourceBinding();
     RPIResourceSet     RPICreateResourceSet(RPIResourceSetType type ,RPIShaderReflect reflect);
 
     RPIPrimitiveBinding RPICreatePrimitiveBinding(RPIShader vertex_shader);
-    RPIPrimitiveBinding RPICreatePrimitiveBinding(RPIPipeline pipeline);
 
     void RPISubmit(RPIContext context);
     void RPIPresent(RPIContext context, RPIWindow window);
 
     void RPICmdPushEvent(RPIContext context, const char* name);
     void RPICmdPopEvent(RPIContext context);
-    void RPICmdSetPipeline(RPIContext context, RPIPipeline pipeline);
+    void RPICmdSetRenderPipeline(RPIContext context, RPIRenderPipeline pipeline, RPIShader vs, RPIShader ps);
     void RPICmdPushConstants(RPIContext context, void* data, int offset, int size);
-    void RPICmdSetResourceBinding(RPIContext context, RPIResourceBinding resourceBinding);
+    void RPICmdSetResourceSet(RPIContext context, RPIResourceSetType type, RPIResourceSet set);
     void RPICmdSetPrimitiveBinding(RPIContext context, RPIPrimitiveBinding primitiveBinding,int sub_id);
     void RPICmdTransitionStateToRender(RPIContext context, RPIResourceSet resourceSet);
     void RPICmdBeginRenderPass(RPIContext context, RPIRenderPass renderPass);

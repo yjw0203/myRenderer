@@ -5,6 +5,7 @@ namespace rhi
 {
     VulkanContext::VulkanContext(VulkanDevice* device)
         :VulkanDeviceObject(device)
+        , m_state_cache(device)
         , m_command_buffer(device, m_state_cache)
     {
     }
@@ -27,7 +28,7 @@ namespace rhi
     void VulkanContext::EndPass()
     {
         m_command_buffer.CmdEndPass();
-        m_state_cache.SetResourceBinding(nullptr);
+        m_state_cache.ClearResourceSet();
         m_state_cache.SetPrimitiveBinding(nullptr, 0);
     }
 
@@ -46,14 +47,14 @@ namespace rhi
         m_state_cache.SetPushConstants(data, offset, size);
     }
 
-    void VulkanContext::TransitionStateToRender(RHIResourceSet* resourceBinding)
+    void VulkanContext::TransitionStateToRender(RHIResourceSet* resourceSet)
     {
-        m_command_buffer.CmdTransitionStateToRender(VKResourceCast(resourceBinding));
+        m_command_buffer.CmdTransitionStateToRender(VKResourceCast(resourceSet));
     }
 
-    void VulkanContext::SetResourceBinding(RHIResourceBinding* resourceBinding)
+    void VulkanContext::SetResourceSet(int set_id, RHIResourceSet* resourceSet)
     {
-        m_state_cache.SetResourceBinding(VKResourceCast(resourceBinding));
+        m_state_cache.SetResourceSet(set_id, VKResourceCast(resourceSet));
     }
 
     void VulkanContext::SetPrimitiveBinding(RHIPrimitiveBinding* primitiveBinding,int sub_id)

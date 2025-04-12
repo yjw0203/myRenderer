@@ -196,55 +196,25 @@ namespace rhi
         return &m_resource_table[name];
     }
 
-    VulkanResourceBinding::VulkanResourceBinding(VulkanDevice* pDevice)
-        :VulkanDeviceObject(pDevice)
+    VulkanPrimitiveBinding::VulkanPrimitiveBinding(VulkanDevice* pDevice, VulkanShader* vs)
+        :VulkanDeviceObject(pDevice), m_vs(vs)
     {
-    }
-
-    VulkanResourceBinding::~VulkanResourceBinding()
-    {
-    }
-
-    void VulkanResourceBinding::SetResourceSet(int set_id, RHIResourceSet* set)
-    {
-        if (m_descriptor_sets.size() <= set_id)
-        {
-            m_descriptor_sets.resize(set_id + 1, GetDevice()->m_default_descriptor_set);
-            m_resource_set_handles.resize(set_id + 1);
-        }
-        if (m_resource_set_handles[set_id] != nullptr)
-        {
-            m_resource_set_handles[set_id]->release();
-            m_resource_set_handles[set_id] = nullptr;
-            m_descriptor_sets[set_id] = nullptr;
-        }
-        m_descriptor_sets[set_id] = ((VulkanResourceSet*)set)->GetDescriptorSet();
-        m_resource_set_handles[set_id] = (VulkanResourceSet*)set;
-        set->retain(this);
-    }
-
-    VkDescriptorSet* VulkanResourceBinding::GetDescriptorSetData()
-    {
-        return m_descriptor_sets.data();
-    }
-
-    int VulkanResourceBinding::GetDescriptorSetCount()
-    {
-        return m_descriptor_sets.size();
-    }
-
-    VulkanPrimitiveBinding::VulkanPrimitiveBinding(VulkanDevice* pDevice, ShaderReflect& reflect)
-        :VulkanDeviceObject(pDevice), m_reflect(reflect)
-    {
+        m_vs->retain(nullptr);
     }
 
     VulkanPrimitiveBinding::~VulkanPrimitiveBinding()
     {
+        m_vs->release();
+    }
+
+    RHIShader* VulkanPrimitiveBinding::GetVertexShader()
+    {
+        return m_vs;
     }
 
     void VulkanPrimitiveBinding::SetVertexBuffer(RHIName name, RHIBufferView* bufferView)
     {
-        int location = m_reflect.GetVertexInputLocation(name);
+        int location = m_vs->GetReflect().GetVertexInputLocation(name);
         if (location >= 0)
         {
             m_vertex_buffers[location] = VKResourceCast(bufferView)->GetBuffer();
@@ -267,7 +237,7 @@ namespace rhi
 
     int VulkanPrimitiveBinding::GetVertexBufferCount()
     {
-        return m_reflect.GetVertexBindingCount();
+        return m_vs->GetReflect().GetVertexBindingCount();
     }
 
     VulkanBuffer* VulkanPrimitiveBinding::GetVertexBuffer(int index)

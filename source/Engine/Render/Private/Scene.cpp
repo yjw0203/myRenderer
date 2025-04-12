@@ -32,12 +32,6 @@ namespace yjw
 
     void RenderEntity::ClearDrawItems()
     {
-        for (DrawItem& item : m_draw_items)
-        {
-            item.m_pipeline->release();
-            item.m_primitive_binding.Release();
-            item.m_resource_binding.Release();
-        }
         m_draw_items.clear();
     }
 
@@ -53,27 +47,15 @@ namespace yjw
         {
             DrawItem item{};
             item.m_sub_primitive_id = sub_primitive.m_sub_primitive_id;
-            item.m_primitive_binding = primitive->GetPrimitiveBinding();
-            item.m_primitive_binding.Retain();
+            item.m_primitive = primitive;
             MaterialInstance* override_material = GetOverrideMaterial(sub_primitive.m_material_slot);
             if (override_material)
             {
-                rpi::RPIRenderPipelineDescriptor pipelineDesc = rpi::RPIGetDefaultRenderPipeline();
-                pipelineDesc.vs = primitive->GetVertexShader();
-                pipelineDesc.ps = override_material->GetPixelShader();
-                pipelineDesc.depth_stencil_state = rpi::RPIGetDepthStencilState(rpi::RPIDepthStencilStateType::default_depth_read_and_write);
-                item.m_pipeline = rpi::RPICreateRenderPipeline(pipelineDesc);
-                item.m_resource_binding = rpi::RPICreateResourceBinding();
-                item.m_resource_binding.SetResourceSet(rpi::RPIResourceSetType::common, g_internal_shader_parameters.GetCommonResourceSet());
-                item.m_resource_binding.SetResourceSet(rpi::RPIResourceSetType::vs, primitive->GetVSResourceSet());
-                item.m_resource_binding.SetResourceSet(rpi::RPIResourceSetType::ps, override_material->GetResourceSet());
+                item.m_material = override_material;
             }
             else
             {
-                item.m_resource_binding = sub_primitive.m_resource_binding;
-                item.m_pipeline = sub_primitive.m_pipeline;
-                item.m_resource_binding.Retain();
-                item.m_pipeline->retain(nullptr);
+                item.m_material = sub_primitive.m_material;
             }
             m_draw_items.push_back(item);
         }

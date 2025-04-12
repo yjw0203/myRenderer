@@ -4,11 +4,6 @@ BEGIN_PUSH_CONSTANTS()
 PUSH_CONSTANTS(flag, int, 0)
 END_PUSH_CONSTANTS()
 
-struct VS_INPUT
-{
-    float3 in_pos : POSITION;
-};
-
 struct MeshVertexOutput
 {
     float4 sv_Position : SV_POSITION;

@@ -1,4 +1,5 @@
 #include "Engine/Render/Private/Renderer/ForwardRenderer.h"
+#include "Engine/InternalShaderResource/Public/yjw_internal_shader_resource.h"
 #include "Engine/Render/Private/Pass/SkyBoxPass.h"
 #include "Engine/Render/Private/Pass/ImGUIPass.h"
 #include "Engine/Render/Private/Pass/PickPass.h"
@@ -8,6 +9,10 @@ namespace yjw
 {
     void ForwardRenderer::Initialize()
     {
+        rpi::RPIRenderPipelineDescriptor pipelineDesc = rpi::RPIGetDefaultRenderPipeline();
+        pipelineDesc.depth_stencil_state = rpi::RPIGetDepthStencilState(rpi::RPIDepthStencilStateType::default_depth_read_and_write);
+        m_opacue_pipeline = RPICreateRenderPipeline(pipelineDesc);
+
         m_context = RPICreateContext();
         m_sky_box_pass = new SkyBoxPass();
         m_sky_box_pass->Initialize();
@@ -77,6 +82,7 @@ namespace yjw
     void ForwardRenderer::RenderFrame()
     {
         RPICmdBeginRenderPass(m_context, m_render_pass);
+        RPICmdSetResourceSet(m_context, RPIResourceSetType::common, g_internal_shader_parameters.GetCommonResourceSet());
         SubmitOpacue();
         m_sky_box_pass->Submit(m_context);
         SubmitTransparent();
@@ -99,9 +105,10 @@ namespace yjw
 
     void ForwardRenderer::Submit(DrawItem* item)
     {
-        RPICmdSetPrimitiveBinding(m_context, item->m_primitive_binding, item->m_sub_primitive_id);
-        RPICmdSetResourceBinding(m_context, item->m_resource_binding);
-        RPICmdSetPipeline(m_context, item->m_pipeline);
+        RPICmdSetPrimitiveBinding(m_context, item->m_primitive->GetPrimitiveBinding(), item->m_sub_primitive_id);
+        RPICmdSetResourceSet(m_context, RPIResourceSetType::vs, item->m_primitive->GetVSResourceSet());
+        RPICmdSetResourceSet(m_context, RPIResourceSetType::ps, item->m_material->GetResourceSet());
+        RPICmdSetRenderPipeline(m_context, m_opacue_pipeline, item->m_primitive->GetVertexShader(), item->m_material->GetPixelShader());
         RPICmdDrawIndex(m_context, 0, 1);
     }
 

@@ -2,6 +2,11 @@
 
 namespace rhi
 {
+    VulkanStateCache::VulkanStateCache(VulkanDevice* device)
+        :VulkanDeviceObject(device)
+    {
+    }
+
     void VulkanStateCache::SetRenderPipeline(VulkanRenderPipeline* pipeline)
     {
         m_current_render_pipeline = pipeline;
@@ -22,14 +27,48 @@ namespace rhi
         return m_current_compute_pipeline;
     }
 
-    void VulkanStateCache::SetResourceBinding(VulkanResourceBinding* resourceBinding)
+    void VulkanStateCache::SetResourceSet(int set_id, VulkanResourceSet* resource_set)
     {
-        m_current_resource_binding = resourceBinding;
+        while (set_id >= m_descriptor_set_count)
+        {
+            m_descriptor_sets[m_descriptor_set_count] = GetDevice()->m_default_descriptor_set;
+            m_descriptor_set_count += 1;
+        }
+        if (resource_set != m_resource_sets[set_id])
+        {
+            m_descriptor_sets[set_id] = resource_set->GetDescriptorSet();
+            if (m_resource_sets[set_id])
+            {
+                m_resource_sets[set_id]->release();
+                m_resource_sets[set_id] = nullptr;
+            }
+            m_resource_sets[set_id] = resource_set;
+            m_resource_sets[set_id]->retain(nullptr);
+        }
     }
 
-    VulkanResourceBinding* VulkanStateCache::GetResourceBinding()
+    VkDescriptorSet* VulkanStateCache::GetDescriptorSetData()
     {
-        return m_current_resource_binding;
+        return m_descriptor_sets;
+    }
+
+    int VulkanStateCache::GetDescriptorSetCount()
+    {
+        return m_descriptor_set_count;
+    }
+
+    void VulkanStateCache::ClearResourceSet()
+    {
+        for (int i = 0; i < m_descriptor_set_count; i++)
+        {
+            if (m_resource_sets[i])
+            {
+                m_resource_sets[i]->release();
+                m_resource_sets[i] = nullptr;
+                m_descriptor_sets[i] = GetDevice()->m_default_descriptor_set;
+            }
+        }
+        m_descriptor_set_count = 0;
     }
 
     void VulkanStateCache::SetPrimitiveBinding(VulkanPrimitiveBinding* primitiveBinding, int sub_id)

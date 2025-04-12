@@ -1,5 +1,6 @@
 #include "Engine/RHI/Public/rpi/yjw_rpi.h"
 #include "Engine/RHI/Public/shaderCompiler/yjw_shader_compiler.h"
+#include "Engine/RHI/Public/rpi/yjw_rpi_resource_binding.h"
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 namespace rpi
@@ -313,29 +314,19 @@ namespace rpi
         return RPIO(device)->CreateRenderPass(desc);
     }
 
-    RPIPipeline RPICreateRenderPipeline(RPIRenderPipelineDescriptor createInfo)
+    RPIRenderPipeline RPICreateRenderPipeline(RPIRenderPipelineDescriptor createInfo)
     {
-        return RPIO(device)->CreateRenderPipeline(createInfo);
+        return RPIRenderPipeline(createInfo);
     }
 
-    RPIPipeline RPICreateComputePipeline(RPIComputePipelineDescriptor createInfo)
+    RPIComputePipeline RPICreateComputePipeline(RPIComputePipelineDescriptor createInfo)
     {
         return RPIO(device)->CreateComputePipeline(createInfo);
-    }
-
-    RPIResourceBinding RPICreateResourceBinding()
-    {
-        return RPIResourceBinding(RPIO(device)->CreateResourceBinding());
     }
 
     RPIResourceSet RPICreateResourceSet(RPIResourceSetType type, RPIShaderReflect reflect)
     {
         return RPIResourceSet(RPIO(device)->CreateResourceSet((int)type, *reflect));
-    }
-
-    RPIPrimitiveBinding RPICreatePrimitiveBinding(RPIPipeline pipeline)
-    {
-        return RPIPrimitiveBinding(pipeline->CreatePrimitiveBinding());
     }
 
     RPIPrimitiveBinding RPICreatePrimitiveBinding(RPIShader vertex_shader)
@@ -364,9 +355,9 @@ namespace rpi
         context->PopEvent();
     }
 
-    void RPICmdSetPipeline(RPIContext context, RPIPipeline pipeline)
+    void RPICmdSetRenderPipeline(RPIContext context, RPIRenderPipeline pipeline, RPIShader vs, RPIShader ps)
     {
-        context->SetRenderPipeline((RHIRenderPipeline*)pipeline);//todo hack
+        context->SetRenderPipeline((RHIRenderPipeline*)pipeline.GetRHIPipeline(vs, ps));
     }
 
     void RPICmdPushConstants(RPIContext context, void* data, int offset, int size)
@@ -374,9 +365,9 @@ namespace rpi
         context->SetPushConstants(data, offset, size);
     }
 
-    void RPICmdSetResourceBinding(RPIContext context, RPIResourceBinding resourceBinding)
+    void RPICmdSetResourceSet(RPIContext context, RPIResourceSetType type, RPIResourceSet set)
     {
-        context->SetResourceBinding(resourceBinding.GetRHIResourceBinding());
+        context->SetResourceSet((int)type, set.GetRHIResourceSet());
     }
 
     void RPICmdSetPrimitiveBinding(RPIContext context, RPIPrimitiveBinding primitiveBinding, int sub_id)

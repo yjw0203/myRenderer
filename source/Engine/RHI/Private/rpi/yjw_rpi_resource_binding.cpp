@@ -1,4 +1,5 @@
 #include "Engine/RHI/Public/rpi/yjw_rpi_resource_binding.h"
+#include "Engine/RHI/Public/rpi/yjw_rpi.h"
 
 namespace rpi
 {
@@ -39,6 +40,14 @@ namespace rpi
         return m_resource_set;
     }
 
+    void RPIResourceSet::Retain()
+    {
+        if (m_resource_set)
+        {
+            m_resource_set->retain(nullptr);
+        }
+    }
+
     void RPIResourceSet::Release()
     {
         if (m_resource_set)
@@ -51,48 +60,6 @@ namespace rpi
     bool RPIResourceSet::IsNull()
     {
         return m_resource_set == nullptr;
-    }
-
-    RPIResourceBinding::RPIResourceBinding()
-    {}
-    RPIResourceBinding::RPIResourceBinding(RHIResourceBinding* rhiResourceBinding)
-    {
-        m_resource_binding = rhiResourceBinding;
-    }
-    void RPIResourceBinding::SetResourceSet(RPIResourceSetType type, RPIResourceSet set)
-    {
-        if (m_resource_binding)
-        {
-            m_resource_binding->SetResourceSet((int)type, set.GetRHIResourceSet());
-        }
-    }
-    RHIResourceBinding* RPIResourceBinding::GetRHIResourceBinding()
-    {
-        return m_resource_binding;
-    }
-    void RPIResourceBinding::Release()
-    {
-        if (m_resource_binding)
-        {
-            int ref = m_resource_binding->release();
-            if (ref == 0)
-            {
-                m_resource_binding = nullptr;
-            }
-        }
-    }
-
-    void RPIResourceBinding::Retain()
-    {
-        if (m_resource_binding)
-        {
-            m_resource_binding->retain(nullptr);
-        }
-    }
-
-    bool RPIResourceBinding::IsNull()
-    {
-        return m_resource_binding == nullptr;
     }
 
 
@@ -121,6 +88,11 @@ namespace rpi
         return m_primitive_binding;
     }
 
+    RPIShader RPIPrimitiveBinding::GetVertexShader()
+    {
+        return m_primitive_binding->GetVertexShader();
+    }
+
     void RPIPrimitiveBinding::Release()
     {
         if (m_primitive_binding)
@@ -144,5 +116,28 @@ namespace rpi
     bool RPIPrimitiveBinding::IsNull()
     {
         return m_primitive_binding == nullptr;
+    }
+
+    RPIRenderPipeline::RPIRenderPipeline(const RPIRenderPipelineDescriptor& descriptor)
+    {
+        m_pipelines = std::make_shared<std::unordered_map<uint64_t, std::shared_ptr<PipelineWrapper>>>();
+        m_pipeline_descriptor = std::make_shared<RHIRenderPipelineDescriptor>();
+        m_pipeline_descriptor->color_blend_state = descriptor.color_blend_state;
+        m_pipeline_descriptor->depth_stencil_state = descriptor.depth_stencil_state;
+        m_pipeline_descriptor->rasterization_state = descriptor.rasterization_state;
+        m_pipeline_descriptor->primitiveTopology = descriptor.primitiveTopology;
+    }
+
+    RHIRenderPipeline* RPIRenderPipeline::GetRHIPipeline(RPIShader vs, RPIShader ps)
+    {
+        uint64_t hash = (uint64_t)vs * 233333 + (uint64_t)ps;
+        if (m_pipelines->find(hash) != m_pipelines->end())
+        {
+            return *(*m_pipelines)[hash];
+        }
+        m_pipeline_descriptor->vs = vs;
+        m_pipeline_descriptor->ps = ps;
+        (*m_pipelines)[hash] = std::make_shared<PipelineWrapper>(RPIO(device)->CreateRenderPipeline(*m_pipeline_descriptor));
+        return *(*m_pipelines)[hash];
     }
 }
