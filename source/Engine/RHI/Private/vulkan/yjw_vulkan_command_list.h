@@ -7,14 +7,24 @@
 
 namespace rhi
 {
+    class VulkanFence : public RHIFence, VulkanDeviceObject
+    {
+    public:
+        VulkanFence(VulkanDevice* device);
+        ~VulkanFence();
+        VkFence& GetFence();
+    private:
+        VkFence m_fence{};
+    };
+
     class VulkanCommandList : public VulkanDeviceObject
     {
     public:
         VulkanCommandList(VulkanDevice* device);
         ~VulkanCommandList();
         VkCommandBuffer GetCommandBuffer();
-        void Submit();
-        void Submit(VkSubmitInfo* submitInfo);
+        VulkanFence* Submit();
+        VulkanFence* Submit(VkSubmitInfo* submitInfo);
     private:
         void NextCommandBuffer();
     private:
@@ -22,7 +32,7 @@ namespace rhi
         static const int k_max_command_buffer_count = 5;
         int m_current_command_buffer_index = 0;
         VkCommandBuffer m_command_buffer[k_max_command_buffer_count] = {};
-        VkFence m_fence[k_max_command_buffer_count] = {};
+        VulkanFence* m_fence[k_max_command_buffer_count] = {};
     };
 
     class VulkanCommandBuffer : public VulkanDeviceObject, RHIObject
@@ -37,7 +47,7 @@ namespace rhi
         void CmdDraw(int vertexCount, int instanceCount, int firstVertex, int firstInstance);
         void CmdDrawIndex(int firstInstance, int instanceCount);
         void CmdDispatch(int groupCountX, int groupCountY, int groupCountZ);
-        void Submit();
+        VulkanFence* Submit();
         void Present(VulkanSwapChain* swapchain, bool bSync);
 
         void CopyTexture2D(VulkanTexture* srcTexture, VulkanTexture* dstTexture);

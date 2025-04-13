@@ -3,16 +3,8 @@
 #include "Engine/File/Public/yjw_file_system_module_header.h"
 #include "Engine/Render/Public/yjw_render_system.h"
 #include "Engine/Asset/Public/Asset.h"
-#include "Engine/Engine/Private/Editor/yjw_editor_ui.h"
 #include <chrono>
 #include <ctime>
-#include "Engine/Engine/Public/Framework/World.h"
-#include "Engine/Engine/Public/Framework/Actor.h"
-#include "Engine/Engine/Public/Framework/Level.h"
-
-#include "Engine/RHI/Public/externs/imgui/yjw_rhi_imgui_layer.h"
-#include "Engine/RHI/Public/externs/imgui/yjw_rhi_imgui_window.h"
-#include "Engine/Engine/Public/Framework/Render/IRenderModule.h"
 #include "Engine/Engine/Public/Window.h"
 #include "Engine/Engine/Private/Editor/MajorEditor.h"
 
@@ -21,9 +13,6 @@ namespace yjw
     Engine::Engine()
     {
         Window::Initialize();
-        m_world = new World();
-        m_ui = new EditorUI(m_world);
-        m_window = new Window();
         m_editor = new MajorEditor();
     }
 
@@ -53,15 +42,7 @@ namespace yjw
     {
         GetModule<IRenderModule>()->Startup();
 
-        m_view = GetModule<IRenderModule>()->CreateView(m_window->GetWindowHandle());
-        m_view->AttachScene(m_world->GetScene());
-        m_view->AttachUI(m_ui);
-
-        GetModule<IRenderModule>()->AttachView(m_view);
-
         m_editor->Startup();
-
-        m_world->GetLevel()->SpawnActor<MeshActor>("naxita", "naxita/naxita.mesh.ast");
     }
     void Engine::mainLoop()
     {
@@ -80,7 +61,7 @@ namespace yjw
         currentRealTime = time;
 
         GetModule<IRenderModule>()->Tick(deltaTime);
-        
+        m_editor->Tick();
         AssetManager::Get()->process();
 
     }

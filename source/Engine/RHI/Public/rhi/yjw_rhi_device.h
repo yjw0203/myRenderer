@@ -23,5 +23,7 @@ namespace rhi
         virtual RHITexture* CreateTexture(const RHITextureDescriptor& tetureDescriptor) = 0;
         virtual RHIBufferView* CreateBufferView(const RHIBufferViewDescriptor& viewDescriptor) = 0;
         virtual RHITextureView* CreateTextureView(const RHITextureViewDescriptor& viewDescriptor) = 0;
+
+        virtual void WaitForFence(RHIFence* fence) = 0;
     };
 }

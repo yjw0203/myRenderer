@@ -81,12 +81,16 @@ namespace rhi
         R8G8B8A8_snorm,
         R8G8B8A8_srgb,
         R8G8B8A8_sfloat,
+        R8G8B8A8_uint,
+        R8G8B8A8_sint,
         B8G8R8A8_srgb,
         B8G8R8A8_unorm,
         R32_sfloat,
         R32G32_sfloat,
         R32G32B32_sfloat,
         R32G32B32A32_sfloat,
+        R32G32B32A32_uint,
+        R32G32B32A32_sint,
         D24_unorm_S8_uint
     };
 
@@ -135,6 +139,43 @@ namespace rhi
         primitive_topology_triangle_fan,
     };
 
+    enum RHIBlendFactor : char 
+    {
+        blend_factor_zero,
+        blend_factor_one,
+        blend_factor_src_color,
+        blend_factor_one_minus_src_color,
+        blend_factor_dst_color,
+        blend_factor_one_minus_dst_color,
+        blend_factor_src_alpha,
+        blend_factor_one_minus_src_alpha,
+        blend_factor_dst_alpha,
+        blend_factor_one_minus_dst_alpha,
+        blend_factor_constant_color,
+        blend_factor_one_minus_constant_color,
+        blend_factor_constant_alpha,
+        blend_factor_one_minus_constant_alpha,
+    };
+
+    enum RHIBlendOp : char
+    {
+        blend_op_add,
+        blend_op_subtract,
+        blend_op_reverse_subtract,
+        blend_op_min,
+        blend_op_max
+    };
+
+    typedef char RHIColorComponentFlags;
+
+    enum RHIColorComponentFlagBits : char
+    {
+        color_component_r = 0x00000001,
+        color_component_g = 0x00000002,
+        color_component_b = 0x00000004,
+        color_component_a = 0x00000008,
+    };
+
     struct RHIBufferDescriptor
     {
         RHIResourceType resourceType;
@@ -181,7 +222,14 @@ namespace rhi
 
     struct RHIColorBlendState
     {
-
+        bool                   blendEnable{};
+        RHIBlendFactor         srcColorBlendFactor{};
+        RHIBlendFactor         dstColorBlendFactor{};
+        RHIBlendOp             colorBlendOp{};
+        RHIBlendFactor         srcAlphaBlendFactor{};
+        RHIBlendFactor         dstAlphaBlendFactor{};
+        RHIBlendOp             alphaBlendOp{};
+        RHIColorComponentFlags colorWriteMask = color_component_r | color_component_g | color_component_b | color_component_a;
     };
 
     struct RHIRenderPassDescriptor
@@ -230,7 +278,7 @@ namespace rhi
         {
             primitiveTopology = RHIPrimitiveTopology::primitive_topology_triangle_list;
         };
-        RHIColorBlendState color_blend_state{};
+        RHIColorBlendState color_blend_state[RHI_MAX_RENDER_TARGETS] = {};
         RHIDepthStencilState depth_stencil_state{};
         RHIRasterizationState rasterization_state{};
         RHIPrimitiveTopology primitiveTopology{};

@@ -10,6 +10,11 @@ namespace yjw
         InputDispatcher::registerMouseButtonEvent(GLFW_MOUSE_BUTTON_LEFT, GLFW_RELEASE, 0, std::bind(&MajorInputDispatcher::LeftMouseRelease, this));
     }
 
+    void MajorInputDispatcher::SetOnClicked(std::function<void(float, float)> func)
+    {
+        m_onclicked = func;
+    }
+
     void MajorInputDispatcher::LeftMouseDown()
     {
         m_isLeftMouseButton = true;
@@ -24,7 +29,6 @@ namespace yjw
     void MajorInputDispatcher::LeftMouseRelease()
     {
         m_isLeftMouseButton = false;
-        printf("%f %f\n", m_lastMouseX, m_lastMouseY);
-
+        m_onclicked(m_lastMouseX, m_lastMouseY);
     }
 }

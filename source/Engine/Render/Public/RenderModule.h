@@ -1,6 +1,6 @@
 #pragma once
 #include "Engine/Engine/Public/Framework/Render/IRenderModule.h"
-#include<vector>
+
 namespace yjw
 {
     class Scene;
@@ -26,12 +26,16 @@ namespace yjw
         virtual void AttachView(ViewProxy* view) override;
         virtual void DettachView(ViewProxy* view) override;
 
+        virtual void AddPendingHitRequest(const char* group_name, const RenderHitRequest& request) override;
+        virtual void GetProcessedHitRequest(const char* group_name, std::vector<RenderHitRequest>& proccessed_request) override;
     public:
         class MaterialManager* m_material_manager{};
         class PrimitiveManager* m_primitive_manager{};
     private:
         RenderSystem* m_render_system{};
         std::vector<class RViewProxy*> m_views;
+
+        class PickPass* m_pick_pass{};
     };
 
 }

@@ -77,9 +77,9 @@ namespace rhi
         m_command_buffer.CmdDispatch(groupCountX, groupCountY, groupCountZ);
     }
 
-    void VulkanContext::Submit()
+    RHIFence* VulkanContext::Submit()
     {
-        m_command_buffer.Submit();
+        return m_command_buffer.Submit();
     }
 
     void VulkanContext::Present(RHISwapChain* swapchain, bool bSync)

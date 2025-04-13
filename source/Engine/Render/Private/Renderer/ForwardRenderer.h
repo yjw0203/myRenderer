@@ -10,7 +10,7 @@ namespace yjw
     using namespace rpi;
     class SkyBoxPass;
     class ImGuiPass;
-    class PickPass;
+    class HighLightPass;
     class ForwardRenderer : public IRenderer
     {
     public:
@@ -44,6 +44,7 @@ namespace yjw
 
         SkyBoxPass* m_sky_box_pass{};
         ImGuiPass* m_imgui_pass{};
-        PickPass* m_pick_pass{};
+        HighLightPass* m_high_light_pass{};
+        
     };
 }

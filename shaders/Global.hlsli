@@ -6,6 +6,7 @@ CBUFFER(camera,COMMON, 0)
     float4x4 viewMatWithoutTranslation;
     float4x4 projectMat;
     float3 cameraPos;
+    float2 near_far;
 };
 
 CBUFFER(light,COMMON, 1)

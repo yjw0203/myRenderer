@@ -24,5 +24,7 @@ namespace yjw
         virtual void EraseEntity(EntityHandle handle) = 0;
         virtual void UpdateEntityMesh(EntityHandle entity, MeshHandle mesh) = 0;
         virtual void UpdateEntityOverrideMaterial(EntityHandle entity, const std::string& slot, MaterialHandle material) = 0;
+        virtual void UpdateEntityPickFlag(EntityHandle entity, int pick_flag[4]) = 0;
+        virtual void UpdateEntityRenderMask(EntityHandle entity, RenderMaskBits maskBit, bool enable) = 0;
     };
 }

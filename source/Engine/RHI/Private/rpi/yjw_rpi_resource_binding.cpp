@@ -122,7 +122,10 @@ namespace rpi
     {
         m_pipelines = std::make_shared<std::unordered_map<uint64_t, std::shared_ptr<PipelineWrapper>>>();
         m_pipeline_descriptor = std::make_shared<RHIRenderPipelineDescriptor>();
-        m_pipeline_descriptor->color_blend_state = descriptor.color_blend_state;
+        for (int i = 0; i < RHI_MAX_RENDER_TARGETS; i++)
+        {
+            m_pipeline_descriptor->color_blend_state[i] = descriptor.color_blend_state[i];
+        }
         m_pipeline_descriptor->depth_stencil_state = descriptor.depth_stencil_state;
         m_pipeline_descriptor->rasterization_state = descriptor.rasterization_state;
         m_pipeline_descriptor->primitiveTopology = descriptor.primitiveTopology;

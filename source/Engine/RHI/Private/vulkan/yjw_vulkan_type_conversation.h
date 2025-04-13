@@ -13,10 +13,14 @@ namespace rhi
     VkMemoryPropertyFlags ConvertMemoryTypeToVkMemoryPropertyFlags(RHIMemoryType memoryType);
     VkFormat ConvertFormatToVkFormat(RHIFormat format);
     RHIFormat ConvertVkFormatToRHIFormat(VkFormat format);
+    int GetFormatPixelByteSize(VkFormat format);
     VkCompareOp ConvertCompareOpToVkCompareOp(RHICompareOp compareOp);
     VkStencilOp ConvertStencilOpToVkStencilOp(RHIStencilOp stencilOp);
     VkStencilOpState ConvertStencilOpStateToVkStencilOpState(RHIStencilOpState stencilOpState);
     VkFormat ConvertDataTypeToVkFormat(ShaderReflect::DataType type);
     VkCullModeFlags ConvertCullModeToVkCullMode(RHICullMode cullMode);
     VkPrimitiveTopology ConvertPrimitiveTopologyToVkPrimitiveTopology(RHIPrimitiveTopology cullMode);
+    VkColorComponentFlags ConvertColorComponentFlagToVkColorComponentFlag(RHIColorComponentFlags componentFlag);
+    VkBlendOp ConvertBlendOpToVkBlendOp(RHIBlendOp op);
+    VkBlendFactor ConvertBlendFactorToVkBlendFactor(RHIBlendFactor factor);
 }

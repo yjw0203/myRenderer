@@ -30,6 +30,36 @@ namespace yjw
         BuildDrawItems();
     }
 
+    void RenderEntity::UpdatePickFlag(int pick_flag[4])
+    {
+        m_pick_flag[0] = pick_flag[0];
+        m_pick_flag[1] = pick_flag[1];
+        m_pick_flag[2] = pick_flag[2];
+        m_pick_flag[3] = pick_flag[3];
+    }
+
+    int* RenderEntity::GetPickFlag()
+    {
+        return m_pick_flag;
+    }
+
+    void RenderEntity::UpdateRenderMask(RenderMaskBits maskBit, bool enable)
+    {
+        if (enable)
+        {
+            m_render_mask |= maskBit;
+        }
+        else
+        {
+            m_render_mask &= ~maskBit;
+        }
+    }
+
+    bool RenderEntity::GetRenderMask(RenderMaskBits maskBit)
+    {
+        return (m_render_mask & maskBit) != 0;
+    }
+
     void RenderEntity::ClearDrawItems()
     {
         m_draw_items.clear();
@@ -46,6 +76,7 @@ namespace yjw
         for (const SubPrimitive& sub_primitive : primitive->GetSubPrimitive())
         {
             DrawItem item{};
+            item.m_entity = this;
             item.m_sub_primitive_id = sub_primitive.m_sub_primitive_id;
             item.m_primitive = primitive;
             MaterialInstance* override_material = GetOverrideMaterial(sub_primitive.m_material_slot);
@@ -116,6 +147,22 @@ namespace yjw
         if (m_entities.find(entity) != m_entities.end())
         {
             m_entities[entity]->UpdateOverrideMaterial(slot, material);
+        }
+    }
+
+    void Scene::UpdateEntityPickFlag(EntityHandle entity, int pick_flag[4])
+    {
+        if (m_entities.find(entity) != m_entities.end())
+        {
+            m_entities[entity]->UpdatePickFlag(pick_flag);
+        }
+    }
+
+    void Scene::UpdateEntityRenderMask(EntityHandle entity, RenderMaskBits maskBit, bool enable)
+    {
+        if (m_entities.find(entity) != m_entities.end())
+        {
+            m_entities[entity]->UpdateRenderMask(maskBit, enable);
         }
     }
 

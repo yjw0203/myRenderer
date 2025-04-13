@@ -3,6 +3,8 @@
 #include "Engine/RHI/Public/externs/imgui/yjw_rhi_imgui_window.h"
 #include "Engine/Engine/Public/Framework/Render/Entity.h"
 #include "Engine/Engine/Public/Framework/Render/SceneInterface.h"
+#include "Engine/Engine/Public/Framework/Render/RenderHit.h"
+#include <vector>
 
 namespace yjw
 {
@@ -22,6 +24,9 @@ namespace yjw
 
         virtual void AttachView(ViewProxy* view) = 0;
         virtual void DettachView(ViewProxy* view) = 0;
+
+        virtual void AddPendingHitRequest(const char* group_name, const RenderHitRequest& request) = 0;
+        virtual void GetProcessedHitRequest(const char* group_name, std::vector<RenderHitRequest>& proccessed_request) = 0;
     };
 
     template<>

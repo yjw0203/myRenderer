@@ -13,7 +13,7 @@ namespace rpi
     {
         RHIInstanceConfig config{};
         config.rhiType = ERHIType::vulkan;
-        config.isDebugMode = true;
+        config.isDebugMode = false;
         config.layers.push_back(rhi_layer_imgui);
         RPIO(instance) = new RHIInstance(config);
         RPIO(device) = RPIO(instance)->CreateDevice();
@@ -144,6 +144,29 @@ namespace rpi
 
         return RPITexture(texture, textureView);
     }
+
+    RPITexture RPICreateReadbackTexture2D(int width, int height, RPIFormat format, int mipLevels /* = 1*/)
+    {
+        RHITextureDescriptor desc{};
+        desc.resourceType = RHIResourceType::texture2D;
+        desc.width = width;
+        desc.height = height;
+        desc.depthOrArraySize = 1;
+        desc.miplevels = mipLevels;
+        desc.format = format;
+        desc.usage = (int)RHIResourceUsageBits::allow_transfer_dst | (int)RHIResourceUsageBits::allow_unordered_access | (int)RHIResourceUsageBits::deny_shader_resource;
+        desc.memoryType = RHIMemoryType::readback;
+        RHITexture* texture = RPIO(device)->CreateTexture(desc);
+
+        RHITextureViewDescriptor viewDesc{};
+        viewDesc.resourceType = RHIResourceType::texture2D;
+        viewDesc.texture = texture;
+        viewDesc.format = format;
+        RHITextureView* textureView = RPIO(device)->CreateTextureView(viewDesc);
+
+        return RPITexture(texture, textureView);
+    }
+
     RPITexture RPICreateDepthStencilTexture2D(int width, int height, RPIFormat format)
     {
         RHITextureDescriptor desc{};
@@ -334,9 +357,14 @@ namespace rpi
         return RPIPrimitiveBinding(vertex_shader->CreatePrimitiveBinding());
     }
 
-    void RPISubmit(RPIContext context)
+    RPIFence RPISubmit(RPIContext context)
     {
-        context->Submit();
+        return context->Submit();
+    }
+
+    void RPIWaitForFence(RPIFence fence)
+    {
+        RPIO(device)->WaitForFence(fence);
     }
 
     void RPIPresent(RPIContext context, RPIWindow window)

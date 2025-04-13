@@ -17,6 +17,8 @@ namespace rhi
         int GetLayerCount();
         int GetMipCount();
         virtual void Update(void* data, int sizeOfByte, int arrayLayer = 0, int mipLevel = 0) override;
+        virtual void MapForReadback(int arrayLayer, int mipLevel, void*& data, int& byte_per_pixel, int& byte_per_raw) override;
+        virtual void UnMapReadback() override;
         void TransitionState(VkCommandBuffer commandBuffer, VkImageLayout newLayout);// to be multi thread
         void TransitionState(VkCommandBuffer commandBuffer, VkImageLayout oldLayout, VkImageLayout newLayout);
     private:

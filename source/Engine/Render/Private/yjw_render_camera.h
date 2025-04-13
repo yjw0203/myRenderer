@@ -24,6 +24,8 @@ namespace yjw
         glm::vec3 up() const { return (glm::vec3(0, 1, 0)) * glm::inverse(m_rotation); }
         glm::vec3 right() const { return (glm::vec3(1, 0, 0)) * glm::inverse(m_rotation); }
         glm::vec3 AbsoluteUp() { return m_up; }
+        float near() { return zNear; }
+        float far() { return zFar; }
         glm::mat4x4 getViewMatrixWithoutTranslation();
         glm::mat4x4 getViewMatrix();
         glm::mat4x4 getProjectionMatrix();

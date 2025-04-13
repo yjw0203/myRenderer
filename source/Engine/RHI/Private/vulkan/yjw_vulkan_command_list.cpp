@@ -6,6 +6,26 @@
 
 namespace rhi
 {
+    VulkanFence::VulkanFence(VulkanDevice* device)
+        :VulkanDeviceObject(device)
+    {
+        VkFenceCreateInfo fenceInfo{};
+        fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
+        fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
+        vkCreateFence(GetDevice()->GetNativeDevice(), &fenceInfo, nullptr, &m_fence);
+    }
+
+    VkFence& VulkanFence::GetFence()
+    {
+        return m_fence;
+    }
+
+    VulkanFence::~VulkanFence()
+    {
+        vkDestroyFence(GetDevice()->GetNativeDevice(), m_fence, nullptr);
+    }
+
+
     VulkanCommandList::VulkanCommandList(VulkanDevice* device)
         :VulkanDeviceObject(device)
     {
@@ -28,7 +48,7 @@ namespace rhi
         fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
         for (int index = 0; index < k_max_command_buffer_count; index++)
         {
-            vkCreateFence(GetDevice()->GetNativeDevice(), &fenceInfo, nullptr, &m_fence[index]);
+            m_fence[index] = new VulkanFence(GetDevice());
         }
 
         NextCommandBuffer();
@@ -38,7 +58,7 @@ namespace rhi
     {
         for (int index = 0; index < k_max_command_buffer_count; index++)
         {
-            vkDestroyFence(GetDevice()->GetNativeDevice(), m_fence[index], nullptr);
+            delete m_fence[index];
         }
         vkFreeCommandBuffers(GetDevice()->GetNativeDevice(), m_command_pool, k_max_command_buffer_count, m_command_buffer);
         vkDestroyCommandPool(GetDevice()->GetNativeDevice(), m_command_pool, nullptr);
@@ -49,37 +69,41 @@ namespace rhi
         return m_command_buffer[m_current_command_buffer_index];
     }
 
-    void VulkanCommandList::Submit()
+    VulkanFence* VulkanCommandList::Submit()
     {
-        vkEndCommandBuffer(m_command_buffer[m_current_command_buffer_index]);
+        VulkanFence* ret_fence = m_fence[m_current_command_buffer_index];
 
+        vkEndCommandBuffer(m_command_buffer[m_current_command_buffer_index]);
         VkSubmitInfo submitInfo{};
         submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
         submitInfo.commandBufferCount = 1;
         submitInfo.pCommandBuffers = &m_command_buffer[m_current_command_buffer_index];
-        vkQueueSubmit(GetDevice()->GetCommandQueue()->GetGraphicsQueue(), 1, &submitInfo, m_fence[m_current_command_buffer_index]);
-
+        vkQueueSubmit(GetDevice()->GetCommandQueue()->GetGraphicsQueue(), 1, &submitInfo, m_fence[m_current_command_buffer_index]->GetFence());
         NextCommandBuffer();
+
+        return ret_fence;
     }
 
-    void VulkanCommandList::Submit(VkSubmitInfo* submitInfo)
+    VulkanFence* VulkanCommandList::Submit(VkSubmitInfo* submitInfo)
     {
-        vkEndCommandBuffer(m_command_buffer[m_current_command_buffer_index]);
+        VulkanFence* ret_fence = m_fence[m_current_command_buffer_index];
 
+        vkEndCommandBuffer(m_command_buffer[m_current_command_buffer_index]);
         submitInfo->sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
         submitInfo->commandBufferCount = 1;
         submitInfo->pCommandBuffers = &m_command_buffer[m_current_command_buffer_index];
-        vkQueueSubmit(GetDevice()->GetCommandQueue()->GetGraphicsQueue(), 1, submitInfo, m_fence[m_current_command_buffer_index]);
-
+        vkQueueSubmit(GetDevice()->GetCommandQueue()->GetGraphicsQueue(), 1, submitInfo, m_fence[m_current_command_buffer_index]->GetFence());
         NextCommandBuffer();
+
+        return ret_fence;
     }
 
     void VulkanCommandList::NextCommandBuffer()
     {
         m_current_command_buffer_index = (m_current_command_buffer_index + 1) % k_max_command_buffer_count;
 
-        vkWaitForFences(GetDevice()->GetNativeDevice(), 1, &m_fence[m_current_command_buffer_index], VK_TRUE, UINT64_MAX);
-        vkResetFences(GetDevice()->GetNativeDevice(), 1, &m_fence[m_current_command_buffer_index]);
+        vkWaitForFences(GetDevice()->GetNativeDevice(), 1, &(m_fence[m_current_command_buffer_index]->GetFence()), VK_TRUE, UINT64_MAX);
+        vkResetFences(GetDevice()->GetNativeDevice(), 1, &(m_fence[m_current_command_buffer_index]->GetFence()));
         vkResetCommandBuffer(m_command_buffer[m_current_command_buffer_index], VK_COMMAND_BUFFER_RESET_RELEASE_RESOURCES_BIT);
         VkCommandBufferBeginInfo beginInfo{};
         beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
@@ -167,9 +191,9 @@ namespace rhi
         vkCmdDispatch(m_command_list.GetCommandBuffer(), groupCountX, groupCountY, groupCountZ);
     }
 
-    void VulkanCommandBuffer::Submit()
+    VulkanFence* VulkanCommandBuffer::Submit()
     {
-        m_command_list.Submit();
+        return m_command_list.Submit();
     }
 
     void VulkanCommandBuffer::Present(VulkanSwapChain* swapchain, bool bSync)

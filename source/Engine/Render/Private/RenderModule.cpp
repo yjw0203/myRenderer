@@ -4,6 +4,7 @@
 #include "Engine/Render/Private/PrimitiveManager.h"
 #include "Engine/Render/Private/View.h"
 #include "Engine/Render/Private/Renderer/ForwardRenderer.h"
+#include "Engine/Render/Private/Pass/PickPass.h"
 
 namespace yjw
 {
@@ -19,6 +20,9 @@ namespace yjw
         m_render_system->initialize();
         renderer->Initialize();
 
+        m_pick_pass = new PickPass();
+        m_pick_pass->Initialize();
+
         g_context = RPICreateContext();
     }
 
@@ -28,11 +32,13 @@ namespace yjw
         delete m_render_system;
         delete m_material_manager;
         delete m_primitive_manager;
+        delete m_pick_pass;
     }
 
     void RenderModule::Tick(float deltaTime)
     {
         m_render_system->tick(deltaTime);
+        m_pick_pass->Submit();
         renderer->Render();
     }
 
@@ -76,6 +82,7 @@ namespace yjw
         DettachView(view);
         m_views.push_back((RViewProxy*)view);
         renderer->SetView(((RViewProxy*)view)->GetView());
+        m_pick_pass->AttachView(((RViewProxy*)view)->GetView());
     }
 
     void RenderModule::DettachView(ViewProxy* view)
@@ -83,6 +90,16 @@ namespace yjw
         m_views.erase(std::remove_if(m_views.begin(), m_views.end(), 
             [&view](const RViewProxy* p) {return p == (RViewProxy*)view; }), 
             m_views.end());
+    }
+
+    void RenderModule::AddPendingHitRequest(const char* group_name, const RenderHitRequest& request)
+    {
+        m_pick_pass->AddPendingHitRequest(group_name, request);
+    }
+
+    void RenderModule::GetProcessedHitRequest(const char* group_name, std::vector<RenderHitRequest>& proccessed_request)
+    {
+        m_pick_pass->GetProcessedHitRequest(group_name, proccessed_request);
     }
 
     template<>

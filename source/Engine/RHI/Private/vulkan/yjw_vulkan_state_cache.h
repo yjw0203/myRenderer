@@ -37,5 +37,6 @@ namespace rhi
         int m_current_sub_primitive_binding_id{};
         char m_push_constants[128] = {};
         bool m_push_constants_dirty = false;
+        int m_push_constants_size = 0;
     };
 }

@@ -3,6 +3,7 @@
 #include "Engine/Render/Private/Pass/SkyBoxPass.h"
 #include "Engine/Render/Private/Pass/ImGUIPass.h"
 #include "Engine/Render/Private/Pass/PickPass.h"
+#include "Engine/Render/Private/Pass/HighLightPass.h"
 #include "projectInfo.h"
 
 namespace yjw
@@ -19,13 +20,16 @@ namespace yjw
         m_sky_box_pass->LoadResource(RESOURCE_FILE(skybox/6));
         m_imgui_pass = new ImGuiPass();
         m_imgui_pass->Initialize();
-        m_pick_pass = new PickPass();
-        m_pick_pass->Initialize();
+
+        m_high_light_pass = new HighLightPass();
+        m_high_light_pass->Initialize();
     }
 
     void ForwardRenderer::Destroy()
     {
+        m_imgui_pass->Destroy();
         m_sky_box_pass->Destroy();
+        m_high_light_pass->Destroy();
         delete m_sky_box_pass;
         m_context->release();
     }
@@ -57,6 +61,7 @@ namespace yjw
     void ForwardRenderer::SetView(RView* view)
     {
         m_view = view;
+        m_high_light_pass->AttachView(view);
     }
 
     void ForwardRenderer::Render()
@@ -81,12 +86,14 @@ namespace yjw
 
     void ForwardRenderer::RenderFrame()
     {
+        m_high_light_pass->SubmitHighLightObject(m_context);
         RPICmdBeginRenderPass(m_context, m_render_pass);
         RPICmdSetResourceSet(m_context, RPIResourceSetType::common, g_internal_shader_parameters.GetCommonResourceSet());
         SubmitOpacue();
         m_sky_box_pass->Submit(m_context);
         SubmitTransparent();
-        m_imgui_pass->Submit(m_context);
+        m_high_light_pass->HighLightPostProcess(m_context);
+        //m_imgui_pass->Submit(m_context);
         RPICmdEndPass(m_context);
     }
 

@@ -44,6 +44,7 @@ namespace yjw
         g_internal_shader_parameters.m_camera->viewMatWithoutTranslation = activeCamera->getViewMatrixWithoutTranslation();
         g_internal_shader_parameters.m_camera->projectMat = activeCamera->getProjectionMatrix();
         g_internal_shader_parameters.m_camera->cameraPos = glm::vec4(activeCamera->position(), 1);
+        g_internal_shader_parameters.m_camera->near_far = glm::vec2(activeCamera->near(), activeCamera->far());
 
         g_internal_shader_parameters.FlushCpuDataToGpu();
 

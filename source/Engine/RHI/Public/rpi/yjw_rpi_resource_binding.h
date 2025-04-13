@@ -59,7 +59,7 @@ namespace rpi
         {
             primitiveTopology = RHIPrimitiveTopology::primitive_topology_triangle_list;
         };
-        RHIColorBlendState color_blend_state{};
+        RHIColorBlendState color_blend_state[RHI_MAX_RENDER_TARGETS] = {};
         RHIDepthStencilState depth_stencil_state{};
         RHIRasterizationState rasterization_state{};
         RHIPrimitiveTopology primitiveTopology{};

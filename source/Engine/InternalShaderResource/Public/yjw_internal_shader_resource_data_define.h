@@ -13,6 +13,7 @@ namespace yjw
             glm::mat4x4 viewMatWithoutTranslation;
             glm::mat4x4 projectMat;
             alignas(16) glm::vec3 cameraPos;
+            alignas(16) glm::vec2 near_far;
         };
 
         struct alignas(64) Light

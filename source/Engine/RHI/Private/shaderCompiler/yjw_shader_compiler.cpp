@@ -173,8 +173,8 @@ namespace rhi
         options.packMatricesInRowMajor = true;
         options.enable16bitTypes = true;
         options.enableDebugInfo = true;
-        options.disableOptimizations = true;
-        options.optimizationLevel = 0;
+        options.disableOptimizations = false;
+        options.optimizationLevel = 3;
         options.shaderModel = { 6, 2 };
         options.shiftAllCBuffersBindings = 0;
         options.shiftAllTexturesBindings = 16;

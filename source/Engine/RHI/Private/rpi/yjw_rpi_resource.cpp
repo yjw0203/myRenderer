@@ -27,6 +27,22 @@ namespace rpi
         return m_view;
     }
 
+    void RPITexture::BeginReadbackMode(int arrayLayer, int mipLevel)
+    {
+        m_texture->MapForReadback(arrayLayer, mipLevel, m_map_data.data, m_map_data.byte_per_pixel, m_map_data.byte_per_raw);
+    }
+
+    void RPITexture::ReadbackLoad(int x, int y, void* data)
+    {
+        int offset = y * m_map_data.byte_per_raw + x * m_map_data.byte_per_pixel;
+        memcpy(data, (uint8_t*)m_map_data.data + offset , m_map_data.byte_per_pixel);
+    }
+
+    void RPITexture::EndReadbackMode()
+    {
+        m_texture->UnMapReadback();
+    }
+
     void RPITexture::Release()
     {
         if(m_view)

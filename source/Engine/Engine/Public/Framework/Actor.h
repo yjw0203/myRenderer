@@ -11,8 +11,10 @@ namespace yjw
     public:
         Actor() {}
         ~Actor() {}
+        void SetActorId(int id) { m_id = id; }
         void SetName(const char* name) { m_name = name; }
         void SetEntity(Entity entity) { m_entity = entity; }
+        int GetActorId() const { return m_id; };
         const char* GetName() const { return m_name.c_str(); };
         Entity GetEntity() { return m_entity; }
         virtual void OnSpawned() {}
@@ -24,6 +26,7 @@ namespace yjw
 
         Entity m_entity{};
         std::string m_name;
+        int m_id{};
     };
 
     class MeshActor : public Actor

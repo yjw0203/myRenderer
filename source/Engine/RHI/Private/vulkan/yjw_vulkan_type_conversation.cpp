@@ -98,7 +98,7 @@ namespace rhi
         }
         else if (memoryType == RHIMemoryType::readback)
         {
-            flag |= VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
+            flag |= VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
         }
         else if (memoryType == RHIMemoryType::upload)
         {
@@ -116,11 +116,15 @@ namespace rhi
         case RHIFormat::R8G8B8A8_snorm: return VkFormat::VK_FORMAT_R8G8B8A8_SNORM;
         case RHIFormat::R8G8B8A8_srgb: return VkFormat::VK_FORMAT_R8G8B8A8_SRGB;
         case RHIFormat::R8G8B8A8_sfloat: return VkFormat::VK_FORMAT_R8G8B8A8_SSCALED;
+        case RHIFormat::R8G8B8A8_uint: return VkFormat::VK_FORMAT_R8G8B8A8_UINT;
+        case RHIFormat::R8G8B8A8_sint: return VkFormat::VK_FORMAT_R8G8B8A8_SINT;
         case RHIFormat::B8G8R8A8_srgb: return VkFormat::VK_FORMAT_B8G8R8A8_SRGB;
         case RHIFormat::B8G8R8A8_unorm: return VkFormat::VK_FORMAT_B8G8R8A8_UNORM;
         case RHIFormat::R32_sfloat: return VkFormat::VK_FORMAT_R32_SFLOAT;
         case RHIFormat::R32G32B32_sfloat: return VkFormat::VK_FORMAT_R32G32B32_SFLOAT;
         case RHIFormat::R32G32B32A32_sfloat: return VkFormat::VK_FORMAT_R32G32B32A32_SFLOAT;
+        case RHIFormat::R32G32B32A32_uint: return VkFormat::VK_FORMAT_R32G32B32A32_UINT;
+        case RHIFormat::R32G32B32A32_sint: return VkFormat::VK_FORMAT_R32G32B32A32_SINT;
         case RHIFormat::R32G32_sfloat: return VkFormat::VK_FORMAT_R32G32_SFLOAT;
         case RHIFormat::D24_unorm_S8_uint: return VkFormat::VK_FORMAT_D24_UNORM_S8_UINT;
         }
@@ -137,16 +141,78 @@ namespace rhi
         case VkFormat::VK_FORMAT_R8G8B8A8_SNORM: return RHIFormat::R8G8B8A8_snorm;
         case VkFormat::VK_FORMAT_R8G8B8A8_SRGB: return RHIFormat::R8G8B8A8_srgb;
         case VkFormat::VK_FORMAT_R8G8B8A8_SSCALED: return RHIFormat::R8G8B8A8_sfloat;
+        case VkFormat::VK_FORMAT_R8G8B8A8_UINT: return RHIFormat::R8G8B8A8_uint;
+        case VkFormat::VK_FORMAT_R8G8B8A8_SINT: return RHIFormat::R8G8B8A8_sint;
         case VkFormat::VK_FORMAT_B8G8R8A8_SRGB: return RHIFormat::B8G8R8A8_srgb;
         case VkFormat::VK_FORMAT_B8G8R8A8_UNORM: return RHIFormat::B8G8R8A8_unorm;
         case VkFormat::VK_FORMAT_R32_SFLOAT: return RHIFormat::R32_sfloat;
         case VkFormat::VK_FORMAT_R32G32B32_SFLOAT: return RHIFormat::R32G32B32_sfloat;
         case VkFormat::VK_FORMAT_R32G32B32A32_SFLOAT: return RHIFormat::R32G32B32A32_sfloat;
+        case VkFormat::VK_FORMAT_R32G32B32A32_UINT: return RHIFormat::R32G32B32A32_uint;
+        case VkFormat::VK_FORMAT_R32G32B32A32_SINT: return RHIFormat::R32G32B32A32_sint;
         case VkFormat::VK_FORMAT_R32G32_SFLOAT: return RHIFormat::R32G32_sfloat;
         case VkFormat::VK_FORMAT_D24_UNORM_S8_UINT: return RHIFormat::D24_unorm_S8_uint;
         }
         assert(0);
         return RHIFormat::unknow;
+    }
+
+    int GetFormatPixelByteSize(VkFormat format)
+    {
+        if (format >= VK_FORMAT_R8_UNORM && format <= VK_FORMAT_R8_SRGB)
+        {
+            return 1;
+        }
+        else if (format >= VK_FORMAT_R8G8_UNORM && format <= VK_FORMAT_R8G8_SRGB)
+        {
+            return 2;
+        }
+        else if (format >= VK_FORMAT_R8G8B8_UNORM && format <= VK_FORMAT_B8G8R8_SRGB)
+        {
+            return 3;
+        }
+        else if (format >= VK_FORMAT_R8G8B8A8_UNORM && format <= VK_FORMAT_B8G8R8A8_SRGB)
+        {
+            return 4;
+        }
+        else if (format >= VK_FORMAT_R16_UNORM && format <= VK_FORMAT_R16_SFLOAT)
+        {
+            return 2;
+        }
+        else if (format >= VK_FORMAT_R16G16_UNORM && format <= VK_FORMAT_R16G16_SFLOAT)
+        {
+            return 4;
+        }
+        else if (format >= VK_FORMAT_R16G16B16_UNORM && format <= VK_FORMAT_R16G16B16_SFLOAT)
+        {
+            return 6;
+        }
+        else if (format >= VK_FORMAT_R16G16B16A16_UNORM && format <= VK_FORMAT_R16G16B16A16_SFLOAT)
+        {
+            return 8;
+        }
+        else if (format >= VK_FORMAT_R32_UINT && format <= VK_FORMAT_R32_SFLOAT)
+        {
+            return 4;
+        }
+        else if (format >= VK_FORMAT_R32G32_UINT && format <= VK_FORMAT_R32G32_SFLOAT)
+        {
+            return 8;
+        }
+        else if (format >= VK_FORMAT_R32G32B32_UINT && format <= VK_FORMAT_R32G32B32_SFLOAT)
+        {
+            return 12;
+        }
+        else if (format >= VK_FORMAT_R32G32B32A32_UINT && format <= VK_FORMAT_R32G32B32A32_SFLOAT)
+        {
+            return 16;
+        }
+        else if (format == VK_FORMAT_D24_UNORM_S8_UINT)
+        {
+            return 4;
+        }
+        assert(0);
+        return 0;
     }
 
     VkCompareOp ConvertCompareOpToVkCompareOp(RHICompareOp compareOp)
@@ -237,5 +303,47 @@ namespace rhi
         }
         assert(0);
         return VkPrimitiveTopology::VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+    }
+
+    VkColorComponentFlags ConvertColorComponentFlagToVkColorComponentFlag(RHIColorComponentFlags componentFlag)
+    {
+        return (VkColorComponentFlags)componentFlag;
+    }
+
+    VkBlendOp ConvertBlendOpToVkBlendOp(RHIBlendOp op)
+    {
+        switch (op)
+        {
+        case RHIBlendOp::blend_op_add: return VK_BLEND_OP_ADD;
+        case RHIBlendOp::blend_op_subtract: return VK_BLEND_OP_SUBTRACT;
+        case RHIBlendOp::blend_op_reverse_subtract: return VK_BLEND_OP_REVERSE_SUBTRACT;
+        case RHIBlendOp::blend_op_min: return VK_BLEND_OP_MIN;
+        case RHIBlendOp::blend_op_max: return VK_BLEND_OP_MAX;
+        }
+        assert(0);
+        return VK_BLEND_OP_ADD;
+    }
+
+    VkBlendFactor ConvertBlendFactorToVkBlendFactor(RHIBlendFactor factor)
+    {
+        switch (factor)
+        {
+        case RHIBlendFactor::blend_factor_zero: return VK_BLEND_FACTOR_ZERO;
+        case RHIBlendFactor::blend_factor_one: return VK_BLEND_FACTOR_ONE;
+        case RHIBlendFactor::blend_factor_src_color: return VK_BLEND_FACTOR_SRC_COLOR;
+        case RHIBlendFactor::blend_factor_one_minus_src_color: return VK_BLEND_FACTOR_ONE_MINUS_SRC_COLOR;
+        case RHIBlendFactor::blend_factor_dst_color: return VK_BLEND_FACTOR_DST_COLOR;
+        case RHIBlendFactor::blend_factor_one_minus_dst_color: return VK_BLEND_FACTOR_ONE_MINUS_DST_COLOR;
+        case RHIBlendFactor::blend_factor_src_alpha: return VK_BLEND_FACTOR_SRC_ALPHA;
+        case RHIBlendFactor::blend_factor_one_minus_src_alpha: return VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
+        case RHIBlendFactor::blend_factor_dst_alpha: return VK_BLEND_FACTOR_DST_ALPHA;
+        case RHIBlendFactor::blend_factor_one_minus_dst_alpha: return VK_BLEND_FACTOR_ONE_MINUS_DST_ALPHA;
+        case RHIBlendFactor::blend_factor_constant_color: return VK_BLEND_FACTOR_CONSTANT_COLOR;
+        case RHIBlendFactor::blend_factor_one_minus_constant_color: return VK_BLEND_FACTOR_ONE_MINUS_CONSTANT_COLOR;
+        case RHIBlendFactor::blend_factor_constant_alpha: return VK_BLEND_FACTOR_CONSTANT_ALPHA;
+        case RHIBlendFactor::blend_factor_one_minus_constant_alpha: return VK_BLEND_FACTOR_ONE_MINUS_CONSTANT_ALPHA;
+        }
+        assert(0);
+        return VK_BLEND_FACTOR_ZERO;
     }
 }

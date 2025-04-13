@@ -4,6 +4,7 @@
 #include "Engine/RHI/Private/vulkan/yjw_vulkan_resource_cast.h"
 #include "Engine/RHI/Private/vulkan/yjw_vulkan_context.h"
 #include "vulkan/vulkan.h"
+#include <cassert>
 
 namespace rhi
 {
@@ -70,7 +71,14 @@ namespace rhi
         }
         createInfo.mipLevels = desc.miplevels;
         createInfo.format = ConvertFormatToVkFormat(desc.format);
-        createInfo.tiling = VK_IMAGE_TILING_OPTIMAL;
+        if (desc.memoryType == RHIMemoryType::readback)
+        {
+            createInfo.tiling = VK_IMAGE_TILING_LINEAR;
+        }
+        else
+        {
+            createInfo.tiling = VK_IMAGE_TILING_OPTIMAL;
+        }
         createInfo.usage = ConvertImageUsageToVkImageUsage(desc.usage);
         createInfo.samples = VK_SAMPLE_COUNT_1_BIT;
         createInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
@@ -79,7 +87,7 @@ namespace rhi
 
         vkCreateImage(device->GetNativeDevice(), &createInfo, nullptr, &m_image);
 
-        VkMemoryRequirements memRequirements;
+        VkMemoryRequirements memRequirements{};
         vkGetImageMemoryRequirements(device->GetNativeDevice(), m_image, &memRequirements);
 
         VkMemoryAllocateInfo allocInfo{};
@@ -213,6 +221,22 @@ namespace rhi
             memcpy(texture_map, data, static_cast<size_t>(sizeOfByte));
             vkUnmapMemory(GetDevice()->GetNativeDevice(), m_memory);
         }
+    }
+
+    void VulkanTexture::MapForReadback(int arrayLayer, int mipLevel, void*& data, int& byte_per_pixel, int& byte_per_raw)
+    {
+        assert(arrayLayer == 0); // only support arrayLayer 0 and miplevel 0.
+        assert(mipLevel == 0);
+        VkMemoryRequirements memRequirements;
+        vkGetImageMemoryRequirements(GetDevice()->GetNativeDevice(), m_image, &memRequirements);
+        byte_per_pixel = GetFormatPixelByteSize(ConvertFormatToVkFormat(GetDesc().format));
+        byte_per_raw = (byte_per_pixel * GetWidth() + memRequirements.alignment - 1) / memRequirements.alignment * memRequirements.alignment;
+        vkMapMemory(GetDevice()->GetNativeDevice(), m_memory, 0, byte_per_raw * GetHeight(), 0, &data);
+    }
+
+    void VulkanTexture::UnMapReadback()
+    {
+        vkUnmapMemory(GetDevice()->GetNativeDevice(), m_memory);
     }
 
     void VulkanTexture::TransitionState(VkCommandBuffer commandBuffer, VkImageLayout newLayout)

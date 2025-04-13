@@ -256,7 +256,11 @@ namespace rhi
 
     VulkanBuffer* VulkanPrimitiveBinding::GetIndexBuffer(int id)
     {
-        return m_sub_primitive_binding[id].m_index_buffer;
+        if (m_sub_primitive_binding.size() > id)
+        {
+            return m_sub_primitive_binding[id].m_index_buffer;
+        }
+        return nullptr;
     }
 
     int VulkanPrimitiveBinding::GetIndexBufferOffset(int id)

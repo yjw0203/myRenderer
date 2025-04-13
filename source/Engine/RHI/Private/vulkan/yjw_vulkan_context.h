@@ -24,7 +24,7 @@ namespace rhi
         virtual void Draw(int vertexCount, int instanceCount, int firstVertex, int firstInstance) override;
         virtual void DrawIndex(int firstInstance, int instanceCount) override;
         virtual void Dispatch(int groupCountX, int groupCountY, int groupCountZ) override;
-        virtual void Submit() override;
+        virtual RHIFence* Submit() override;
         virtual void Present(RHISwapChain* swapchain, bool bSync) override;
 
         virtual void CopyTexture2D(RHITexture* srcTexture, RHITexture* dstTexture) override;

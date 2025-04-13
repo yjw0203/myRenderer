@@ -65,9 +65,11 @@ namespace yjw
         for (char c : encoded) {
             if (c == '=') ++padding;
         }
+        /*
         if (padding > 0 && padding != (4 - (encoded.size() % 4)) % 4) {
             throw std::invalid_argument("Invalid Base64 padding");
         }
+        */
     }
 
 

@@ -11,6 +11,14 @@ namespace rpi
         depth_stencil_state_type_count,
     };
 
+    enum RPIColorBlendStateType
+    {
+        no_blend,
+        default_alpha_blend,
+        color_blend_state_type_count
+    };
+
     RPIDepthStencilState RPIGetDepthStencilState(RPIDepthStencilStateType type);
+    RPIColorBlendState RPIGetColorBlendState(RPIColorBlendStateType type);
     RPIRenderPipelineDescriptor RPIGetDefaultRenderPipeline();
 }

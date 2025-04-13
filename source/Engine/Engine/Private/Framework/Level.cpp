@@ -19,4 +19,16 @@ namespace yjw
     {
         m_ecs_manager.GetSystemManager().Update(deltaTime);
     }
+
+    Actor* Level::GetActorById(int id)
+    {
+        for (Actor* actor : m_actors)
+        {
+            if (actor->GetActorId() == id)
+            {
+                return actor;
+            }
+        }
+        return nullptr;
+    }
 }

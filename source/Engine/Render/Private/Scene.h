@@ -12,6 +12,7 @@ namespace yjw
 
     struct DrawItem
     {
+        class RenderEntity* m_entity{};
         int m_sub_primitive_id{};
         Primitive* m_primitive{};
         MaterialInstance* m_material{};
@@ -24,6 +25,10 @@ namespace yjw
         ~RenderEntity();
         void UpdateMesh(MeshHandle handle);
         void UpdateOverrideMaterial(const std::string& slot, MaterialHandle handle);
+        void UpdatePickFlag(int pick_flag[4]);
+        int* GetPickFlag();
+        void UpdateRenderMask(RenderMaskBits maskBit, bool enable);
+        bool GetRenderMask(RenderMaskBits maskBit);
         void ClearDrawItems();
         void BuildDrawItems();
         MaterialInstance* GetOverrideMaterial(const std::string& slot);
@@ -36,6 +41,9 @@ namespace yjw
         std::vector<DrawItem> m_draw_items;
 
         RenderModule* m_render_module{ nullptr };
+
+        int m_pick_flag[4] = {};
+        int m_render_mask{};
     };
 
     class PrimitiveComponent;
@@ -49,6 +57,8 @@ namespace yjw
         virtual void EraseEntity(EntityHandle handle) override;
         virtual void UpdateEntityMesh(EntityHandle entity, MeshHandle mesh) override;
         virtual void UpdateEntityOverrideMaterial(EntityHandle entity, const std::string& slot, MaterialHandle material) override;
+        virtual void UpdateEntityPickFlag(EntityHandle entity, int pick_flag[4]) override;
+        virtual void UpdateEntityRenderMask(EntityHandle entity, RenderMaskBits maskBit, bool enable) override;
 
         void GetDrawItems(std::vector<DrawItem>& v);
 

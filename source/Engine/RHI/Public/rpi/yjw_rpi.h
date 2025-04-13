@@ -16,6 +16,7 @@ namespace rpi
     RPIBuffer RPICreateUploadBuffer(int size);
     RPIBuffer RPICreateFormatBuffer(int size, RPIFormat format);
     RPITexture RPICreateDefaultTexture2D(int width, int height, RPIFormat format,int mipLevels = 1);
+    RPITexture RPICreateReadbackTexture2D(int width, int height, RPIFormat format,int mipLevels = 1);
     RPITexture RPICreateDepthStencilTexture2D(int width, int height, RPIFormat format);
     RPITexture RPICreateUploadTexture2D(int width, int height, RPIFormat format);
     RPITexture RPICreateTexture2DFromFile(const char* filePath);
@@ -34,8 +35,9 @@ namespace rpi
 
     RPIPrimitiveBinding RPICreatePrimitiveBinding(RPIShader vertex_shader);
 
-    void RPISubmit(RPIContext context);
+    RPIFence RPISubmit(RPIContext context);
     void RPIPresent(RPIContext context, RPIWindow window);
+    void RPIWaitForFence(RPIFence fence);
 
     void RPICmdPushEvent(RPIContext context, const char* name);
     void RPICmdPopEvent(RPIContext context);

@@ -40,6 +40,7 @@ namespace rhi
         class VulkanCommandQueue* GetCommandQueue();
         class VulkanCommandList* GetImmediaCommandList();
 
+        void WaitForFence(RHIFence* fence) override;
         void WaitForIdle();
     private:
         VulkanInstance* m_parent_instance = nullptr;
@@ -62,7 +63,7 @@ namespace rhi
     {
     public:
         VulkanDeviceObject(VulkanDevice* device);
-        ~VulkanDeviceObject();
+        virtual ~VulkanDeviceObject();
         VulkanDevice* GetDevice();
     private:
         VulkanDevice* m_parent_device = nullptr;

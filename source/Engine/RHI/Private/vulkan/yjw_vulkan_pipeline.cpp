@@ -219,16 +219,14 @@ namespace rhi
         VkPipelineColorBlendAttachmentState colorBlendStates[RHI_MAX_RENDER_TARGETS];
         for (int index = 0; index < renderPass->GetDesc().colorAttachmentCount; index++)
         {
-            colorBlendStates[index].colorWriteMask = VK_COLOR_COMPONENT_R_BIT |
-                VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT |
-                VK_COLOR_COMPONENT_A_BIT;
-            colorBlendStates[index].blendEnable = VK_FALSE;
-            colorBlendStates[index].srcColorBlendFactor = VK_BLEND_FACTOR_ONE; // Optional
-            colorBlendStates[index].dstColorBlendFactor = VK_BLEND_FACTOR_ZERO; // Optional
-            colorBlendStates[index].colorBlendOp = VK_BLEND_OP_ADD; // Optional
-            colorBlendStates[index].srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE; // Optional
-            colorBlendStates[index].dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO; // Optional
-            colorBlendStates[index].alphaBlendOp = VK_BLEND_OP_ADD; // Optional
+            colorBlendStates[index].colorWriteMask = ConvertColorComponentFlagToVkColorComponentFlag(m_descriptor.color_blend_state[index].colorWriteMask);
+            colorBlendStates[index].blendEnable = m_descriptor.color_blend_state[index].blendEnable;
+            colorBlendStates[index].srcColorBlendFactor = ConvertBlendFactorToVkBlendFactor(m_descriptor.color_blend_state[index].srcColorBlendFactor);
+            colorBlendStates[index].dstColorBlendFactor = ConvertBlendFactorToVkBlendFactor(m_descriptor.color_blend_state[index].dstColorBlendFactor);
+            colorBlendStates[index].colorBlendOp = ConvertBlendOpToVkBlendOp(m_descriptor.color_blend_state[index].colorBlendOp);
+            colorBlendStates[index].srcAlphaBlendFactor = ConvertBlendFactorToVkBlendFactor(m_descriptor.color_blend_state[index].srcAlphaBlendFactor);
+            colorBlendStates[index].dstAlphaBlendFactor = ConvertBlendFactorToVkBlendFactor(m_descriptor.color_blend_state[index].dstAlphaBlendFactor);
+            colorBlendStates[index].alphaBlendOp = ConvertBlendOpToVkBlendOp(m_descriptor.color_blend_state[index].alphaBlendOp);
         }
 
         colorBlendStateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
@@ -295,7 +293,7 @@ namespace rhi
         }
 
         VkPushConstantRange push_constants[1] = {};
-        push_constants[0].stageFlags = VK_SHADER_STAGE_COMPUTE_BIT;
+        push_constants[0].stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
         push_constants[0].offset = 0;
         push_constants[0].size = 128;
 

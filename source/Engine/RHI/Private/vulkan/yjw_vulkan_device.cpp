@@ -257,6 +257,11 @@ namespace rhi
         return m_immediately_command_list;
     }
 
+    void VulkanDevice::WaitForFence(RHIFence* fence)
+    {
+        vkWaitForFences(m_native_device, 1, &VKResourceCast(fence)->GetFence(), VK_TRUE, 1000000);
+    }
+
     void VulkanDevice::WaitForIdle()
     {
         vkQueueWaitIdle(m_command_queue->GetGraphicsQueue());

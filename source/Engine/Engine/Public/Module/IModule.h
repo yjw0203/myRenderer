@@ -1,5 +1,4 @@
 #pragma once
-#include "Engine/Render/Private/Scene.h"
 
 namespace yjw
 {

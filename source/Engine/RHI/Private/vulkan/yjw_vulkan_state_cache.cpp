@@ -92,6 +92,7 @@ namespace rhi
         if (offset + size <= 128)
         {
             memcpy(m_push_constants + offset, data, size);
+            m_push_constants_size = offset + size;
             m_push_constants_dirty = true;
         }
     }
@@ -103,7 +104,7 @@ namespace rhi
 
     int VulkanStateCache::GetPushConstantsSize()
     {
-        return 128;
+        return m_push_constants_size;
     }
 
     bool VulkanStateCache::IsPushConstantsDirty()
@@ -113,6 +114,7 @@ namespace rhi
 
     void VulkanStateCache::ClearPushConstantsDirty()
     {
+        memset(m_push_constants, 0, sizeof(m_push_constants));
         m_push_constants_dirty = false;
     }
 }
