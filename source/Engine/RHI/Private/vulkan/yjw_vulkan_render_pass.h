@@ -14,7 +14,8 @@ namespace rhi
         VkFramebuffer GetFramebuffer();
         virtual int GetWidth() override;
         virtual int GetHeight() override;
-        void TransitionStateToRender(VkCommandBuffer commandBuffer);
+        void TransitionStateToWrite(VkCommandBuffer commandBuffer);
+        void TransitionStateToRead(VkCommandBuffer commandBuffer);
     private:
         VkRenderPass m_native_render_pass = nullptr;
         VkFramebuffer m_frame_buffer = nullptr;

@@ -40,7 +40,9 @@ namespace rhi
         class VulkanCommandQueue* GetCommandQueue();
         class VulkanCommandList* GetImmediaCommandList();
 
-        void WaitForFence(RHIFence* fence) override;
+        virtual void WaitForFence(RHIFence* fence) override;
+        virtual void SetGlobalResourceSetLayout(int set_id, const ShaderReflect& reflect) override;
+        ShaderReflect* GetGlobalResourceSetLayout(int set_id);
         void WaitForIdle();
     private:
         VulkanInstance* m_parent_instance = nullptr;
@@ -49,14 +51,14 @@ namespace rhi
         QueueFamilyIndices m_queue_family_indices{};
         class VulkanCommandQueue* m_command_queue = nullptr;
         class VulkanCommandList* m_immediately_command_list = nullptr;
+        
+        std::unordered_map<int, ShaderReflect> m_global_resource_set_layout;
 
-    /***************** to be delete ***************/
     public:
         VkSampler m_default_sampler = nullptr;
         VkDescriptorSetLayout m_default_descriptor_layout = nullptr;
         VkDescriptorPool m_default_descriptor_pool = nullptr;
         VkDescriptorSet m_default_descriptor_set = nullptr;
-    /***************** to be delete ***************/
     };
 
     class VulkanDeviceObject

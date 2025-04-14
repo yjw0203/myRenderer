@@ -13,7 +13,7 @@ namespace rpi
     {
         RHIInstanceConfig config{};
         config.rhiType = ERHIType::vulkan;
-        config.isDebugMode = false;
+        config.isDebugMode = true;
         config.layers.push_back(rhi_layer_imgui);
         RPIO(instance) = new RHIInstance(config);
         RPIO(device) = RPIO(instance)->CreateDevice();
@@ -23,6 +23,11 @@ namespace rpi
     RPIContext RPICreateContext()
     {
         return RPIO(device)->CreateContext();
+    }
+
+    void RPIGlobalSetResourceSetLayout(RPIResourceSetType type, RPIShaderReflect reflect)
+    {
+        return RPIO(device)->SetGlobalResourceSetLayout((int)type, *reflect);
     }
 
     RPIWindow RPICreateWindow(void* window)

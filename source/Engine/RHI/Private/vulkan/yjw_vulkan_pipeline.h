@@ -23,17 +23,14 @@ namespace rhi
         };
         VulkanResourceLayoutView() {};
         void AddReflectionTable(RHIShaderType shaderType, const ShaderReflect& reflection);
-        void AddBinding(VkShaderStageFlagBits shaderBits,RHIName name, int set, int binding, VkDescriptorType descriptorType);
+        void OverrideSetReflection(int set, VkShaderStageFlags shaderBits, const ShaderReflect& reflection);
+        void AddBinding(VkShaderStageFlags shaderBits,RHIName name, int set, int binding, VkDescriptorType descriptorType);
         std::vector<VkDescriptorSetLayoutBinding>& GetBindingsBySetID(int setId);
         int GetMaxSetCount();
-        int GetDescriptorCount(VkDescriptorType type);
         int GetVertexBindingCount();
-        const VariableBinding* GetVariableBinding(RHIShaderType shaderType, RHIName name);
         int GetVertexInputLocation(const RHIName& name);
     private:
         std::vector<VkDescriptorSetLayoutBinding> m_sets[VULKAN_MAX_DESCRIPTOR_SET];
-        ShaderReflect m_reflect_table[(int)RHIShaderType::count];
-        std::unordered_map<RHIName, VariableBinding> m_resource_table[(int)RHIShaderType::count];
         std::unordered_map<RHIName, int> m_vertex_input_table;
         int m_max_set_id = -1;
     };

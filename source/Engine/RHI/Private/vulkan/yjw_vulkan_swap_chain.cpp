@@ -174,7 +174,7 @@ namespace rhi
             textureDesc.height = m_swapchainExtent.height;
             textureDesc.miplevels = 1;
             textureDesc.depthOrArraySize = 1;
-            textureDesc.usage = (int)RHIResourceUsageBits::allow_render_target | (int)RHIResourceUsageBits::allow_transfer_src | (int)RHIResourceUsageBits::allow_transfer_dst;
+            textureDesc.usage = (int)RHIResourceUsageBits::allow_render_target | (int)RHIResourceUsageBits::allow_transfer_src | (int)RHIResourceUsageBits::allow_transfer_dst | (int)RHIResourceUsageBits::deny_shader_resource;
             textureDesc.memoryType = RHIMemoryType::default_;
             m_swapchainImages[i] = new VulkanTexture(pDevice, textureDesc, images[i], VK_IMAGE_LAYOUT_UNDEFINED);
 

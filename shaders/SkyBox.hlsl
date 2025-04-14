@@ -13,7 +13,7 @@ struct VS_OUTPUT
 
 VS_OUTPUT VSMain(VS_INPUT input)  
 {  
-    VS_OUTPUT output{};
+    VS_OUTPUT output = (VS_OUTPUT)0;
     output.tex_coord = input.in_pos;
     float4 pos = mul(mul(float4(input.in_pos,1.0f),viewMatWithoutTranslation),projectMat);
     pos.z = pos.w * 0.99999;

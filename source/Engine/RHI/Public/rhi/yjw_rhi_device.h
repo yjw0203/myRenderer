@@ -25,5 +25,6 @@ namespace rhi
         virtual RHITextureView* CreateTextureView(const RHITextureViewDescriptor& viewDescriptor) = 0;
 
         virtual void WaitForFence(RHIFence* fence) = 0;
+        virtual void SetGlobalResourceSetLayout(int set_id, const ShaderReflect& reflect) = 0;
     };
 }

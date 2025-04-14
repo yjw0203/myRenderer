@@ -143,7 +143,7 @@ namespace rhi
         renderPassInfo.renderArea.extent = VkExtent2D{ (uint32_t)renderPass->GetWidth(), (uint32_t)renderPass->GetHeight() };
         renderPassInfo.clearValueCount = 0;
         renderPassInfo.pClearValues = nullptr;
-        renderPass->TransitionStateToRender(m_command_list.GetCommandBuffer());
+        renderPass->TransitionStateToWrite(m_command_list.GetCommandBuffer());
 
         VkViewport viewport{};
         viewport.x = 0.0f;
@@ -166,6 +166,8 @@ namespace rhi
     void VulkanCommandBuffer::CmdEndPass()
     {
         vkCmdEndRenderPass(m_command_list.GetCommandBuffer());
+        m_current_render_pass->TransitionStateToRead(m_command_list.GetCommandBuffer());
+        m_current_render_pass = nullptr;
     }
 
     void VulkanCommandBuffer::CmdTransitionStateToRender(VulkanResourceSet* resourceSet)

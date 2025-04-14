@@ -8,6 +8,7 @@ namespace rpi
 
     void RPIInit();
     RPIContext RPICreateContext();
+    void RPIGlobalSetResourceSetLayout(RPIResourceSetType type, RPIShaderReflect reflect);
     RPIWindow RPICreateWindow(void* window);
     void RPIDestroyWindow(RPIWindow window);
     RPIBuffer RPICreateGpuVertexBuffer(int size);

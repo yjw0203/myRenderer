@@ -154,7 +154,7 @@ namespace rhi
         return m_height;
     }
 
-    void VulkanRenderPass::TransitionStateToRender(VkCommandBuffer commandBuffer)
+    void VulkanRenderPass::TransitionStateToWrite(VkCommandBuffer commandBuffer)
     {
         for (int index = 0; index < GetDesc().colorAttachmentCount; index++)
         {
@@ -163,6 +163,18 @@ namespace rhi
         if (GetDesc().depthStencilAttachment)
         {
             VKResourceCast(GetDesc().depthStencilAttachment)->GetTexture()->TransitionState(commandBuffer, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
+        }
+    }
+
+    void VulkanRenderPass::TransitionStateToRead(VkCommandBuffer commandBuffer)
+    {
+        for (int index = 0; index < GetDesc().colorAttachmentCount; index++)
+        {
+            VKResourceCast(GetDesc().colorAttachments[index])->GetTexture()->TransitionToOriginState(commandBuffer);
+        }
+        if (GetDesc().depthStencilAttachment)
+        {
+            VKResourceCast(GetDesc().depthStencilAttachment)->GetTexture()->TransitionToOriginState(commandBuffer);
         }
     }
 }

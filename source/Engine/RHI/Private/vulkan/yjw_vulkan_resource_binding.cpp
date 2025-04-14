@@ -86,6 +86,13 @@ namespace rhi
                 poolSizes.push_back(poolSize);
             }
         }
+        if (poolSizes.empty())
+        {
+            VkDescriptorPoolSize poolSize{};
+            poolSize.type = VK_DESCRIPTOR_TYPE_SAMPLER;
+            poolSize.descriptorCount = 1;
+            poolSizes.push_back(poolSize);
+        }
 
         VkDescriptorPoolCreateInfo poolInfo{};
         poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;

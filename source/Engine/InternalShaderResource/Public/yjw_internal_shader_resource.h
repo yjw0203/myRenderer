@@ -67,6 +67,7 @@ namespace yjw
         void* m_cpu_data = nullptr;
         int m_total_size = 0;
 
+        rpi::ShaderReflect m_reflect{};
         rpi::RPIResourceSet m_common_resource_set{};
     };
 

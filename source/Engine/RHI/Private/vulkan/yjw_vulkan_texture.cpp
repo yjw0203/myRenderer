@@ -100,11 +100,15 @@ namespace rhi
         vkBindImageMemory(device->GetNativeDevice(), m_image, m_memory, 0);
         m_b_create_from_exist_image = false;
 
-        TransitionState(GetDevice()->GetImmediaCommandList()->GetCommandBuffer(), VK_IMAGE_LAYOUT_GENERAL);
-        if ((createInfo.usage & (VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | VK_IMAGE_USAGE_STORAGE_BIT)) == 0)
+        if ((createInfo.usage & (VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT))!= 0)
         {
-            TransitionState(GetDevice()->GetImmediaCommandList()->GetCommandBuffer(), VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+            m_origin_layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
         }
+        else
+        {
+            m_origin_layout = VK_IMAGE_LAYOUT_GENERAL;
+        }
+        TransitionState(GetDevice()->GetImmediaCommandList()->GetCommandBuffer(), m_origin_layout);
         GetDevice()->GetImmediaCommandList()->Submit();
     }
 
@@ -115,6 +119,14 @@ namespace rhi
     {
         m_image = existImage;
         m_b_create_from_exist_image = true;
+        if ((ConvertImageUsageToVkImageUsage(desc.usage) & (VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT)) != 0)
+        {
+            m_origin_layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+        }
+        else
+        {
+            m_origin_layout = VK_IMAGE_LAYOUT_GENERAL;
+        }
     }
 
     VulkanTexture::~VulkanTexture()
@@ -237,6 +249,11 @@ namespace rhi
     void VulkanTexture::UnMapReadback()
     {
         vkUnmapMemory(GetDevice()->GetNativeDevice(), m_memory);
+    }
+
+    void VulkanTexture::TransitionToOriginState(VkCommandBuffer commandBuffer)
+    {
+        TransitionState(commandBuffer, m_current_layout, m_origin_layout);
     }
 
     void VulkanTexture::TransitionState(VkCommandBuffer commandBuffer, VkImageLayout newLayout)

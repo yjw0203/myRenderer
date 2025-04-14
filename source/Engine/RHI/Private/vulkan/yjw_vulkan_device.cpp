@@ -137,10 +137,14 @@ namespace rhi
         dsl_createInfo.pNext = nullptr;
         vkCreateDescriptorSetLayout(m_native_device, &dsl_createInfo, nullptr, &m_default_descriptor_layout);
 
+        VkDescriptorPoolSize poolSize{};
+        poolSize.type = VK_DESCRIPTOR_TYPE_SAMPLER;
+        poolSize.descriptorCount = 1;
+
         VkDescriptorPoolCreateInfo poolInfo{};
         poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
-        poolInfo.poolSizeCount = 0;
-        poolInfo.pPoolSizes = nullptr;
+        poolInfo.poolSizeCount = 1;
+        poolInfo.pPoolSizes = &poolSize;
         poolInfo.maxSets = 1;
 
         if (vkCreateDescriptorPool(m_native_device, &poolInfo, nullptr, &m_default_descriptor_pool) != VK_SUCCESS) {
@@ -260,6 +264,20 @@ namespace rhi
     void VulkanDevice::WaitForFence(RHIFence* fence)
     {
         vkWaitForFences(m_native_device, 1, &VKResourceCast(fence)->GetFence(), VK_TRUE, 1000000);
+    }
+
+    void VulkanDevice::SetGlobalResourceSetLayout(int set_id, const ShaderReflect& reflect)
+    {
+        m_global_resource_set_layout[set_id] = reflect;
+    }
+
+    ShaderReflect* VulkanDevice::GetGlobalResourceSetLayout(int set_id)
+    {
+        if (m_global_resource_set_layout.find(set_id) != m_global_resource_set_layout.end())
+        {
+            return &m_global_resource_set_layout[set_id];
+        }
+        return nullptr;
     }
 
     void VulkanDevice::WaitForIdle()

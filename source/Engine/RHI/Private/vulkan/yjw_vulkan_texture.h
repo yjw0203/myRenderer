@@ -19,12 +19,14 @@ namespace rhi
         virtual void Update(void* data, int sizeOfByte, int arrayLayer = 0, int mipLevel = 0) override;
         virtual void MapForReadback(int arrayLayer, int mipLevel, void*& data, int& byte_per_pixel, int& byte_per_raw) override;
         virtual void UnMapReadback() override;
+        void TransitionToOriginState(VkCommandBuffer commandBuffer);
         void TransitionState(VkCommandBuffer commandBuffer, VkImageLayout newLayout);// to be multi thread
         void TransitionState(VkCommandBuffer commandBuffer, VkImageLayout oldLayout, VkImageLayout newLayout);
     private:
         VkImage m_image;
         VkDeviceMemory m_memory;
-        VkImageLayout m_current_layout;
+        VkImageLayout m_origin_layout{};
+        VkImageLayout m_current_layout{};
         bool m_b_create_from_exist_image = false;
     };
 

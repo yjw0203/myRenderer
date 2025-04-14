@@ -8,7 +8,6 @@ namespace rhi
     void VulkanResourceLayoutView::AddReflectionTable(RHIShaderType shaderType, const ShaderReflect& reflect)
     {
         VkShaderStageFlagBits shaderBits = ConvertShaderTypeToVkStage(shaderType);
-        m_reflect_table[(int)shaderType] = reflect;
         for (const ShaderReflect::UBO& ubo : reflect.m_ubos)
         {
             AddBinding(shaderBits,RHIName(ubo.m_name), ubo.m_set, ubo.m_binding, VkDescriptorType::VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER);
@@ -30,9 +29,35 @@ namespace rhi
         }
     }
 
-    void VulkanResourceLayoutView::AddBinding(VkShaderStageFlagBits shaderBits, RHIName name, int set, int binding, VkDescriptorType descriptorType)
+    void VulkanResourceLayoutView::OverrideSetReflection(int set, VkShaderStageFlags shaderBits, const ShaderReflect& reflect)
     {
-        m_resource_table[(int)ConvertVkStageToShaderType(shaderBits)][name] = VariableBinding{ descriptorType ,set, binding };
+        m_sets[set] = std::vector<VkDescriptorSetLayoutBinding>{};
+        for (const ShaderReflect::UBO& ubo : reflect.m_ubos)
+        {
+            if (ubo.m_set == set)
+            {
+                AddBinding(shaderBits, RHIName(ubo.m_name), ubo.m_set, ubo.m_binding, VkDescriptorType::VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER);
+            }
+        }
+        for (const ShaderReflect::SeparateImage& image : reflect.m_separate_images)
+        {
+            if (image.m_set == set)
+            {
+                AddBinding(shaderBits, RHIName(image.m_name), image.m_set, image.m_binding, VkDescriptorType::VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER);
+            }
+        }
+        for (const ShaderReflect::SamplerBuffer& buffer : reflect.m_sampler_buffers)
+        {
+            if (buffer.m_set == set)
+            {
+                AddBinding(shaderBits, RHIName(buffer.m_name), buffer.m_set, buffer.m_binding, VkDescriptorType::VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER);
+            }
+        }
+        m_max_set_id = std::max(m_max_set_id, set);
+    }
+
+    void VulkanResourceLayoutView::AddBinding(VkShaderStageFlags shaderBits, RHIName name, int set, int binding, VkDescriptorType descriptorType)
+    {
         VkDescriptorSetLayoutBinding decriptorBinding{};
         decriptorBinding.binding = binding;
         decriptorBinding.descriptorCount = 1;
@@ -67,34 +92,9 @@ namespace rhi
         return m_max_set_id + 1;
     }
 
-    int VulkanResourceLayoutView::GetDescriptorCount(VkDescriptorType type)
-    {
-        int count = 0;
-        for (int setId = 0; setId <= m_max_set_id; setId++)
-        {
-            for (VkDescriptorSetLayoutBinding& binding : m_sets[setId])
-            {
-                if (binding.descriptorType == type)
-                {
-                    count++;
-                }
-            }
-        }
-        return count;
-    }
-
     int VulkanResourceLayoutView::GetVertexBindingCount()
     {
-        return m_reflect_table[(int)RHIShaderType::vertex].m_inputs.size();
-    }
-
-    const VulkanResourceLayoutView::VariableBinding* VulkanResourceLayoutView::GetVariableBinding(RHIShaderType shaderType, RHIName name)
-    {
-        if (m_resource_table[(int)shaderType].find(name) == m_resource_table[(int)shaderType].end())
-        {
-            return nullptr;
-        }
-        return &m_resource_table[(int)shaderType][name];
+        return m_vertex_input_table.size();
     }
 
     int VulkanResourceLayoutView::GetVertexInputLocation(const RHIName& name)
@@ -113,6 +113,14 @@ namespace rhi
         desc.ps->retain(this);
         m_reflect_view.AddReflectionTable(RHIShaderType::vertex, VKResourceCast(desc.vs)->GetReflect());
         m_reflect_view.AddReflectionTable(RHIShaderType::fragment, VKResourceCast(desc.ps)->GetReflect());
+        for (int i = 0; i < VULKAN_MAX_DESCRIPTOR_SET; i++)
+        {
+            ShaderReflect* reflect = device->GetGlobalResourceSetLayout(i);
+            if (reflect)
+            {
+                m_reflect_view.OverrideSetReflection(i, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, *reflect);
+            }
+        }
     }
 
     VkPipeline VulkanRenderPipeline::GetOrCreateVkPipeline(VulkanRenderPass* renderPass)
@@ -350,6 +358,14 @@ namespace rhi
     {
         desc.cs->retain(this);
         m_reflect_view.AddReflectionTable(RHIShaderType::compute, VKResourceCast(desc.cs)->GetReflect());
+        for (int i = 0; i < VULKAN_MAX_DESCRIPTOR_SET; i++)
+        {
+            ShaderReflect* reflect = device->GetGlobalResourceSetLayout(i);
+            if (reflect)
+            {
+                m_reflect_view.OverrideSetReflection(i, VK_SHADER_STAGE_COMPUTE_BIT, *reflect);
+            }
+        }
     }
 
     VkPipeline VulkanComputePipeline::GetOrCreateVkPipeline()
