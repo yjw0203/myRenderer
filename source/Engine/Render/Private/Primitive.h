@@ -15,15 +15,15 @@ namespace yjw
     struct SubPrimitive
     {
         int m_sub_primitive_id{};
-        MaterialInstance* m_material{};
+        RdMaterial* m_material{};
         std::string m_material_slot{};
     };
 
-    class Primitive : public RenderResource
+    class RdGeometry : public RenderResource
     {
     public:
-        Primitive() {}
-        ~Primitive();
+        RdGeometry() {}
+        ~RdGeometry();
         void Build(const char* url);
         rpi::RPIPrimitiveBinding GetPrimitiveBinding();
         rpi::RPIShader GetVertexShader();
@@ -35,8 +35,8 @@ namespace yjw
         Asset<MeshAST> m_mesh_ast;
         
         std::vector<SubPrimitive> m_sub_primitives;
-        std::vector<Material*> m_materials;
-        std::vector<MaterialInstance*> m_material_instances;
+        std::vector<RdMaterialTemplate*> m_materials;
+        std::vector<RdMaterial*> m_material_instances;
 
         // rhi resource
         struct VB
@@ -58,13 +58,13 @@ namespace yjw
         rpi::RPIShader m_vertex_shader;
     };
 
-    class BoxPrimitive : public Primitive
+    class BoxPrimitive : public RdGeometry
     {
     public:
         BoxPrimitive();
     };
 
-    class SpherePrimitive : public Primitive
+    class SpherePrimitive : public RdGeometry
     {
     public:
         SpherePrimitive();

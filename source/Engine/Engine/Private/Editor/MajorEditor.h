@@ -24,7 +24,7 @@ namespace yjw
 
         class World* m_world = nullptr;
         class Window* m_window = nullptr;
-        class ViewProxy* m_view = nullptr;
+        class RdView* m_view = nullptr;
         class ::rhi::ImGuiUI* m_ui;
 
         int m_select_actor_id{};

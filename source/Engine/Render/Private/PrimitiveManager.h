@@ -1,19 +1,19 @@
 #pragma once
-#include "Engine/Engine/Public/Framework/Render/Entity.h"
 #include "Engine/Render/Private/Primitive.h"
+#include "Engine/Render/Public/RenderAPI.h"
+#include <set>
 
 namespace yjw
 {
     class PrimitiveManager
     {
     public:
-        MeshHandle LoadMesh(const std::string& url);
-        void UnloadMesh(MeshHandle handle);
-        Primitive* GetMesh(MeshHandle handle);
+        RdGeometryPtr LoadMesh(const std::string& url);
+        void UnloadMesh(RdGeometryPtr handle);
+        RdGeometry* GetMesh(RdGeometryPtr handle);
     private:
-        MeshHandle m_mesh_id_allocator{ 0 };
-        std::unordered_map<MeshHandle, Primitive*> m_meshes;
-        std::unordered_map<std::string, MeshHandle> m_mesh_url_to_handle;
-        std::unordered_map<MeshHandle, std::string> m_mesh_handle_to_url;
+        std::set<RdGeometry*> m_meshes;
+        std::unordered_map<std::string, RdGeometryPtr> m_mesh_url_to_handle;
+        std::unordered_map<RdGeometryPtr, std::string> m_mesh_handle_to_url;
     };
 }

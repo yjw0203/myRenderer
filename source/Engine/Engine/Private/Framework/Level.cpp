@@ -1,6 +1,5 @@
 #include "Engine/Render/Private/Scene.h"
 #include "Engine/Engine/Public/Framework/Level.h"
-#include "Engine/Render/Private/Mesh.h"
 #include <queue>
 
 namespace yjw

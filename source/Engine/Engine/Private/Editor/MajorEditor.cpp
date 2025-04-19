@@ -1,5 +1,4 @@
 #include "Engine/Engine/Private/Editor/MajorEditor.h"
-#include "Engine/Engine/Public/Framework/Render/IRenderModule.h"
 #include "Engine/Engine/Public/Framework/World.h"
 #include "Engine/Engine/Private/Editor/yjw_editor_ui.h"
 #include "Engine/Engine/Public/Framework/Actor.h"
@@ -7,8 +6,9 @@
 
 #include "Engine/RHI/Public/externs/imgui/yjw_rhi_imgui_layer.h"
 #include "Engine/RHI/Public/externs/imgui/yjw_rhi_imgui_window.h"
-#include "Engine/Engine/Public/Framework/Render/IRenderModule.h"
 #include "Engine/Engine/Public/Window.h"
+
+#include "Engine/Render/Public/RenderAPI.h"
 namespace yjw
 {
     void MajorEditor::Startup()
@@ -20,11 +20,9 @@ namespace yjw
         m_ui = new EditorUI(m_world);
         m_window = new Window();
 
-        m_view = GetModule<IRenderModule>()->CreateView(m_window->GetWindowHandle());
-        m_view->AttachScene(m_world->GetScene());
-        m_view->AttachUI(m_ui);
-
-        GetModule<IRenderModule>()->AttachView(m_view);
+        m_view = rdCreateView(m_window->GetWindowHandle());
+        rdAttachScene(m_view, m_world->GetScene());
+        rdAttachUI(m_view, m_ui);
 
         m_world->GetLevel()->SpawnActor<MeshActor>("naxita", "naxita/naxita.mesh.ast");
         m_world->GetLevel()->SpawnActor<MeshActor>("heita", "heita/heita.mesh.ast");
@@ -32,7 +30,7 @@ namespace yjw
 
     void MajorEditor::Destroy()
     {
-        GetModule<IRenderModule>()->DettachView(m_view);
+        rdDestroyView(m_view);
         delete m_world;
         delete m_ui;
         delete m_window;
@@ -40,8 +38,8 @@ namespace yjw
 
     void MajorEditor::Tick()
     {
-        std::vector<RenderHitRequest> proccessed_request;
-        GetModule<IRenderModule>()->GetProcessedHitRequest("select actor", proccessed_request);
+        std::vector<RdHitRequestStruct> proccessed_request;
+        rdGetProcessedHitRequest(m_view, "select actor", proccessed_request);
         if (!proccessed_request.empty())
         {
             if (proccessed_request.back().m_result[0])
@@ -54,6 +52,8 @@ namespace yjw
             }
             printf("%d %d %d %d\n", proccessed_request.back().m_result[0], proccessed_request.back().m_result[1], proccessed_request.back().m_result[2], proccessed_request.back().m_result[3]);
         }
+
+        rdDrawView(m_view);
     }
 
     void MajorEditor::SelectActor(int actor_id)
@@ -65,7 +65,7 @@ namespace yjw
         Actor* actor = m_world->GetLevel()->GetActorById(actor_id);
         if (actor)
         {
-            m_world->GetScene()->UpdateEntityRenderMask(actor->GetSceneEntity(), RenderMaskBits::highlight, true);
+            m_world->GetScene()->UpdateEntityRenderMask(actor->GetSceneEntity(), RdRenderMaskBits::highlight, true);
             m_select_actor_id = actor_id;
         }
     }
@@ -75,15 +75,15 @@ namespace yjw
         Actor* actor = m_world->GetLevel()->GetActorById(m_select_actor_id);
         if (actor)
         {
-            m_world->GetScene()->UpdateEntityRenderMask(actor->GetSceneEntity(), RenderMaskBits::highlight, false);
+            m_world->GetScene()->UpdateEntityRenderMask(actor->GetSceneEntity(), RdRenderMaskBits::highlight, false);
         }
     }
 
     void MajorEditor::OnClicked(float x, float y)
     {
-        RenderHitRequest req{};
+        RdHitRequestStruct req{};
         req.m_posx = x;
         req.m_posy = y;
-        GetModule<IRenderModule>()->AddPendingHitRequest("select actor", req);
+        rdAddPendingHitRequest(m_view, "select actor", req);
     }
 }

@@ -27,7 +27,7 @@ namespace yjw
         m_pick_depth_texture.Release();
     }
 
-    void PickPass::AttachView(RView* view)
+    void PickPass::AttachView(RdView* view)
     {
         m_view = view;
     }
@@ -47,7 +47,7 @@ namespace yjw
         RPIWaitForFence(fence);
         int data[4] = {};
         m_pick_staging_texture.BeginReadbackMode(0, 0);
-        for (std::pair<std::string, RenderHitRequest>& req : m_pending_request)
+        for (std::pair<std::string, RdHitRequestStruct>& req : m_pending_request)
         {
             m_pick_staging_texture.ReadbackLoad(req.second.m_posx, req.second.m_posy, req.second.m_result);
             req.second.m_completed = true;
@@ -57,12 +57,12 @@ namespace yjw
         m_pick_staging_texture.EndReadbackMode();
     }
 
-    void PickPass::AddPendingHitRequest(const char* group_name, const RenderHitRequest& request)
+    void PickPass::AddPendingHitRequest(const char* group_name, const RdHitRequestStruct& request)
     {
         m_pending_request.push_back(std::make_pair(std::string(group_name), request));
     }
 
-    void PickPass::GetProcessedHitRequest(const char* group_name, std::vector<RenderHitRequest>& proccessed_request)
+    void PickPass::GetProcessedHitRequest(const char* group_name, std::vector<RdHitRequestStruct>& proccessed_request)
     {
         if (m_processed_request.find(group_name) != m_processed_request.end())
         {

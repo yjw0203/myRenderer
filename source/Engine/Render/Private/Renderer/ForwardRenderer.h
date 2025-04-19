@@ -4,6 +4,7 @@
 #include "Engine/Render/Private/Renderer/IRenderer.h"
 #include "Engine/RHI/Public/externs/imgui/yjw_rhi_imgui_window.h"
 #include "Engine/Render/Private/View.h"
+#include "Engine/Render/Public/RenderAPI.h"
 
 namespace yjw
 {
@@ -19,7 +20,7 @@ namespace yjw
         void Destroy();
         void SetOutput(RPITexture output_color, RPITexture output_depth);
         void SetRenderPass(RPIRenderPass render_pass);
-        void SetView(RView* view);
+        void SetView(RdView* view);
 
         void Render();
     private:
@@ -33,7 +34,7 @@ namespace yjw
         void SubmitTransparent();
 
     private:
-        RView* m_view{};
+        RdView* m_view{};
         RPIContext m_context{};
 
         RPITexture m_output_color{};

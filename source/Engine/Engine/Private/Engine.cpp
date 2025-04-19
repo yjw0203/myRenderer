@@ -1,7 +1,6 @@
 #include "Engine/Engine/Public/Engine.h"
 #include "Engine/Render/Private/Scene.h"
 #include "Engine/File/Public/yjw_file_system_module_header.h"
-#include "Engine/Render/Public/yjw_render_system.h"
 #include "Engine/Asset/Public/Asset.h"
 #include <chrono>
 #include <ctime>
@@ -33,14 +32,14 @@ namespace yjw
 
     void Engine::shutdown()
     {
-        GetModule<IRenderModule>()->Shutdown();
+        rdDestroy();
         Window::Shutdown();
         shouldShutdown = true;
     }
 
     void Engine::initialize()
     {
-        GetModule<IRenderModule>()->Startup();
+        rdInit();
 
         m_editor->Startup();
     }
@@ -60,7 +59,7 @@ namespace yjw
         float deltaTime = delta_time_micro / 1000000.0f;
         currentRealTime = time;
 
-        GetModule<IRenderModule>()->Tick(deltaTime);
+        rdTick(deltaTime);
         m_editor->Tick();
         AssetManager::Get()->process();
 

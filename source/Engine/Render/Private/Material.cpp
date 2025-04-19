@@ -100,20 +100,20 @@ namespace yjw
         }
     }
 
-    Material::Material()
+    RdMaterialTemplate::RdMaterialTemplate()
     {}
 
-    Material::~Material()
+    RdMaterialTemplate::~RdMaterialTemplate()
     {
         Destroy();
     }
 
-    rpi::RPIShader Material::GetPixelShader()
+    rpi::RPIShader RdMaterialTemplate::GetPixelShader()
     {
         return m_pixel_shader;
     }
 
-    void Material::Build(const char* shader, const char* entry)
+    void RdMaterialTemplate::Build(const char* shader, const char* entry)
     {
         Destroy();
         m_ps.shader_path = shader;
@@ -123,7 +123,7 @@ namespace yjw
         m_ps_reflect = m_pixel_shader->GetShaderReflect();
     }
 
-    void Material::Build(const char* url)
+    void RdMaterialTemplate::Build(const char* url)
     {
         Destroy();
         m_asset.SetURL(url);
@@ -134,7 +134,7 @@ namespace yjw
         m_ps_reflect = m_pixel_shader->GetShaderReflect();
     }
 
-    void Material::Destroy()
+    void RdMaterialTemplate::Destroy()
     {
         if (m_pixel_shader)
         {
@@ -142,23 +142,23 @@ namespace yjw
         }
     }
 
-    MaterialInstance::MaterialInstance()
+    RdMaterial::RdMaterial()
     {
     }
 
-    MaterialInstance::~MaterialInstance()
+    RdMaterial::~RdMaterial()
     {
         Destroy();
     }
 
-    void MaterialInstance::Build(Material* material)
+    void RdMaterial::Build(RdMaterialTemplate* material)
     {
         using namespace rpi;
-        m_material = material;
+        m_material_template = material;
 
         m_parameters_pool.Clear();
-        m_ps_resource_set = RPICreateResourceSet(RPIResourceSetType::ps, m_material->m_ps_reflect);
-        for (rhi::ShaderReflect::UBO& ubo : m_material->m_ps_reflect->m_ubos)
+        m_ps_resource_set = RPICreateResourceSet(RPIResourceSetType::ps, m_material_template->m_ps_reflect);
+        for (rhi::ShaderReflect::UBO& ubo : m_material_template->m_ps_reflect->m_ubos)
         {
             if (RPICheckResourceSetTypeID(ubo.m_set, RPIResourceSetType::ps))
             {
@@ -174,17 +174,17 @@ namespace yjw
         }
     }
 
-    void MaterialInstance::Build(const char* url)
+    void RdMaterial::Build(const char* url)
     {
         m_asset.SetURL(url);
 
         using namespace rpi;
-        m_material = new Material();
-        m_material->Build(m_asset.GetData()->m_material_template.m_url.c_str());
+        m_material_template = new RdMaterialTemplate();
+        m_material_template->Build(m_asset.GetData()->m_material_template.m_url.c_str());
 
         m_parameters_pool.Clear();
-        m_ps_resource_set = RPICreateResourceSet(RPIResourceSetType::ps, m_material->m_ps_reflect);
-        for (rhi::ShaderReflect::UBO& ubo : m_material->m_ps_reflect->m_ubos)
+        m_ps_resource_set = RPICreateResourceSet(RPIResourceSetType::ps, m_material_template->m_ps_reflect);
+        for (rhi::ShaderReflect::UBO& ubo : m_material_template->m_ps_reflect->m_ubos)
         {
             if (RPICheckResourceSetTypeID(ubo.m_set, RPIResourceSetType::ps))
             {
@@ -213,7 +213,7 @@ namespace yjw
         FlushDataToGpu();
     }
 
-    void MaterialInstance::Destroy()
+    void RdMaterial::Destroy()
     {
         m_parameters_pool.Clear();
         if (m_ps_resource_set)
@@ -222,46 +222,46 @@ namespace yjw
         }
     }
 
-    void MaterialInstance::SetDataFloat(const std::string& name, float value)
+    void RdMaterial::SetDataFloat(const std::string& name, float value)
     {
         m_parameters_pool.SetDataFloat(name, value);
     }
-    void MaterialInstance::SetDataVec2(const std::string& name, glm::vec2 value)
+    void RdMaterial::SetDataVec2(const std::string& name, glm::vec2 value)
     {
         m_parameters_pool.SetDataVec2(name, value);
     }
-    void MaterialInstance::SetDataVec3(const std::string& name, glm::vec3 value)
+    void RdMaterial::SetDataVec3(const std::string& name, glm::vec3 value)
     {
         m_parameters_pool.SetDataVec3(name, value);
     }
-    void MaterialInstance::SetDataVec4(const std::string& name, glm::vec4 value)
+    void RdMaterial::SetDataVec4(const std::string& name, glm::vec4 value)
     {
         m_parameters_pool.SetDataVec4(name, value);
     }
-    void MaterialInstance::SetDataMat4(const std::string& name, glm::mat4x4 value)
+    void RdMaterial::SetDataMat4(const std::string& name, glm::mat4x4 value)
     {
         m_parameters_pool.SetDataMat4(name, value);
     }
 
-    void MaterialInstance::SetTexture(const std::string& name, rpi::RPITexture texture)
+    void RdMaterial::SetTexture(const std::string& name, rpi::RPITexture texture)
     {
         m_ps_resource_set.SetTexture(name, texture);
     }
 
-    void MaterialInstance::FlushDataToGpu()
+    void RdMaterial::FlushDataToGpu()
     {
         m_parameters_pool.FlushCpuDataToGpu();
     }
 
-    rpi::RPIResourceSet& MaterialInstance::GetResourceSet()
+    rpi::RPIResourceSet& RdMaterial::GetResourceSet()
     {
         return m_ps_resource_set;
     }
 
-    rpi::RPIShader MaterialInstance::GetPixelShader()
+    rpi::RPIShader RdMaterial::GetPixelShader()
     {
-        return m_material->m_pixel_shader;
+        return m_material_template->m_pixel_shader;
     }
 
-    MaterialInstance* g_default_material_instance{};
+    RdMaterial* g_default_material_instance{};
 }

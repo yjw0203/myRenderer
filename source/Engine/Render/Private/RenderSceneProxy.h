@@ -9,7 +9,7 @@ namespace yjw
     {
     public:
         RenderSceneProxy() {}
-        RenderSceneProxy(Scene* scene) : m_scene(scene) {}
+        RenderSceneProxy(RdScene* scene) : m_scene(scene) {}
 
         template<typename T,typename Func>
         void SubmitOpaque(T* This ,Func func)
@@ -23,6 +23,6 @@ namespace yjw
             }
         }
     private:
-        Scene* m_scene{};
+        RdScene* m_scene{};
     };
 }

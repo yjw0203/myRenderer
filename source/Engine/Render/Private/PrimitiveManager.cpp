@@ -2,31 +2,30 @@
 
 namespace yjw
 {
-    MeshHandle PrimitiveManager::LoadMesh(const std::string& url)
+    RdGeometryPtr PrimitiveManager::LoadMesh(const std::string& url)
     {
         if (m_mesh_url_to_handle.find(url) != m_mesh_url_to_handle.end())
         {
-            MeshHandle handle = m_mesh_url_to_handle[url];
-            if (m_meshes[handle])
+            RdGeometryPtr handle = m_mesh_url_to_handle[url];
+            if (handle)
             {
                 return handle;
             }
         }
-        MeshHandle id = ++m_mesh_id_allocator;
-        m_mesh_url_to_handle[url] = id;
-        m_mesh_handle_to_url[id] = url;
+        RdGeometryPtr geometry = new RdGeometry();
+        m_mesh_url_to_handle[url] = geometry;
+        m_mesh_handle_to_url[geometry] = url;
 
-        Primitive* new_instance = new Primitive();
-        new_instance->Build(url.c_str());
-        m_meshes[id] = new_instance;
-        return id;
+        geometry->Build(url.c_str());
+        m_meshes.insert(geometry);
+        return geometry;
     }
 
-    void PrimitiveManager::UnloadMesh(MeshHandle handle)
+    void PrimitiveManager::UnloadMesh(RdGeometryPtr handle)
     {
         if (m_mesh_handle_to_url.find(handle) != m_mesh_handle_to_url.end())
         {
-            delete m_meshes[handle];
+            delete handle;
             std::string url = m_mesh_handle_to_url[handle];
             m_mesh_url_to_handle.erase(url);
             m_meshes.erase(handle);
@@ -34,11 +33,11 @@ namespace yjw
         }
     }
 
-    Primitive* PrimitiveManager::GetMesh(MeshHandle handle)
+    RdGeometry* PrimitiveManager::GetMesh(RdGeometryPtr handle)
     {
         if (m_meshes.find(handle) != m_meshes.end())
         {
-            return m_meshes[handle];
+            return handle;
         }
         return nullptr;
     }

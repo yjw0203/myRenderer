@@ -58,7 +58,7 @@ namespace yjw
         m_output_depth = RPITexture::Null;
     }
 
-    void ForwardRenderer::SetView(RView* view)
+    void ForwardRenderer::SetView(RdView* view)
     {
         m_view = view;
         m_high_light_pass->AttachView(view);
@@ -100,7 +100,7 @@ namespace yjw
     void ForwardRenderer::EndFrame()
     {
         RPISubmit(m_context);
-        m_view->Present(m_context);
+        rpi::RPIPresent(m_context, m_view->GetWindow());
     }
 
     void ForwardRenderer::SubmitOpacue()

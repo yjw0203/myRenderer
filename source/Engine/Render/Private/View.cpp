@@ -1,69 +1,65 @@
 #include "Engine/Render/Private/View.h"
+#include "Engine/Render/Private/Pass/PickPass.h"
+#include "Engine/Render/Private/Renderer/ForwardRenderer.h"
 
 namespace yjw
 {
-    RViewProxy::RViewProxy(void* window_handle)
-    {
-        m_view = new RView(window_handle);
-    }
-
-    RViewProxy::~RViewProxy()
-    {
-        delete m_view;
-    }
-
-    void RViewProxy::AttachScene(SceneInterface* scene)
-    {
-        m_view->AttachScene(scene);
-    }
-
-    void RViewProxy::AttachUI(class rhi::ImGuiUI* ui)
-    {
-        m_view->AttachUI(ui);
-    }
-
-    RView* RViewProxy::GetView()
-    {
-        return m_view;
-    }
-
-    RView::RView(void* window_handle)
+    RdView::RdView(void* window_handle)
     {
         m_rpi_window = rpi::RPICreateWindow(window_handle);
+
+        m_renderer = new ForwardRenderer();
+        m_renderer->Initialize();
+        m_renderer->SetView(this);
+
+        m_pick_pass = new PickPass();
+        m_pick_pass->Initialize();
+        m_pick_pass->AttachView(this);
     }
 
-    void RView::AttachScene(SceneInterface* scene)
+    void RdView::Draw()
     {
-        m_attach_scene = (Scene*)scene;
+        m_pick_pass->Submit();
+        m_renderer->Render();
     }
 
-    void RView::AttachUI(class rhi::ImGuiUI* ui)
+    void RdView::AttachScene(RdScene* scene)
+    {
+        m_attach_scene = (RdScene*)scene;
+    }
+
+    void RdView::AttachUI(class rhi::ImGuiUI* ui)
     {
         m_attach_ui = ui;
     }
 
-    Scene* RView::GetScene()
+    RdScene* RdView::GetScene()
     {
         return m_attach_scene;
     }
 
-    rhi::ImGuiUI* RView::GetUI()
+    rhi::ImGuiUI* RdView::GetUI()
     {
         return m_attach_ui;
     }
 
-    rpi::RPIRenderPass RView::GetRenderPass()
+    rpi::RPIRenderPass RdView::GetRenderPass()
     {
         return m_rpi_window.swapchain->GetCurrentRenderPass();
     }
 
-    rpi::RPIWindow RView::GetWindow()
+    rpi::RPIWindow RdView::GetWindow()
     {
         return m_rpi_window;
     }
 
-    void RView::Present(rpi::RPIContext context)
+    void RdView::AddPendingHitRequest(const char* group_name, const RdHitRequestStruct& request)
     {
-        rpi::RPIPresent(context, m_rpi_window);
+        m_pick_pass->AddPendingHitRequest(group_name, request);
+    }
+
+    void RdView::GetProcessedHitRequest(const char* group_name, std::vector<RdHitRequestStruct>& proccessed_request)
+    {
+        m_pick_pass->GetProcessedHitRequest(group_name, proccessed_request);
     }
 }

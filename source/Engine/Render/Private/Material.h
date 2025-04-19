@@ -22,8 +22,8 @@ namespace yjw
 
     class MaterialParameterPool
     {
-        friend class Material;
-        friend class MaterialInstance;
+        friend class RdMaterialTemplate;
+        friend class RdMaterial;
     public:
         struct MaterialParameter
         {
@@ -61,12 +61,12 @@ namespace yjw
         bool m_cpu_data_dirty = false;
     };
 
-    class Material : public RenderResource
+    class RdMaterialTemplate : public RenderResource
     {
-        friend class MaterialInstance;
+        friend class RdMaterial;
     public:
-        Material();
-        ~Material();
+        RdMaterialTemplate();
+        ~RdMaterialTemplate();
         rpi::RPIShader GetPixelShader();
         void Build(const char* shader, const char* entry);
         void Build(const char* url);
@@ -80,12 +80,12 @@ namespace yjw
         Asset<MaterialAST> m_asset{};
     };
 
-    class MaterialInstance : public RenderResource
+    class RdMaterial : public RenderResource
     {
     public:
-        MaterialInstance();
-        ~MaterialInstance();
-        void Build(Material* material);
+        RdMaterial();
+        ~RdMaterial();
+        void Build(RdMaterialTemplate* material);
         void Build(const char* url);
         void Destroy();
         void SetDataFloat(const std::string& name, float value);
@@ -98,12 +98,12 @@ namespace yjw
         rpi::RPIResourceSet& GetResourceSet();
         rpi::RPIShader GetPixelShader();
     private:
-        Material* m_material = nullptr;
+        RdMaterialTemplate* m_material_template = nullptr;
         MaterialParameterPool m_parameters_pool;
         rpi::RPIResourceSet m_ps_resource_set{};
 
         Asset<MaterialInstanceAST> m_asset;
     };
 
-    extern MaterialInstance* g_default_material_instance;
+    extern RdMaterial* g_default_material_instance;
 }

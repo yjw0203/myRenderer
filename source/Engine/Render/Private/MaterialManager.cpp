@@ -2,31 +2,30 @@
 
 namespace yjw
 {
-    MaterialHandle MaterialManager::LoadMaterial(const std::string& url)
+    RdMaterialPtr MaterialManager::LoadMaterial(const std::string& url)
     {
         if (m_material_url_to_handle.find(url) != m_material_url_to_handle.end())
         {
-            MaterialHandle handle = m_material_url_to_handle[url];
-            if (m_material_instances[handle])
+            RdMaterialPtr handle = m_material_url_to_handle[url];
+            if (handle)
             {
                 return handle;
             }
         }
-        MaterialHandle id = ++m_material_id_allocator;
-        m_material_url_to_handle[url] = id;
-        m_material_handle_to_url[id] = url;
+        RdMaterialPtr material = new RdMaterial();
+        m_material_url_to_handle[url] = material;
+        m_material_handle_to_url[material] = url;
 
-        MaterialInstance* new_instance = new MaterialInstance();
-        new_instance->Build(url.c_str());
-        m_material_instances[id] = new_instance;
-        return id;
+        material->Build(url.c_str());
+        m_material_instances.insert(material);
+        return material;
     }
 
-    void MaterialManager::UnloadMaterial(MaterialHandle handle)
+    void MaterialManager::UnloadMaterial(RdMaterialPtr handle)
     {
         if (m_material_handle_to_url.find(handle) != m_material_handle_to_url.end())
         {
-            delete m_material_instances[handle];
+            delete handle;
             std::string url = m_material_handle_to_url[handle];
             m_material_url_to_handle.erase(url);
             m_material_instances.erase(handle);
@@ -34,11 +33,11 @@ namespace yjw
         }
     }
 
-    MaterialInstance* MaterialManager::GetMaterialInstance(MaterialHandle handle)
+    RdMaterial* MaterialManager::GetMaterialInstance(RdMaterialPtr handle)
     {
         if (m_material_instances.find(handle) != m_material_instances.end())
         {
-            return m_material_instances[handle];
+            return handle;
         }
         return nullptr;
     }

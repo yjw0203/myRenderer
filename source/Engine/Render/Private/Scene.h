@@ -1,72 +1,73 @@
 #pragma once
-#include "Engine/Engine/Public/Framework/Render/SceneInterface.h"
-#include "Engine/Render/Public/RenderModule.h"
 #include "Engine/RHI/Public/rpi/yjw_rpi.h"
 #include "Engine/Render/Private/Primitive.h"
+#include "Engine/Render/Private/Context.h"
+#include "Engine/Render/Public/RenderAPI.h"
 #include <vector>
+#include <set>
 
 namespace yjw
 {
     class RenderModule;
-    class MaterialInstance;
+    class RdMaterial;
 
     struct DrawItem
     {
-        class RenderEntity* m_entity{};
+        class RdEntity* m_entity{};
         int m_sub_primitive_id{};
-        Primitive* m_primitive{};
-        MaterialInstance* m_material{};
+        RdGeometry* m_primitive{};
+        RdMaterial* m_material{};
     };
 
-    class RenderEntity
+    class RdEntity
     {
     public:
-        RenderEntity(RenderModule* render_module);
-        ~RenderEntity();
-        void UpdateMesh(MeshHandle handle);
-        void UpdateOverrideMaterial(const std::string& slot, MaterialHandle handle);
+        RdEntity(RdContext* context);
+        ~RdEntity();
+        void UpdateMesh(RdGeometryPtr handle);
+        void UpdateOverrideMaterial(const std::string& slot, RdMaterialPtr handle);
         void UpdatePickFlag(int pick_flag[4]);
         int* GetPickFlag();
-        void UpdateRenderMask(RenderMaskBits maskBit, bool enable);
-        bool GetRenderMask(RenderMaskBits maskBit);
+        void UpdateRenderMask(RdRenderMaskBits maskBit, bool enable);
+        bool GetRenderMask(RdRenderMaskBits maskBit);
         void ClearDrawItems();
         void BuildDrawItems();
-        MaterialInstance* GetOverrideMaterial(const std::string& slot);
+        RdMaterial* GetOverrideMaterial(const std::string& slot);
         
         const std::vector<DrawItem>& GetDrawItems();
     private:
-        MeshHandle m_mesh{};
-        std::unordered_map<std::string, MaterialHandle> m_override_materials;
+        RdGeometryPtr m_mesh{};
+        std::unordered_map<std::string, RdMaterialPtr> m_override_materials;
 
         std::vector<DrawItem> m_draw_items;
 
-        RenderModule* m_render_module{ nullptr };
+        RdContext* m_context{ nullptr };
 
         int m_pick_flag[4] = {};
         int m_render_mask{};
     };
 
     class PrimitiveComponent;
-    class Scene : public SceneInterface
+    class RdScene
     {
     public:
-        Scene(RenderModule* render_module) : m_render_module{render_module} {};
-        ~Scene();
+        RdScene(RdContext* context) : m_context{ context } {};
+        ~RdScene();
 
-        virtual EntityHandle AddEntity() override;
-        virtual void EraseEntity(EntityHandle handle) override;
-        virtual void UpdateEntityMesh(EntityHandle entity, MeshHandle mesh) override;
-        virtual void UpdateEntityOverrideMaterial(EntityHandle entity, const std::string& slot, MaterialHandle material) override;
-        virtual void UpdateEntityPickFlag(EntityHandle entity, int pick_flag[4]) override;
-        virtual void UpdateEntityRenderMask(EntityHandle entity, RenderMaskBits maskBit, bool enable) override;
+        RdEntityPtr AddEntity();
+        void EraseEntity(RdEntityPtr handle);
+        void UpdateEntityMesh(RdEntityPtr entity, RdGeometryPtr mesh);
+        void UpdateEntityOverrideMaterial(RdEntityPtr entity, const std::string& slot, RdMaterialPtr material);
+        void UpdateEntityPickFlag(RdEntityPtr entity, int pick_flag[4]);
+        void UpdateEntityRenderMask(RdEntityPtr entity, RdRenderMaskBits maskBit, bool enable);
 
         void GetDrawItems(std::vector<DrawItem>& v);
 
         void Update(float deltaTime);
     private:
-        EntityHandle m_entity_id_allocator = 0;
-        std::unordered_map<EntityHandle, RenderEntity*> m_entities;
+        RdEntityPtr m_entity_id_allocator = 0;
+        std::set<RdEntity*> m_entities;
 
-        RenderModule* m_render_module{nullptr};
+        RdContext* m_context{nullptr};
     };
 }

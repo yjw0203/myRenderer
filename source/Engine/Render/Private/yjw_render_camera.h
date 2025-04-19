@@ -44,7 +44,7 @@ namespace yjw
     class RenderCameraInputDispatcher
     {
     public:
-        RenderCameraInputDispatcher(class RenderSystem* render_system) :m_render_system(render_system){};
+        RenderCameraInputDispatcher(class RdContext* render_system) :m_render_system(render_system){};
         void Register();
 
     private:
@@ -64,6 +64,6 @@ namespace yjw
         void RightMouseRelease();
         void MouseScroll(float x, float y);
 
-        class RenderSystem* m_render_system = nullptr;
+        class RdContext* m_render_system = nullptr;
     };
 }

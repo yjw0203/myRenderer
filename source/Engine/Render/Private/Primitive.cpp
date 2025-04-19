@@ -22,13 +22,13 @@ namespace yjw
         return "UNKNOW";
     }
 
-    void Primitive::Build(const char* url)
+    void RdGeometry::Build(const char* url)
     {
         m_mesh_ast.SetURL(url);
         BuildGpuPrimitive();
     }
 
-    void Primitive::BuildGpuPrimitive()
+    void RdGeometry::BuildGpuPrimitive()
     {
         MeshAST* mesh_ptr = m_mesh_ast.GetData();
         if (m_primitive_binding.IsNull() && mesh_ptr)
@@ -63,10 +63,10 @@ namespace yjw
                    if (m_ast)
                    {
                        material_slot_index[itr.first] = m_materials.size();
-                       Material* material = new Material();
+                       RdMaterialTemplate* material = new RdMaterialTemplate();
                        material->Build((std::string{} + SHADER_PATH + "/" + m_ast->m_shader).c_str(), m_ast->m_entry.c_str());
                        m_materials.push_back(material);
-                       MaterialInstance* material_instance = new MaterialInstance();
+                       RdMaterial* material_instance = new RdMaterial();
                        material_instance->Build(m_materials.back());
                        m_material_instances.push_back(material_instance);
                        for (std::pair<const std::string, float>& param : mi_ast->m_float_params)
@@ -102,7 +102,7 @@ namespace yjw
         }
     }
 
-    Primitive::~Primitive()
+    RdGeometry::~RdGeometry()
     {
         m_vertex_shader->release();
         m_vs_resource_set.Release();
@@ -116,7 +116,7 @@ namespace yjw
         }
     }
 
-    rpi::RPIPrimitiveBinding Primitive::GetPrimitiveBinding()
+    rpi::RPIPrimitiveBinding RdGeometry::GetPrimitiveBinding()
     {
         if (m_primitive_binding.IsNull())
         {
@@ -128,17 +128,17 @@ namespace yjw
         return m_primitive_binding;
     }
 
-    rpi::RPIShader Primitive::GetVertexShader()
+    rpi::RPIShader RdGeometry::GetVertexShader()
     {
         return m_vertex_shader;
     }
 
-    rpi::RPIResourceSet Primitive::GetVSResourceSet()
+    rpi::RPIResourceSet RdGeometry::GetVSResourceSet()
     {
         return m_vs_resource_set;
     }
 
-    const std::vector<SubPrimitive>& Primitive::GetSubPrimitive()
+    const std::vector<SubPrimitive>& RdGeometry::GetSubPrimitive()
     {
         return m_sub_primitives;
     }

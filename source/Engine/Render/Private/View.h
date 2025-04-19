@@ -1,36 +1,30 @@
 #pragma once
-#include "Engine/Engine/Public/Framework/Render/SceneInterface.h"
 #include "Engine/Render/Private/Scene.h"
 
 namespace yjw
 {
-    class RView;
-    class RViewProxy : public ViewProxy
+    class RdView
     {
     public:
-        RViewProxy(void* window_handle);
-        ~RViewProxy();
-        virtual void AttachScene(SceneInterface* scene) override;
-        virtual void AttachUI(class rhi::ImGuiUI* ui) override;
-        RView* GetView();
-    private:
-        RView* m_view = nullptr;
-    };
-
-    class RView
-    {
-    public:
-        RView(void* window_handle);
-        void AttachScene(SceneInterface* scene);
+        RdView(void* window_handle);
+        void Draw();
+        void AttachScene(RdScene* scene);
         void AttachUI(class rhi::ImGuiUI* ui);
-        Scene* GetScene();
+        RdScene* GetScene();
         class rhi::ImGuiUI* GetUI();
         rpi::RPIRenderPass GetRenderPass();
         rpi::RPIWindow GetWindow();
-        void Present(rpi::RPIContext context);
+
+        void AddPendingHitRequest(const char* group_name, const RdHitRequestStruct& request);
+        void GetProcessedHitRequest(const char* group_name, std::vector<RdHitRequestStruct>& proccessed_request);
+
     private:
         rpi::RPIWindow m_rpi_window{};
-        Scene* m_attach_scene = nullptr;
+        RdScene* m_attach_scene = nullptr;
         class rhi::ImGuiUI* m_attach_ui = nullptr;
+
+        class ForwardRenderer* m_renderer{};
+
+        class PickPass* m_pick_pass{};
     };
 }

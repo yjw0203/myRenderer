@@ -1,5 +1,5 @@
 #include "yjw_render_camera.h"
-#include "Engine/Render/Public/yjw_render_system.h"
+#include "Engine/Render/Private/Context.h"
 #include "Engine/Engine/Public/Window.h"
 
 namespace yjw
@@ -73,7 +73,7 @@ namespace yjw
     void RenderCameraInputDispatcher::W()
     {
         float deltaTime = m_render_system->m_delta_time;
-        RenderCamera& camera = *m_render_system->activeCamera;
+        RenderCamera& camera = *m_render_system->m_render_camera;
         glm::vec3 relative_pos = glm::vec3(0, 0, -speed * deltaTime) * glm::inverse(camera.rotation());
         camera.SetPosition(camera.position() + relative_pos);
     }
@@ -81,7 +81,7 @@ namespace yjw
     void RenderCameraInputDispatcher::A()
     {
         float deltaTime = m_render_system->m_delta_time;
-        RenderCamera& camera = *m_render_system->activeCamera;
+        RenderCamera& camera = *m_render_system->m_render_camera;
         glm::vec3 relative_pos = glm::vec3(-speed * deltaTime, 0, 0) * glm::inverse(camera.rotation());
         camera.SetPosition(camera.position() + relative_pos);
     }
@@ -89,7 +89,7 @@ namespace yjw
     void RenderCameraInputDispatcher::S()
     {
         float deltaTime = m_render_system->m_delta_time;
-        RenderCamera& camera = *m_render_system->activeCamera;
+        RenderCamera& camera = *m_render_system->m_render_camera;
         glm::vec3 relative_pos = glm::vec3(0, 0, speed * deltaTime) * glm::inverse(camera.rotation());
         camera.SetPosition(camera.position() + relative_pos);
     }
@@ -97,7 +97,7 @@ namespace yjw
     void RenderCameraInputDispatcher::D()
     {
         float deltaTime = m_render_system->m_delta_time;
-        RenderCamera& camera = *m_render_system->activeCamera;
+        RenderCamera& camera = *m_render_system->m_render_camera;
         glm::vec3 relative_pos = glm::vec3(speed * deltaTime, 0, 0) * glm::inverse(camera.rotation());
         camera.SetPosition(camera.position() + relative_pos);
     }
@@ -105,7 +105,7 @@ namespace yjw
     void RenderCameraInputDispatcher::Q()
     {
         float deltaTime = m_render_system->m_delta_time;
-        RenderCamera& camera = *m_render_system->activeCamera;
+        RenderCamera& camera = *m_render_system->m_render_camera;
         glm::vec3 relative_pos = glm::vec3( 0, speed * deltaTime, 0) * glm::inverse(camera.rotation());
         camera.SetPosition(camera.position() + relative_pos);
     }
@@ -113,7 +113,7 @@ namespace yjw
     void RenderCameraInputDispatcher::E()
     {
         float deltaTime = m_render_system->m_delta_time;
-        RenderCamera& camera = *m_render_system->activeCamera;
+        RenderCamera& camera = *m_render_system->m_render_camera;
         glm::vec3 relative_pos = glm::vec3(0, -speed * deltaTime, 0) * glm::inverse(camera.rotation());
         camera.SetPosition(camera.position() + relative_pos);
     }
@@ -130,7 +130,7 @@ namespace yjw
             float angularVelocity = glm::radians(180.0f);
             float deltaX = (x - lastMouseX) / 1200 * angularVelocity;
             float deltaY = (y - lastMouseY) / 1200 * angularVelocity;
-            RenderCamera& camera = *m_render_system->activeCamera;
+            RenderCamera& camera = *m_render_system->m_render_camera;
             glm::quat camera_rot = camera.rotation();
 
             glm::vec3 XAxis = glm::vec3(1, 0, 0);

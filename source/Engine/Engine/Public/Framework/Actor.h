@@ -1,9 +1,8 @@
 #pragma once
 #include "Engine/Utils/Public/DesignPatterns/ECS.h"
 #include "Engine/Engine/Public/Framework/Components/StaticMeshComponent.h"
-#include "Engine/Render/Private/Mesh.h"
 #include "Engine/Engine/Public/Framework/Level.h"
-#include "Engine/Engine/Public/Framework/Render/Entity.h"
+#include "Engine/Render/Public/RenderAPI.h"
 namespace yjw
 {
     class Actor
@@ -18,11 +17,11 @@ namespace yjw
         const char* GetName() const { return m_name.c_str(); };
         Entity GetEntity() { return m_entity; }
         virtual void OnSpawned() {}
-        void SetSceneEntity(EntityHandle handle) { m_entity_handle = handle; }
-        EntityHandle GetSceneEntity() { return m_entity_handle; }
+        void SetSceneEntity(RdEntityPtr handle) { m_entity_handle = handle; }
+        RdEntityPtr GetSceneEntity() { return m_entity_handle; }
     private:
 
-        EntityHandle m_entity_handle{};
+        RdEntityPtr m_entity_handle{};
 
         Entity m_entity{};
         std::string m_name;

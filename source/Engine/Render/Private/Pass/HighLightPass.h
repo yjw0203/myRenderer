@@ -1,7 +1,7 @@
 #pragma once
 #include "Engine/RHI/Public/rpi/yjw_rpi_header.h"
 #include "Engine/Render/Private/View.h"
-#include "Engine/Engine/Public/Framework/Render/RenderHit.h"
+#include "Engine/Render/Public/RenderAPI.h"
 
 namespace yjw
 {
@@ -11,7 +11,7 @@ namespace yjw
     public:
         void Initialize();
         void Destroy();
-        void AttachView(RView* view);
+        void AttachView(RdView* view);
         void SubmitHighLightObject(RPIContext context);
         void HighLightPostProcess(RPIContext context);
     private:
@@ -30,7 +30,7 @@ namespace yjw
         RPIRenderPipeline m_highlight_post_process_pipeline{};
         RPIResourceSet m_high_light_post_process_ps_resource_set{};
 
-        RView* m_view{};
+        RdView* m_view{};
 
         RPIContext m_current_context{};
     };

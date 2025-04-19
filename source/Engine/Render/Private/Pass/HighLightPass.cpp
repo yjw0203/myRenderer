@@ -40,7 +40,7 @@ namespace yjw
         m_highlight_mask_depth.Release();
     }
 
-    void HighLightPass::AttachView(RView* view)
+    void HighLightPass::AttachView(RdView* view)
     {
         m_view = view;
     }
@@ -60,7 +60,7 @@ namespace yjw
 
     void HighLightPass::SubmitOpacue(DrawItem* item)
     {
-        if (item->m_entity->GetRenderMask(RenderMaskBits::highlight))
+        if (item->m_entity->GetRenderMask(RdRenderMaskBits::highlight))
         {
             RPICmdSetPrimitiveBinding(m_current_context, item->m_primitive->GetPrimitiveBinding(), item->m_sub_primitive_id);
             RPICmdSetResourceSet(m_current_context, RPIResourceSetType::vs, item->m_primitive->GetVSResourceSet());

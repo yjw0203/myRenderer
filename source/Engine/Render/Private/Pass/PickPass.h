@@ -1,8 +1,7 @@
 #pragma once
 #include "Engine/RHI/Public/rpi/yjw_rpi_header.h"
 #include "Engine/Render/Private/View.h"
-#include "Engine/Engine/Public/Framework/Render/RenderHit.h"
-
+#include "Engine/Render/Public/RenderAPI.h"
 namespace yjw
 {
     using namespace rpi;
@@ -11,10 +10,10 @@ namespace yjw
     public:
         void Initialize();
         void Destroy();
-        void AttachView(RView* view);
+        void AttachView(RdView* view);
         void Submit();
-        void AddPendingHitRequest(const char* group_name, const RenderHitRequest& request);
-        void GetProcessedHitRequest(const char* group_name, std::vector<RenderHitRequest>& proccessed_request);
+        void AddPendingHitRequest(const char* group_name, const RdHitRequestStruct& request);
+        void GetProcessedHitRequest(const char* group_name, std::vector<RdHitRequestStruct>& proccessed_request);
     private:
         void SubmitOpacue(DrawItem* item);
     private:
@@ -28,9 +27,9 @@ namespace yjw
 
         RPIContext m_context{};
 
-        RView* m_view{};
+        RdView* m_view{};
 
-        std::vector<std::pair<std::string, RenderHitRequest>> m_pending_request;
-        std::unordered_map<std::string, std::vector<RenderHitRequest>> m_processed_request;
+        std::vector<std::pair<std::string, RdHitRequestStruct>> m_pending_request;
+        std::unordered_map<std::string, std::vector<RdHitRequestStruct>> m_processed_request;
     };
 }
