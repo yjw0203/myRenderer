@@ -46,6 +46,22 @@ namespace rhi
                 descriptor_combined_image_count++;
             }
         }
+        int storage_buffer_count = 0;
+        for (const ShaderReflect::SSBO& buffer : reflection.m_ssbos)
+        {
+            if (buffer.m_set == set_id)
+            {
+                m_resource_table[RHIName(buffer.m_name)] = VariableBinding{ VK_DESCRIPTOR_TYPE_STORAGE_BUFFER , buffer.m_set, buffer.m_binding };
+                VkDescriptorSetLayoutBinding binding{};
+                binding.binding = buffer.m_binding;
+                binding.descriptorCount = 1;
+                binding.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+                binding.pImmutableSamplers = nullptr;
+                binding.stageFlags = VK_SHADER_STAGE_ALL;
+                bindings.push_back(binding);
+                storage_buffer_count++;
+            }
+        }
         int descriptor_uniform_texel_buffer_count = 0;
         for (const ShaderReflect::SamplerBuffer& buffer : reflection.m_sampler_buffers)
         {
@@ -71,8 +87,8 @@ namespace rhi
         createInfo.pNext = nullptr;
         vkCreateDescriptorSetLayout(GetDevice()->GetNativeDevice(), &createInfo, nullptr, &m_descriptor_set_layout);
 
-        std::array<VkDescriptorType, 3> descriptorType{ VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER ,VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER };
-        std::array<int, 3> descriptorCount{ descriptor_combined_image_count, descriptor_uniform_buffer_count ,descriptor_uniform_texel_buffer_count };
+        std::array<VkDescriptorType, 4> descriptorType{ VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER ,VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER };
+        std::array<int, 4> descriptorCount{ descriptor_combined_image_count, descriptor_uniform_buffer_count ,descriptor_uniform_texel_buffer_count, storage_buffer_count };
 
         std::vector<VkDescriptorPoolSize> poolSizes{};
         poolSizes.reserve(5);

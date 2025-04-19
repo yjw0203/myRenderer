@@ -268,7 +268,7 @@ namespace rhi
                     VK_PIPELINE_BIND_POINT_GRAPHICS,
                     m_state_cache.GetRenderPipeline()->GetOrCreateVkPipelineLayout(),
                     0,
-                    m_state_cache.GetDescriptorSetCount(),
+                    std::min(m_state_cache.GetDescriptorSetCount(), m_state_cache.GetRenderPipeline()->GetMaxSetCount()),
                     m_state_cache.GetDescriptorSetData(),
                     0,
                     nullptr);

@@ -17,6 +17,17 @@ namespace yjw
         ClearDrawItems();
     }
 
+    int RdEntity::GetDataId()
+    {
+        return m_data_id;
+    }
+
+    void RdEntity::UpdateDataId(int id)
+    {
+        m_data_id = id;
+        m_push_constants[0] = id;
+    }
+
     void RdEntity::UpdateMesh(RdGeometryPtr handle)
     {
         m_mesh = handle;
@@ -29,17 +40,19 @@ namespace yjw
         BuildDrawItems();
     }
 
-    void RdEntity::UpdatePickFlag(int pick_flag[4])
+    void RdEntity::UpdateEntityDataID(int id)
     {
-        m_pick_flag[0] = pick_flag[0];
-        m_pick_flag[1] = pick_flag[1];
-        m_pick_flag[2] = pick_flag[2];
-        m_pick_flag[3] = pick_flag[3];
+        m_push_constants[0] = id;
     }
 
-    int* RdEntity::GetPickFlag()
+    void RdEntity::UpdatePickFlag(int pick_flag)
     {
-        return m_pick_flag;
+        m_push_constants[3] = pick_flag;
+    }
+
+    int* RdEntity::GetPushContants()
+    {
+        return m_push_constants;
     }
 
     void RdEntity::UpdateRenderMask(RdRenderMaskBits maskBit, bool enable)
@@ -105,6 +118,33 @@ namespace yjw
         return m_draw_items;
     }
 
+    RdScene::RdScene(RdContext* context)
+        :m_context(context)
+    {
+        rpi::ShaderReflect reflect{};
+        rpi::ShaderReflect::SSBO buffer{};
+        buffer.m_set = rpi::RPIGetResourceSetIDByType(rpi::RPIResourceSetType::entity);
+        buffer.m_name = "EntityDataBuffer";
+        buffer.m_binding = 0;
+        reflect.m_ssbos.push_back(buffer);
+        m_entity_resource_set = rpi::RPICreateResourceSet(rpi::RPIResourceSetType::entity, &reflect);
+
+        int max_entity = 1000; // to be remove
+        m_entity_data_buffer = rpi::RPICreateUploadBuffer(max_entity * sizeof(RdEntityData));
+        m_entity_resource_set.SetBuffer("EntityDataBuffer", m_entity_data_buffer);
+    }
+
+    void RdScene::OnInit()
+    {
+        rpi::ShaderReflect reflect{};
+        rpi::ShaderReflect::SSBO buffer{};
+        buffer.m_set = rpi::RPIGetResourceSetIDByType(rpi::RPIResourceSetType::entity);
+        buffer.m_name = "EntityDataBuffer";
+        buffer.m_binding = 0;
+        reflect.m_ssbos.push_back(buffer);
+        rpi::RPIGlobalSetResourceSetLayout(rpi::RPIResourceSetType::entity, &reflect);
+    }
+
     RdScene::~RdScene()
     {
         for (auto itr : m_entities)
@@ -121,6 +161,24 @@ namespace yjw
     {
         RdEntityPtr entity = new RdEntity(m_context);
         m_entities.insert(entity);
+        int id = -1;
+        for (int i = 0; i < m_entity_data.size(); i++)
+        {
+            if (m_entity_data_free[i])
+            {
+                id = i;
+                m_entity_data[i] = RdEntityData{};
+                m_entity_data_free[i] = 0;
+                break;
+            }
+        }
+        if (id == -1)
+        {
+            id = m_entity_data.size();
+            m_entity_data.push_back(RdEntityData{});
+            m_entity_data_free.push_back(0);
+        }
+        entity->UpdateDataId(id);
         return entity;
     }
 
@@ -128,9 +186,15 @@ namespace yjw
     {
         if (m_entities.find(handle) != m_entities.end())
         {
+            m_entity_data_free[handle->GetDataId()] = 1;
             delete handle;
             m_entities.erase(handle);
         }
+    }
+
+    void RdScene::UpdateEntityTransform(RdEntityPtr entity, Transform transform)
+    {
+        m_entity_data[entity->GetDataId()].m_model_matrix = transform.getMatrix();
     }
 
     void RdScene::UpdateEntityMesh(RdEntityPtr entity, RdGeometryPtr mesh)
@@ -149,7 +213,7 @@ namespace yjw
         }
     }
 
-    void RdScene::UpdateEntityPickFlag(RdEntityPtr entity, int pick_flag[4])
+    void RdScene::UpdateEntityPickFlag(RdEntityPtr entity, int pick_flag)
     {
         if (m_entities.find(entity) != m_entities.end())
         {
@@ -176,9 +240,14 @@ namespace yjw
         }
     }
 
-    void RdScene::Update(float deltaTime)
+    rpi::RPIResourceSet RdScene::GetEntityResourceSet()
     {
+        return m_entity_resource_set;
+    }
 
+    void RdScene::Update()
+    {
+        rpi::RPIUpdateBuffer(m_entity_data_buffer, m_entity_data.data(), 0, m_entity_data.size() * sizeof(RdEntityData));
     }
 
 }

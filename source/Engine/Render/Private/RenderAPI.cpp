@@ -28,6 +28,8 @@ namespace yjw
         //activeCamera->SetRotation(glm::quat(0.2, -0.93, 0.04, -0.3));
         g_rd_context->m_render_camera->SetRotation(glm::quat(0, 0, 0, 1));
         (new RenderCameraInputDispatcher(g_rd_context))->Register();
+
+        RdScene::OnInit();
     }
 
     void rdTick(float delta)
@@ -112,6 +114,11 @@ namespace yjw
         scene->EraseEntity(entity);
     }
 
+    void rdUpdateEntityTransform(RdScenePtr scene, RdEntityPtr entity, const Transform& transform)
+    {
+        scene->UpdateEntityTransform(entity, transform);
+    }
+
     void rdUpdateEntityOverrideMaterial(RdScenePtr scene, RdEntityPtr entity, const char* slot, RdMaterialPtr material)
     {
         scene->UpdateEntityOverrideMaterial(entity, slot, material);
@@ -122,7 +129,7 @@ namespace yjw
         scene->UpdateEntityMesh(entity, geometry);
     }
 
-    void rdUpdateEntityPickFlag(RdScenePtr scene, RdEntityPtr entity, int pick_flag[4])
+    void rdUpdateEntityPickFlag(RdScenePtr scene, RdEntityPtr entity, int pick_flag)
     {
         scene->UpdateEntityPickFlag(entity, pick_flag);
     }

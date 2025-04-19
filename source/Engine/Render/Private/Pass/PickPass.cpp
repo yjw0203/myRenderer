@@ -39,6 +39,7 @@ namespace yjw
         RPICmdClearTexture(m_context, m_pick_depth_texture);
         RPICmdBeginRenderPass(m_context, m_render_pass);
         RPICmdSetResourceSet(m_context, RPIResourceSetType::common, g_internal_shader_parameters.GetCommonResourceSet());
+        RPICmdSetResourceSet(m_context, RPIResourceSetType::entity, m_view->GetScene()->GetEntityResourceSet());
         RenderSceneProxy(m_view->GetScene()).SubmitOpaque(this, &PickPass::SubmitOpacue);
         RPICmdEndPass(m_context);
         RPICmdCopyTexture(m_context, m_pick_output_texture, m_pick_staging_texture);
@@ -49,7 +50,9 @@ namespace yjw
         m_pick_staging_texture.BeginReadbackMode(0, 0);
         for (std::pair<std::string, RdHitRequestStruct>& req : m_pending_request)
         {
-            m_pick_staging_texture.ReadbackLoad(req.second.m_posx, req.second.m_posy, req.second.m_result);
+            int result[4] = {};
+            m_pick_staging_texture.ReadbackLoad(req.second.m_posx, req.second.m_posy, result);
+            req.second.m_result = result[3];
             req.second.m_completed = true;
             m_processed_request[req.first].push_back(req.second);
         }
@@ -73,7 +76,7 @@ namespace yjw
 
     void PickPass::SubmitOpacue(DrawItem* item)
     {
-        RPICmdPushConstants(m_context, item->m_entity->GetPickFlag(), 0, sizeof(int) * 4);
+        RPICmdPushConstants(m_context, item->m_entity->GetPushContants(), 0, sizeof(int) * 4);
         RPICmdSetPrimitiveBinding(m_context, item->m_primitive->GetPrimitiveBinding(), item->m_sub_primitive_id);
         RPICmdSetResourceSet(m_context, RPIResourceSetType::vs, item->m_primitive->GetVSResourceSet());
         RPICmdSetRenderPipeline(m_context, m_pipeline, item->m_primitive->GetVertexShader(), m_ps);

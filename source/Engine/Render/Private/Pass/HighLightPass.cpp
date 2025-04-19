@@ -53,6 +53,7 @@ namespace yjw
         RPICmdClearTexture(context, m_highlight_mask_depth);
         RPICmdBeginRenderPass(context, m_highlight_mask_render_pass);
         RPICmdSetResourceSet(context, RPIResourceSetType::common, g_internal_shader_parameters.GetCommonResourceSet());
+        RPICmdSetResourceSet(context, RPIResourceSetType::entity, m_view->GetScene()->GetEntityResourceSet());
         RenderSceneProxy(m_view->GetScene()).SubmitOpaque(this, &HighLightPass::SubmitOpacue);
         RPICmdEndPass(context);
         RPICmdPopEvent(context);
@@ -62,6 +63,7 @@ namespace yjw
     {
         if (item->m_entity->GetRenderMask(RdRenderMaskBits::highlight))
         {
+            RPICmdPushConstants(m_current_context, item->m_entity->GetPushContants(), 0, sizeof(int) * 4);
             RPICmdSetPrimitiveBinding(m_current_context, item->m_primitive->GetPrimitiveBinding(), item->m_sub_primitive_id);
             RPICmdSetResourceSet(m_current_context, RPIResourceSetType::vs, item->m_primitive->GetVSResourceSet());
             RPICmdSetRenderPipeline(m_current_context, m_highlight_mask_pipeline, item->m_primitive->GetVertexShader(), m_highlight_mask_ps);

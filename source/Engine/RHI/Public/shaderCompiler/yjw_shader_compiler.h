@@ -57,6 +57,13 @@ namespace rhi
             int m_binding;
         };
 
+        struct SSBO
+        {
+            std::string m_name;
+            int m_set;
+            int m_binding;
+        };
+
         struct Input
         {
             DataType m_type;
@@ -74,6 +81,7 @@ namespace rhi
         RHIShaderType m_shader_type{};
         std::string m_function_name{};
         std::vector<UBO> m_ubos;
+        std::vector<SSBO> m_ssbos;
         std::vector<SeparateImage> m_separate_images;
         std::vector<SamplerBuffer> m_sampler_buffers;
         std::vector<Input> m_inputs;

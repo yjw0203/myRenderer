@@ -25,7 +25,11 @@ namespace yjw
         rdAttachUI(m_view, m_ui);
 
         m_world->GetLevel()->SpawnActor<MeshActor>("naxita", "naxita/naxita.mesh.ast");
-        m_world->GetLevel()->SpawnActor<MeshActor>("heita", "heita/heita.mesh.ast");
+        Actor* heita = m_world->GetLevel()->SpawnActor<MeshActor>("heita", "heita/heita.mesh.ast");
+
+        Transform transform{};
+        transform.m_location = glm::vec3(10, 10, 0);
+        rdUpdateEntityTransform(m_world->GetScene(), heita->GetSceneEntity(), transform);
     }
 
     void MajorEditor::Destroy()
@@ -42,15 +46,15 @@ namespace yjw
         rdGetProcessedHitRequest(m_view, "select actor", proccessed_request);
         if (!proccessed_request.empty())
         {
-            if (proccessed_request.back().m_result[0])
+            if (proccessed_request.back().m_result)
             {
-                SelectActor(proccessed_request.back().m_result[0]);
+                SelectActor(proccessed_request.back().m_result);
             }
             else
             {
                 UnselectActor();
             }
-            printf("%d %d %d %d\n", proccessed_request.back().m_result[0], proccessed_request.back().m_result[1], proccessed_request.back().m_result[2], proccessed_request.back().m_result[3]);
+            printf("%d %d %d %d\n", proccessed_request.back().m_result, proccessed_request.back().m_result, proccessed_request.back().m_result, proccessed_request.back().m_result);
         }
 
         rdDrawView(m_view);

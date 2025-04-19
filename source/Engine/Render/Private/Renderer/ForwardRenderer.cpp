@@ -88,6 +88,7 @@ namespace yjw
     {
         m_high_light_pass->SubmitHighLightObject(m_context);
         RPICmdBeginRenderPass(m_context, m_render_pass);
+        RPICmdSetResourceSet(m_context, RPIResourceSetType::entity, m_view->GetScene()->GetEntityResourceSet());
         RPICmdSetResourceSet(m_context, RPIResourceSetType::common, g_internal_shader_parameters.GetCommonResourceSet());
         SubmitOpacue();
         m_sky_box_pass->Submit(m_context);
@@ -112,6 +113,7 @@ namespace yjw
 
     void ForwardRenderer::Submit(DrawItem* item)
     {
+        RPICmdPushConstants(m_context, item->m_entity->GetPushContants(), 0, sizeof(int) * 4);
         RPICmdSetPrimitiveBinding(m_context, item->m_primitive->GetPrimitiveBinding(), item->m_sub_primitive_id);
         RPICmdSetResourceSet(m_context, RPIResourceSetType::vs, item->m_primitive->GetVSResourceSet());
         RPICmdSetResourceSet(m_context, RPIResourceSetType::ps, item->m_material->GetResourceSet());

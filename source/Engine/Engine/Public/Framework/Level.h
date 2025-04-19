@@ -32,8 +32,7 @@ namespace yjw
                 actor->SetSceneEntity(entity_handle);
                 RdGeometryPtr mesh_handle = rdCreateGeometry(mesh_component->GetPrimitive());
                 GetWorld()->GetScene()->UpdateEntityMesh(entity_handle, mesh_handle);
-                int pick_flag[4] = { actor->GetActorId(), 0,0,0 };
-                GetWorld()->GetScene()->UpdateEntityPickFlag(entity_handle, pick_flag);
+                GetWorld()->GetScene()->UpdateEntityPickFlag(entity_handle, actor->GetActorId());
             }
 
             return actor;

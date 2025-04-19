@@ -28,6 +28,6 @@ namespace rhi
         int GetOffset();
         VkBufferView& GetView();
     private:
-        VkBufferView m_view;
+        VkBufferView m_view{};
     };
 }

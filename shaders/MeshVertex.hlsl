@@ -1,4 +1,5 @@
 #include "Global.hlsli"
+#include "EntityData.hlsli"
 
 struct MeshVertexInput  
 {  
@@ -90,7 +91,7 @@ MeshVertexOutput SimpleVS(SimpleMeshVertexInput input)
     
     float4 model_position = float4(input.positon, 1.0);
     
-    output.sv_Position = mul(mul(model_position, viewMat), projectMat);
+    output.sv_Position = mul(mul(mul(model_position, GetModelMatrix()), viewMat), projectMat);
   
     output.position = model_position.xyz;
     output.normal = input.normal;

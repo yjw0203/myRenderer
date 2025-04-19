@@ -45,6 +45,7 @@ namespace rhi
         virtual ShaderReflect* GetPSShaderReflect() override;
         VkPipeline GetOrCreateVkPipeline(VulkanRenderPass* renderPass);
         VkPipelineLayout GetOrCreateVkPipelineLayout();
+        int GetMaxSetCount();
     private:
         VkPipelineLayout m_pipeline_layout = nullptr;
         std::vector<VkDescriptorSetLayout> m_descriptor_set_layouts;
@@ -59,6 +60,7 @@ namespace rhi
         ~VulkanComputePipeline();
         VkPipeline GetOrCreateVkPipeline();
         VkPipelineLayout GetOrCreateVkPipelineLayout();
+        int GetMaxSetCount();
     private:
         VkPipelineLayout m_pipeline_layout = nullptr;
         std::vector<VkDescriptorSetLayout> m_descriptor_set_layouts;

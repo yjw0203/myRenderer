@@ -177,9 +177,9 @@ namespace rhi
         options.optimizationLevel = 3;
         options.shaderModel = { 6, 2 };
         options.shiftAllCBuffersBindings = 0;
-        options.shiftAllTexturesBindings = 16;
-        options.shiftAllSamplersBindings = 32;
-        options.shiftAllUABuffersBindings = 48;
+        options.shiftAllTexturesBindings = 0;
+        options.shiftAllSamplersBindings = 0;
+        options.shiftAllUABuffersBindings = 0;
 
         Compiler::TargetDesc targetDesc{};
         targetDesc.language = ShadingLanguage::SpirV;
@@ -255,6 +255,21 @@ namespace rhi
                     image.m_type = ShaderReflect::ToImageType(type_name.c_str());
                     reflect.m_separate_images.push_back(image);
                 }
+            }
+        }
+
+        if (document.HasMember("ssbos"))
+        {
+            auto& ssbos = document["ssbos"];
+            for (int index = 0; index < ssbos.Size(); index++)
+            {
+                auto& ssbo_json = ssbos[index];
+                assert(ssbo_json.IsObject());
+                ShaderReflect::SSBO buffer{};
+                buffer.m_name = ssbo_json["name"].GetString();
+                buffer.m_set = ssbo_json["set"].GetInt();
+                buffer.m_binding = ssbo_json["binding"].GetInt();
+                reflect.m_ssbos.push_back(buffer);
             }
         }
 

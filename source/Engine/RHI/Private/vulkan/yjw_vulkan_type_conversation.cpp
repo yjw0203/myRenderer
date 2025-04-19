@@ -34,7 +34,7 @@ namespace rhi
         }
         if (!((int)RHIResourceUsageBits::deny_shader_resource & usage))
         {
-            flag |= VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT | VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER;
+            flag |= VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT | VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER | VK_BUFFER_USAGE_STORAGE_BUFFER_BIT;
         }
         if ((int)RHIResourceUsageBits::allow_transfer_src & usage)
         {

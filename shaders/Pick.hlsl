@@ -1,11 +1,5 @@
 #include "Global.hlsli"
-
-BEGIN_PUSH_CONSTANTS()
-PUSH_CONSTANTS(flag0, int, 0)
-PUSH_CONSTANTS(flag1, int, 4)
-PUSH_CONSTANTS(flag2, int, 8)
-PUSH_CONSTANTS(flag3, int, 12)
-END_PUSH_CONSTANTS()
+#include "EntityData.hlsli"
 
 struct MeshVertexOutput
 {
@@ -17,5 +11,5 @@ struct MeshVertexOutput
 
 int4 PSMain(MeshVertexOutput ps_in) : SV_TARGET
 {
-    return int4(PUSH_CONSTANTS.flag0,PUSH_CONSTANTS.flag1,PUSH_CONSTANTS.flag2,PUSH_CONSTANTS.flag3);
+    return int4(PUSH_CONSTANTS.pick_flag,PUSH_CONSTANTS.pick_flag,PUSH_CONSTANTS.pick_flag,PUSH_CONSTANTS.pick_flag);
 }

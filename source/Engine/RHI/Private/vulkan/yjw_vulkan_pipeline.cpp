@@ -20,6 +20,10 @@ namespace rhi
         {
             AddBinding(shaderBits, RHIName(buffer.m_name), buffer.m_set, buffer.m_binding, VkDescriptorType::VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER);
         }
+        for (const ShaderReflect::SSBO& buffer : reflect.m_ssbos)
+        {
+            AddBinding(shaderBits, RHIName(buffer.m_name), buffer.m_set, buffer.m_binding, VkDescriptorType::VK_DESCRIPTOR_TYPE_STORAGE_BUFFER);
+        }
         if (shaderType == RHIShaderType::vertex)
         {
             for (const auto& input : reflect.m_inputs)
@@ -51,6 +55,13 @@ namespace rhi
             if (buffer.m_set == set)
             {
                 AddBinding(shaderBits, RHIName(buffer.m_name), buffer.m_set, buffer.m_binding, VkDescriptorType::VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER);
+            }
+        }
+        for (const ShaderReflect::SSBO& buffer : reflect.m_ssbos)
+        {
+            if (buffer.m_set == set)
+            {
+                AddBinding(shaderBits, RHIName(buffer.m_name), buffer.m_set, buffer.m_binding, VkDescriptorType::VK_DESCRIPTOR_TYPE_STORAGE_BUFFER);
             }
         }
         m_max_set_id = std::max(m_max_set_id, set);
@@ -118,7 +129,10 @@ namespace rhi
             ShaderReflect* reflect = device->GetGlobalResourceSetLayout(i);
             if (reflect)
             {
-                m_reflect_view.OverrideSetReflection(i, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, *reflect);
+                if (!m_reflect_view.GetBindingsBySetID(i).empty())
+                {
+                    m_reflect_view.OverrideSetReflection(i, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, *reflect);
+                }
             }
         }
     }
@@ -318,6 +332,11 @@ namespace rhi
         return m_pipeline_layout;
     }
 
+    int VulkanRenderPipeline::GetMaxSetCount()
+    {
+        return m_reflect_view.GetMaxSetCount();
+    }
+
     RHIPrimitiveBinding* VulkanRenderPipeline::CreatePrimitiveBinding()
     {
         return m_descriptor.vs->CreatePrimitiveBinding();
@@ -363,7 +382,10 @@ namespace rhi
             ShaderReflect* reflect = device->GetGlobalResourceSetLayout(i);
             if (reflect)
             {
-                m_reflect_view.OverrideSetReflection(i, VK_SHADER_STAGE_COMPUTE_BIT, *reflect);
+                if (!m_reflect_view.GetBindingsBySetID(i).empty())
+                {
+                    m_reflect_view.OverrideSetReflection(i, VK_SHADER_STAGE_COMPUTE_BIT, *reflect);
+                }
             }
         }
     }
@@ -429,6 +451,11 @@ namespace rhi
         vkCreatePipelineLayout(GetDevice()->GetNativeDevice(), &pipelineLayoutInfo, nullptr, &m_pipeline_layout);
 
         return m_pipeline_layout;
+    }
+
+    int VulkanComputePipeline::GetMaxSetCount()
+    {
+        return m_reflect_view.GetMaxSetCount();
     }
 
     VulkanComputePipeline::~VulkanComputePipeline()

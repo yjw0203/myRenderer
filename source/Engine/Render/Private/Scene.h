@@ -19,15 +19,25 @@ namespace yjw
         RdMaterial* m_material{};
     };
 
+    struct RdEntityData
+    {
+        RdEntityData() { m_model_matrix = Transform().getMatrix(); }
+        Matrix4x4 m_model_matrix{};
+    };
+
     class RdEntity
     {
     public:
         RdEntity(RdContext* context);
         ~RdEntity();
+
+        int GetDataId();
+        void UpdateDataId(int id);
         void UpdateMesh(RdGeometryPtr handle);
         void UpdateOverrideMaterial(const std::string& slot, RdMaterialPtr handle);
-        void UpdatePickFlag(int pick_flag[4]);
-        int* GetPickFlag();
+        void UpdateEntityDataID(int id);
+        void UpdatePickFlag(int pick_flag);
+        int* GetPushContants();
         void UpdateRenderMask(RdRenderMaskBits maskBit, bool enable);
         bool GetRenderMask(RdRenderMaskBits maskBit);
         void ClearDrawItems();
@@ -43,7 +53,8 @@ namespace yjw
 
         RdContext* m_context{ nullptr };
 
-        int m_pick_flag[4] = {};
+        int m_data_id{};
+        int m_push_constants[4] = {}; //0: entity_data_id, 3: pick_flag
         int m_render_mask{};
     };
 
@@ -51,23 +62,30 @@ namespace yjw
     class RdScene
     {
     public:
-        RdScene(RdContext* context) : m_context{ context } {};
+        RdScene(RdContext* context);
         ~RdScene();
+
+        static void OnInit();
 
         RdEntityPtr AddEntity();
         void EraseEntity(RdEntityPtr handle);
+        void UpdateEntityTransform(RdEntityPtr entity, Transform transform);
         void UpdateEntityMesh(RdEntityPtr entity, RdGeometryPtr mesh);
         void UpdateEntityOverrideMaterial(RdEntityPtr entity, const std::string& slot, RdMaterialPtr material);
-        void UpdateEntityPickFlag(RdEntityPtr entity, int pick_flag[4]);
+        void UpdateEntityPickFlag(RdEntityPtr entity, int pick_flag);
         void UpdateEntityRenderMask(RdEntityPtr entity, RdRenderMaskBits maskBit, bool enable);
 
         void GetDrawItems(std::vector<DrawItem>& v);
+        rpi::RPIResourceSet GetEntityResourceSet();
 
-        void Update(float deltaTime);
+        void Update();
     private:
-        RdEntityPtr m_entity_id_allocator = 0;
         std::set<RdEntity*> m_entities;
-
         RdContext* m_context{nullptr};
+
+        rpi::RPIResourceSet m_entity_resource_set{};
+        rpi::RPIBuffer m_entity_data_buffer{};
+        std::vector<RdEntityData> m_entity_data{};
+        std::vector<int> m_entity_data_free{};
     };
 }

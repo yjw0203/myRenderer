@@ -19,6 +19,7 @@ namespace yjw
 
     void RdView::Draw()
     {
+        m_attach_scene->Update();
         m_pick_pass->Submit();
         m_renderer->Render();
     }

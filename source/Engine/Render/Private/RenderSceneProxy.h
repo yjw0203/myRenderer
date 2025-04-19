@@ -11,6 +11,8 @@ namespace yjw
         RenderSceneProxy() {}
         RenderSceneProxy(RdScene* scene) : m_scene(scene) {}
 
+        rpi::RPIResourceSet GetEntityResourceSet() { return m_scene->GetEntityResourceSet(); }
+
         template<typename T,typename Func>
         void SubmitOpaque(T* This ,Func func)
         {
