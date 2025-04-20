@@ -94,7 +94,7 @@ namespace yjw
         m_sky_box_pass->Submit(m_context);
         SubmitTransparent();
         m_high_light_pass->HighLightPostProcess(m_context);
-        //m_imgui_pass->Submit(m_context);
+        m_imgui_pass->Submit(m_context);
         RPICmdEndPass(m_context);
     }
 

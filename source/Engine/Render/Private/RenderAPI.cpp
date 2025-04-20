@@ -24,9 +24,9 @@ namespace yjw
         g_internal_shader_parameters.m_light->lightColor = glm::vec3(5, 5, 5);
         g_internal_shader_parameters.m_option->screenSize = glm::vec2(1200, 1200);
 
-        g_rd_context->m_render_camera->SetPosition(glm::vec3(7.9, 14, -13));
+        g_rd_context->m_render_camera->SetPosition(glm::vec3(0, 10, 0));
         //activeCamera->SetRotation(glm::quat(0.2, -0.93, 0.04, -0.3));
-        g_rd_context->m_render_camera->SetRotation(glm::quat(0, 0, 0, 1));
+        g_rd_context->m_render_camera->SetRotation(glm::quat(1, 0, 0, 0));
         (new RenderCameraInputDispatcher(g_rd_context))->Register();
 
         RdScene::OnInit();
@@ -42,6 +42,12 @@ namespace yjw
         g_internal_shader_parameters.m_camera->near_far = glm::vec2(g_rd_context->m_render_camera->near(), g_rd_context->m_render_camera->far());
 
         g_internal_shader_parameters.FlushCpuDataToGpu();
+
+        printf("forward: %.3f %.3f %.3f\n", g_rd_context->m_render_camera->forward().x, g_rd_context->m_render_camera->forward().y, g_rd_context->m_render_camera->forward().z);
+        printf("up: %.3f %.3f %.3f\n", g_rd_context->m_render_camera->up().x, g_rd_context->m_render_camera->up().y, g_rd_context->m_render_camera->up().z);
+        printf("right: %.3f %.3f %.3f\n", g_rd_context->m_render_camera->right().x, g_rd_context->m_render_camera->right().y, g_rd_context->m_render_camera->right().z);
+        glm::vec3 ford = glm::vec3(-1, 0, 0) * glm::quat(1,0,0,0);// glm::quat(0, 0, 0, 1);
+        printf("%.3f %.3f %.3f\n", ford.x, ford.y, ford.z);
     }
 
     void rdDestroy()
@@ -147,5 +153,15 @@ namespace yjw
     void rdGetProcessedHitRequest(RdViewPtr view, const char* group_name, std::vector<RdHitRequestStruct>& proccessed_request)
     {
         view->GetProcessedHitRequest(group_name, proccessed_request);
+    }
+
+    glm::mat4x4 rdGetViewMatrix()
+    {
+        return g_rd_context->m_render_camera->getViewMatrix();
+    }
+
+    glm::mat4x4 rdGetProjMatrix()
+    {
+        return g_rd_context->m_render_camera->getProjectionMatrix();
     }
 }

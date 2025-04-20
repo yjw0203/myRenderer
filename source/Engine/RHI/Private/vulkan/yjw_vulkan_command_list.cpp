@@ -147,9 +147,9 @@ namespace rhi
 
         VkViewport viewport{};
         viewport.x = 0.0f;
-        viewport.y = 0.0f;
+        viewport.y = renderPass->GetHeight();
         viewport.width = renderPass->GetWidth();
-        viewport.height = renderPass->GetHeight();
+        viewport.height = -renderPass->GetHeight();
         viewport.minDepth = 0.0f;
         viewport.maxDepth = 1.0f;
         vkCmdSetViewport(m_command_list.GetCommandBuffer(), 0, 1, &viewport);

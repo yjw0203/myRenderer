@@ -36,7 +36,8 @@ namespace yjw
 
     glm::mat4x4 RenderCamera::getProjectionMatrix()
     {
-        return glm::perspective(glm::radians(fov), aspectRatio, zNear, zFar);
+        glm::mat4x4 mat = glm::perspective(glm::radians(fov), aspectRatio, zNear, zFar);
+        return mat;
     }
 
     glm::mat4x4 RenderCamera::getViewProjectionMatrix()
@@ -74,8 +75,8 @@ namespace yjw
     {
         float deltaTime = m_render_system->m_delta_time;
         RenderCamera& camera = *m_render_system->m_render_camera;
-        glm::vec3 relative_pos = glm::vec3(0, 0, -speed * deltaTime) * glm::inverse(camera.rotation());
-        camera.SetPosition(camera.position() + relative_pos);
+        glm::vec3 relative_pos = glm::vec3(0, speed * deltaTime, 0) * glm::inverse(camera.rotation());
+        camera.SetPosition(camera.position() + camera.forward() * speed * deltaTime);
     }
 
     void RenderCameraInputDispatcher::A()
@@ -83,15 +84,15 @@ namespace yjw
         float deltaTime = m_render_system->m_delta_time;
         RenderCamera& camera = *m_render_system->m_render_camera;
         glm::vec3 relative_pos = glm::vec3(-speed * deltaTime, 0, 0) * glm::inverse(camera.rotation());
-        camera.SetPosition(camera.position() + relative_pos);
+        camera.SetPosition(camera.position() + camera.right() * speed * deltaTime);
     }
 
     void RenderCameraInputDispatcher::S()
     {
         float deltaTime = m_render_system->m_delta_time;
         RenderCamera& camera = *m_render_system->m_render_camera;
-        glm::vec3 relative_pos = glm::vec3(0, 0, speed * deltaTime) * glm::inverse(camera.rotation());
-        camera.SetPosition(camera.position() + relative_pos);
+        glm::vec3 relative_pos = glm::vec3(0, -speed * deltaTime,0) * glm::inverse(camera.rotation());
+        camera.SetPosition(camera.position() - camera.forward() * speed * deltaTime);
     }
 
     void RenderCameraInputDispatcher::D()
@@ -99,14 +100,14 @@ namespace yjw
         float deltaTime = m_render_system->m_delta_time;
         RenderCamera& camera = *m_render_system->m_render_camera;
         glm::vec3 relative_pos = glm::vec3(speed * deltaTime, 0, 0) * glm::inverse(camera.rotation());
-        camera.SetPosition(camera.position() + relative_pos);
+        camera.SetPosition(camera.position() - camera.right() * speed * deltaTime);
     }
 
     void RenderCameraInputDispatcher::Q()
     {
         float deltaTime = m_render_system->m_delta_time;
         RenderCamera& camera = *m_render_system->m_render_camera;
-        glm::vec3 relative_pos = glm::vec3( 0, speed * deltaTime, 0) * glm::inverse(camera.rotation());
+        glm::vec3 relative_pos = glm::vec3( 0, 0, -speed * deltaTime) * glm::inverse(camera.rotation());
         camera.SetPosition(camera.position() + relative_pos);
     }
 
@@ -114,7 +115,7 @@ namespace yjw
     {
         float deltaTime = m_render_system->m_delta_time;
         RenderCamera& camera = *m_render_system->m_render_camera;
-        glm::vec3 relative_pos = glm::vec3(0, -speed * deltaTime, 0) * glm::inverse(camera.rotation());
+        glm::vec3 relative_pos = glm::vec3(0, 0, speed * deltaTime) * glm::inverse(camera.rotation());
         camera.SetPosition(camera.position() + relative_pos);
     }
 
@@ -128,18 +129,18 @@ namespace yjw
         if (isRightMouseButton)
         {
             float angularVelocity = glm::radians(180.0f);
-            float deltaX = (x - lastMouseX) / 1200 * angularVelocity;
-            float deltaY = (y - lastMouseY) / 1200 * angularVelocity;
+            float deltaX = (lastMouseX - x) / 1200 * angularVelocity;
+            float deltaY = (lastMouseY - y) / 1200 * angularVelocity;
             RenderCamera& camera = *m_render_system->m_render_camera;
             glm::quat camera_rot = camera.rotation();
 
-            glm::vec3 XAxis = glm::vec3(1, 0, 0);
+            glm::vec3 XAxis = camera.right();
             glm::vec3 pitchAxis = XAxis;
             camera_rot = glm::rotate(camera_rot, deltaY, pitchAxis);
 
-            glm::vec3 YAxis = glm::vec3(0, 1, 0) * camera_rot;
-            glm::vec3 yawAxis = YAxis;
-            camera_rot = glm::rotate(camera_rot, deltaX, yawAxis);
+            glm::vec3 ZAxis = glm::vec3(0, 0, 1);
+            glm::vec3 yawAxis = ZAxis;
+            camera_rot = glm::rotate(camera_rot, -deltaX, yawAxis);
 
             camera.SetRotation(camera_rot);
         }

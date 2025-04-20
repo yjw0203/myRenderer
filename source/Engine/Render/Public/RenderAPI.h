@@ -62,4 +62,7 @@ namespace yjw
     void rdAddPendingHitRequest(RdViewPtr view, const char* group_name, const RdHitRequestStruct& request);
     void rdGetProcessedHitRequest(RdViewPtr view, const char* group_name, std::vector<RdHitRequestStruct>& proccessed_request);
 
+    glm::mat4x4 rdGetViewMatrix();
+    glm::mat4x4 rdGetProjMatrix();
+
 }

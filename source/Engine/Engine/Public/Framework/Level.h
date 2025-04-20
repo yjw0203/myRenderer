@@ -2,7 +2,7 @@
 #include "Engine/Utils/Public/DesignPatterns/ECS.h"
 #include "Engine/Engine/Public/Framework/Actor.h"
 #include "Engine/Engine/Public/Framework/World.h"
-#include "Engine/Render/Private/Scene.h"
+#include "Engine/Render/Public/RenderAPI.h"
 namespace yjw
 {
     class Actor;
@@ -28,11 +28,12 @@ namespace yjw
             m_actors.push_back(actor);
             if (StaticMeshComponent* mesh_component = actor->GetEntity().GetComponent<StaticMeshComponent>())
             {
-                RdEntityPtr entity_handle = GetWorld()->GetScene()->AddEntity();
+                RdEntityPtr entity_handle = rdAddEntity(GetWorld()->GetScene());
                 actor->SetSceneEntity(entity_handle);
                 RdGeometryPtr mesh_handle = rdCreateGeometry(mesh_component->GetPrimitive());
-                GetWorld()->GetScene()->UpdateEntityMesh(entity_handle, mesh_handle);
-                GetWorld()->GetScene()->UpdateEntityPickFlag(entity_handle, actor->GetActorId());
+                rdUpdateEntityGeometry(GetWorld()->GetScene(), entity_handle, mesh_handle);
+                rdUpdateEntityTransform(GetWorld()->GetScene(), entity_handle, actor->GetTransform());
+                rdUpdateEntityPickFlag(GetWorld()->GetScene(), entity_handle, actor->GetActorId());
             }
 
             return actor;

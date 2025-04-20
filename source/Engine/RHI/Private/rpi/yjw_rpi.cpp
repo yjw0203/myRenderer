@@ -13,7 +13,7 @@ namespace rpi
     {
         RHIInstanceConfig config{};
         config.rhiType = ERHIType::vulkan;
-        config.isDebugMode = true;
+        config.isDebugMode = false;
         config.layers.push_back(rhi_layer_imgui);
         RPIO(instance) = new RHIInstance(config);
         RPIO(device) = RPIO(instance)->CreateDevice();

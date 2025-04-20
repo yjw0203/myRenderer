@@ -13,16 +13,18 @@ namespace yjw
         void SetActorId(int id) { m_id = id; }
         void SetName(const char* name) { m_name = name; }
         void SetEntity(Entity entity) { m_entity = entity; }
+        void SetTransform(const Transform& transform) { m_transform = transform; }
         int GetActorId() const { return m_id; };
         const char* GetName() const { return m_name.c_str(); };
         Entity GetEntity() { return m_entity; }
+        Transform GetTransform() { return m_transform; }
         virtual void OnSpawned() {}
         void SetSceneEntity(RdEntityPtr handle) { m_entity_handle = handle; }
         RdEntityPtr GetSceneEntity() { return m_entity_handle; }
     private:
 
         RdEntityPtr m_entity_handle{};
-
+        Transform m_transform{};
         Entity m_entity{};
         std::string m_name;
         int m_id{};

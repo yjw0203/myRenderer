@@ -207,7 +207,7 @@ namespace rhi
         rasteriazationStateInfo.polygonMode = VK_POLYGON_MODE_FILL;
         rasteriazationStateInfo.lineWidth = 1.0f;
         rasteriazationStateInfo.cullMode = ConvertCullModeToVkCullMode(m_descriptor.rasterization_state.cull_mode);
-        rasteriazationStateInfo.frontFace = VK_FRONT_FACE_CLOCKWISE;
+        rasteriazationStateInfo.frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE;
         rasteriazationStateInfo.depthBiasEnable = VK_FALSE;
         rasteriazationStateInfo.depthBiasClamp = 0.0;
         rasteriazationStateInfo.flags = 0;

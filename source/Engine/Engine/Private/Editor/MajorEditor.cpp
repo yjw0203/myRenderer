@@ -14,7 +14,13 @@ namespace yjw
     void MajorEditor::Startup()
     {
         m_input_dispatcher.Register();
-        m_input_dispatcher.SetOnClicked(std::bind(&MajorEditor::OnClicked, this, std::placeholders::_1, std::placeholders::_2));
+        m_input_dispatcher.SetOnClicked(std::bind(&MajorEditor::OnMouseClicked, this, std::placeholders::_1, std::placeholders::_2));
+        m_input_dispatcher.SetOnMousePress(std::bind(&MajorEditor::OnMousePress, this, std::placeholders::_1, std::placeholders::_2));
+        m_input_dispatcher.SetOnMouseMove(std::bind(&MajorEditor::OnMouseMove, this, std::placeholders::_1, std::placeholders::_2));
+        m_input_dispatcher.SetOnMouseRelease(std::bind(&MajorEditor::OnMouseRelease, this, std::placeholders::_1, std::placeholders::_2));
+        m_input_dispatcher.SetOnQ(std::bind(&MajorEditor::OnKeyPressedQ, this));
+        m_input_dispatcher.SetOnW(std::bind(&MajorEditor::OnKeyPressedW, this));
+        m_input_dispatcher.SetOnE(std::bind(&MajorEditor::OnKeyPressedE, this));
 
         m_world = new World();
         m_ui = new EditorUI(m_world);
@@ -29,6 +35,8 @@ namespace yjw
 
         Transform transform{};
         transform.m_location = glm::vec3(10, 10, 0);
+        transform.m_rotate = glm::quat(glm::vec3(2, 2, 2));
+        heita->SetTransform(transform);
         rdUpdateEntityTransform(m_world->GetScene(), heita->GetSceneEntity(), transform);
     }
 
@@ -57,6 +65,16 @@ namespace yjw
             printf("%d %d %d %d\n", proccessed_request.back().m_result, proccessed_request.back().m_result, proccessed_request.back().m_result, proccessed_request.back().m_result);
         }
 
+        if (m_select_actor_id && m_transform_mode != EditTransformMode::none)
+        {
+            Actor* actor = m_world->GetLevel()->GetActorById(m_select_actor_id);
+            if (actor)
+            {
+                actor->SetTransform(m_select_actor_edit_transform);
+                rdUpdateEntityTransform(m_world->GetScene(), actor->GetSceneEntity(), m_select_actor_edit_transform);
+            }
+        }
+
         rdDrawView(m_view);
     }
 
@@ -69,7 +87,9 @@ namespace yjw
         Actor* actor = m_world->GetLevel()->GetActorById(actor_id);
         if (actor)
         {
-            m_world->GetScene()->UpdateEntityRenderMask(actor->GetSceneEntity(), RdRenderMaskBits::highlight, true);
+            m_select_actor_edit_transform = actor->GetTransform();
+            m_ui->SetEditTransformPtr(&m_select_actor_edit_transform);
+            rdUpdateEntityRenderMask(m_world->GetScene(), actor->GetSceneEntity(), RdRenderMaskBits::highlight, true);
             m_select_actor_id = actor_id;
         }
     }
@@ -79,15 +99,55 @@ namespace yjw
         Actor* actor = m_world->GetLevel()->GetActorById(m_select_actor_id);
         if (actor)
         {
-            m_world->GetScene()->UpdateEntityRenderMask(actor->GetSceneEntity(), RdRenderMaskBits::highlight, false);
+            //m_ui->SetEditTransformPtr(nullptr);
+            rdUpdateEntityRenderMask(m_world->GetScene(), actor->GetSceneEntity(), RdRenderMaskBits::highlight, false);
         }
     }
 
-    void MajorEditor::OnClicked(float x, float y)
+    void MajorEditor::OnMouseClicked(float x, float y)
+    {
+        
+    }
+
+    void MajorEditor::OnMousePress(float x, float y)
     {
         RdHitRequestStruct req{};
         req.m_posx = x;
         req.m_posy = y;
         rdAddPendingHitRequest(m_view, "select actor", req);
+        ImGuiIO& io = ImGui::GetIO();
+        if (io.WantCaptureMouse)
+        {
+
+        }
+        else
+        {
+
+        }
+    }
+
+    void MajorEditor::OnMouseMove(float x, float y)
+    {
+
+    }
+
+    void MajorEditor::OnMouseRelease(float x, float y)
+    {
+
+    }
+
+    void MajorEditor::OnKeyPressedQ()
+    {
+        m_transform_mode = EditTransformMode::translate;
+    }
+
+    void MajorEditor::OnKeyPressedW()
+    {
+        m_transform_mode = EditTransformMode::rotate;
+    }
+
+    void MajorEditor::OnKeyPressedE()
+    {
+        m_transform_mode = EditTransformMode::scale;
     }
 }

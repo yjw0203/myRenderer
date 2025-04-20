@@ -1,5 +1,6 @@
 #pragma once
 #include "Engine/Engine/Private/Editor/MajorEditorInput.h"
+#include "Engine/Math/Public/Transform.h"
 
 namespace rhi
 {
@@ -8,6 +9,14 @@ namespace rhi
 
 namespace yjw
 {
+    enum class EditTransformMode
+    {
+        none,
+        translate,
+        rotate,
+        scale
+    };
+
     class MajorEditor
     {
     public:
@@ -18,15 +27,23 @@ namespace yjw
         void SelectActor(int actor_id);
         void UnselectActor();
     private:
-        void OnClicked(float x, float y);
+        void OnMouseClicked(float x, float y);
+        void OnMousePress(float x, float y);
+        void OnMouseMove(float x, float y);
+        void OnMouseRelease(float x, float y);
+        void OnKeyPressedQ();
+        void OnKeyPressedW();
+        void OnKeyPressedE();
     private:
         MajorInputDispatcher m_input_dispatcher{};
 
         class World* m_world = nullptr;
         class Window* m_window = nullptr;
         class RdView* m_view = nullptr;
-        class ::rhi::ImGuiUI* m_ui;
+        class EditorUI* m_ui;
 
         int m_select_actor_id{};
+        EditTransformMode m_transform_mode{ EditTransformMode::translate };
+        Transform m_select_actor_edit_transform{};
     };
 }

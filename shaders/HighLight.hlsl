@@ -24,6 +24,7 @@ VS_OUTPUT PostProcessVS(VS_INPUT input)
     VS_OUTPUT output;
     output.sv_Position = float4(input.in_pos, 1.0f, 1.0f);
     output.pos = input.in_pos;
+    output.pos.y = -output.pos.y;
     return output;
 }
 

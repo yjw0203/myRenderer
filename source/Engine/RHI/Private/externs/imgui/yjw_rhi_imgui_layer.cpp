@@ -2,6 +2,7 @@
 #include "Engine/RHI/Private/externs/imgui/native/imgui.h"
 #include "Engine/RHI/Private/externs/imgui/native/imgui_impl_vulkan.h"
 #include "Engine/RHI/Private/externs/imgui/native/imgui_impl_glfw.h"
+#include "Engine/RHI/Private/externs/imgui/native/ImGuizmo.h"
 
 #include "Engine/RHI/Private/vulkan/yjw_vulkan_context.h"
 #include "Engine/RHI/Private/vulkan/yjw_vulkan_instance.h"
@@ -114,6 +115,7 @@ namespace rhi
         ImGui_ImplVulkan_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
+        ImGuizmo::BeginFrame();
     }
 
     void RHIImguiLayer::Render(RHIContext* context)
