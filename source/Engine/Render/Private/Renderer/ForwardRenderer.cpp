@@ -117,7 +117,7 @@ namespace yjw
         RPICmdSetPrimitiveBinding(m_context, item->m_primitive->GetPrimitiveBinding(), item->m_sub_primitive_id);
         RPICmdSetResourceSet(m_context, RPIResourceSetType::vs, item->m_primitive->GetVSResourceSet());
         RPICmdSetResourceSet(m_context, RPIResourceSetType::ps, item->m_material->GetResourceSet());
-        RPICmdSetRenderPipeline(m_context, m_opacue_pipeline, item->m_primitive->GetVertexShader(), item->m_material->GetPixelShader());
+        RPICmdSetRenderPipeline(m_context, m_opacue_pipeline, item->m_primitive->GetPrimitiveBinding(), item->m_material->GetPixelShader());
         RPICmdDrawIndex(m_context, 0, 1);
     }
 

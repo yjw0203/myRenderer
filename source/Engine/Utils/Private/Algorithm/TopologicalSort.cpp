@@ -11,9 +11,11 @@ namespace yjw
         bool AddEdge(int from, int to);
         bool Sort();
         std::vector<int>& GetResult();
+        std::vector<int>& GetRResult();
     private:
         std::vector<std::vector<int>> m_edges;
         std::vector<int> m_result;
+        std::vector<int> m_r_result;
         std::vector<int> m_inDegree;
     };
 
@@ -74,7 +76,14 @@ namespace yjw
 
         //3. Check has topological order
         if (m_result.size() == m_inDegree.size())
+        {
+            m_r_result.resize(m_result.size());
+            for (int i = 0; i < m_result.size(); i++)
+            {
+                m_r_result[m_result[i]] = i;
+            }
             return true;
+        }
         else
             return false;
     }
@@ -82,6 +91,11 @@ namespace yjw
     std::vector<int>& TopologicalSortImplement::GetResult()
     {
         return m_result;
+    }
+
+    std::vector<int>& TopologicalSortImplement::GetRResult()
+    {
+        return m_r_result;
     }
 
     TopologicalSort::TopologicalSort(int n)
@@ -107,5 +121,10 @@ namespace yjw
     std::vector<int>& TopologicalSort::GetResult()
     {
         return m_implement->GetResult();
+    }
+
+    std::vector<int>& TopologicalSort::GetRResult()
+    {
+        return m_implement->GetRResult();
     }
 }

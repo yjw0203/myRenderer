@@ -9,6 +9,7 @@
 #include "Engine/Animation/Public/AnimationData.h"
 #include "Engine/Engine/Public/Asset/Material.h"
 #include "Engine/Engine/Public/Asset/Mesh.h"
+#include "Engine/Engine/Public/Asset/Animation.h"
 
 namespace yjw
 {
@@ -92,7 +93,9 @@ namespace yjw
         std::vector<MaterialIns> m_material_instances;
         std::vector<Entity> m_entities;
 
-        SkeletonData m_skeleton_data;
+        SkeletonAST m_skeleton_data;
+
+        AnimationClipAST m_animation_clip_data;
     };
 
     class ModelBuilder;

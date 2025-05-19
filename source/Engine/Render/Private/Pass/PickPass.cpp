@@ -79,7 +79,7 @@ namespace yjw
         RPICmdPushConstants(m_context, item->m_entity->GetPushContants(), 0, sizeof(int) * 4);
         RPICmdSetPrimitiveBinding(m_context, item->m_primitive->GetPrimitiveBinding(), item->m_sub_primitive_id);
         RPICmdSetResourceSet(m_context, RPIResourceSetType::vs, item->m_primitive->GetVSResourceSet());
-        RPICmdSetRenderPipeline(m_context, m_pipeline, item->m_primitive->GetVertexShader(), m_ps);
+        RPICmdSetRenderPipeline(m_context, m_pipeline, item->m_primitive->GetPrimitiveBinding(), m_ps);
         RPICmdDrawIndex(m_context, 0, 1);
     }
 }

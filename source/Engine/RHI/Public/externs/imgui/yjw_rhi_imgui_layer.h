@@ -33,8 +33,12 @@ namespace rhi
         VkDescriptorPool m_descriptor_pool{};
         RHITexture* m_texture = nullptr;
         RHITextureView* m_texture_view = nullptr;
+        rpi::RPIShader m_vs{};
+        rpi::RPIShader m_ps{};
         rpi::RPIRenderPass m_render_pass{};
+        rpi::RPIRenderPipeline m_render_pipeline{};
         std::unordered_map<std::string, VkTextureId> m_registered_textures;
+
 
         RHIDevice* m_device = nullptr;
 

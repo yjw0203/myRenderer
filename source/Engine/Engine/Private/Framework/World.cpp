@@ -12,6 +12,11 @@ namespace yjw
         m_scene = rdCreateScene();
     }
 
+    void World::Tick(float deltaTime)
+    {
+        m_level->Update(deltaTime);
+    }
+
     void World::DestroyWorld()
     {
         delete m_scene;

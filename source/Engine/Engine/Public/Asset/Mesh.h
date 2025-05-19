@@ -3,6 +3,7 @@
 #include "Engine/Asset/Public/Asset.h"
 #include "Engine/Engine/Public/Asset/Material.h"
 #include <vector>
+#include "Engine/Math/Public/Math.h"
 
 namespace yjw
 {
@@ -12,12 +13,15 @@ namespace yjw
         INDEX, // not a attribute
         POSITION,
         NORMAL,
-        TARGENT,
+        TANGENT,
         UV0,
         UV1,
         BLEND_INDICES,
         BLEND_WEIGHTS,
-        BLEND_TYPE
+        BLEND_INDICES1,
+        BLEND_WEIGHTS1,
+        BLEND_TYPE,
+        COLOR
     };
 
     template<typename T>
@@ -66,4 +70,16 @@ namespace yjw
 
     void to_json(json& j, const yjw::RawBuffer& obj);
     void from_json(const json& j, yjw::RawBuffer& obj);
+    void to_json(json& j, const yjw::Transform& obj);
+    void from_json(const json& j, yjw::Transform& obj);
+}
+
+namespace glm
+{
+    void to_json(json& j, const yjw::Vector3& obj);
+    void from_json(const json& j, yjw::Vector3& obj);
+    void to_json(json& j, const yjw::Quaternion& obj);
+    void from_json(const json& j, yjw::Quaternion& obj);
+    void to_json(json& j, const yjw::Matrix4x4& obj);
+    void from_json(const json& j, yjw::Matrix4x4& obj);
 }

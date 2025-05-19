@@ -19,10 +19,11 @@ namespace yjw
         RdMaterial* m_material{};
     };
 
-    struct RdEntityData
+    struct alignas(16) RdEntityData
     {
         RdEntityData() { m_model_matrix = Transform().getMatrix(); }
         Matrix4x4 m_model_matrix{};
+        int skeletal_start_id{0};
     };
 
     class RdEntity
@@ -70,6 +71,7 @@ namespace yjw
         RdEntityPtr AddEntity();
         void EraseEntity(RdEntityPtr handle);
         void UpdateEntityTransform(RdEntityPtr entity, Transform transform);
+        void UpdateEntitySkeletalMatrix(RdEntityPtr entity, const Matrix4x4* data, int count);
         void UpdateEntityMesh(RdEntityPtr entity, RdGeometryPtr mesh);
         void UpdateEntityOverrideMaterial(RdEntityPtr entity, const std::string& slot, RdMaterialPtr material);
         void UpdateEntityPickFlag(RdEntityPtr entity, int pick_flag);
@@ -77,6 +79,8 @@ namespace yjw
 
         void GetDrawItems(std::vector<DrawItem>& v);
         rpi::RPIResourceSet GetEntityResourceSet();
+
+        void resetSkeletal();
 
         void Update();
     private:
@@ -87,5 +91,8 @@ namespace yjw
         rpi::RPIBuffer m_entity_data_buffer{};
         std::vector<RdEntityData> m_entity_data{};
         std::vector<int> m_entity_data_free{};
+
+        rpi::RPIBuffer m_skeletal_matrix_buffer{};
+        std::vector<Matrix4x4> m_skeletal_matrix_data{};
     };
 }

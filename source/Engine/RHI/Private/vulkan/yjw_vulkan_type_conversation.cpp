@@ -272,6 +272,7 @@ namespace rhi
         case ShaderReflect::DataType::vec4: return VkFormat::VK_FORMAT_R32G32B32A32_SFLOAT;
         case ShaderReflect::DataType::ivec4: return VkFormat::VK_FORMAT_R32G32B32A32_SINT;
         case ShaderReflect::DataType::int_: return VkFormat::VK_FORMAT_R32_SINT;
+        case ShaderReflect::DataType::uint_: return VkFormat::VK_FORMAT_R32_UINT;
         }
         assert(0);
         return VkFormat::VK_FORMAT_UNDEFINED;

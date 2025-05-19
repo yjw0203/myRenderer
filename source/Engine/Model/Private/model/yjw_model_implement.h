@@ -24,8 +24,10 @@ namespace yjw
         int AddMaterial(const CPUModel::Material& material);
         int AddMaterialInstance(const CPUModel::MaterialIns& material_instance);
         int AddEntity(int mesh_id, int material_ins_id);
-        void AddBone(const BoneData& bone);
-        const BoneData& GetBone(int index);
+        void AddBone(const RawBone& bone);
+        const RawBone& GetBone(int index);
+        SkeletonAST& GetSkeleton();
+        AnimationClipAST& GetAnimationClip();
     public:
         std::shared_ptr<CPUModel> m_cpu_model;
     };

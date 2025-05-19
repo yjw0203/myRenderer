@@ -8,9 +8,9 @@ namespace yjw
         InputDispatcher::registerMouseButtonEvent(GLFW_MOUSE_BUTTON_LEFT, GLFW_PRESS, 0, std::bind(&MajorInputDispatcher::LeftMouseDown, this));
         InputDispatcher::registerMousePosEvent(std::bind(&MajorInputDispatcher::MouseMove, this, std::placeholders::_1, std::placeholders::_2));
         InputDispatcher::registerMouseButtonEvent(GLFW_MOUSE_BUTTON_LEFT, GLFW_RELEASE, 0, std::bind(&MajorInputDispatcher::LeftMouseRelease, this));
-        InputDispatcher::registerMouseButtonEvent(GLFW_KEY_Q, GLFW_PRESS, 0, std::bind(&MajorInputDispatcher::Q, this));
-        InputDispatcher::registerMouseButtonEvent(GLFW_KEY_W, GLFW_PRESS, 0, std::bind(&MajorInputDispatcher::W, this));
-        InputDispatcher::registerMouseButtonEvent(GLFW_KEY_E, GLFW_PRESS, 0, std::bind(&MajorInputDispatcher::E, this));
+        InputDispatcher::registerKeyEvent(GLFW_KEY_Q, GLFW_PRESS, 0, std::bind(&MajorInputDispatcher::Q, this));
+        InputDispatcher::registerKeyEvent(GLFW_KEY_W, GLFW_PRESS, 0, std::bind(&MajorInputDispatcher::W, this));
+        InputDispatcher::registerKeyEvent(GLFW_KEY_E, GLFW_PRESS, 0, std::bind(&MajorInputDispatcher::E, this));
     }
 
     void MajorInputDispatcher::SetOnClicked(std::function<void(float, float)> func)

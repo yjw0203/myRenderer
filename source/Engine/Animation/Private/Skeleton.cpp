@@ -9,12 +9,22 @@ namespace yjw
 
     }
 
-    bool Skeleton::BuildSkeleton(const SkeletonData& skeleton_data)
+    bool Skeleton::BuildSkeleton(const char* url)
     {
-        TopologicalSort TopoSort(skeleton_data.bones.size());
-        for (auto& bone : skeleton_data.bones)
+        Asset<SkeletonAST> ast;
+        ast.SetURL(url);
+        return BuildSkeleton(ast.GetData()->m_bones_map, ast.GetData()->m_skin_map);
+    }
+
+    bool Skeleton::BuildSkeleton(const std::vector<RawBone>& m_bones_map, const std::vector<int>& skin_map)
+    {
+        TopologicalSort TopoSort(m_bones_map.size());
+        for (auto& bone : m_bones_map)
         {
-            TopoSort.AddEdge(bone.parent_index, bone.index);
+            if (bone.m_parent_index != bone.m_parent_index)
+            {
+                TopoSort.AddEdge(bone.m_parent_index, bone.m_index);
+            }
         }
         if (!TopoSort.Sort())
         {
@@ -22,21 +32,26 @@ namespace yjw
         }
 
         std::unordered_map<int, int> index_map;
-        m_bones.resize(skeleton_data.bones.size());
+        m_bones.resize(m_bones_map.size());
         for (int index = 0; index < m_bones.size(); index++)
         {
-            const BoneData& bone_data = skeleton_data.bones[TopoSort.GetResult()[index]];
-            index_map[bone_data.index] = index;
-            m_bones[index].m_index = bone_data.index;
-            m_bones[index].m_name = bone_data.name;
-            m_bones[index].m_init_pose = bone_data.binding_pose;
-            m_bones[index].m_inverse_init = glm::inverse(m_bones[index].m_init_pose.getMatrix());
-            if (index_map.count(bone_data.parent_index))
+            const RawBone& bone_data = m_bones_map[TopoSort.GetResult()[index]];
+            index_map[bone_data.m_index] = index;
+            m_bones[index].m_index = bone_data.m_index;
+            m_bones[index].m_name = bone_data.m_name;
+            m_bones[index].m_init_pose = bone_data.m_binding_pose;
+            m_bones[index].m_inverse_init = bone_data.m_inverse_T_matrix;
+            if (index_map.count(bone_data.m_parent_index))
             {
-                int parent_index = index_map[bone_data.parent_index];
+                int parent_index = index_map[bone_data.m_parent_index];
                 m_bones[index].m_parent = &m_bones[parent_index];
-                m_bones[index].m_inverse_init = m_bones[index].m_inverse_init * m_bones[index].m_parent->m_inverse_init;
             }
+        }
+
+        m_skin_map.resize(skin_map.size());
+        for (int i = 0; i < skin_map.size(); i++)
+        {
+            m_skin_map[i] = TopoSort.GetRResult()[skin_map[i]];
         }
 
         return true;
@@ -58,9 +73,9 @@ namespace yjw
         EndUpdateAnimation();
     }
 
-    const Bone::List& Skeleton::GetBones()
+    Bone::List* Skeleton::GetBones()
     {
-        return m_bones;
+        return &m_bones;
     }
 
     const std::vector<Matrix4x4>& Skeleton::GetBoneMatrices()
@@ -81,17 +96,18 @@ namespace yjw
     {
         for (int index = 0; index < m_bones.size(); index++)
         {
-            m_bones[index].m_pose.m_rotate = m_bones[index].m_pose.m_rotate * m_bones[index].m_anim_pose.m_rotate;
+            //m_bones[index].m_pose.m_rotate = m_bones[index].m_pose.m_rotate * m_bones[index].m_anim_pose.m_rotate;
+            m_bones[index].m_pose.m_rotate = m_bones[index].m_anim_pose.m_rotate;
             m_bones[index].m_pose.m_rotate = glm::normalize(m_bones[index].m_pose.m_rotate);
 
             m_bones[index].m_pose.m_scale = m_bones[index].m_pose.m_scale * m_bones[index].m_anim_pose.m_scale;
 
-            m_bones[index].m_pose.m_location += m_bones[index].m_anim_pose.m_location;
+            //m_bones[index].m_pose.m_location += m_bones[index].m_anim_pose.m_location;
+            m_bones[index].m_pose.m_location = m_bones[index].m_anim_pose.m_location;
 
             m_bones[index].m_local = m_bones[index].m_pose.getMatrix();
         }
 
-        m_bone_matrices.resize(m_bones.size());
         for (int index = 0; index < m_bones.size(); index++)
         {
             Bone* parent = m_bones[index].m_parent;
@@ -109,10 +125,16 @@ namespace yjw
 
             }
             //m_bone_matrices[m_bones[index].m_index] = m_bones[index].m_inverse_init * m_bones[index].m_pose.getMatrix();
-            m_bone_matrices[m_bones[index].m_index] = m_bones[index].m_local * m_bones[index].m_inverse_init;
             //m_bone_matrices[m_bones[index].m_index] = glm::transpose(m_bone_matrices[m_bones[index].m_index]);
             //m_bone_matrices[m_bones[index].m_index] = parent->m_inverse_init * parent->m_local;
             //m_bone_matrices[m_bones[index].m_index] = m_bones[index].m_inverse_init * m_bones[index].m_init_pose.getMatrix();
+        }
+
+        m_bone_matrices.resize(m_skin_map.size());
+        for (int i = 0; i < m_bone_matrices.size(); i++)
+        {
+            int bone_index = m_skin_map[i];
+            m_bone_matrices[i] = m_bones[bone_index].m_local * m_bones[bone_index].m_inverse_init;
         }
     }
 }

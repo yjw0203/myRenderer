@@ -48,19 +48,16 @@ namespace yjw
                 return m_entity_manager->GetComponentManager().RemoveComponent<T>(*this);
             }
         }
+
+        void SetParent(void* data) { m_parent = data; }
+        void* GetParent() { return m_parent; }
+
     private:
+        void* m_parent = nullptr;
         int m_id;
         EntityManager* m_entity_manager = nullptr;
     };
     
-    class SystemBase {
-    public:
-        virtual ~SystemBase() = default;
-        virtual void Update(float deltaTime) = 0;
-        void SetEntityManager(class EntityManager* entity_manager) { m_entity_manager = entity_manager; }
-    protected:
-        class EntityManager* m_entity_manager = nullptr;
-    };
 }
 
 namespace std {
@@ -110,13 +107,13 @@ namespace yjw
     public:
         EntityManager() : nextId(0) {}
 
-        Entity CreateEntity() {
+        Entity& CreateEntity() {
             Entity entity(nextId++, this);
             entities.push_back(entity);
-            return entity;
+            return entities.back();
         }
 
-        const std::vector<Entity>& GetEntities() const { return entities; }
+        std::vector<Entity>& GetEntities() { return entities; }
 
         ComponentManager& GetComponentManager() { return componentManager; }
 
@@ -124,6 +121,17 @@ namespace yjw
         std::vector<Entity> entities;
         ComponentManager componentManager;
         int nextId;
+    };
+
+    class SystemBase {
+    public:
+        virtual ~SystemBase() = default;
+        virtual void Update(float deltaTime) = 0;
+        void SetEntityManager(class EntityManager* entity_manager) { m_entity_manager = entity_manager; }
+        class EntityManager* GetEntityManager() { return m_entity_manager; }
+        std::vector<Entity>& GetEntities() { return GetEntityManager()->GetEntities(); }
+    protected:
+        class EntityManager* m_entity_manager = nullptr;
     };
 
     class SystemManager {

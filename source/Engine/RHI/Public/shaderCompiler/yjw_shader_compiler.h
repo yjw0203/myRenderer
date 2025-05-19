@@ -23,7 +23,8 @@ namespace rhi
             vec4,
             mat4,
             ivec4,
-            int_
+            int_,
+            uint_
         };
 
         struct UBOMember
@@ -127,7 +128,7 @@ namespace rhi
     {
     public:
         ShaderBlob CompileFromFileHLSLToSpirv(ShaderConductor::ShaderStage shaderType, const char* url, const char* entryName);
-        ShaderBlob CompileFromCodeHLSLToSpirv(ShaderConductor::ShaderStage shaderType, const char* code, const char* entryName);
+        ShaderBlob CompileFromCodeHLSLToSpirv(ShaderConductor::ShaderStage shaderType, const char* code, const char* entryName, const char* fileName = nullptr);
         ShaderReflect GetReflectFromSpirv(const void* compiledData, int compiledDataSize);
     private:
         void ReadCodeFromFileUrl(const char* url, std::vector<char>& code);

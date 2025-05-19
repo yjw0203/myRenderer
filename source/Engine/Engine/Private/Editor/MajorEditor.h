@@ -22,7 +22,7 @@ namespace yjw
     public:
         void Startup();
         void Destroy();
-        void Tick();
+        void Tick(float deltaTime);
 
         void SelectActor(int actor_id);
         void UnselectActor();

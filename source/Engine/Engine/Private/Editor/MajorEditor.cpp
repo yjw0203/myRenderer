@@ -3,6 +3,8 @@
 #include "Engine/Engine/Private/Editor/yjw_editor_ui.h"
 #include "Engine/Engine/Public/Framework/Actor.h"
 #include "Engine/Engine/Public/Framework/Level.h"
+#include "Engine/Engine/Public/Framework/Components/SkeletonComponent.h"
+#include "Engine/Engine/Public/Framework/Components/AnimationComponent.h"
 
 #include "Engine/RHI/Public/externs/imgui/yjw_rhi_imgui_layer.h"
 #include "Engine/RHI/Public/externs/imgui/yjw_rhi_imgui_window.h"
@@ -30,14 +32,19 @@ namespace yjw
         rdAttachScene(m_view, m_world->GetScene());
         rdAttachUI(m_view, m_ui);
 
-        m_world->GetLevel()->SpawnActor<MeshActor>("naxita", "naxita/naxita.mesh.ast");
-        Actor* heita = m_world->GetLevel()->SpawnActor<MeshActor>("heita", "heita/heita.mesh.ast");
-
-        Transform transform{};
-        transform.m_location = glm::vec3(10, 10, 0);
-        transform.m_rotate = glm::quat(glm::vec3(2, 2, 2));
-        heita->SetTransform(transform);
-        rdUpdateEntityTransform(m_world->GetScene(), heita->GetSceneEntity(), transform);
+        Vector3 locations[] = { Vector3(-2,-2,0),Vector3(-2, 0,0), Vector3(-2,1,0), Vector3(0,-2,0), Vector3(0,0,0),Vector3(0,2,0),Vector3(2,-2,0),Vector3(2,0,0),Vector3(2,2,0) };
+        for (int i = 0; i < 9; i++)
+        {
+            Transform transform{};
+            transform.m_location = locations[i];
+            Actor* wizard = m_world->GetLevel()->SpawnActor<MeshActor>("wizard", "wizard/wizard.mesh.ast");
+            wizard->SetTransform(transform);
+            SkeletonComponent* skeleton_component = wizard->GetEntity().AddComponent<SkeletonComponent>();
+            AnimationComponent* animation_component = wizard->GetEntity().AddComponent<AnimationComponent>();
+            skeleton_component->LoadSkeleton("wizard/wizard.skeleton.ast");
+            std::string animation = std::string("wizard/Animation/wizard") + (char)('0' + i + 1) + ".animation.ast";
+            animation_component->LoadAnimation(animation.c_str());
+        }
     }
 
     void MajorEditor::Destroy()
@@ -48,8 +55,10 @@ namespace yjw
         delete m_window;
     }
 
-    void MajorEditor::Tick()
+    void MajorEditor::Tick(float deltaTime)
     {
+        m_world->Tick(deltaTime);
+
         std::vector<RdHitRequestStruct> proccessed_request;
         rdGetProcessedHitRequest(m_view, "select actor", proccessed_request);
         if (!proccessed_request.empty())
@@ -71,7 +80,6 @@ namespace yjw
             if (actor)
             {
                 actor->SetTransform(m_select_actor_edit_transform);
-                rdUpdateEntityTransform(m_world->GetScene(), actor->GetSceneEntity(), m_select_actor_edit_transform);
             }
         }
 
@@ -138,6 +146,7 @@ namespace yjw
 
     void MajorEditor::OnKeyPressedQ()
     {
+        m_ui->SetEditTransformPtr(nullptr);
         m_transform_mode = EditTransformMode::translate;
     }
 

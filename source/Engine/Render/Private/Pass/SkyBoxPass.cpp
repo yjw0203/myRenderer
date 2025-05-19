@@ -87,7 +87,7 @@ namespace yjw
         RPICmdPushEvent(context, "SkyBoxPass");
         RPICmdSetResourceSet(context, RPIResourceSetType::ps, m_custom_ps_resource_set);
         RPICmdSetPrimitiveBinding(context, m_primitive_binding, 0);
-        RPICmdSetRenderPipeline(context, m_pipeline, m_primitive_binding.GetVertexShader(), m_ps);
+        RPICmdSetRenderPipeline(context, m_pipeline, m_primitive_binding, m_ps);
         RPICmdDrawIndex(context, 0, 1);
         RPICmdPopEvent(context);
     }

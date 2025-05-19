@@ -388,9 +388,9 @@ namespace rpi
         context->PopEvent();
     }
 
-    void RPICmdSetRenderPipeline(RPIContext context, RPIRenderPipeline pipeline, RPIShader vs, RPIShader ps)
+    void RPICmdSetRenderPipeline(RPIContext context, RPIRenderPipeline pipeline, RPIPrimitiveBinding primitive_binding, RPIShader ps)
     {
-        context->SetRenderPipeline((RHIRenderPipeline*)pipeline.GetRHIPipeline(vs, ps));
+        context->SetRenderPipeline((RHIRenderPipeline*)pipeline.GetRHIPipeline(primitive_binding.GetVertexShader(), ps));
     }
 
     void RPICmdPushConstants(RPIContext context, void* data, int offset, int size)

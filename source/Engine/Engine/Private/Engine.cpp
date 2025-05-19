@@ -60,7 +60,7 @@ namespace yjw
         currentRealTime = time;
 
         rdTick(deltaTime);
-        m_editor->Tick();
+        m_editor->Tick(deltaTime);
         AssetManager::Get()->process();
 
     }

@@ -19,21 +19,24 @@ namespace yjw
 
     void BezierAnimationController::Bind(Bone::List* bones)
     {
-        m_bones = bones;
-        if (bones)
+        if (m_bones != bones)
         {
-            m_node_index.resize(m_bones->size());
-            for (int i = 0; i < m_node_index.size(); i++)
+            m_bones = bones;
+            if (bones)
             {
-                std::string name = (*bones)[i].m_name;
-                std::shared_ptr<BezierAnimationKey> key = m_animation.lock();
-                if (key && key->m_bone_index_map.count(name))
+                m_node_index.resize(m_bones->size());
+                for (int i = 0; i < m_node_index.size(); i++)
                 {
-                    m_node_index[i] = key->m_bone_index_map[name];
-                }
-                else
-                {
-                    m_node_index[i] = -1;
+                    std::string name = (*bones)[i].m_name;
+                    std::shared_ptr<BezierAnimationKey> key = m_animation.lock();
+                    if (key && key->m_bone_index_map.count(name))
+                    {
+                        m_node_index[i] = key->m_bone_index_map[name];
+                    }
+                    else
+                    {
+                        m_node_index[i] = -1;
+                    }
                 }
             }
         }
@@ -113,6 +116,83 @@ namespace yjw
         {
             bone.m_anim_pose.m_rotate = glm::slerp(bone.m_anim_pose.m_rotate, q, weight);
             bone.m_anim_pose.m_location = glm::mix(bone.m_anim_pose.m_location, vt, weight);
+        }
+    }
+
+    ClipAnimationController::ClipAnimationController(const char* url)
+    {
+        m_clip.SetURL(url);
+    }
+
+    void ClipAnimationController::Bind(Bone::List* bones)
+    {
+        if (m_bones == bones)
+        {
+            return;
+        }
+        AnimationClipAST* clip = m_clip.GetData();
+        if (clip == nullptr)
+        {
+            return;
+        }
+        m_bones = bones;
+        if (bones)
+        {
+            m_node_index.resize(m_bones->size());
+            for (int i = 0; i < m_node_index.size(); i++)
+            {
+                m_node_index[i] = -1;
+                std::string name = (*bones)[i].m_name;
+                for (int j = 0; j < clip->m_animation_channels.size(); j++)
+                {
+                    if (clip->m_animation_channels[j].m_name == name)
+                    {
+                        m_node_index[i] = j;
+                        break;
+                    }
+                }
+            }
+        }
+    }
+    void ClipAnimationController::Evaluate(float time, float weight)
+    {
+        AnimationClipAST* clip = m_clip.GetData();
+        if (m_bones && clip && clip->m_total_frame > 0)
+        {
+            for (int index = 0; index < m_node_index.size(); index++)
+            {
+                int node_index = m_node_index[index];
+                if (node_index == -1)
+                    continue;
+
+                Bone& bone = (*m_bones)[index];
+                AnimationChannel& nodes = clip->m_animation_channels[node_index];
+                EvaluateBone(bone, nodes, time, clip->m_time_per_frame, weight);
+            }
+        }
+    }
+
+    void ClipAnimationController::EvaluateBone(Bone& bone, AnimationChannel& channel, float time, float time_per_frame, float weight)
+    {
+        int low_frame = std::min((int)(time / time_per_frame), (int)(channel.m_position_keys.size() - 1));
+        int high_frame = std::min(low_frame + 1, (int)(channel.m_position_keys.size() - 1));
+        float lerp_ratio = time - low_frame * time_per_frame;
+
+        Vector3 target_position = glm::mix(channel.m_position_keys[low_frame], channel.m_position_keys[high_frame], lerp_ratio);
+        Vector3 target_scale = glm::mix(channel.m_scaling_keys[low_frame], channel.m_scaling_keys[high_frame], lerp_ratio);
+        Quaternion target_rotation = glm::slerp(channel.m_rotation_keys[low_frame], channel.m_rotation_keys[high_frame], lerp_ratio);
+
+        if (weight == 1.0f)
+        {
+            bone.m_anim_pose.m_rotate = target_rotation;
+            bone.m_anim_pose.m_scale = target_scale;
+            bone.m_anim_pose.m_location = target_position;
+        }
+        else
+        {
+            bone.m_anim_pose.m_rotate = glm::slerp(bone.m_anim_pose.m_rotate, target_rotation, weight);
+            bone.m_anim_pose.m_scale = glm::mix(bone.m_anim_pose.m_scale, target_scale, weight);
+            bone.m_anim_pose.m_location = glm::mix(bone.m_anim_pose.m_location, target_position, weight);
         }
     }
 }

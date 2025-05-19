@@ -1,6 +1,7 @@
 #pragma once
 #include "Engine/Animation/Public/Bone.h"
 #include "Engine/Animation/Public/AnimationData.h"
+#include "Engine/Engine/Public/Asset/Animation.h"
 #include <vector>
 #include <memory>
 
@@ -11,17 +12,19 @@ namespace yjw
     {
     public:
         ~Skeleton();
-        bool BuildSkeleton(const SkeletonData& skeleton_data);
+        bool BuildSkeleton(const char* url);
+        bool BuildSkeleton(const std::vector<RawBone>& m_bones_map, const std::vector<int>& skin_map);
         void LoadController(std::shared_ptr<SkeletonController> controller);
         void Update(float time);
-        const Bone::List& GetBones();
+        Bone::List* GetBones();
         const std::vector<Matrix4x4>& GetBoneMatrices();
         
-    private:
         void BeginUpdateAnimation();
         void EndUpdateAnimation();
+    private:
         Bone::List m_bones;
         std::shared_ptr<SkeletonController> m_controller;
+        std::vector<int> m_skin_map;
         std::vector<Matrix4x4> m_bone_matrices;
     };
 

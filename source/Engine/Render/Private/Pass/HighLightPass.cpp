@@ -66,7 +66,7 @@ namespace yjw
             RPICmdPushConstants(m_current_context, item->m_entity->GetPushContants(), 0, sizeof(int) * 4);
             RPICmdSetPrimitiveBinding(m_current_context, item->m_primitive->GetPrimitiveBinding(), item->m_sub_primitive_id);
             RPICmdSetResourceSet(m_current_context, RPIResourceSetType::vs, item->m_primitive->GetVSResourceSet());
-            RPICmdSetRenderPipeline(m_current_context, m_highlight_mask_pipeline, item->m_primitive->GetVertexShader(), m_highlight_mask_ps);
+            RPICmdSetRenderPipeline(m_current_context, m_highlight_mask_pipeline, item->m_primitive->GetPrimitiveBinding(), m_highlight_mask_ps);
             RPICmdDrawIndex(m_current_context, 0, 1);
         }
     }
@@ -76,7 +76,7 @@ namespace yjw
         RPICmdPushEvent(context, "HighLightPostProcess");
         RPICmdSetResourceSet(context, RPIResourceSetType::ps, m_high_light_post_process_ps_resource_set);
         RPICmdSetPrimitiveBinding(context, m_post_process_Primitive_binding, 0);
-        RPICmdSetRenderPipeline(context, m_highlight_post_process_pipeline, m_highlight_post_process_vs, m_highlight_post_process_ps);
+        RPICmdSetRenderPipeline(context, m_highlight_post_process_pipeline, m_post_process_Primitive_binding, m_highlight_post_process_ps);
         RPICmdDraw(context, 6, 1, 0, 0);
         RPICmdPopEvent(context);
     }

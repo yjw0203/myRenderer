@@ -10,6 +10,7 @@
 #include "Engine/RHI/Private/vulkan/yjw_vulkan_command_queue.h"
 
 #include "Engine/RHI/Public/rpi/yjw_rpi.h"
+#include "projectInfo.h"
 
 namespace rhi
 {
@@ -87,6 +88,9 @@ namespace rhi
         init_info.UseDynamicRendering = false;
 
         ImGui_ImplVulkan_Init(&init_info);
+
+        m_vs = rpi::RPICreateShader(rpi::RPIShaderType::vertex, SHADER_FILE(ImGui.hlsl), "VSMain");
+        m_ps = rpi::RPICreateShader(rpi::RPIShaderType::fragment, SHADER_FILE(ImGui.hlsl), "PSMain");
     }
 
     void RHIImguiLayer::OnDeviceShutdown(class RHIDevice* device)

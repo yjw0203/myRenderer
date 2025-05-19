@@ -125,6 +125,14 @@ namespace yjw
         scene->UpdateEntityTransform(entity, transform);
     }
 
+    void rdUpdateEntitySkeletalMatrix(RdScenePtr scene, RdEntityPtr entity, const Matrix4x4* data, int count)
+    {
+        if (count > 0)
+        {
+            scene->UpdateEntitySkeletalMatrix(entity, data, count);
+        }
+    }
+
     void rdUpdateEntityOverrideMaterial(RdScenePtr scene, RdEntityPtr entity, const char* slot, RdMaterialPtr material)
     {
         scene->UpdateEntityOverrideMaterial(entity, slot, material);
@@ -143,6 +151,11 @@ namespace yjw
     void rdUpdateEntityRenderMask(RdScenePtr scene, RdEntityPtr entity, RdRenderMaskBits maskBit, bool enable)
     {
         scene->UpdateEntityRenderMask(entity, maskBit, enable);
+    }
+
+    void rdResetSkeletal(RdScenePtr scene)
+    {
+        scene->resetSkeletal();
     }
 
     void rdAddPendingHitRequest(RdViewPtr view, const char* group_name, const RdHitRequestStruct& request)

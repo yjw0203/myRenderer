@@ -59,18 +59,18 @@ namespace yjw
 
         for (int i = 0; i < pmxModel.m_bones.size(); i++)
         {
-            BoneData bone;
-            bone.name = pmxModel.m_bones[i].m_name;
-            bone.index = i;
-            bone.parent_index = pmxModel.m_bones[i].m_parentBoneIndex;
+            RawBone bone;
+            bone.m_name = pmxModel.m_bones[i].m_name;
+            bone.m_index = i;
+            bone.m_parent_index = pmxModel.m_bones[i].m_parentBoneIndex;
             if (pmxModel.m_bones[i].m_parentBoneIndex != -1)
             {
                 const auto& parentBone = pmxModel.m_bones[pmxModel.m_bones[i].m_parentBoneIndex];
-                bone.binding_pose.m_location = pmxModel.m_bones[i].m_position - parentBone.m_position;
+                bone.m_binding_pose.m_location = pmxModel.m_bones[i].m_position - parentBone.m_position;
             }
             else
             {
-                bone.binding_pose.m_location = pmxModel.m_bones[i].m_position;
+                bone.m_binding_pose.m_location = pmxModel.m_bones[i].m_position;
             }
             AddBone(bone);
         }

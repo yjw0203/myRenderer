@@ -2,6 +2,7 @@
 
 #include <fstream>
 #include <iostream>
+#include <filesystem>
 
 #define SHADER_CONDUCTOR_SOURCE
 #include "ShaderConductor/ShaderConductor.hpp"
@@ -63,6 +64,9 @@ namespace rhi
         else if (strcmp(str, "int") == 0) {
             return ShaderReflect::DataType::int_;
         }
+        else if (strcmp(str, "uint") == 0) {
+            return ShaderReflect::DataType::uint_;
+        }
         assert(0);
         return (ShaderReflect::DataType)-1;
     }
@@ -78,6 +82,7 @@ namespace rhi
         case ShaderReflect::DataType::mat4:return 64;
         case ShaderReflect::DataType::ivec4:return 16;
         case ShaderReflect::DataType::int_:return 4;
+        case ShaderReflect::DataType::uint_:return 4;
         }
         assert(0);
         return -1;
@@ -137,15 +142,17 @@ namespace rhi
 
     ShaderBlob ShaderCompiler::CompileFromFileHLSLToSpirv(ShaderConductor::ShaderStage shaderType, const char* url, const char* entryName)
     {
+        std::filesystem::path path(url);
+        std::string fileName = path.filename().string();
         std::vector<char> code;
         ReadCodeFromFileUrl(url, code);
         code.push_back('\0');
-        ShaderBlob blob = CompileFromCodeHLSLToSpirv(shaderType, code.data(), entryName);
+        ShaderBlob blob = CompileFromCodeHLSLToSpirv(shaderType, code.data(), entryName, fileName.c_str());
         blob.SetShaderReflect(GetReflectFromSpirv(blob.Data(), blob.Size()));
         return blob;
     }
 
-    ShaderBlob ShaderCompiler::CompileFromCodeHLSLToSpirv(ShaderConductor::ShaderStage shaderType, const char* code, const char* entryName)
+    ShaderBlob ShaderCompiler::CompileFromCodeHLSLToSpirv(ShaderConductor::ShaderStage shaderType, const char* code, const char* entryName, const char* fileName /* = nullptr */)
     {
         std::vector<Blob*> blob_to_delete;
 
@@ -163,6 +170,7 @@ namespace rhi
         Compiler compiler;
         Compiler::SourceDesc sourceDesc{};
         sourceDesc.source = code;
+        sourceDesc.fileName = fileName;
         sourceDesc.entryPoint = entryName;
         sourceDesc.stage = shaderType;
         sourceDesc.defines = nullptr;
@@ -171,11 +179,11 @@ namespace rhi
 
         Compiler::Options options{};
         options.packMatricesInRowMajor = true;
-        options.enable16bitTypes = true;
+        options.enable16bitTypes = false;
         options.enableDebugInfo = true;
-        options.disableOptimizations = false;
+        options.disableOptimizations = true;
         options.optimizationLevel = 3;
-        options.shaderModel = { 6, 2 };
+        options.shaderModel = { 5, 0 };
         options.shiftAllCBuffersBindings = 0;
         options.shiftAllTexturesBindings = 0;
         options.shiftAllSamplersBindings = 0;

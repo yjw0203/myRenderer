@@ -12,12 +12,15 @@ namespace yjw
         case MeshVertexType::UNKNOW: return "UNKNOW";
         case MeshVertexType::POSITION:return "POSITION";
         case MeshVertexType::NORMAL:return "NORMAL";
-        case MeshVertexType::TARGENT:return "TARGENT";
+        case MeshVertexType::TANGENT:return "TANGENT";
         case MeshVertexType::UV0:return "UV0";
         case MeshVertexType::UV1:return "UV1";
         case MeshVertexType::BLEND_INDICES:return "BLEND_INDICES";
         case MeshVertexType::BLEND_WEIGHTS:return "BLEND_WEIGHTS";
+        case MeshVertexType::BLEND_INDICES1:return "BLEND_INDICES1";
+        case MeshVertexType::BLEND_WEIGHTS1:return "BLEND_WEIGHTS1";
         case MeshVertexType::BLEND_TYPE:return "BLEND_TYPE";
+        case MeshVertexType::COLOR:return "COLOR";
         }
         return "UNKNOW";
     }
@@ -33,10 +36,15 @@ namespace yjw
         MeshAST* mesh_ptr = m_mesh_ast.GetData();
         if (m_primitive_binding.IsNull() && mesh_ptr)
         {
+            bool has_skeleton = false;
             m_vertex_buffers.resize(mesh_ptr->m_vertex_buffers.size());
             for (int i = 0; i < m_vertex_buffers.size(); i++)
             {
                 m_vertex_buffers[i].m_type = mesh_ptr->m_vertex_buffers[i].m_type;
+                if (m_vertex_buffers[i].m_type == BLEND_INDICES)
+                {
+                    has_skeleton = true;
+                }
                 m_vertex_buffers[i].m_buffer = rpi::RPICreateGpuVertexBuffer(mesh_ptr->m_vertex_buffers[i].m_vertexes.size());
                 rpi::RPIUpdateBuffer(m_vertex_buffers[i].m_buffer, mesh_ptr->m_vertex_buffers[i].m_vertexes.data(), 0, mesh_ptr->m_vertex_buffers[i].m_vertexes.size());
             }
@@ -45,7 +53,14 @@ namespace yjw
             m_index_buffer.m_buffer = rpi::RPICreateGpuVertexBuffer(mesh_ptr->m_index_buffer.size());
             rpi::RPIUpdateBuffer(m_index_buffer.m_buffer, mesh_ptr->m_index_buffer.data(), 0, mesh_ptr->m_index_buffer.size());
 
-            m_vertex_shader = rpi::RPICreateShader(rpi::RPIShaderType::vertex, SHADER_FILE(MeshVertex.hlsl), "SimpleVS");
+            if (has_skeleton)
+            {
+                m_vertex_shader = rpi::RPICreateShader(rpi::RPIShaderType::vertex, SHADER_FILE(MeshVertex.hlsl), "SkeletalVS");
+            }
+            else
+            {
+                m_vertex_shader = rpi::RPICreateShader(rpi::RPIShaderType::vertex, SHADER_FILE(MeshVertex.hlsl), "SimpleVS");
+            }
             m_vs_resource_set = rpi::RPICreateResourceSet(rpi::RPIResourceSetType::vs, m_vertex_shader->GetShaderReflect());
             m_primitive_binding = rpi::RPICreatePrimitiveBinding(m_vertex_shader);
             for (int i = 0; i < m_vertex_buffers.size(); i++)

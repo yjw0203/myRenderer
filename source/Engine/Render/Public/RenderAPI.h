@@ -17,7 +17,8 @@ namespace yjw
 
     enum RdRenderMaskBits
     {
-        highlight = 1 << 0
+        highlight = 1 << 0,
+        skeletal = 1 << 1
     };
 
     using RdRenderMask = int;
@@ -54,10 +55,12 @@ namespace yjw
     RdEntityPtr rdAddEntity(RdScenePtr scene);
     void rdRemoveEntity(RdScenePtr scene, RdEntityPtr entity);
     void rdUpdateEntityTransform(RdScenePtr scene, RdEntityPtr entity, const Transform& transform);
+    void rdUpdateEntitySkeletalMatrix(RdScenePtr scene, RdEntityPtr entity, const Matrix4x4* data, int count);
     void rdUpdateEntityOverrideMaterial(RdScenePtr scene, RdEntityPtr entity, const char* slot, RdMaterialPtr material);
     void rdUpdateEntityGeometry(RdScenePtr scene, RdEntityPtr entity, RdGeometryPtr geometry);
     void rdUpdateEntityPickFlag(RdScenePtr scene, RdEntityPtr entity, int pick_flag);
     void rdUpdateEntityRenderMask(RdScenePtr scene, RdEntityPtr entity, RdRenderMaskBits maskBit, bool enable);
+    void rdResetSkeletal(RdScenePtr scene);
 
     void rdAddPendingHitRequest(RdViewPtr view, const char* group_name, const RdHitRequestStruct& request);
     void rdGetProcessedHitRequest(RdViewPtr view, const char* group_name, std::vector<RdHitRequestStruct>& proccessed_request);

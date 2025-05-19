@@ -43,6 +43,7 @@ namespace yjw
             mCurrentGizmoOperation = ImGuizmo::ROTATE;
         if (ImGui::IsKeyPressed(ImGuiKey::ImGuiKey_C)) // r Key
             mCurrentGizmoOperation = ImGuizmo::SCALE;
+        /*
         if (ImGui::RadioButton("Translate", mCurrentGizmoOperation == ImGuizmo::TRANSLATE))
             mCurrentGizmoOperation = ImGuizmo::TRANSLATE;
         ImGui::SameLine();
@@ -85,6 +86,11 @@ namespace yjw
             ImGui::InputFloat("Scale Snap", &snap.x);
             break;
         }
+        */
+
+        static bool useSnap(false);
+        static glm::vec3 snap{};
+
         const ImGuiViewport* viewport = ImGui::GetMainViewport();
         ImGuiIO& io = ImGui::GetIO();
         ImGuizmo::SetRect(viewport->WorkPos.x, viewport->WorkPos.y, io.DisplaySize.x, io.DisplaySize.y);
@@ -112,13 +118,6 @@ namespace yjw
         ImGui::SetNextWindowSize(viewport->WorkSize);
         ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0, 0, 0, 0));
         ImGui::Begin("Engine", nullptr, flags);
-
-        ImGui::SetNextWindowPos(viewport->WorkPos);
-        ImGui::SetNextWindowSize(ImVec2(500, 500));
-        ImGui::BeginChild("option");
-        ShowOption();
-        ImGui::EndChild();
-        
         ImGui::SetNextWindowPos(viewport->WorkPos);
         ImGui::SetNextWindowSize(viewport->WorkSize);
         ImGui::BeginChild("transform");
@@ -127,8 +126,14 @@ namespace yjw
             EditTransform(rdGetViewMatrix(), rdGetProjMatrix(), *m_edit_transform_ptr, EditTransformMode::translate);
         }
         ImGui::EndChild();
-
         ImGui::End();
+
+        ImGui::SetNextWindowPos(viewport->WorkPos);
+        ImGui::SetNextWindowSize(ImVec2(500, 500));
+        ImGui::Begin("option");
+        ShowOption();
+        ImGui::End();
+
         ImGui::PopStyleColor();
     }
 
@@ -137,16 +142,22 @@ namespace yjw
         if (ImGui::TreeNode("Option"))
         {
             static char input_text[256] = "";
+            static char input_text1[256] = "";
             ImGui::InputText("Import Dir:", input_text, IM_ARRAYSIZE(input_text));
+            ImGui::InputText("Import Name:", input_text1, IM_ARRAYSIZE(input_text1));
             if (ImGui::Button("Import Resource"))
             {
                 std::string path = OpenFileDialog();
+                std::string ast_path = input_text;
+                std::string ast_name = input_text1;
+                ImportAsset(ast_path, ast_name, path);
+                /*
                 if (path != "")
                 {
                     std::string ast_name = input_text;
                     ImportModel(ast_name, path);
                     m_world->GetLevel()->SpawnActor<MeshActor>("test", (ast_name + ".mesh.ast").c_str());
-                }
+                }*/
             }
             ImGui::TreePop();
         }

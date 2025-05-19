@@ -2,6 +2,7 @@
 #include "Engine/Engine/Public/Asset/Mesh.h"
 #include "Engine/Engine/Public/Asset/Material.h"
 #include "Engine/Model/Public/yjw_model.h"
+#include "Engine/Model/Public/AnimationLoader.h"
 #include "generate1/projectInfo.h"
 #include <filesystem>
 
@@ -9,7 +10,9 @@ namespace yjw
 {
 void ImportTexture(const std::string& out_name, const std::string& texture_path)
 {
-    std::string abs_path = RESOURCE_PATH + std::string("/") + out_name;
+    std::string abs_path_str = RESOURCE_PATH + std::string("/") + out_name;
+    std::filesystem::path abs_path(abs_path_str);
+    std::filesystem::create_directories(abs_path.parent_path());
     std::filesystem::copy(texture_path, abs_path, std::filesystem::copy_options::recursive);
 }
 
@@ -30,18 +33,16 @@ void ImportMaterialInstance(Asset<MaterialInstanceAST>& ast, CPUModel::MaterialI
     ast.Save();
 }
 
-void ImportModel(const std::string& out_path, const std::string& in_path)
+void ImportModel(const std::string& out_path, const std::string& name, const std::string& in_path)
 {
     std::shared_ptr<Model> model = *Model::load(in_path);
 
     if (!model)return;
 
-    std::string name = out_path;
-
     std::vector<std::string> mat_names;
     for (int i = 0; i < model->m_cpu_model->m_material.size(); i++)
     {
-        std::string mat_name = name + std::to_string(i) + ".material.ast";
+        std::string mat_name = out_path + "/Material/" + name + std::to_string(i) + ".material.ast";
         Asset<MaterialAST> mat_ast(mat_name.c_str());
         ImportMaterial(mat_ast, model->m_cpu_model->m_material[i]);
         mat_names.push_back(mat_name);
@@ -49,7 +50,7 @@ void ImportModel(const std::string& out_path, const std::string& in_path)
 
     for (int i = 0; i < model->m_cpu_model->m_pool_textures.size(); i++)
     {
-        std::string texture_name = name + std::to_string(i) + ".png";
+        std::string texture_name = out_path + "/Texture/" + name + std::to_string(i) + ".png";
         ImportTexture(texture_name, model->m_cpu_model->m_pool_textures[i].texture_name);
         model->m_cpu_model->m_pool_textures[i].m_imported_name = texture_name;
     }
@@ -63,13 +64,13 @@ void ImportModel(const std::string& out_path, const std::string& in_path)
         {
             mat_ins.m_decided_texture_params[param.first] = model->m_cpu_model->m_pool_textures[param.second].m_imported_name;
         }
-        std::string mat_ins_name = name + std::to_string(i) + ".material_instance.ast";
+        std::string mat_ins_name = out_path + "/Material/" + name + std::to_string(i) + ".material_instance.ast";
         Asset<MaterialInstanceAST> mat_ins_ast(mat_ins_name.c_str());
         ImportMaterialInstance(mat_ins_ast, mat_ins);
         mat_ins_names.push_back(mat_ins_name);
     }
 
-    std::string mesh_name = name + ".mesh.ast";
+    std::string mesh_name = out_path + "/" + name + ".mesh.ast";
     Asset<MeshAST> mesh_ast(mesh_name.c_str());
     MeshAST* mesh = mesh_ast.GetData();
     for (int i = 0; i < mat_ins_names.size(); i++)
@@ -104,9 +105,59 @@ void ImportModel(const std::string& out_path, const std::string& in_path)
         mesh->m_is_index_short = cpu_mesh.is_indices_16bit;
     }
     mesh_ast.Save();
-}
+
+    std::string skeleton_name = out_path + "/" + name + ".skeleton.ast";
+    Asset<SkeletonAST> skeleton_ast(skeleton_name.c_str());
+    (*skeleton_ast.GetData()) = model->m_cpu_model->m_skeleton_data;
+    skeleton_ast.Save();
+
+    std::string clip_name = out_path + "/Animation/" + name + ".animation_clip.ast";
+    Asset<AnimationClipAST> clip_ast(clip_name.c_str());
+    (*clip_ast.GetData()) = model->m_cpu_model->m_animation_clip_data;
+    clip_ast.Save();
+
+    std::string animation_name = out_path + "/Animation/" + name + ".animation.ast";
+    Asset<AnimationAST> animation_ast(animation_name.c_str());
+    AssetReferece<AnimationClipAST> ref{};
+    ref.m_url = clip_name;
+    animation_ast.GetData()->m_clip = ref;
+    animation_ast.Save();
 }
 
+void ImportAnimation(const std::string& out_path, const std::string& name, const std::string& in_path)
+{
+    VMD vmd;
+    vmd.Load(in_path);
+    
+    std::string clip_name = out_path + "/Animation/" + name + ".animation_clip.ast";
+    Asset<AnimationClipAST> clip_ast(clip_name.c_str());
+    (*clip_ast.GetData()) = vmd.m_animation_clip;
+    clip_ast.Save();
+
+    std::string animation_name = out_path + "/Animation/" + name + ".animation.ast";
+    Asset<AnimationAST> animation_ast(animation_name.c_str());
+    AssetReferece<AnimationClipAST> ref{};
+    ref.m_url = clip_name;
+    animation_ast.GetData()->m_clip = ref;
+
+    animation_ast.Save();
+}
+
+void ImportAsset(const std::string& out_path, const std::string& name, const std::string& in_path)
+{
+    std::filesystem::path path(in_path);
+    std::string extension = path.extension().string();
+    if (extension == ".pmx" || extension == ".glb" || extension == ".gltf")
+    {
+        ImportModel(out_path, name, in_path);
+    }
+    else if(extension == ".vmd")
+    {
+        ImportAnimation(out_path, name, in_path);
+    }
+}
+
+}
 /*
 int main()
 {

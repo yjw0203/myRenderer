@@ -119,14 +119,23 @@ namespace yjw
         return entity_id;
     }
 
-    void ModelBuildImplement::AddBone(const BoneData& bone)
+    void ModelBuildImplement::AddBone(const RawBone& bone)
     {
-        m_cpu_model->m_skeleton_data.bones.push_back(bone);
+        m_cpu_model->m_skeleton_data.m_bones_map.push_back(bone);
     }
 
-    const BoneData& ModelBuildImplement::GetBone(int index)
+    const RawBone& ModelBuildImplement::GetBone(int index)
     {
-        return m_cpu_model->m_skeleton_data.bones[index];
+        return m_cpu_model->m_skeleton_data.m_bones_map[index];
     }
 
+    SkeletonAST& ModelBuildImplement::GetSkeleton()
+    {
+        return m_cpu_model->m_skeleton_data;
+    }
+
+    AnimationClipAST& ModelBuildImplement::GetAnimationClip()
+    {
+        return m_cpu_model->m_animation_clip_data;
+    }
 }
