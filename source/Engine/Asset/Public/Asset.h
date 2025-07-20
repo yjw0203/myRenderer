@@ -12,9 +12,9 @@
 namespace yjw
 {
     using json = nlohmann::json;
-    using AssetCreateAndDeserializeFunc = std::function<void* (const json*)>;
+    using AssetCreateAndDeserializeFunc = std::function<void* (Archive&)>;
     using AssetDestoryFunc = std::function<void(void*)>;
-    using AssetSerializeFunc = std::function<void(void*, json*)>;
+    using AssetSerializeFunc = std::function<void(Archive& ,void*)>;
 
     Class(AssetHeader)
     {
@@ -67,10 +67,9 @@ namespace yjw
                 return id;
             }
             return LoadAsset(url, GetClassName<T>(),
-            [](const json* j) {
+            [](Archive& Ar) {
                 T* obj = new T();
-                void from_json(const json & j, T& obj);
-                from_json(*j, *obj);
+                Serialize(Ar, *obj);
                 return (void*)obj;
             },
             [](void* obj) {
@@ -80,10 +79,9 @@ namespace yjw
                     delete t;
                 }
             },
-            [](void* obj, json* j) {
-                void to_json(json & j, const T & obj);
+            [](Archive& Ar, void* obj) {
                 T* t = (T*)obj;
-                to_json(*j, *t);
+                Serialize(Ar, *t);
             });
         }
 
@@ -105,9 +103,7 @@ namespace yjw
             {
                 if (m_assets[id.m_id].m_salt == id.m_salt)
                 {
-                    json j;
-                    m_assets[id.m_id].m_serialize_func(m_assets[id.m_id].m_payload, &j);
-                    SaveAssetToFile(m_assets[id.m_id].m_url.c_str(), m_assets[id.m_id].m_header, j);
+                    SaveAssetToFile(m_assets[id.m_id].m_url.c_str(), m_assets[id.m_id]);
                     return;
                 }
             }
@@ -125,7 +121,7 @@ namespace yjw
         AssetID AllocateAssetID();
         void DeallocateAssetID(AssetID id);
         void LoadAssetFromFile(const char* url, AssetHeader& header, json& obj);
-        void SaveAssetToFile(const char* url, const AssetHeader& header, const json& obj);
+        void SaveAssetToFile(const char* url, AssetInfo& assert_info);
     private:
         // ensure thread-safe when use, only modify on exclusive thread, except ref count.
         std::vector<AssetInfo> m_assets;
@@ -234,7 +230,7 @@ namespace yjw
     {
     public:
         AssetReferece() {}
-        AssetReferece(AssetReferece&& other) noexcept {
+        AssetReferece(AssetReferece&& other) {
             m_asset = other.m_asset;
             m_url = other.m_url;
         }
@@ -243,6 +239,11 @@ namespace yjw
             m_url = other.m_url;
             return *this;
         }
+        AssetReferece(const AssetReferece& other) {
+            m_asset = other.m_asset;
+            m_url = other.m_url;
+        }
+
         std::string m_url{};
         T* GetData()
         {
@@ -255,6 +256,11 @@ namespace yjw
     private:
         Asset<T> m_asset{};
     };
+
+    template<typename T>
+    void Serialize(Archive& j, yjw::AssetReferece<T>& obj) {
+        j << obj.m_url;
+    }
 
     template<typename T>
     void to_json(json& j, const yjw::AssetReferece<T>& obj) {

@@ -13,6 +13,7 @@ namespace yjw
     CAsset(MaterialInstanceAST)
     {
     public:
+        MaterialInstanceAST(){}
         AssetReferece<MaterialAST> m_material_template; 
 
         std::map<std::string, float> m_float_params;

@@ -37,11 +37,6 @@ namespace yjw
         }
     }
 
-    class RawBuffer : public std::vector<std::uint8_t>
-    {
-        using std::vector<std::uint8_t>::vector;
-    };
-
     Class(SubMeshInfo)
     {
     public:
@@ -54,7 +49,7 @@ namespace yjw
     {
     public:
         MeshVertexType m_type;
-        RawBuffer m_vertexes;
+        std::vector<std::uint8_t> m_vertexes;
     };
 
     CAsset(MeshAST)
@@ -62,14 +57,11 @@ namespace yjw
     public:
         std::vector<SubMeshInfo> m_sub_meshes;
         std::vector<MeshVertexBuffer> m_vertex_buffers;
-        RawBuffer m_index_buffer;
+        std::vector<std::uint8_t> m_index_buffer;
         std::map<std::string, AssetReferece<MaterialInstanceAST>> m_materials;
         bool m_is_index_short;
     };
     
-
-    void to_json(json& j, const yjw::RawBuffer& obj);
-    void from_json(const json& j, yjw::RawBuffer& obj);
     void to_json(json& j, const yjw::Transform& obj);
     void from_json(const json& j, yjw::Transform& obj);
 }

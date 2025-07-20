@@ -32,6 +32,18 @@ namespace yjw
         rdAttachScene(m_view, m_world->GetScene());
         rdAttachUI(m_view, m_ui);
 
+        
+        Actor* wizard = m_world->GetLevel()->SpawnActor<MeshActor>("wizard", "wizard/wizard.mesh.ast");
+        Transform transform{};
+        transform.m_location = Vector3(0, 0, 0);
+        wizard->SetTransform(transform);
+        SkeletonComponent* skeleton_component = wizard->GetEntity().AddComponent<SkeletonComponent>();
+        AnimationComponent* animation_component = wizard->GetEntity().AddComponent<AnimationComponent>();
+        skeleton_component->LoadSkeleton("wizard/wizard.skeleton.ast");
+        std::string animation = std::string("wizard/Animation/wizard.animation.ast");
+        animation_component->LoadAnimation(animation.c_str());
+        
+        /*
         Vector3 locations[] = { Vector3(-2,-2,0),Vector3(-2, 0,0), Vector3(-2,1,0), Vector3(0,-2,0), Vector3(0,0,0),Vector3(0,2,0),Vector3(2,-2,0),Vector3(2,0,0),Vector3(2,2,0) };
         for (int i = 0; i < 9; i++)
         {
@@ -45,6 +57,7 @@ namespace yjw
             std::string animation = std::string("wizard/Animation/wizard") + (char)('0' + i + 1) + ".animation.ast";
             animation_component->LoadAnimation(animation.c_str());
         }
+        */
     }
 
     void MajorEditor::Destroy()

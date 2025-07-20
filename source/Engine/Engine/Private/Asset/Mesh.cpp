@@ -72,18 +72,6 @@ namespace yjw
         */
     }
 
-    void to_json(json& j, const yjw::RawBuffer& obj) {
-        j = base64_encode(obj);
-    }
-
-    void from_json(const json& j, yjw::RawBuffer& obj) {
-        if (j.is_string())
-        {
-            std::string s = j.get<std::string>();
-            base64_decode(s, obj);
-        }
-    }
-
     void to_json(json& j, const yjw::Transform& obj)
     {
         j = json{

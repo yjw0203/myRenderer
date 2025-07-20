@@ -84,13 +84,13 @@ void ImportModel(const std::string& out_path, const std::string& name, const std
     {
         if (buffer.type == MeshVertexType::INDEX)
         {
-            mesh->m_index_buffer = RawBuffer(buffer.buffer.begin(),buffer.buffer.end());
+            mesh->m_index_buffer = std::vector<std::uint8_t>(buffer.buffer.begin(),buffer.buffer.end());
         }
         else
         {
             MeshVertexBuffer vex_buffer{};
             vex_buffer.m_type = buffer.type;
-            vex_buffer.m_vertexes = RawBuffer(buffer.buffer.begin(), buffer.buffer.end());
+            vex_buffer.m_vertexes = std::vector<std::uint8_t>(buffer.buffer.begin(), buffer.buffer.end());
             mesh->m_vertex_buffers.push_back(vex_buffer);
         }
     }

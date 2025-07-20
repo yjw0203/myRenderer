@@ -2,6 +2,8 @@
 #include <fstream>
 #include <iostream>
 #include <filesystem>
+#include "Engine/Utils/Public/Serialize/FileArchive.h"
+#include "projectInfo.h"
 
 namespace yjw
 {
@@ -55,9 +57,12 @@ namespace yjw
             asset_info.m_ref_count.store(load_info.m_ref_count);
             asset_info.m_destory_func = load_info.m_destory_func;
             asset_info.m_serialize_func = load_info.m_serialize_func;
-            json j = json::object();
-            LoadAssetFromFile(load_info.m_url.c_str(), asset_info.m_header, j);
-            asset_info.m_payload = load_info.m_create_func(&j);
+
+            std::string filename = std::string(RESOURCE_FILE()) + load_info.m_url;
+            FileReaderArchive Ar(filename.c_str());
+            Serialize(Ar, asset_info.m_header);
+            asset_info.m_payload = load_info.m_create_func(Ar);
+            Ar.close();
         }
     }
 
@@ -111,7 +116,9 @@ namespace yjw
 
     void AssetManagerImplement::LoadAssetFromFile(const char* url, AssetHeader& header, json& obj)
     {
-        std::string filename = std::string("E:/workspace/myRenderer/resource/") + url;
+        /*
+        std::string filename = std::string(RESOURCE_FILE()) + url;
+
         std::fstream file;
         file.open(filename, std::ios::in);
 
@@ -131,11 +138,17 @@ namespace yjw
         }
 
         file.close();
+        */
     }
 
-    void AssetManagerImplement::SaveAssetToFile(const char* url, const AssetHeader& header, const json& obj)
+    void AssetManagerImplement::SaveAssetToFile(const char* url, AssetInfo& assert_info)
     {
-        std::string filename = std::string("E:/workspace/myRenderer/resource/") + url;
+        std::string filename = std::string(RESOURCE_FILE()) + url;
+        FileWriterArchive Ar(filename.c_str());
+        Serialize(Ar, assert_info.m_header);
+        assert_info.m_serialize_func(Ar, assert_info.m_payload);
+        Ar.close();
+        /*
         std::filesystem::path path(filename);
         std::filesystem::create_directories(path.parent_path());
         std::ofstream file(filename);
@@ -151,5 +164,6 @@ namespace yjw
         file << h << obj << std::endl;
         file.flush();
         file.close();
+        */
     }
 }

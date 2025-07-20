@@ -37,7 +37,7 @@ typedef TestA hhh;
 
 int main()
 {
-    TestA a;
+    //TestA a;
     //std::cout << "ClassName is " << a.GetClassName() << std::endl;
     return 0;
 }

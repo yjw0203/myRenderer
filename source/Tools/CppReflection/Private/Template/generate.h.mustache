@@ -2,8 +2,10 @@
 
 #include "json.hpp"
 #include <string>
+#include "Engine/Utils/Public/Serialize/Archive.h"
 
 using json = nlohmann::json;
+using Archive = yjw::Archive;
 
 template<typename T>
 const char* GetClassName();
@@ -16,6 +18,7 @@ namespace {{namespace}}
 class {{class_name}};
 void to_json(json& j, const {{class_name_with_namespace}}& obj);
 void from_json(const json& j, {{class_name_with_namespace}}& obj);
+void Serialize(Archive& Ar, {{class_name_with_namespace}}& obj);
 {{#has_namespace}}
 }
 {{/has_namespace}}

@@ -11,26 +11,32 @@ using json = nlohmann::json;
 namespace {{namespace}}
 {
 {{/has_namespace}}
+void Serialize(Archive& Ar, {{class_name_with_namespace}}& obj) {
+    {{#field_list}}
+    Ar << obj.{{field_name}};
+    {{/field_list}}
+}
 void to_json(json& j, const {{class_name_with_namespace}}& obj) {
     j = json{
-        {{#field_list}}
+{{#field_list}}
          {"{{field_name}}", obj.{{field_name}}},
-        {{/field_list}}
+{{/field_list}}
          };
 }
 void from_json(const json& j, {{class_name_with_namespace}}& obj) {
-    {{#field_list}}
+{{#field_list}}
     if(j.count("{{field_name}}")){
         j.at("{{field_name}}").get_to(obj.{{field_name}});
     }
-    {{/field_list}}
+{{/field_list}}
 }
 {{#has_namespace}}
 }
 template<>
-const char* GetClassName<{{class_name_with_namespace}}>()
-{
+const char* GetClassName<{{class_name_with_namespace}}>
+    ()
+    {
     return "{{class_name}}";
-}
-{{/has_namespace}}
-{{/class_list}}
+    }
+    {{/has_namespace}}
+    {{/class_list}}
