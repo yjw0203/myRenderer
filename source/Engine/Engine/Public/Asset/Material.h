@@ -1,17 +1,20 @@
 #pragma once
 #include "Engine/Asset/Public/Asset.h"
+#include "Generate/Public/Engine/Engine/Public/Asset/Material.generate.h"
 
 namespace yjw
 {
-    CAsset(MaterialAST)
+    CAsset(MaterialAST) : public MObject
     {
+        GENERATED_BODY();
     public:
         std::string m_shader;
         std::string m_entry;
     };
 
-    CAsset(MaterialInstanceAST)
+    CAsset(MaterialInstanceAST) : public MObject
     {
+        GENERATED_BODY();
     public:
         MaterialInstanceAST(){}
         AssetReferece<MaterialAST> m_material_template; 

@@ -8,12 +8,14 @@
 #define Class(...) class Meta(type=class) __VA_ARGS__
 
 #include <vector>
+#include "Generate/Public/UnitTest/Test_Utils/Private/main.generate.h"
 
 namespace yjw
 {
 
 Class(B)
 {
+    GENERATED_BODY();
 public:
     int x;
     int z;
@@ -22,6 +24,7 @@ public:
 
 Class(A)
 {
+    GENERATED_BODY();
 public:
     int y;
     B b;

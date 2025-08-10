@@ -43,6 +43,7 @@ namespace yjw
         std::string animation = std::string("wizard/Animation/wizard.animation.ast");
         animation_component->LoadAnimation(animation.c_str());
         
+
         /*
         Vector3 locations[] = { Vector3(-2,-2,0),Vector3(-2, 0,0), Vector3(-2,1,0), Vector3(0,-2,0), Vector3(0,0,0),Vector3(0,2,0),Vector3(2,-2,0),Vector3(2,0,0),Vector3(2,2,0) };
         for (int i = 0; i < 9; i++)

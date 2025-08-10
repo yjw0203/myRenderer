@@ -7,7 +7,8 @@
 #include "Engine/Utils/Public/DesignPatterns/Singleton.h"
 #include "json.hpp"
 #include "Engine/Utils/Public/Define.h"
-#include "Generate/Public/generate.h"
+#include "Engine/Utils/Public/Object/Object.h"
+#include "Generate/Public/Engine/Asset/Public/Asset.generate.h"
 
 namespace yjw
 {
@@ -16,8 +17,9 @@ namespace yjw
     using AssetDestoryFunc = std::function<void(void*)>;
     using AssetSerializeFunc = std::function<void(Archive& ,void*)>;
 
-    Class(AssetHeader)
+    Class(AssetHeader) : public MObject
     {
+        GENERATED_BODY();
     public:
         std::string m_type;
     };
@@ -66,10 +68,10 @@ namespace yjw
                 m_assets[id.m_id].m_ref_count.fetch_add(1);
                 return id;
             }
-            return LoadAsset(url, GetClassName<T>(),
+            return LoadAsset(url, "",
             [](Archive& Ar) {
                 T* obj = new T();
-                Serialize(Ar, *obj);
+                obj->Serialize(Ar);
                 return (void*)obj;
             },
             [](void* obj) {
@@ -81,7 +83,7 @@ namespace yjw
             },
             [](Archive& Ar, void* obj) {
                 T* t = (T*)obj;
-                Serialize(Ar, *t);
+                t->Serialize(Ar);
             });
         }
 
@@ -253,27 +255,12 @@ namespace yjw
             }
             return m_asset.GetData();
         }
+        void Serialize(Archive& j)
+        {
+            j << m_url;
+        }
     private:
         Asset<T> m_asset{};
     };
-
-    template<typename T>
-    void Serialize(Archive& j, yjw::AssetReferece<T>& obj) {
-        j << obj.m_url;
-    }
-
-    template<typename T>
-    void to_json(json& j, const yjw::AssetReferece<T>& obj) {
-        j = json{
-             {"m_url", obj.m_url}
-        };
-    }
-
-    template<typename T>
-    void from_json(const json& j, yjw::AssetReferece<T>& obj) {
-        if (j.count("m_url")) {
-            j.at("m_url").get_to(obj.m_url);
-        }
-    }
 
 }

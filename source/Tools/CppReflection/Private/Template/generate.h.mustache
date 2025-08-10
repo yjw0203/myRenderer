@@ -1,28 +1,7 @@
-#pragma once
-
-#include "json.hpp"
-#include <string>
+#include "Engine/Utils/Public/Meta/Meta.h"
 #include "Engine/Utils/Public/Serialize/Archive.h"
 
-using json = nlohmann::json;
-using Archive = yjw::Archive;
-
-template<typename T>
-const char* GetClassName();
-
-{{#class_list}}
-{{#has_namespace}}
-namespace {{namespace}}
-{
-{{/has_namespace}}
-class {{class_name}};
-void to_json(json& j, const {{class_name_with_namespace}}& obj);
-void from_json(const json& j, {{class_name_with_namespace}}& obj);
-void Serialize(Archive& Ar, {{class_name_with_namespace}}& obj);
-{{#has_namespace}}
-}
-{{/has_namespace}}
-template<>
-const char* GetClassName<{{class_name_with_namespace}}>();
-
-{{/class_list}}
+#define GENERATED_BODY() \
+public:                     \
+virtual const MetaClass& GetClass(); \
+virtual void Serialize(Archive& Ar);

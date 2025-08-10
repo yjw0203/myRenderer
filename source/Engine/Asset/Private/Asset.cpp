@@ -60,7 +60,7 @@ namespace yjw
 
             std::string filename = std::string(RESOURCE_FILE()) + load_info.m_url;
             FileReaderArchive Ar(filename.c_str());
-            Serialize(Ar, asset_info.m_header);
+            Ar << asset_info.m_header;
             asset_info.m_payload = load_info.m_create_func(Ar);
             Ar.close();
         }
@@ -145,7 +145,7 @@ namespace yjw
     {
         std::string filename = std::string(RESOURCE_FILE()) + url;
         FileWriterArchive Ar(filename.c_str());
-        Serialize(Ar, assert_info.m_header);
+        Ar << assert_info.m_header;
         assert_info.m_serialize_func(Ar, assert_info.m_payload);
         Ar.close();
         /*

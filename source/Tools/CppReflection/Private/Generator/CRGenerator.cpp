@@ -1,5 +1,6 @@
 #include "Tools/CppReflection/Private/Generator/CRGenerator.h"
 #include <fstream>
+#include <filesystem>
 #include "mustache.hpp"
 
 namespace Mustache = kainjow::mustache;
@@ -66,6 +67,10 @@ std::string readFile(const char* file_name)
 
 void writeFile(const char* file_name, const std::string& str)
 {
+    std::string abs_path_str = file_name;
+    std::filesystem::path abs_path(abs_path_str);
+    std::filesystem::create_directories(abs_path.parent_path());
+
     std::ofstream file(file_name);
     if (file.is_open()) {
         file << str;

@@ -11,13 +11,14 @@
 
 Class(TestC)
 {
+    GENERATED_BODY();
 public:
     int w;
 };
 
 Class(TestA) : public TestC
 {
-    GENERATED_BODY()
+    GENERATED_BODY();
 public:
     class B
     {

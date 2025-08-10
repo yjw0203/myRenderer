@@ -6,6 +6,14 @@
 #include "projectInfo.h"
 #include <filesystem>
 #include <map>
+#include <set>
+
+std::string replacePrefix(const std::string& path, const std::string& oldPrefix, const std::string& newPrefix) {
+    if (path.substr(0, oldPrefix.size()) == oldPrefix) {
+        return newPrefix + path.substr(oldPrefix.size());
+    }
+    return path;
+}
 
 void Print(const std::vector<meta::Class>& classes)
 {
@@ -26,8 +34,11 @@ void Print(const std::vector<meta::Class>& classes)
 int main()
 {
     std::vector<std::string> headers;
-    std::map<std::string, meta::Class> class_map;
+    std::map<std::string, std::map<std::string, meta::Class>> file_class_map;
+    std::set<std::string> class_set;
     std::string floder = SOURCE_PATH;
+    std::string generate_h_floder = floder + "/Generate/Public";
+    std::string generate_cpp_floder = floder + "/Generate/Private";
     for (const auto& entry : std::filesystem::recursive_directory_iterator(floder)) {
         if (entry.is_regular_file()) {
             std::filesystem::path file_path = entry.path();
@@ -38,32 +49,44 @@ int main()
                 visitor.Visit(unit);
                 if (!visitor.m_result.empty())
                 {
+                    std::string tmp = file_path.replace_extension().string();
+                    std::string generate_path = replacePrefix(tmp, floder, "");
+                    file_class_map[generate_path] = std::map<std::string, meta::Class>();
                     headers.push_back(file_path.string());
                     for (meta::Class& class_ : visitor.m_result)
                     {
-                        class_map[class_.m_namespace + "::" + class_.m_name] = class_;
+                        std::string class_id = class_.m_namespace + "::" + class_.m_name;
+                        if (!class_set.count(class_id))
+                        {
+                            file_class_map[generate_path][class_.m_namespace + "::" + class_.m_name] = class_;
+                            class_set.insert(class_id);
+                        }
                     }
                 }
             }
         }
     }
 
-    meta::Class::List class_list;
-    for (auto& class_ : class_map)
+    for (auto& itr : file_class_map)
     {
-        class_list.push_back(class_.second);
+        auto& file_name = itr.first;
+        std::string ori_h_path = floder + file_name + ".h";
+        std::string generate_h_path = generate_h_floder + file_name + ".generate.h";
+        std::string generate_cpp_path = generate_cpp_floder + file_name + ".generate.cpp";
+        meta::Class::List class_list;
+        for (auto& class_ : itr.second)
+        {
+            class_list.push_back(class_.second);
+        }
+
+        std::vector<std::string> header;
+        header.push_back(ori_h_path);
+        header.push_back(generate_h_path);
+
+        CRGenerator generator;
+        generator.Generate(header, class_list, CR_TEMPLATE_FILE(generate.h.mustache), generate_h_path.c_str());
+
+        generator.Generate(header, class_list, CR_TEMPLATE_FILE(generate.cpp.mustache), generate_cpp_path.c_str());
     }
-
-    std::string h_file = std::string("") + SOURCE_PATH + "/" + "UnitTest/Test_Utils/Private/main.h";
-    std::string generate_file_h = "E:/workspace/CppReflection/Source/Example/Private/main.generated.h";
-    CRTranslationUnit unit = CRCreateTranslationUnitFromSourceFile(h_file.c_str());
-    CRVisitor<CRCondition_IsMetaClass, CRAction_GatherClass> visitor;
-    visitor.Visit(unit);
-    CRGenerator generator;
-    generator.Generate(headers, class_list, CR_TEMPLATE_FILE(generate.h.mustache), CR_GENERATE_PUBLIC_FILE(generate.h));
-
-    headers.push_back(CR_GENERATE_PUBLIC_FILE(generate.h));
-    generator.Generate(headers, class_list, CR_TEMPLATE_FILE(generate.cpp.mustache), CR_GENERATE_PRIVATE_FILE(generate.cpp));
-    Print(visitor.m_result);
     return 0;
 }

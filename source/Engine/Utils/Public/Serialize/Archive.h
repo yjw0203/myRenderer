@@ -2,10 +2,20 @@
 #include <vector>
 #include <map>
 #include <string>
+#include "Engine/Utils/Public/Object/Object.h"
 
 namespace yjw
 {
     class Archive;
+
+    template<typename T, typename = void>
+    struct HasSerializeMethod : std::false_type {};
+
+    template<typename T>
+    struct HasSerializeMethod<T, std::void_t<decltype(std::declval<T&>().Serialize(std::declval<Archive&>()))>>
+        : std::true_type {};
+
+
     void SerializeImpl(Archive& Ar, void* data, int size);
 
     template<typename T>
@@ -19,9 +29,27 @@ namespace yjw
     public:
         virtual ~Archive() {};
 
-        template<typename BaseType>
-        Archive& operator<<(BaseType& value) {
-            Serialize(*this, value);
+        template<typename BaseType/*, typename = std::enable_if_t<!HasSerializeMethod<BaseType>::value>*/>
+        auto operator<<(BaseType& value) -> std::enable_if_t<!HasSerializeMethod<BaseType>::value, Archive&>
+        {
+            SerializeInternal(&value, sizeof(value));
+            return *this;
+        }
+
+        template<typename BaseType/*, typename = std::enable_if_t<HasSerializeMethod<BaseType>::value>*/>
+        auto operator<<(BaseType& value) -> std::enable_if_t<HasSerializeMethod<BaseType>::value, Archive&>
+        {
+            value.Serialize(*this);
+            return *this;
+        }
+
+        Archive& operator<<(MObject& value) {
+            value.Serialize(*this);
+            return *this;
+        }
+
+        Archive& operator<<(MObject* value) {
+            (*this) << *value;
             return *this;
         }
         
@@ -65,6 +93,11 @@ namespace yjw
                 mp.emplace(elm.first, elm.second);
             }
             return *this;
+        }
+
+        void Serialize(void* data, int length)
+        {
+            SerializeInternal(data, length);
         }
 
         virtual void SerializeInternal(void* data, int length) = 0;

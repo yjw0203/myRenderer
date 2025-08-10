@@ -1,42 +1,32 @@
 {{#include_header_files}}
 #include "{{header_file_name}}"
 {{/include_header_files}}
+#include "Engine/Utils/Public/Meta/Meta.h"
 
-#include "json.hpp"
-
-using json = nlohmann::json;
-{{#class_list}}
-
-{{#has_namespace}}
-namespace {{namespace}}
+namespace yjw
 {
-{{/has_namespace}}
-void Serialize(Archive& Ar, {{class_name_with_namespace}}& obj) {
-    {{#field_list}}
-    Ar << obj.{{field_name}};
-    {{/field_list}}
-}
-void to_json(json& j, const {{class_name_with_namespace}}& obj) {
-    j = json{
-{{#field_list}}
-         {"{{field_name}}", obj.{{field_name}}},
-{{/field_list}}
-         };
-}
-void from_json(const json& j, {{class_name_with_namespace}}& obj) {
-{{#field_list}}
-    if(j.count("{{field_name}}")){
-        j.at("{{field_name}}").get_to(obj.{{field_name}});
-    }
-{{/field_list}}
-}
-{{#has_namespace}}
-}
-template<>
-const char* GetClassName<{{class_name_with_namespace}}>
-    ()
+{{#class_list}}
+    const MetaClass& {{class_name}}::GetClass()
     {
-    return "{{class_name}}";
+        static MetaClass* instance = nullptr;
+        if(!instance)
+        {
+            instance = new MetaClass();
+            instance->SetName("{{class_name}}");
+            instance->SetSize(sizeof({{class_name}}));
+
+            {{#field_list}}
+            //{{field_name}}
+            {{/field_list}}
+        }
+        return *instance;
     }
-    {{/has_namespace}}
-    {{/class_list}}
+
+    void {{class_name}}::Serialize(Archive& Ar)
+    {
+        {{#field_list}}
+        Ar << {{field_name}};
+        {{/field_list}}
+    }
+{{/class_list}}
+}

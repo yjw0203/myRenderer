@@ -3,6 +3,8 @@
 #include "Engine/Engine/Public/Framework/World.h"
 #include "Engine/Engine/Public/Framework/Actor.h"
 #include "Engine/Render/Public/RenderAPI.h"
+#include "Engine/Utils/Public/Serialize/Archive.h"
+
 namespace yjw
 {
     class Actor;
@@ -42,6 +44,7 @@ namespace yjw
         }
 
         Actor* GetActorById(int id);
+
     private:
         std::vector<Actor*> m_actors;
 

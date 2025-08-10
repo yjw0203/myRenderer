@@ -4,6 +4,7 @@
 #include "Engine/Engine/Public/Asset/Material.h"
 #include <vector>
 #include "Engine/Math/Public/Math.h"
+#include "Generate/Public/Engine/Engine/Public/Asset/Mesh.generate.h"
 
 namespace yjw
 {
@@ -37,23 +38,26 @@ namespace yjw
         }
     }
 
-    Class(SubMeshInfo)
+    Class(SubMeshInfo) : public MObject
     {
+        GENERATED_BODY();
     public:
         int m_start_index;
         int m_index_count;
         std::string m_material_slot;
     };
 
-    Class(MeshVertexBuffer)
+    Class(MeshVertexBuffer) : public MObject
     {
+        GENERATED_BODY();
     public:
         MeshVertexType m_type;
         std::vector<std::uint8_t> m_vertexes;
     };
 
-    CAsset(MeshAST)
+    CAsset(MeshAST) : public MObject
     {
+        GENERATED_BODY();
     public:
         std::vector<SubMeshInfo> m_sub_meshes;
         std::vector<MeshVertexBuffer> m_vertex_buffers;
@@ -62,16 +66,4 @@ namespace yjw
         bool m_is_index_short;
     };
     
-    void to_json(json& j, const yjw::Transform& obj);
-    void from_json(const json& j, yjw::Transform& obj);
-}
-
-namespace glm
-{
-    void to_json(json& j, const yjw::Vector3& obj);
-    void from_json(const json& j, yjw::Vector3& obj);
-    void to_json(json& j, const yjw::Quaternion& obj);
-    void from_json(const json& j, yjw::Quaternion& obj);
-    void to_json(json& j, const yjw::Matrix4x4& obj);
-    void from_json(const json& j, yjw::Matrix4x4& obj);
 }

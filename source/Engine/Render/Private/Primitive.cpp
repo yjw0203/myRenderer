@@ -263,7 +263,11 @@ namespace yjw
             mesh_ptr->m_index_buffer.resize(sizeof(int32_t) * indices.size());
             memcpy(mesh_ptr->m_index_buffer.data(), indices.data(), sizeof(int32_t) * indices.size());
 
-            mesh_ptr->m_sub_meshes.push_back(SubMeshInfo{ 0,(int)indices.size(),"default" });
+            SubMeshInfo mesh_info{};
+            mesh_info.m_start_index = 0;
+            mesh_info.m_index_count = (int)indices.size();
+            mesh_info.m_material_slot = "default";
+            mesh_ptr->m_sub_meshes.push_back(mesh_info);
 
             m_mesh_ast.Save();
         }
