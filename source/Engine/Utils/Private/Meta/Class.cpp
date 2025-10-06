@@ -31,4 +31,14 @@ namespace yjw
     {
 
     }
+
+    void* MetaClass::GetDefaultObject()
+    {
+        return m_default_object;
+    }
+
+    void MetaClass::SetDefaultObject(void* object)
+    {
+        m_default_object = object;
+    }
 }

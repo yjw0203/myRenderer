@@ -25,8 +25,11 @@ namespace yjw
         void SetName(const char* name);
         void AddFunction(const char* name, const Function& func);
         void AddField(const char* name, const Field& field);
+        void* GetDefaultObject();
+        void SetDefaultObject(void* object);
 
     private:
+        void* m_default_object = nullptr;
         int m_size = 0;
         std::string m_name;
         std::vector<std::pair<std::string, Function>> m_functions;

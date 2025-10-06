@@ -14,7 +14,7 @@ namespace yjw
             instance = new MetaClass();
             instance->SetName("{{class_name}}");
             instance->SetSize(sizeof({{class_name}}));
-
+            instance->SetDefaultObject((void*)(new {{class_name}}()));
             {{#field_list}}
             //{{field_name}}
             {{/field_list}}

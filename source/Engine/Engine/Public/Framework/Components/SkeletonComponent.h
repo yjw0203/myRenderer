@@ -5,7 +5,7 @@
 
 namespace yjw
 {
-    class SkeletonComponent : public IComponent
+    class SkeletonComponent : public Component
     {
     public:
         SkeletonComponent();

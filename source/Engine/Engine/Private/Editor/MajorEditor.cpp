@@ -37,8 +37,8 @@ namespace yjw
         Transform transform{};
         transform.m_location = Vector3(0, 0, 0);
         wizard->SetTransform(transform);
-        SkeletonComponent* skeleton_component = wizard->GetEntity().AddComponent<SkeletonComponent>();
-        AnimationComponent* animation_component = wizard->GetEntity().AddComponent<AnimationComponent>();
+        SkeletonComponent* skeleton_component = wizard->AddComponent<SkeletonComponent>();
+        AnimationComponent* animation_component = wizard->AddComponent<AnimationComponent>();
         skeleton_component->LoadSkeleton("wizard/wizard.skeleton.ast");
         std::string animation = std::string("wizard/Animation/wizard.animation.ast");
         animation_component->LoadAnimation(animation.c_str());

@@ -7,15 +7,14 @@ namespace yjw
 {
     void AnimationSystem::Update(float deltaTime)
     {
-        for (Entity& entity : GetEntities())
+        for (Actor* actor : GetLevel()->GetActors())
         {
-            Actor* actor = (Actor*)entity.GetParent();
             if (!actor)
             {
                 continue;
             }
-            SkeletonComponent* skeleton_component = entity.GetComponent<SkeletonComponent>();
-            AnimationComponent* animation_component = entity.GetComponent<AnimationComponent>();
+            SkeletonComponent* skeleton_component = actor->GetComponent<SkeletonComponent>();
+            AnimationComponent* animation_component = actor->GetComponent<AnimationComponent>();
             if (skeleton_component)
             {
                 skeleton_component->GetSkeleton()->BeginUpdateAnimation(); 

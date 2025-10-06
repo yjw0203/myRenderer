@@ -1,15 +1,13 @@
 #pragma once
 #include <vector>
 #include "Engine/Math/Public/Math.h"
+#include "Engine/Utils/Public/Object/Object.h"
 namespace yjw
 {
-    class Component
+    class Component : public MObject
     {
     public:
         virtual ~Component() {};
-        Component* GetParent();
-        void AddSubComponent(Component* component);
-        std::vector<Component*>& GetSubComponents();
 
         template<typename T>
         T* CastTo()
@@ -19,7 +17,5 @@ namespace yjw
         }
 
     private:
-        Component* m_parent_component{};
-        std::vector<Component*> m_sub_components;
     };
 }

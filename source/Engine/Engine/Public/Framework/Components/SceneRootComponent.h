@@ -4,7 +4,7 @@
 
 namespace yjw
 {
-    class SceneRootComponent : public IComponent
+    class SceneRootComponent : public Component
     {
     public:
         const Transform& GetRelativeToParent();

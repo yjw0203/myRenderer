@@ -36,7 +36,7 @@ namespace yjw
 
         FILE* file = fopen(m_url.c_str(), "wb");
         if (!file) {
-            std::cout << std::string("打开文件失败： ") + std::string(m_url) << std::endl;
+            std::cout << std::string("open file failed!") + std::string(m_url) << std::endl;
             return;
         }
         else
@@ -54,7 +54,7 @@ namespace yjw
     {
         FILE* file = fopen(url, "rb");
         if (!file) {
-            std::cout << std::string("打开文件失败： ") + std::string(url) << std::endl;
+            std::cout << std::string("open file failed!") + std::string(url) << std::endl;
             return;
         }
 
@@ -66,7 +66,7 @@ namespace yjw
         size_t bytesRead = fread(m_buffer.data(), 1, fileSize, file);
         if (bytesRead != static_cast<size_t>(fileSize)) {
             fclose(file);
-            std::cout << std::string("文件读取不完整： ") + std::string(url) << std::endl;
+            std::cout << std::string("file read faild!") + std::string(url) << std::endl;
             return;
         }
 
@@ -76,7 +76,7 @@ namespace yjw
 
         if (!m_cursor)
         {
-            std::cout << std::string("文件为空：") + std::string(url) << std::endl;
+            std::cout << std::string("file is empty!") + std::string(url) << std::endl;
             return;
         }
     }

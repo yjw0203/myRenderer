@@ -5,7 +5,7 @@
 
 namespace yjw
 {
-    class AnimationComponent : public IComponent
+    class AnimationComponent : public Component
     {
     public:
         AnimationComponent();
