@@ -24,21 +24,11 @@ namespace yjw
         {
             Actor* actor = new T(std::forward<Args>(args)...);
             actor->SetName(name);
-            actor->OnSpawned();
             actor->SetActorId(m_actors.size() + 1);
             m_actors.push_back(actor);
             actor->SetWorld(m_world);
-            
-            if (StaticMeshComponent* mesh_component = (StaticMeshComponent*)actor->m_components[0])
-            {
-                RdEntityPtr entity_handle = rdAddEntity(GetWorld()->GetScene());
-                actor->SetSceneEntity(entity_handle);
-                RdGeometryPtr mesh_handle = rdCreateGeometry(mesh_component->GetPrimitive());
-                rdUpdateEntityGeometry(GetWorld()->GetScene(), entity_handle, mesh_handle);
-                rdUpdateEntityTransform(GetWorld()->GetScene(), entity_handle, actor->GetTransform());
-                rdUpdateEntityPickFlag(GetWorld()->GetScene(), entity_handle, actor->GetActorId());
-            }
 
+            actor->OnSpawned();
             return actor;
         }
 

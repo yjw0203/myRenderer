@@ -1,13 +1,13 @@
 #pragma once
-#include "Engine/Utils/Public/DesignPatterns/ECS.h"
-#include "Engine/Engine/Public/Framework/Components/StaticMeshComponent.h"
-#include "Engine/Engine/Public/Framework/Level.h"
-#include "Engine/Render/Public/RenderAPI.h"
 #include "Engine/Utils/Public/Object/Object.h"
+#include "Engine/Engine/Public/Framework/Components/StaticMeshComponent.h"
+#include "Engine/Engine/Public/Framework/World.h"
+#include "Engine/Render/Public/RenderAPI.h"
 namespace yjw
 {
-    class Actor : public MObject
+    class Meta() Actor : public MObject
     {
+        GENERATED_BODY();
     public:
         Actor() {}
         ~Actor() {}
@@ -54,18 +54,15 @@ namespace yjw
         int m_id{};
 
     public:
+        Meta()
         std::vector<Component*> m_components;
-
-    public:
-        void Serialize(class Archive& Ar)
-        {
-            Ar << m_transform;
-        }
     };
 
-    class MeshActor : public Actor
+    class Meta() MeshActor : public Actor
     {
+        GENERATED_BODY();
     public:
+        MeshActor() {}
         MeshActor(const char* name)
         {
             m_primitive_url = name;
@@ -74,18 +71,34 @@ namespace yjw
         {
             m_components.push_back(new StaticMeshComponent());
             ((StaticMeshComponent*)m_components[0])->SetPrimitive(m_primitive_url.c_str());
+
+            RdEntityPtr entity_handle = rdAddEntity(GetWorld()->GetScene());
+            SetSceneEntity(entity_handle);
+            RdGeometryPtr mesh_handle = rdCreateGeometry(((StaticMeshComponent*)m_components[0])->GetPrimitive());
+            rdUpdateEntityGeometry(GetWorld()->GetScene(), entity_handle, mesh_handle);
+            rdUpdateEntityTransform(GetWorld()->GetScene(), entity_handle, GetTransform());
+            rdUpdateEntityPickFlag(GetWorld()->GetScene(), entity_handle, GetActorId());
         }
     private:
         std::string m_primitive_url{};
     };
 
-    class TestBoxActor : public Actor
+    class Meta() TestBoxActor : public Actor
     {
+        GENERATED_BODY();
     public:
+        TestBoxActor() {}
         virtual void OnSpawned()
         {
             m_components.push_back(new StaticMeshComponent());
             ((StaticMeshComponent*)m_components[0])->SetPrimitive("naxita/纳西妲.mesh.ast");
+
+            RdEntityPtr entity_handle = rdAddEntity(GetWorld()->GetScene());
+            SetSceneEntity(entity_handle);
+            RdGeometryPtr mesh_handle = rdCreateGeometry(((StaticMeshComponent*)m_components[0])->GetPrimitive());
+            rdUpdateEntityGeometry(GetWorld()->GetScene(), entity_handle, mesh_handle);
+            rdUpdateEntityTransform(GetWorld()->GetScene(), entity_handle, GetTransform());
+            rdUpdateEntityPickFlag(GetWorld()->GetScene(), entity_handle, GetActorId());
         }
     };
 }

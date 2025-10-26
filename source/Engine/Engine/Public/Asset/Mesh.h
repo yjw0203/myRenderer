@@ -4,7 +4,6 @@
 #include "Engine/Engine/Public/Asset/Material.h"
 #include <vector>
 #include "Engine/Math/Public/Math.h"
-#include "Generate/Public/Engine/Engine/Public/Asset/Mesh.generate.h"
 
 namespace yjw
 {
@@ -38,31 +37,41 @@ namespace yjw
         }
     }
 
-    Class(SubMeshInfo) : public MObject
+    class Meta() SubMeshInfo : public MObject
     {
         GENERATED_BODY();
     public:
+        Meta()
         int m_start_index;
+        Meta()
         int m_index_count;
+        Meta()
         std::string m_material_slot;
     };
 
-    Class(MeshVertexBuffer) : public MObject
+    class Meta() MeshVertexBuffer : public MObject
     {
         GENERATED_BODY();
     public:
+        Meta()
         MeshVertexType m_type;
+        Meta()
         std::vector<std::uint8_t> m_vertexes;
     };
 
-    CAsset(MeshAST) : public MObject
+    class Meta() MeshAST : public MObject
     {
         GENERATED_BODY();
     public:
+        Meta()
         std::vector<SubMeshInfo> m_sub_meshes;
+        Meta()
         std::vector<MeshVertexBuffer> m_vertex_buffers;
+        Meta()
         std::vector<std::uint8_t> m_index_buffer;
+        Meta()
         std::map<std::string, AssetReferece<MaterialInstanceAST>> m_materials;
+        Meta()
         bool m_is_index_short;
     };
     

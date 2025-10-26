@@ -25,14 +25,20 @@ namespace yjw
         void SetName(const char* name);
         void AddFunction(const char* name, const Function& func);
         void AddField(const char* name, const Field& field);
-        void* GetDefaultObject();
+        void* GetDefaultObject() const;
         void SetDefaultObject(void* object);
-
+        void* NewObject() const;
     private:
         void* m_default_object = nullptr;
         int m_size = 0;
         std::string m_name;
         std::vector<std::pair<std::string, Function>> m_functions;
         std::map<std::string, Field> m_field;
+    public:
+        static void RegisterClass(const char* name, MetaClass* class_ptr);
+        static const MetaClass* GetClassRuntime(const char* name);
+        static void* CreateObjectRuntime(const char* name);
+    private:
+        static std::map<std::string, MetaClass*> m_classes_map;
     };
 }

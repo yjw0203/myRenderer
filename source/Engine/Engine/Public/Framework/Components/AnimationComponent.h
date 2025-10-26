@@ -5,8 +5,9 @@
 
 namespace yjw
 {
-    class AnimationComponent : public Component
+    class Meta() AnimationComponent : public Component
     {
+        GENERATED_BODY();
     public:
         AnimationComponent();
         ~AnimationComponent();

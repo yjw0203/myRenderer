@@ -4,8 +4,9 @@
 
 namespace yjw
 {
-    class SceneRootComponent : public Component
+    class Meta() SceneRootComponent : public Component
     {
+        GENERATED_BODY();
     public:
         const Transform& GetRelativeToParent();
     private:

@@ -11,6 +11,8 @@ namespace yjw
 {
     Engine::Engine()
     {
+        BROADCAST_DELEGATE(EngineStartup)
+
         Window::Initialize();
         m_editor = new MajorEditor();
     }

@@ -32,7 +32,7 @@ namespace yjw
 
     }
 
-    void* MetaClass::GetDefaultObject()
+    void* MetaClass::GetDefaultObject() const
     {
         return m_default_object;
     }
@@ -40,5 +40,36 @@ namespace yjw
     void MetaClass::SetDefaultObject(void* object)
     {
         m_default_object = object;
+    }
+
+    void* MetaClass::NewObject() const
+    {
+        void* ptr = malloc(m_size);
+        memcpy(ptr, m_default_object, m_size);// to copy virtual ptr.
+        return ptr;
+    }
+
+    std::map<std::string, MetaClass*> MetaClass::m_classes_map;
+    void MetaClass::RegisterClass(const char* name, MetaClass* class_ptr)
+    {
+        m_classes_map[name] = class_ptr;
+    }
+
+    const MetaClass* MetaClass::GetClassRuntime(const char* name)
+    {
+        return m_classes_map[name];
+    }
+
+    void* MetaClass::CreateObjectRuntime(const char* name)
+    {
+        const MetaClass* cl = GetClassRuntime(name);
+        if (cl)
+        {
+            return GetClassRuntime(name)->NewObject();
+        }
+        else
+        {
+            return nullptr;
+        }
     }
 }

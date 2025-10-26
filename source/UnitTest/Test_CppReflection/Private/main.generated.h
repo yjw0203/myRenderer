@@ -1,1 +1,6 @@
-#define GENERATED_BODY() public: const char* GetClassName(){return "TestA";} 
+#define GENERATED_BODY() 
+
+class WWW
+{
+
+};

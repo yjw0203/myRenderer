@@ -12,6 +12,7 @@ namespace yjw
         FileWriterArchive(const char* url);
         virtual ~FileWriterArchive();
         virtual void close() override;
+        virtual ArchiveType GetArchiveType() { return ArchiveType::write; }
     private:
         virtual void SerializeInternal(void* data, int length) override;
         std::vector<char> m_buffer;
@@ -22,6 +23,7 @@ namespace yjw
     {
     public:
         FileReaderArchive(const char* url);
+        virtual ArchiveType GetArchiveType() { return ArchiveType::read; }
     private:
         virtual void SerializeInternal(void* data, int length) override;
         std::vector<char> m_buffer;

@@ -5,8 +5,9 @@
 #include "Engine/Engine/Public/Framework/Components/PrimitiveComponent.h"
 namespace yjw
 {
-    class StaticMeshComponent : public PrimitiveComponent
+    class Meta() StaticMeshComponent : public PrimitiveComponent
     {
+        GENERATED_BODY();
     public:
         void SetPrimitive(const char* url);
         

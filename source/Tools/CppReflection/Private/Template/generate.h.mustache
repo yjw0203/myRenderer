@@ -3,5 +3,6 @@
 
 #define GENERATED_BODY() \
 public:                     \
-virtual const MetaClass& GetClass(); \
+static const MetaClass* RegisterClass();\
+virtual const MetaClass* GetClass(); \
 virtual void Serialize(Archive& Ar);

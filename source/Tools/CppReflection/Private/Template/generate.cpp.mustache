@@ -2,31 +2,44 @@
 #include "{{header_file_name}}"
 {{/include_header_files}}
 #include "Engine/Utils/Public/Meta/Meta.h"
+#include "Engine/Engine/Public/Engine.h"
+#include "Generate/Public/Generate.h"
+#include "Engine/Utils/Public/Serialize/Archive.h"
 
 namespace yjw
 {
+{{#ast}}
 {{#class_list}}
-    const MetaClass& {{class_name}}::GetClass()
+    const MetaClass* {{name}}::RegisterClass()
     {
         static MetaClass* instance = nullptr;
         if(!instance)
         {
             instance = new MetaClass();
-            instance->SetName("{{class_name}}");
-            instance->SetSize(sizeof({{class_name}}));
-            instance->SetDefaultObject((void*)(new {{class_name}}()));
-            {{#field_list}}
-            //{{field_name}}
-            {{/field_list}}
+            instance->SetName("{{name}}");
+            instance->SetSize(sizeof({{name}}));
+            instance->SetDefaultObject((void*)(new {{name}}()));
+            MetaClass::RegisterClass("{{name}}", instance);
         }
-        return *instance;
+        return instance;
     }
 
-    void {{class_name}}::Serialize(Archive& Ar)
+    const MetaClass* {{name}}::GetClass()
     {
-        {{#field_list}}
-        Ar << {{field_name}};
-        {{/field_list}}
+        return {{name}}::RegisterClass();
     }
+
+    void {{name}}::Serialize(Archive& Ar)
+    {
+{{#inherit_list}}
+        {{name}}::Serialize(Ar);
+{{/inherit_list}}
+{{#field_list}}
+        Ar << {{name}};
+{{/field_list}}
+    }
+
+    REGISTER_DELEGATE(EngineStartup, [&]{ {{name}}::RegisterClass(); })
 {{/class_list}}
+{{/ast}}
 }

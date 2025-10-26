@@ -8,7 +8,7 @@
 #define Class(...) class Meta(type=class) __VA_ARGS__
 
 #include <vector>
-#include "Generate/Public/UnitTest/Test_Utils/Private/main.generate.h"
+#include "Generate/Public/Generate.h"
 
 namespace yjw
 {

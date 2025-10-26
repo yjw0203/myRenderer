@@ -11,6 +11,7 @@
 #include "Engine/Engine/Public/Window.h"
 
 #include "Engine/Render/Public/RenderAPI.h"
+#include "Engine/Utils/Public/Serialize/FileArchive.h"
 namespace yjw
 {
     void MajorEditor::Startup()
@@ -43,7 +44,14 @@ namespace yjw
         std::string animation = std::string("wizard/Animation/wizard.animation.ast");
         animation_component->LoadAnimation(animation.c_str());
         
+        FileWriterArchive Ar("E:/workspace/myRenderer/resource/actor.ast");
+        Ar << wizard;
+        Ar.close();
 
+        Actor* test = nullptr;
+        FileReaderArchive rAr("E:/workspace/myRenderer/resource/actor.ast");
+        rAr << test;
+        rAr.close();
         /*
         Vector3 locations[] = { Vector3(-2,-2,0),Vector3(-2, 0,0), Vector3(-2,1,0), Vector3(0,-2,0), Vector3(0,0,0),Vector3(0,2,0),Vector3(2,-2,0),Vector3(2,0,0),Vector3(2,2,0) };
         for (int i = 0; i < 9; i++)

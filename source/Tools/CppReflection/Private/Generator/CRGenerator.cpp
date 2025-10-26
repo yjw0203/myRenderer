@@ -4,42 +4,6 @@
 #include "mustache.hpp"
 
 namespace Mustache = kainjow::mustache;
-void GenerateMustanceData(const meta::Field& field, Mustache::data& data)
-{
-    data.set("field_name", field.m_name);
-    data.set("field_type", field.m_type);
-}
-
-void GenerateMustanceData(const meta::Field::List& fields, Mustache::data& data)
-{
-    for (const meta::Field& field : fields)
-    {
-        Mustache::data field_data;
-        GenerateMustanceData(field, field_data);
-        data.push_back(field_data);
-    }
-}
-
-void GenerateMustanceData(const meta::Class& class_, Mustache::data& data)
-{
-    data.set("class_name", class_.m_name);
-    data.set("class_name_with_namespace", class_.GetClassNameWithNameSpace());
-    data.set("namespace", class_.m_namespace);
-    data.set("has_namespace", !(class_.m_namespace == ""));
-    Mustache::data field_list_data(Mustache::data::type::list);
-    GenerateMustanceData(class_.m_fields, field_list_data);
-    data.set("field_list", field_list_data);
-}
-
-void GenerateMustanceData(const meta::Class::List& classes, Mustache::data& data)
-{
-    for (const meta::Class& class_ : classes)
-    {
-        Mustache::data class_data;
-        GenerateMustanceData(class_, class_data);
-        data.push_back(class_data);
-    }
-}
 
 std::string MustacheRenderTemplate(const std::string& template_str, Mustache::data& data)
 {
@@ -80,11 +44,131 @@ void writeFile(const char* file_name, const std::string& str)
     }
 }
 
-void CRGenerator::Generate(const std::vector<std::string>& include_files, const meta::Class::List& classes, const char* template_file, const char* out_file)
+void GenerateMustanceData(CREnum* obj, Mustache::data& data)
+{
+    data.set("name", obj->m_name);
+    Mustache::data item_list_data;
+    for (const std::string& item : obj->m_items)
+    {
+        item_list_data.push_back(item);
+    }
+    data.set("item_list", item_list_data);
+}
+
+void GenerateMustanceData(CRParm* obj, Mustache::data& data)
+{
+    data.set("name", obj->m_name);
+    data.set("type", obj->m_type);
+    data.set("is_fundamental_type", obj->m_is_fundamental_type);
+}
+
+void GenerateMustanceData(CRMethod* obj, Mustache::data& data)
+{
+    data.set("name", obj->m_name);
+    Mustache::data parm_list_data;
+    for (CRParm* item : obj->m_parms)
+    {
+        parm_list_data.push_back(item);
+    }
+    data.set("parm_list", parm_list_data);
+}
+
+void GenerateMustanceData(CRField* obj, Mustache::data& data)
+{
+    data.set("name", obj->m_name);
+    data.set("type", obj->m_type);
+    data.set("is_fundamental_type", obj->m_is_fundamental_type);
+}
+
+void GenerateMustanceData(CRVar* obj, Mustache::data& data)
+{
+    data.set("name", obj->m_name);
+    data.set("type", obj->m_type);
+    data.set("is_fundamental_type", obj->m_is_fundamental_type);
+}
+
+void GenerateMustanceData(CRFunction* obj, Mustache::data& data)
+{
+    data.set("name", obj->m_name);
+    Mustache::data parm_list_data;
+    for (CRParm* item : obj->m_parms)
+    {
+        parm_list_data.push_back(item);
+    }
+    data.set("parm_list", parm_list_data);
+}
+
+void GenerateMustanceData(CRStruct* obj, Mustache::data& data);
+void GenerateMustanceData(CRClass* obj, Mustache::data& data);
+
+template<typename T>
+void SetGenerateMustanceDataList(Mustache::data& data, const char* name, std::vector<T*>& obj)
+{
+    Mustache::data list_data(Mustache::data::type::list);
+    for (T* item : obj)
+    {
+        Mustache::data item_data;
+        GenerateMustanceData(item, item_data);
+        list_data.push_back(item_data);
+    }
+    data.set(name, list_data);
+}
+
+void GenerateMustanceData(CRStruct* obj, Mustache::data& data)
+{
+    data.set("name", obj->m_name);
+    SetGenerateMustanceDataList(data, "enum_list", obj->m_enums);
+    SetGenerateMustanceDataList(data, "class_list", obj->m_classes);
+    SetGenerateMustanceDataList(data, "struct_list", obj->m_structs);
+    SetGenerateMustanceDataList(data, "var_list", obj->m_vars);
+    SetGenerateMustanceDataList(data, "function_list", obj->m_functions);
+    SetGenerateMustanceDataList(data, "metahod_list", obj->m_methods);
+    SetGenerateMustanceDataList(data, "field_list", obj->m_fields);
+    Mustache::data list_data(Mustache::data::type::list);
+    for (const std::string& item : obj->m_inherits)
+    {
+        Mustache::data data;
+        data.set("name", item);
+        list_data.push_back(data);
+    }
+    data.set("inherit_list", list_data);
+}
+
+void GenerateMustanceData(CRClass* obj, Mustache::data& data)
+{
+    data.set("name", obj->m_name);
+    SetGenerateMustanceDataList(data, "enum_list", obj->m_enums);
+    SetGenerateMustanceDataList(data, "class_list", obj->m_classes);
+    SetGenerateMustanceDataList(data, "struct_list", obj->m_structs);
+    SetGenerateMustanceDataList(data, "var_list", obj->m_vars);
+    SetGenerateMustanceDataList(data, "function_list", obj->m_functions);
+    SetGenerateMustanceDataList(data, "metahod_list", obj->m_methods);
+    SetGenerateMustanceDataList(data, "field_list", obj->m_fields);
+    Mustache::data list_data(Mustache::data::type::list);
+    for (const std::string& item: obj->m_inherits)
+    {
+        Mustache::data data;
+        data.set("name", item);
+        list_data.push_back(data);
+    }
+    data.set("inherit_list", list_data);
+}
+
+void GenerateMustanceData(CRASTree* ast, Mustache::data& data)
+{
+    SetGenerateMustanceDataList(data, "enum_list", ast->m_enums);
+    SetGenerateMustanceDataList(data, "class_list", ast->m_classes);
+    SetGenerateMustanceDataList(data, "struct_list", ast->m_structs);
+    SetGenerateMustanceDataList(data, "var_list", ast->m_vars);
+    SetGenerateMustanceDataList(data, "function_list", ast->m_functions);
+}
+
+void CRGenerator::Generate(const std::vector<std::string>& include_files, CRASTree* ast, const char* template_file, const char* out_file)
 {
     Mustache::data data;
-    Mustache::data class_list_data(Mustache::data::type::list);
-    GenerateMustanceData(classes, class_list_data);
+    Mustache::data ast_data;
+    GenerateMustanceData(ast, ast_data);
+    data.set("ast", ast_data);
 
     Mustache::data header_list_data(Mustache::data::type::list);
     for (const std::string& header : include_files)
@@ -94,7 +178,6 @@ void CRGenerator::Generate(const std::vector<std::string>& include_files, const 
         header_list_data.push_back(header_data);
     }
     data.set("include_header_files", header_list_data);
-    data.set("class_list", class_list_data);
 
     std::string template_str = readFile(template_file);
     std::string out = MustacheRenderTemplate(template_str, data);

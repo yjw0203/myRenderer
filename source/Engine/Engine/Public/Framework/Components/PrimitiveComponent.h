@@ -5,8 +5,9 @@
 
 namespace yjw
 {
-    class PrimitiveComponent : public SceneRootComponent
+    class Meta() PrimitiveComponent : public SceneRootComponent
     {
+        GENERATED_BODY();
     public:
         virtual const char* GetPrimitive() { return ""; }
     };

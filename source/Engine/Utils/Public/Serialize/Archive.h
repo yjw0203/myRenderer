@@ -24,10 +24,18 @@ namespace yjw
         SerializeImpl(Ar, &obj, sizeof(obj));
     }
 
+    enum class ArchiveType
+    {
+        read,
+        write
+    };
+
     class Archive
     {
     public:
         virtual ~Archive() {};
+
+        virtual ArchiveType GetArchiveType() = 0;
 
         template<typename BaseType/*, typename = std::enable_if_t<!HasSerializeMethod<BaseType>::value>*/>
         auto operator<<(BaseType& value) -> std::enable_if_t<!HasSerializeMethod<BaseType>::value, Archive&>
@@ -43,13 +51,31 @@ namespace yjw
             return *this;
         }
 
-        Archive& operator<<(MObject& value) {
-            value.Serialize(*this);
-            return *this;
-        }
-
-        Archive& operator<<(MObject* value) {
-            (*this) << *value;
+        template<typename BaseType>
+        Archive& operator<<(BaseType*& value) {
+            int not_null;
+            std::string class_name;
+            if (GetArchiveType() == ArchiveType::read)
+            {
+                (*this) << not_null;
+                if (not_null)
+                {
+                    (*this) << class_name;
+                    value = (BaseType*)MetaClass::CreateObjectRuntime(class_name.c_str());
+                    (*this) << *value;
+                }
+            }
+            else if(GetArchiveType() == ArchiveType::write)
+            {
+                not_null = value != nullptr ? 1 : 0;
+                (*this) << not_null;
+                if (not_null)
+                {
+                    class_name = value->GetClass()->GetName();
+                    (*this) << class_name;
+                    (*this) << *value;
+                }
+            }
             return *this;
         }
         

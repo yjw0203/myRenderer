@@ -6,4 +6,8 @@ namespace yjw
     {
     }
 
+    MObject* MObject::CreateNewObject(const char* name)
+    {
+        return (MObject*)MetaClass::CreateObjectRuntime(name);
+    }
 }

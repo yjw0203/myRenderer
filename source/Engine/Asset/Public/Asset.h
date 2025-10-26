@@ -8,7 +8,6 @@
 #include "json.hpp"
 #include "Engine/Utils/Public/Define.h"
 #include "Engine/Utils/Public/Object/Object.h"
-#include "Generate/Public/Engine/Asset/Public/Asset.generate.h"
 
 namespace yjw
 {
@@ -17,10 +16,11 @@ namespace yjw
     using AssetDestoryFunc = std::function<void(void*)>;
     using AssetSerializeFunc = std::function<void(Archive& ,void*)>;
 
-    Class(AssetHeader) : public MObject
+    class Meta() AssetHeader : public MObject
     {
         GENERATED_BODY();
     public:
+        Meta()
         std::string m_type;
     };
     

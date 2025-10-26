@@ -1,4 +1,7 @@
 #pragma once
+#include "Engine/Utils/Public/yjw_delegate.h"
+
+EXTERN_DELEGATE(EngineStartup);
 
 namespace yjw
 {
