@@ -12,11 +12,16 @@ namespace yjw
         void InitWorld();
         void Tick(float deltaTime);
         void DestroyWorld();
-        Level* GetLevel() { return m_level; }
-        RdScene* GetScene() { return m_scene; }
+        Level* GetLevel();
+        RdScene* GetScene();
+
+        void AttachLevel(Level* level);
+        void DettachLevel();
+
+        void LoadLevel(const char* url);
+        void SaveLevel(const char* url);
 
     private:
         Level* m_level = nullptr;
-        RdScene* m_scene = nullptr;
     };
 }

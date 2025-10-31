@@ -4,16 +4,29 @@ namespace yjw
 {
     SkeletonComponent::SkeletonComponent()
     {
-        m_skeleton = new Skeleton();
     }
 
     SkeletonComponent::~SkeletonComponent()
     {
-        delete m_skeleton;
+    }
+
+    void SkeletonComponent::OnLoaded()
+    {
+        LoadSkeleton(m_url.c_str());
     }
 
     void SkeletonComponent::LoadSkeleton(const char* url)
     {
+        if (std::string("") == url)
+        {
+            return;
+        }
+        if (m_skeleton)
+        {
+            delete m_skeleton;
+        }
+        m_url = url;
+        m_skeleton = new Skeleton();
         m_skeleton->BuildSkeleton(url);
     }
 

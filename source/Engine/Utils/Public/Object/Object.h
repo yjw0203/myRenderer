@@ -8,6 +8,8 @@ namespace yjw
     class MObject
     {
     public:
+        MObject() {}
+        virtual void OnLoaded() {}
         virtual void Serialize(Archive& Ar);
         virtual const MetaClass* GetClass() = 0;
         static MObject* CreateNewObject(const char* name);

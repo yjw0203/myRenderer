@@ -11,11 +11,16 @@ namespace yjw
     public:
         AnimationComponent();
         ~AnimationComponent();
+        virtual void OnLoaded();
         void LoadAnimation(const char* url);
         void Update(float deltaTime);
         void ControlSkeleton(Skeleton* skeleton);
 
     private:
+
+        Meta()
+        std::string m_url = "";
+
         std::shared_ptr<SkeletonController> m_skeleton_controller;
         std::shared_ptr<SkeletonController> m_ik_controller;
 

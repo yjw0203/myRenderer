@@ -5,6 +5,9 @@
 
 namespace yjw
 {
+    class Level;
+    class Actor;
+    class RdScene;
     class Meta() Component : public MObject
     {
         GENERATED_BODY();
@@ -17,7 +20,16 @@ namespace yjw
             // to optimize using type reflection
             return dynamic_cast<T*>(this);
         }
+        virtual void OnLoaded() {};
+
+        virtual void AttachToLevel(Level* level) {};
+        virtual void DettachToLevel() {};
+        virtual void AttachToScene(RdScene* scene) {};
+        virtual void DettachToScene() {};
+        void SetActor(Actor* actor) { m_actor = actor; }
+        Actor* GetActor() { return m_actor; }
 
     private:
+        Actor* m_actor = nullptr;
     };
 }

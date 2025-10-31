@@ -4,15 +4,24 @@
 #include "Engine/Engine/Public/Framework/Actor.h"
 #include "Engine/Render/Public/RenderAPI.h"
 #include "Engine/Utils/Public/Serialize/Archive.h"
+#include "Engine/Utils/Public/Object/Object.h"
+#include "Engine/Engine/Public/Framework/System/System.h"
 
 namespace yjw
 {
     class System;
     class Actor;
-    class Level
+    
+    class Meta() Level : public MObject
     {
+        GENERATED_BODY()
     public:
-        Level(World* world);
+        Level();
+        virtual ~Level();
+
+        void InitLevel();
+        void DestroyLevel();
+        void OnLoaded();
 
         World* GetWorld() { return m_world; }
 
@@ -24,19 +33,29 @@ namespace yjw
         {
             Actor* actor = new T(std::forward<Args>(args)...);
             actor->SetName(name);
-            actor->SetActorId(m_actors.size() + 1);
-            m_actors.push_back(actor);
-            actor->SetWorld(m_world);
-
             actor->OnSpawned();
+            AttachActor(actor);
             return actor;
         }
 
         Actor* GetActorById(int id);
+        RdScene* GetScene() { return m_scene; }
+        void AttachToWorld(World* world);
+        void DettachToWorld();
+
+        void AttachActor(Actor* actor);
+        void DettachActor(Actor* actor);
+
+        void AttachSystem(System* system);
+        void DettachSystem(System* system);
 
     private:
+        Meta()
         std::vector<Actor*> m_actors;
+        Meta()
         std::vector<System*> m_systems;
+        
         World* m_world{};
+        RdScene* m_scene = nullptr;
     };
 }

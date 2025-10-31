@@ -12,12 +12,23 @@ namespace yjw
 
     }
 
+    void AnimationComponent::OnLoaded()
+    {
+        LoadAnimation(m_url.c_str());
+    }
+
     void AnimationComponent::LoadAnimation(const char* url)
     {
+        if (std::string("") == url)
+        {
+            return;
+        }
+        m_url = url;
         Asset<AnimationAST> animation_ast(url);
         AnimationClipAST* clip = animation_ast.GetData()->m_clip.GetData();
         m_total_time = clip->m_total_frame * clip->m_time_per_frame;
         m_skeleton_controller = std::make_shared<ClipAnimationController>(animation_ast.GetData()->m_clip.m_url.c_str());
+        m_play_time = 0;
     }
 
     void AnimationComponent::Update(float deltaTime)

@@ -4,8 +4,9 @@
 
 namespace yjw
 {
-    class AnimationSystem : public System
+    class Meta() AnimationSystem : public System
     {
+        GENERATED_BODY()
     public:
         virtual void Update(float deltaTime) override;
     };

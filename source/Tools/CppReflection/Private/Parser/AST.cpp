@@ -231,6 +231,7 @@ CRClass* CRASTree::buildClass(CRCursor cursor, CRNamespace& currentNamespace, CR
     bool is_public = false;
     for (auto child : children)
     {
+        auto name = child.GetDisplayName();
         auto kind = child.GetKind();
         if (kind == CXCursor_CXXBaseSpecifier)
         {
@@ -247,11 +248,6 @@ CRClass* CRASTree::buildClass(CRCursor cursor, CRNamespace& currentNamespace, CR
             {
                 is_public = false;
             }
-        }
-
-        if (!is_public)
-        {
-            continue;
         }
 
         std::string annotateAttr = child.GetAnnotateAttr();

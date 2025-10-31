@@ -5,16 +5,21 @@
 
 namespace yjw
 {
-    class SkeletonComponent : public Component
+    class Meta() SkeletonComponent : public Component
     {
+        GENERATED_BODY();
     public:
         SkeletonComponent();
         ~SkeletonComponent();
+        virtual void OnLoaded();
         void LoadSkeleton(const char* url);
 
         Skeleton* GetSkeleton();
 
     private:
+        Meta()
+        std::string m_url;
+
         Skeleton* m_skeleton = nullptr;
     };
 

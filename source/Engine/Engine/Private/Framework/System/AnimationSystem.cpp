@@ -1,6 +1,7 @@
 #include "Engine/Engine/Public/Framework/System/AnimationSystem.h"
 #include "Engine/Engine/Public/Framework/Components/SkeletonComponent.h"
 #include "Engine/Engine/Public/Framework/Components/AnimationComponent.h"
+#include "Engine/Engine/Public/Framework/Components/StaticMeshComponent.h"
 #include "Engine/Engine/Public/Framework/Actor.h"
 
 namespace yjw
@@ -15,7 +16,8 @@ namespace yjw
             }
             SkeletonComponent* skeleton_component = actor->GetComponent<SkeletonComponent>();
             AnimationComponent* animation_component = actor->GetComponent<AnimationComponent>();
-            if (skeleton_component)
+            StaticMeshComponent* mesh_component = actor->GetComponent<StaticMeshComponent>();
+            if (skeleton_component && skeleton_component->GetSkeleton() && mesh_component)
             {
                 skeleton_component->GetSkeleton()->BeginUpdateAnimation(); 
                 if (animation_component)
@@ -25,7 +27,7 @@ namespace yjw
                 }
                 skeleton_component->GetSkeleton()->EndUpdateAnimation();
                 const std::vector<Matrix4x4>& bone_matrix = skeleton_component->GetSkeleton()->GetBoneMatrices();
-                rdUpdateEntitySkeletalMatrix(actor->GetWorld()->GetScene(), actor->GetSceneEntity(), bone_matrix.data(), bone_matrix.size());
+                rdUpdateEntitySkeletalMatrix(actor->GetWorld()->GetScene(), mesh_component->GetSceneEntity(), bone_matrix.data(), bone_matrix.size());
             }
         }
     }

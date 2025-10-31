@@ -5,6 +5,7 @@
 #include "Engine/Engine/Public/Framework/Level.h"
 #include "Engine/Engine/Public/Framework/Components/SkeletonComponent.h"
 #include "Engine/Engine/Public/Framework/Components/AnimationComponent.h"
+#include "Engine/Engine/Public/Framework/System/System.h"
 
 #include "Engine/RHI/Public/externs/imgui/yjw_rhi_imgui_layer.h"
 #include "Engine/RHI/Public/externs/imgui/yjw_rhi_imgui_window.h"
@@ -30,9 +31,6 @@ namespace yjw
         m_window = new Window();
 
         m_view = rdCreateView(m_window->GetWindowHandle());
-        rdAttachScene(m_view, m_world->GetScene());
-        rdAttachUI(m_view, m_ui);
-
         
         Actor* wizard = m_world->GetLevel()->SpawnActor<MeshActor>("wizard", "wizard/wizard.mesh.ast");
         Transform transform{};
@@ -44,14 +42,27 @@ namespace yjw
         std::string animation = std::string("wizard/Animation/wizard.animation.ast");
         animation_component->LoadAnimation(animation.c_str());
         
-        FileWriterArchive Ar("E:/workspace/myRenderer/resource/actor.ast");
-        Ar << wizard;
-        Ar.close();
+        m_world->SaveLevel("E:/workspace/myRenderer/resource/level.ast");
+        m_world->LoadLevel("E:/workspace/myRenderer/resource/level.ast");
 
+        rdAttachScene(m_view, m_world->GetLevel()->GetScene());
+        rdAttachUI(m_view, m_ui);
+
+        //FileWriterArchive Ar("E:/workspace/myRenderer/resource/actor.ast");
+        //Ar << wizard;
+        //Ar.close();
+
+        /*
         Actor* test = nullptr;
         FileReaderArchive rAr("E:/workspace/myRenderer/resource/actor.ast");
         rAr << test;
         rAr.close();
+        test->OnLoaded();
+        m_world->GetLevel()->AttachActor(test);
+        */
+
+        //m_world->GetLevel()->DettachActor(wizard);
+
         /*
         Vector3 locations[] = { Vector3(-2,-2,0),Vector3(-2, 0,0), Vector3(-2,1,0), Vector3(0,-2,0), Vector3(0,0,0),Vector3(0,2,0),Vector3(2,-2,0),Vector3(2,0,0),Vector3(2,2,0) };
         for (int i = 0; i < 9; i++)
@@ -119,7 +130,7 @@ namespace yjw
         {
             m_select_actor_edit_transform = actor->GetTransform();
             m_ui->SetEditTransformPtr(&m_select_actor_edit_transform);
-            rdUpdateEntityRenderMask(m_world->GetScene(), actor->GetSceneEntity(), RdRenderMaskBits::highlight, true);
+            //rdUpdateEntityRenderMask(m_world->GetScene(), actor->GetSceneEntity(), RdRenderMaskBits::highlight, true);
             m_select_actor_id = actor_id;
         }
     }
@@ -130,7 +141,7 @@ namespace yjw
         if (actor)
         {
             //m_ui->SetEditTransformPtr(nullptr);
-            rdUpdateEntityRenderMask(m_world->GetScene(), actor->GetSceneEntity(), RdRenderMaskBits::highlight, false);
+            //rdUpdateEntityRenderMask(m_world->GetScene(), actor->GetSceneEntity(), RdRenderMaskBits::highlight, false);
         }
     }
 

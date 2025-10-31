@@ -8,8 +8,13 @@ namespace yjw
     {
         GENERATED_BODY();
     public:
+        void SetRelativeTransform(const Transform& transform);
         const Transform& GetRelativeToParent();
+        const Transform& GetTransform();
     private:
+        Meta()
         Transform m_relative{};
+
+        SceneRootComponent* m_parent = nullptr;
     };
 }

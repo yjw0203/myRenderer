@@ -19,7 +19,7 @@ std::string replacePrefix(const std::string& path, const std::string& oldPrefix,
 int main()
 {
     CRASTree astree;
-    astree.build("E:/workspace/myRenderer/source/Engine/Engine/Public/Framework/Actor.h");
+    astree.build("E:/workspace/myRenderer/source/Engine/Engine/Public/Framework/Components/StaticMeshComponent.h");
 
     std::vector<std::string> headers;
     std::map<std::string, CRASTree*> file_ast_map;
