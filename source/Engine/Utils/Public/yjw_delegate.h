@@ -3,8 +3,6 @@
 #include<vector>
 #include<functional>
 
-namespace yjw
-{
 #define _STR_CAT(x,y,z) (x##y##z)
 #define STR_CAT(x,y,z) _STR_CAT(x,y,z)
 
@@ -35,5 +33,5 @@ namespace yjw
 
 #define REGISTER_DELEGATE(NAME,Func) static int STR_CAT(NAME,__LINE__,DelegateRegister) = (NAME##Delegate::get().Register(Func), 0);
 #define BROADCAST_DELEGATE(NAME) NAME##Delegate::get().Broadcast();
-}
+
 

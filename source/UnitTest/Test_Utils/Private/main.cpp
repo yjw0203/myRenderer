@@ -9,7 +9,6 @@
 
 #include "Engine/Utils/Public/Serialize/FileArchive.h"
 #include "projectInfo.h"
-using namespace yjw;
 
 
 class AA
@@ -46,11 +45,11 @@ public:
 int main()
 {
     /*
-    Asset<yjw::MeshAST> ast("Content/3.ast");
+    Asset<MeshAST> ast("Content/3.ast");
 
     AssetManager::Get()->process();
 
-    yjw::MeshAST* a = ast.GetData();
+    MeshAST* a = ast.GetData();
     ast.Save();
     */
     AA a;

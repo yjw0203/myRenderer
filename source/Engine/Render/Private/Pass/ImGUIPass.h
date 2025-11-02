@@ -3,19 +3,16 @@
 #include "Engine/RHI/Public/externs/imgui/yjw_rhi_imgui_window.h"
 #include "Engine/RHI/Public/externs/imgui/yjw_rhi_imgui_layer.h"
 
-namespace yjw
+using namespace rpi;
+class ImGuiPass
 {
-    using namespace rpi;
-    class ImGuiPass
-    {
-    public:
-        void Initialize();
-        void Destroy();
-        void Submit(RPIContext context);
-        void LoadResource(rhi::ImGuiUI* ui);
+public:
+    void Initialize();
+    void Destroy();
+    void Submit(RPIContext context);
+    void LoadResource(rhi::ImGuiUI* ui);
 
-    private:
-        rhi::ImGuiUI* m_ui{};
-        RHIImguiLayer* m_imgui_layer{};
-    };
-}
+private:
+    rhi::ImGuiUI* m_ui{};
+    RHIImguiLayer* m_imgui_layer{};
+};

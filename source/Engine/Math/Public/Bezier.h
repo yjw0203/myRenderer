@@ -1,17 +1,14 @@
 #pragma once
 #include "glm/glm.hpp"
 
-namespace yjw
+struct Bezier
 {
-    struct Bezier
-    {
-        float EvalX(float t) const;
-        float EvalY(float t) const;
-        glm::vec2 Eval(float t) const;
+    float EvalX(float t) const;
+    float EvalY(float t) const;
+    glm::vec2 Eval(float t) const;
 
-        float FindBezierX(float time) const;
+    float FindBezierX(float time) const;
 
-        glm::vec2	m_cp1;
-        glm::vec2	m_cp2;
-    };
-}
+    glm::vec2	m_cp1;
+    glm::vec2	m_cp2;
+};

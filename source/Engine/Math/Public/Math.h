@@ -3,7 +3,3 @@
 #include "Engine/Math/Public/Transform.h"
 #include "Engine/Math/Public/Bezier.h"
 
-namespace yjw
-{
-
-}

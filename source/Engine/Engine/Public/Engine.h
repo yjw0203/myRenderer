@@ -3,25 +3,21 @@
 
 EXTERN_DELEGATE(EngineStartup);
 
-namespace yjw
+class Engine
 {
-    class Engine
-    {
-    public:
-        Engine();
-        ~Engine();
-        void run();
-        void shutdown();
+public:
+    Engine();
+    ~Engine();
+    void run();
+    void shutdown();
 
-    private:
-        void initialize();
-        void mainLoop();
-        void cleanup();
-        void loadModules();
-    private:
-        bool shouldShutdown = false;
+private:
+    void initialize();
+    void mainLoop();
+    void cleanup();
+    void loadModules();
+private:
+    bool shouldShutdown = false;
 
-        class MajorEditor* m_editor = nullptr;
-    };
-
-}
+    class MajorEditor* m_editor = nullptr;
+};

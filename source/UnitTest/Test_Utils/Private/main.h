@@ -10,9 +10,6 @@
 #include <vector>
 #include "Generate/Public/Generate.h"
 
-namespace yjw
-{
-
 Class(B)
 {
     GENERATED_BODY();
@@ -30,5 +27,3 @@ public:
     B b;
     std::vector<B> b_array;
 };
-
-}

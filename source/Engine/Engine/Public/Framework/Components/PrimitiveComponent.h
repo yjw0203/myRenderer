@@ -3,12 +3,10 @@
 #include "Engine/Render/Private/Primitive.h"
 #include "Engine/Utils/Public/DesignPatterns/ECS.h"
 
-namespace yjw
+class Meta() PrimitiveComponent : public SceneRootComponent
 {
-    class Meta() PrimitiveComponent : public SceneRootComponent
-    {
-        GENERATED_BODY();
-    public:
-        virtual const char* GetPrimitive() { return ""; }
-    };
-}
+    GENERATED_BODY();
+public:
+    virtual const char* GetPrimitive() { return ""; }
+};
+

@@ -1,10 +1,7 @@
 #pragma once
 
-namespace yjw
+class IRenderer
 {
-    class IRenderer
-    {
-    public:
-        IRenderer() {}
-    };
-}
+public:
+    IRenderer() {}
+};

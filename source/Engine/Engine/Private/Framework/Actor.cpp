@@ -3,70 +3,67 @@
 #include "Engine/Engine/Public/Framework/Components/Component.h"
 #include "Engine/Engine/Public/Framework/Components/StaticMeshComponent.h"
 
-namespace yjw
+Actor::Actor()
 {
-    Actor::Actor()
+    m_root_component.SetActor(this);
+}
+
+World* Actor::GetWorld()
+{
+    if (GetLevel())
     {
-        m_root_component.SetActor(this);
+        return GetLevel()->GetWorld();
+    }
+    return nullptr;
+}
+
+Level* Actor::GetLevel()
+{
+    return m_level;
+}
+
+void Actor::OnLoaded()
+{
+    for (Component* component : m_components)
+    {
+        component->SetActor(this);
+        component->OnLoaded();
+    }
+}
+
+void Actor::AttachToLevel(Level* level)
+{
+    m_level = level;
+    for (Component* component : m_components)
+    {
+        component->AttachToLevel(level);
     }
 
-    World* Actor::GetWorld()
+    for (Component* component : m_components)
     {
-        if (GetLevel())
-        {
-            return GetLevel()->GetWorld();
-        }
-        return nullptr;
+        component->AttachToScene(level->GetScene());
+    }
+}
+
+void Actor::DettachToLevel()
+{
+    for (Component* component : m_components)
+    {
+        component->DettachToScene();
     }
 
-    Level* Actor::GetLevel()
+    for (Component* component : m_components)
     {
-        return m_level;
+        component->DettachToLevel();
     }
 
-    void Actor::OnLoaded()
-    {
-        for (Component* component : m_components)
-        {
-            component->SetActor(this);
-            component->OnLoaded();
-        }
-    }
+    m_level = nullptr;
+}
 
-    void Actor::AttachToLevel(Level* level)
-    {
-        m_level = level;
-        for (Component* component : m_components)
-        {
-            component->AttachToLevel(level);
-        }
-
-        for (Component* component : m_components)
-        {
-            component->AttachToScene(level->GetScene());
-        }
-    }
-
-    void Actor::DettachToLevel()
-    {
-        for (Component* component : m_components)
-        {
-            component->DettachToScene();
-        }
-
-        for (Component* component : m_components)
-        {
-            component->DettachToLevel();
-        }
-
-        m_level = nullptr;
-    }
-
-    void MeshActor::OnSpawned()
-    {
-        Actor::OnSpawned();
-        AddComponent<StaticMeshComponent>();
-        StaticMeshComponent* mesh_component = GetComponent<StaticMeshComponent>();
-        mesh_component->SetPrimitive(m_primitive_url.c_str());
-    }
+void MeshActor::OnSpawned()
+{
+    Actor::OnSpawned();
+    AddComponent<StaticMeshComponent>();
+    StaticMeshComponent* mesh_component = GetComponent<StaticMeshComponent>();
+    mesh_component->SetPrimitive(m_primitive_url.c_str());
 }

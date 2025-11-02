@@ -115,6 +115,7 @@ bool parserAnnotateAttr(const std::string& text, CRArguments& arguments)
 void CRASTree::buildSubTree(CRCursor cursor, CRNamespace& currentNamespace, CRCursor parent)
 {
     CXCursorKind kind = cursor.GetKind();
+    auto displayName = cursor.GetDisplayName();
     if (kind == CXCursor_TranslationUnit)
     {
         CRCursor::List children = cursor.GetChildren();
@@ -127,7 +128,6 @@ void CRASTree::buildSubTree(CRCursor cursor, CRNamespace& currentNamespace, CRCu
 
     if (kind == CXCursor_Namespace)
     {
-        auto displayName = cursor.GetDisplayName();
         if (!displayName.empty())
         {
             currentNamespace.push_back(displayName);

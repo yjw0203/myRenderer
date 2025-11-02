@@ -2,15 +2,12 @@
 
 #include "Engine/Engine/Public/Core/EngineEventManager.h"
 
-namespace yjw
+namespace EngineEventUtilitys
 {
-    namespace EngineEventUtilitys
+    class Loader
     {
-        class Loader
-        {
 
-        };
+    };
 
 
-    }
 }

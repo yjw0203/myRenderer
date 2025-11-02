@@ -6,46 +6,43 @@
 #include "Engine/Render/Private/View.h"
 #include "Engine/Render/Public/RenderAPI.h"
 
-namespace yjw
+using namespace rpi;
+class SkyBoxPass;
+class ImGuiPass;
+class HighLightPass;
+class ForwardRenderer : public IRenderer
 {
-    using namespace rpi;
-    class SkyBoxPass;
-    class ImGuiPass;
-    class HighLightPass;
-    class ForwardRenderer : public IRenderer
-    {
-    public:
-        ForwardRenderer() {}
-        void Initialize();
-        void Destroy();
-        void SetOutput(RPITexture output_color, RPITexture output_depth);
-        void SetRenderPass(RPIRenderPass render_pass);
-        void SetView(RdView* view);
+public:
+    ForwardRenderer() {}
+    void Initialize();
+    void Destroy();
+    void SetOutput(RPITexture output_color, RPITexture output_depth);
+    void SetRenderPass(RPIRenderPass render_pass);
+    void SetView(RdView* view);
 
-        void Render();
-    private:
+    void Render();
+private:
 
-        void BeginFrame();
-        void RenderFrame();
-        void EndFrame();
+    void BeginFrame();
+    void RenderFrame();
+    void EndFrame();
 
-        void Submit(DrawItem* item);
-        void SubmitOpacue();
-        void SubmitTransparent();
+    void Submit(DrawItem* item);
+    void SubmitOpacue();
+    void SubmitTransparent();
 
-    private:
-        RdView* m_view{};
-        RPIContext m_context{};
+private:
+    RdView* m_view{};
+    RPIContext m_context{};
 
-        RPITexture m_output_color{};
-        RPITexture m_output_depth{};
-        RPIRenderPass m_render_pass{};
+    RPITexture m_output_color{};
+    RPITexture m_output_depth{};
+    RPIRenderPass m_render_pass{};
 
-        RPIRenderPipeline m_opacue_pipeline{};
+    RPIRenderPipeline m_opacue_pipeline{};
 
-        SkyBoxPass* m_sky_box_pass{};
-        ImGuiPass* m_imgui_pass{};
-        HighLightPass* m_high_light_pass{};
+    SkyBoxPass* m_sky_box_pass{};
+    ImGuiPass* m_imgui_pass{};
+    HighLightPass* m_high_light_pass{};
         
-    };
-}
+};

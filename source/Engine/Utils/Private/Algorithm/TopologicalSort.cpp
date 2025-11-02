@@ -1,130 +1,127 @@
 #include "Engine/Utils/Public/Algorithm/TopologicalSort.h"
 #include <queue>
 
-namespace yjw
+class TopologicalSortImplement
 {
-    class TopologicalSortImplement
-    {
-    public:
-        TopologicalSortImplement(int n);
-        ~TopologicalSortImplement();
-        bool AddEdge(int from, int to);
-        bool Sort();
-        std::vector<int>& GetResult();
-        std::vector<int>& GetRResult();
-    private:
-        std::vector<std::vector<int>> m_edges;
-        std::vector<int> m_result;
-        std::vector<int> m_r_result;
-        std::vector<int> m_inDegree;
-    };
+public:
+    TopologicalSortImplement(int n);
+    ~TopologicalSortImplement();
+    bool AddEdge(int from, int to);
+    bool Sort();
+    std::vector<int>& GetResult();
+    std::vector<int>& GetRResult();
+private:
+    std::vector<std::vector<int>> m_edges;
+    std::vector<int> m_result;
+    std::vector<int> m_r_result;
+    std::vector<int> m_inDegree;
+};
 
-    TopologicalSortImplement::TopologicalSortImplement(int n)
+TopologicalSortImplement::TopologicalSortImplement(int n)
+{
+    m_edges.resize(n);
+    m_inDegree.resize(n);
+}
+
+TopologicalSortImplement::~TopologicalSortImplement()
+{}
+
+bool TopologicalSortImplement::AddEdge(int from, int to)
+{
+    if (from >= 0 && from < m_edges.size() && to >= 0 && to < m_edges.size())
     {
-        m_edges.resize(n);
-        m_inDegree.resize(n);
+        m_inDegree[to]++;
+        m_edges[from].push_back(to);
+        return true;
     }
-
-    TopologicalSortImplement::~TopologicalSortImplement()
-    {}
-
-    bool TopologicalSortImplement::AddEdge(int from, int to)
+    else
     {
-        if (from >= 0 && from < m_edges.size() && to >= 0 && to < m_edges.size())
+        return false;
+    }
+}
+
+bool TopologicalSortImplement::Sort()
+{
+    m_result.clear();
+    std::vector<int> temp_inDegree = m_inDegree;
+
+    std::queue<int> Q;
+
+    //1. find 0 in-degree ndoe as first node.
+    for (int i = 0; i < temp_inDegree.size(); i++)
+    {
+        if (temp_inDegree[i] == 0)
         {
-            m_inDegree[to]++;
-            m_edges[from].push_back(to);
-            return true;
-        }
-        else
-        {
-            return false;
+            Q.push(i);
         }
     }
-
-    bool TopologicalSortImplement::Sort()
-    {
-        m_result.clear();
-        std::vector<int> temp_inDegree = m_inDegree;
-
-        std::queue<int> Q;
-
-        //1. find 0 in-degree ndoe as first node.
-        for (int i = 0; i < temp_inDegree.size(); i++)
-        {
-            if (temp_inDegree[i] == 0)
-            {
-                Q.push(i);
-            }
-        }
         
-        //2. Topological Sort
-        while (!Q.empty())
+    //2. Topological Sort
+    while (!Q.empty())
+    {
+        int p = Q.front();
+        Q.pop();
+        m_result.push_back(p);
+        for (int to : m_edges[p])
         {
-            int p = Q.front();
-            Q.pop();
-            m_result.push_back(p);
-            for (int to : m_edges[p])
+            temp_inDegree[to]--;
+            if (temp_inDegree[to] == 0)
             {
-                temp_inDegree[to]--;
-                if (temp_inDegree[to] == 0)
-                {
-                    Q.push(to);
-                }
+                Q.push(to);
             }
         }
+    }
 
-        //3. Check has topological order
-        if (m_result.size() == m_inDegree.size())
+    //3. Check has topological order
+    if (m_result.size() == m_inDegree.size())
+    {
+        m_r_result.resize(m_result.size());
+        for (int i = 0; i < m_result.size(); i++)
         {
-            m_r_result.resize(m_result.size());
-            for (int i = 0; i < m_result.size(); i++)
-            {
-                m_r_result[m_result[i]] = i;
-            }
-            return true;
+            m_r_result[m_result[i]] = i;
         }
-        else
-            return false;
+        return true;
     }
+    else
+        return false;
+}
 
-    std::vector<int>& TopologicalSortImplement::GetResult()
-    {
-        return m_result;
-    }
+std::vector<int>& TopologicalSortImplement::GetResult()
+{
+    return m_result;
+}
 
-    std::vector<int>& TopologicalSortImplement::GetRResult()
-    {
-        return m_r_result;
-    }
+std::vector<int>& TopologicalSortImplement::GetRResult()
+{
+    return m_r_result;
+}
 
-    TopologicalSort::TopologicalSort(int n)
-    {
-        m_implement = new TopologicalSortImplement(n);
-    }
+TopologicalSort::TopologicalSort(int n)
+{
+    m_implement = new TopologicalSortImplement(n);
+}
 
-    TopologicalSort::~TopologicalSort()
-    {
-        delete m_implement;
-    }
+TopologicalSort::~TopologicalSort()
+{
+    delete m_implement;
+}
 
-    bool TopologicalSort::AddEdge(int from, int to)
-    {
-        return m_implement->AddEdge(from, to);
-    }
+bool TopologicalSort::AddEdge(int from, int to)
+{
+    return m_implement->AddEdge(from, to);
+}
 
-    bool TopologicalSort::Sort()
-    {
-        return m_implement->Sort();
-    }
+bool TopologicalSort::Sort()
+{
+    return m_implement->Sort();
+}
 
-    std::vector<int>& TopologicalSort::GetResult()
-    {
-        return m_implement->GetResult();
-    }
+std::vector<int>& TopologicalSort::GetResult()
+{
+    return m_implement->GetResult();
+}
 
-    std::vector<int>& TopologicalSort::GetRResult()
-    {
-        return m_implement->GetRResult();
-    }
+std::vector<int>& TopologicalSort::GetRResult()
+{
+    return m_implement->GetRResult();
 }

@@ -1,27 +1,24 @@
 #pragma once
 
-namespace yjw
+class Level;
+class RdScene;
+class World
 {
-    class Level;
-    class RdScene;
-    class World
-    {
-    public:
-        World() { InitWorld(); }
-        ~World() { DestroyWorld(); }
-        void InitWorld();
-        void Tick(float deltaTime);
-        void DestroyWorld();
-        Level* GetLevel();
-        RdScene* GetScene();
+public:
+    World() { InitWorld(); }
+    ~World() { DestroyWorld(); }
+    void InitWorld();
+    void Tick(float deltaTime);
+    void DestroyWorld();
+    Level* GetLevel();
+    RdScene* GetScene();
 
-        void AttachLevel(Level* level);
-        void DettachLevel();
+    void AttachLevel(Level* level);
+    void DettachLevel();
 
-        void LoadLevel(const char* url);
-        void SaveLevel(const char* url);
+    void LoadLevel(const char* url);
+    void SaveLevel(const char* url);
 
-    private:
-        Level* m_level = nullptr;
-    };
-}
+private:
+    Level* m_level = nullptr;
+};

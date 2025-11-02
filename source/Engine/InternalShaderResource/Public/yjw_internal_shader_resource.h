@@ -35,41 +35,38 @@
 
 #define INTERNAL_SHADER_PARAMETER(ParameterType,ShaderParameterName,VariableName, BindingID) INTERNAL_SHADER_PARAMETER_WITH_ID(ParameterType,ShaderParameterName,VariableName,BindingID,__COUNTER__)
 
-namespace yjw
+struct InternalShaderParameterLayout
 {
-    struct InternalShaderParameterLayout
-    {
-        std::string name;
-        int binding_id;
-        int offset;
-        int width;
-        rpi::RPIBuffer gpuData;
-        void* cpuData;
-    };
+    std::string name;
+    int binding_id;
+    int offset;
+    int width;
+    rpi::RPIBuffer gpuData;
+    void* cpuData;
+};
 
-    class InternalShaderParameter
-    {
-        DECALE_INTERNAL_SHADER_PARAMETER();
-    public:
-        void Initialize();
-        void Destroy();
-        void FlushCpuDataToGpu();
-        rpi::RPIBuffer GetGpuBufferByShaderParameterName(const std::string& shaderName);
-        bool IsShaderParameterNameInternal(const std::string& shaderName);
-        rpi::RPIResourceSet GetCommonResourceSet();
-    public:
-        INTERNAL_SHADER_PARAMETER(InternalShaderData::Camera, camera, m_camera, 0);
-        INTERNAL_SHADER_PARAMETER(InternalShaderData::Light, light, m_light, 1);
-        INTERNAL_SHADER_PARAMETER(InternalShaderData::Option, option, m_option, 2);
-    private:
-        std::vector<InternalShaderParameterLayout> m_shader_parameter_layouts;
-        rpi::RPIBuffer m_gpu_data = rpi::RPIBuffer::Null;
-        void* m_cpu_data = nullptr;
-        int m_total_size = 0;
+class InternalShaderParameter
+{
+    DECALE_INTERNAL_SHADER_PARAMETER();
+public:
+    void Initialize();
+    void Destroy();
+    void FlushCpuDataToGpu();
+    rpi::RPIBuffer GetGpuBufferByShaderParameterName(const std::string& shaderName);
+    bool IsShaderParameterNameInternal(const std::string& shaderName);
+    rpi::RPIResourceSet GetCommonResourceSet();
+public:
+    INTERNAL_SHADER_PARAMETER(InternalShaderData::Camera, camera, m_camera, 0);
+    INTERNAL_SHADER_PARAMETER(InternalShaderData::Light, light, m_light, 1);
+    INTERNAL_SHADER_PARAMETER(InternalShaderData::Option, option, m_option, 2);
+private:
+    std::vector<InternalShaderParameterLayout> m_shader_parameter_layouts;
+    rpi::RPIBuffer m_gpu_data = rpi::RPIBuffer::Null;
+    void* m_cpu_data = nullptr;
+    int m_total_size = 0;
 
-        rpi::ShaderReflect m_reflect{};
-        rpi::RPIResourceSet m_common_resource_set{};
-    };
+    rpi::ShaderReflect m_reflect{};
+    rpi::RPIResourceSet m_common_resource_set{};
+};
 
-    extern InternalShaderParameter g_internal_shader_parameters;
-}
+extern InternalShaderParameter g_internal_shader_parameters;

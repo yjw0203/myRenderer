@@ -6,40 +6,37 @@
 #include "Generate/Public/Generate.h"
 #include "Engine/Utils/Public/Serialize/Archive.h"
 
-namespace yjw
-{
 {{#ast}}
 {{#class_list}}
-    const MetaClass* {{name}}::RegisterClass()
+const MetaClass* {{name}}::RegisterClass()
+{
+    static MetaClass* instance = nullptr;
+    if(!instance)
     {
-        static MetaClass* instance = nullptr;
-        if(!instance)
-        {
-            instance = new MetaClass();
-            instance->SetName("{{name}}");
-            instance->SetSize(sizeof({{name}}));
-            instance->SetDefaultObject((void*)(new {{name}}()));
-            MetaClass::RegisterClass("{{name}}", instance);
-        }
-        return instance;
+        instance = new MetaClass();
+        instance->SetName("{{name}}");
+        instance->SetSize(sizeof({{name}}));
+        instance->SetDefaultObject((void*)(new {{name}}()));
+        MetaClass::RegisterClass("{{name}}", instance);
     }
+    return instance;
+}
 
-    const MetaClass* {{name}}::GetClass()
-    {
-        return {{name}}::RegisterClass();
-    }
+const MetaClass* {{name}}::GetClass()
+{
+    return {{name}}::RegisterClass();
+}
 
-    void {{name}}::Serialize(Archive& Ar)
-    {
+void {{name}}::Serialize(Archive& Ar)
+{
 {{#inherit_list}}
-        {{name}}::Serialize(Ar);
+    {{name}}::Serialize(Ar);
 {{/inherit_list}}
 {{#field_list}}
-        Ar << {{name}};
+    Ar << {{name}};
 {{/field_list}}
-    }
+}
 
-    REGISTER_DELEGATE(EngineStartup, [&]{ {{name}}::RegisterClass(); })
+REGISTER_DELEGATE(EngineStartup, [&]{ {{name}}::RegisterClass(); })
 {{/class_list}}
 {{/ast}}
-}

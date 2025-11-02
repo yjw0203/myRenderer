@@ -6,8 +6,6 @@
 #include "generate1/projectInfo.h"
 #include <filesystem>
 
-namespace yjw
-{
 void ImportTexture(const std::string& out_name, const std::string& texture_path)
 {
     std::string abs_path_str = RESOURCE_PATH + std::string("/") + out_name;
@@ -157,7 +155,6 @@ void ImportAsset(const std::string& out_path, const std::string& name, const std
     }
 }
 
-}
 /*
 int main()
 {

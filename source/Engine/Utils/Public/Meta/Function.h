@@ -1,18 +1,15 @@
 #pragma once
 
-namespace yjw
+class Parameter
 {
-    class Parameter
-    {
-    public:
-        std::string m_name = "";
-    };
+public:
+    std::string m_name = "";
+};
 
-    class Function
-    {
-    public:
-        void Invoke() {};
-    private:
-        void* m_func_ptr = nullptr;
-    };
-}
+class Function
+{
+public:
+    void Invoke() {};
+private:
+    void* m_func_ptr = nullptr;
+};

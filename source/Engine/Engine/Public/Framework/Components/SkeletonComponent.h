@@ -3,24 +3,20 @@
 #include "Engine/Utils/Public/DesignPatterns/ECS.h"
 #include "Engine/Animation/Public/Skeleton.h"
 
-namespace yjw
+class Meta() SkeletonComponent : public Component
 {
-    class Meta() SkeletonComponent : public Component
-    {
-        GENERATED_BODY();
-    public:
-        SkeletonComponent();
-        ~SkeletonComponent();
-        virtual void OnLoaded();
-        void LoadSkeleton(const char* url);
+    GENERATED_BODY();
+public:
+    SkeletonComponent();
+    ~SkeletonComponent();
+    virtual void OnLoaded();
+    void LoadSkeleton(const char* url);
 
-        Skeleton* GetSkeleton();
+    Skeleton* GetSkeleton();
 
-    private:
-        Meta()
-        std::string m_url;
+private:
+    Meta()
+    std::string m_url;
 
-        Skeleton* m_skeleton = nullptr;
-    };
-
-}
+    Skeleton* m_skeleton = nullptr;
+};

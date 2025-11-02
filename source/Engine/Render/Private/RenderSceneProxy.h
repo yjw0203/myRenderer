@@ -2,29 +2,26 @@
 #include "Engine/Render/Private/Scene.h"
 #include <functional>
 
-namespace yjw
+class IRenderer;
+class RenderSceneProxy
 {
-    class IRenderer;
-    class RenderSceneProxy
+public:
+    RenderSceneProxy() {}
+    RenderSceneProxy(RdScene* scene) : m_scene(scene) {}
+
+    rpi::RPIResourceSet GetEntityResourceSet() { return m_scene->GetEntityResourceSet(); }
+
+    template<typename T,typename Func>
+    void SubmitOpaque(T* This ,Func func)
     {
-    public:
-        RenderSceneProxy() {}
-        RenderSceneProxy(RdScene* scene) : m_scene(scene) {}
-
-        rpi::RPIResourceSet GetEntityResourceSet() { return m_scene->GetEntityResourceSet(); }
-
-        template<typename T,typename Func>
-        void SubmitOpaque(T* This ,Func func)
+        std::vector<DrawItem> draw_items;
+        m_scene->GetDrawItems(draw_items);
+        for (DrawItem& item : draw_items)
         {
-            std::vector<DrawItem> draw_items;
-            m_scene->GetDrawItems(draw_items);
-            for (DrawItem& item : draw_items)
-            {
-                auto bfunc = std::bind(func, This, &item);
-                bfunc();
-            }
+            auto bfunc = std::bind(func, This, &item);
+            bfunc();
         }
-    private:
-        RdScene* m_scene{};
-    };
-}
+    }
+private:
+    RdScene* m_scene{};
+};
