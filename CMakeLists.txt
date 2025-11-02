@@ -9,6 +9,8 @@ message( STATUS "host system: ${CMAKE_HOST_SYSTEM_NAME} (${CMAKE_HOST_SYSTEM_VER
 
 project( "Renderer" VERSION 2023.1.31 LANGUAGES C CXX )
 
+include(utils.cmake)
+
 ## language standard
 set(CMAKE_CXX_STANDARD 17)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
@@ -42,10 +44,13 @@ set(llvm_dll ${CMAKE_CURRENT_SOURCE_DIR}/3rd/LLVM/bin/x64/libclang.dll)
 set(mustache_include ${CMAKE_CURRENT_SOURCE_DIR}/3rd/mustache/include)
 
 set(pybind_include ${CMAKE_CURRENT_SOURCE_DIR}/3rd/pybind/include)
+set(pybind_tools ${CMAKE_CURRENT_SOURCE_DIR}/3rd/pybind/tools)
 
 set(3rd_party_include ${vulkan_include} ${glfw_include} ${stb_include} ${glm_include} ${shaderc_include} ${rapid_json_include} ${json_include} ${llvm_include} ${mustache_include} ${pybind_include})
 set(3rd_party_lib ${vulkan_libs} ${glfw_lib} ${shaderc_lib} ${llvm_lib})
 set(3rd_party_dll ${shaderc_dll} ${llvm_dll})
+
+message("${3rd_party_include}")
 
 add_subdirectory(source)
 add_subdirectory(shaders)

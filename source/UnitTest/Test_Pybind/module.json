@@ -1,0 +1,6 @@
+{
+    "name": "Test_Pybind",
+    "dependencys": [],
+    "build": "dll",
+    "script_enable": "true"
+}
