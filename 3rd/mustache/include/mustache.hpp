@@ -452,13 +452,26 @@ public:
     }
 
     virtual const basic_data<string_type>* get(const string_type& name) const override {
+        return get(name, 0);
+    }
+
+    virtual const basic_data<string_type>* get(const string_type& name, int back_count) const {
         // process {{.}} name
         if (name.size() == 1 && name.at(0) == '.') {
             return items_.front();
         }
+
+        if (name.size() >= 3 && name.at(0) == '.' && name.at(1) == '.' && name.at(2) == '/')
+        {
+            string_type new_name(name.begin() + 3, name.end());
+            return get(new_name, back_count + 1);
+        }
+
         if (name.find('.') == string_type::npos) {
             // process normal name without having to split which is slower
-            for (const auto& item : items_) {
+            for (int index = back_count; index < items_.size(); index++)
+            {
+                const auto& item = items_[index];
                 const auto var = item->get(name);
                 if (var) {
                     return var;
@@ -468,7 +481,9 @@ public:
         }
         // process x.y-like name
         const auto names = split(name, '.');
-        for (const auto& item : items_) {
+        for (int index = back_count; index < items_.size(); index++)
+        {
+            const auto& item = items_[index];
             auto var = item;
             for (const auto& n : names) {
                 var = var->get(n);
