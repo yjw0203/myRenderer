@@ -1,9 +1,10 @@
-import pyTest_Pybind
+import Test_Pybind
 
-print(pyTest_Pybind.say_hello())
+class A (Test_Pybind.Engine):
+    def hhh(self):
+        print("hhh")
 
-greeter = pyTest_Pybind.Greeter("World")
-print(greeter.greet())
-
-greeter.set_name("Alice")
-print(greeter.greet())
+engine = A()
+engine.hhh()
+while True:
+    engine.mainloop()

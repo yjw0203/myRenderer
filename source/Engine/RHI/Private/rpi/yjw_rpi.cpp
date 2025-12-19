@@ -218,6 +218,10 @@ namespace rpi
     {
         int texWidth, texHeight, texChannels;
         stbi_uc* pixels = stbi_load(filePath, &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
+        if (pixels == nullptr)
+        {
+            return RPITexture();
+        }
         RHITextureDescriptor desc{};
         desc.resourceType = RHIResourceType::texture2D;
         desc.width = texWidth;

@@ -15,7 +15,7 @@ public:
     Skeleton* GetSkeleton();
 
 private:
-    Meta()
+    Property()
     std::string m_url;
 
     Skeleton* m_skeleton = nullptr;

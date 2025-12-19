@@ -4,3 +4,5 @@ source/generate/
 *.generate.cpp
 *.generate.h
 tmp/
+*.generate.script_py.cpp
+*.generate.script_py.h

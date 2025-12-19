@@ -1,0 +1,5 @@
+{
+    "name": "PyEngine",
+    "dependencys": ["Engine"],
+    "build": "py_module"
+}

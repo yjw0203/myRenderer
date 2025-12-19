@@ -39,11 +39,11 @@ class Meta() SubMeshInfo : public MObject
 {
     GENERATED_BODY();
 public:
-    Meta()
+    Property()
     int m_start_index;
-    Meta()
+    Property()
     int m_index_count;
-    Meta()
+    Property()
     std::string m_material_slot;
 };
 
@@ -51,9 +51,9 @@ class Meta() MeshVertexBuffer : public MObject
 {
     GENERATED_BODY();
 public:
-    Meta()
+    Property()
     MeshVertexType m_type;
-    Meta()
+    Property()
     std::vector<std::uint8_t> m_vertexes;
 };
 
@@ -61,15 +61,15 @@ class Meta() MeshAST : public MObject
 {
     GENERATED_BODY();
 public:
-    Meta()
+    Property()
     std::vector<SubMeshInfo> m_sub_meshes;
-    Meta()
+    Property()
     std::vector<MeshVertexBuffer> m_vertex_buffers;
-    Meta()
+    Property()
     std::vector<std::uint8_t> m_index_buffer;
-    Meta()
+    Property()
     std::map<std::string, AssetReferece<MaterialInstanceAST>> m_materials;
-    Meta()
+    Property()
     bool m_is_index_short;
 };
  

@@ -104,6 +104,7 @@ public:
     ~CRASTree();
     void build(const char* filename);
     bool isEmpty();
+    void merge(CRASTree* tree);
     std::vector<CREnum*> m_enums;
     std::vector<CRVar*> m_vars;
     std::vector<CRFunction*> m_functions;

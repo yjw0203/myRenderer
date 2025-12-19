@@ -55,14 +55,14 @@ private:
         
     int m_id{};
 
-    Meta()
+    Property()
     SceneRootComponent m_root_component;
 
-    Meta()
+    Property()
     std::string m_name;
 
 public:
-    Meta()
+    Property()
     std::vector<Component*> m_components;
 };
 
@@ -77,6 +77,6 @@ public:
     }
     virtual void OnSpawned() override;
 private:
-    Meta()
+    Property()
     std::string m_primitive_url{};
 };

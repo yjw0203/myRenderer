@@ -4,30 +4,24 @@
 #include "Engine/Asset/Public/Asset.h"
 #include <chrono>
 #include <ctime>
-#include "Engine/Engine/Public/Window.h"
+#include "Engine/Core/Public/Windows/Window.h"
 #include "Engine/Engine/Private/Editor/MajorEditor.h"
 
 Engine::Engine()
 {
-    BROADCAST_DELEGATE(EngineStartup)
-
-    Window::Initialize();
-    m_editor = new MajorEditor();
+    initialize();
 }
 
 Engine::~Engine()
 {
-        
+    cleanup();
 }
 
 void Engine::run()
 {
-    initialize();
     while (!shouldShutdown) {
         mainLoop();
-        Window::PoolEvents();
     }
-    cleanup();
 }
 
 void Engine::shutdown()
@@ -39,6 +33,10 @@ void Engine::shutdown()
 
 void Engine::initialize()
 {
+    BROADCAST_DELEGATE(EngineStartup)
+
+    m_editor = new MajorEditor();
+
     rdInit();
 
     m_editor->Startup();
@@ -63,6 +61,7 @@ void Engine::mainLoop()
     m_editor->Tick(deltaTime);
     AssetManager::Get()->process();
 
+    Window::PoolEvents();
 }
 void Engine::cleanup()
 {

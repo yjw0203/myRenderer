@@ -1,0 +1,5 @@
+{
+    "name": "Oracle",
+    "dependencys": ["RHI", "Core", "Math", "Utils"],
+    "build": "exe"
+}

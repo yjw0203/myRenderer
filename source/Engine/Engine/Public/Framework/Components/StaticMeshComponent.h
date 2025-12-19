@@ -16,7 +16,7 @@ public:
     virtual void AttachToScene(RdScene* scene);
     virtual void DettachToScene();
 private:
-    Meta()
+    Property()
     std::string m_mesh_url{};
 
     RdGeometryPtr m_mesh_handle{};

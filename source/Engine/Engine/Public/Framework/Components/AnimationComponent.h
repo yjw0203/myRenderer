@@ -16,7 +16,7 @@ public:
 
 private:
 
-    Meta()
+    Property()
     std::string m_url = "";
 
     std::shared_ptr<SkeletonController> m_skeleton_controller;

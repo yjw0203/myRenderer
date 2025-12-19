@@ -1,0 +1,21 @@
+{{#include_header_files}}
+#include "{{header_file_name}}"
+{{/include_header_files}}
+#include "pybind11/pybind11.h"
+#include "pybind11/stl.h"
+namespace py = pybind11;
+
+{{#ast}}
+PYBIND11_MODULE(PyEngine, m) {
+    m.doc() = "Engine note";
+    
+{{#class_list}}
+    py::classh<{{name}}>(m, "{{name}}")
+    {{#field_list}}
+        .def_readwrite("{{name}}", &{{../name}}::{{name}})
+    {{/field_list}}
+        .def(py::init<>());
+{{/class_list}}
+
+}
+{{/ast}}

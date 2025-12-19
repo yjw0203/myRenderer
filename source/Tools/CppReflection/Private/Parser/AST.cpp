@@ -55,6 +55,15 @@ bool CRASTree::isEmpty()
     return m_enums.empty() && m_classes.empty() && m_structs.empty() && m_functions.empty() && m_vars.empty();
 }
 
+void CRASTree::merge(CRASTree* tree)
+{
+    m_enums.insert(m_enums.end(), tree->m_enums.begin(), tree->m_enums.end());
+    m_classes.insert(m_classes.end(), tree->m_classes.begin(), tree->m_classes.end());
+    m_structs.insert(m_structs.end(), tree->m_structs.begin(), tree->m_structs.end());
+    m_functions.insert(m_functions.end(), tree->m_functions.begin(), tree->m_functions.end());
+    m_vars.insert(m_vars.end(), tree->m_vars.begin(), tree->m_vars.end());
+}
+
 bool parserAnnotateAttr(const std::string& text, CRArguments& arguments)
 {
     bool parser_result = false;

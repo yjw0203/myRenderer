@@ -18,7 +18,7 @@ class Meta() AssetHeader : public MObject
 {
     GENERATED_BODY();
 public:
-    Meta()
+    Property()
     std::string m_type;
 };
     

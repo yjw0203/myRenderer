@@ -1,5 +1,5 @@
 #include "Engine/Engine/Private/Editor/MajorEditorInput.h"
-#include "Engine/Engine/Public/Window.h"
+#include "Engine/Core/Public/Windows/Window.h"
 
 
 void MajorInputDispatcher::Register()

@@ -44,6 +44,15 @@ void writeFile(const char* file_name, const std::string& str)
     }
 }
 
+void GenerateMustanceData(const CRArguments& obj, Mustache::data& data)
+{
+    for (auto& itr : obj)
+    {
+        data.set(itr.first, itr.second);
+    }
+}
+
+
 void GenerateMustanceData(CREnum* obj, Mustache::data& data)
 {
     data.set("name", obj->m_name);
@@ -53,6 +62,10 @@ void GenerateMustanceData(CREnum* obj, Mustache::data& data)
         item_list_data.push_back(item);
     }
     data.set("item_list", item_list_data);
+
+    Mustache::data argument_data;
+    GenerateMustanceData(obj->m_arguments, argument_data);
+    data.set("arguments", argument_data);
 }
 
 void GenerateMustanceData(CRParm* obj, Mustache::data& data)
@@ -71,6 +84,10 @@ void GenerateMustanceData(CRMethod* obj, Mustache::data& data)
         parm_list_data.push_back(item);
     }
     data.set("parm_list", parm_list_data);
+
+    Mustache::data argument_data;
+    GenerateMustanceData(obj->m_arguments, argument_data);
+    data.set("arguments", argument_data);
 }
 
 void GenerateMustanceData(CRField* obj, Mustache::data& data)
@@ -78,6 +95,10 @@ void GenerateMustanceData(CRField* obj, Mustache::data& data)
     data.set("name", obj->m_name);
     data.set("type", obj->m_type);
     data.set("is_fundamental_type", obj->m_is_fundamental_type);
+
+    Mustache::data argument_data;
+    GenerateMustanceData(obj->m_arguments, argument_data);
+    data.set("arguments", argument_data);
 }
 
 void GenerateMustanceData(CRVar* obj, Mustache::data& data)
@@ -85,6 +106,10 @@ void GenerateMustanceData(CRVar* obj, Mustache::data& data)
     data.set("name", obj->m_name);
     data.set("type", obj->m_type);
     data.set("is_fundamental_type", obj->m_is_fundamental_type);
+
+    Mustache::data argument_data;
+    GenerateMustanceData(obj->m_arguments, argument_data);
+    data.set("arguments", argument_data);
 }
 
 void GenerateMustanceData(CRFunction* obj, Mustache::data& data)
@@ -96,6 +121,10 @@ void GenerateMustanceData(CRFunction* obj, Mustache::data& data)
         parm_list_data.push_back(item);
     }
     data.set("parm_list", parm_list_data);
+
+    Mustache::data argument_data;
+    GenerateMustanceData(obj->m_arguments, argument_data);
+    data.set("arguments", argument_data);
 }
 
 void GenerateMustanceData(CRStruct* obj, Mustache::data& data);
@@ -122,7 +151,7 @@ void GenerateMustanceData(CRStruct* obj, Mustache::data& data)
     SetGenerateMustanceDataList(data, "struct_list", obj->m_structs);
     SetGenerateMustanceDataList(data, "var_list", obj->m_vars);
     SetGenerateMustanceDataList(data, "function_list", obj->m_functions);
-    SetGenerateMustanceDataList(data, "metahod_list", obj->m_methods);
+    SetGenerateMustanceDataList(data, "method_list", obj->m_methods);
     SetGenerateMustanceDataList(data, "field_list", obj->m_fields);
     Mustache::data list_data(Mustache::data::type::list);
     for (const std::string& item : obj->m_inherits)
@@ -132,6 +161,10 @@ void GenerateMustanceData(CRStruct* obj, Mustache::data& data)
         list_data.push_back(data);
     }
     data.set("inherit_list", list_data);
+
+    Mustache::data argument_data;
+    GenerateMustanceData(obj->m_arguments, argument_data);
+    data.set("arguments", argument_data);
 }
 
 void GenerateMustanceData(CRClass* obj, Mustache::data& data)
@@ -142,7 +175,7 @@ void GenerateMustanceData(CRClass* obj, Mustache::data& data)
     SetGenerateMustanceDataList(data, "struct_list", obj->m_structs);
     SetGenerateMustanceDataList(data, "var_list", obj->m_vars);
     SetGenerateMustanceDataList(data, "function_list", obj->m_functions);
-    SetGenerateMustanceDataList(data, "metahod_list", obj->m_methods);
+    SetGenerateMustanceDataList(data, "method_list", obj->m_methods);
     SetGenerateMustanceDataList(data, "field_list", obj->m_fields);
     Mustache::data list_data(Mustache::data::type::list);
     for (const std::string& item: obj->m_inherits)
@@ -152,6 +185,10 @@ void GenerateMustanceData(CRClass* obj, Mustache::data& data)
         list_data.push_back(data);
     }
     data.set("inherit_list", list_data);
+
+    Mustache::data argument_data;
+    GenerateMustanceData(obj->m_arguments, argument_data);
+    data.set("arguments", argument_data);
 }
 
 void GenerateMustanceData(CRASTree* ast, Mustache::data& data)

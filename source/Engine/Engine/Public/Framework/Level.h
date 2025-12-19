@@ -48,9 +48,9 @@ public:
     void DettachSystem(System* system);
 
 private:
-    Meta()
+    Property()
     std::vector<Actor*> m_actors;
-    Meta()
+    Property()
     std::vector<System*> m_systems;
         
     World* m_world{};

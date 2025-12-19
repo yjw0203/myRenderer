@@ -1,6 +1,6 @@
 #include "yjw_render_camera.h"
 #include "Engine/Render/Private/Context.h"
-#include "Engine/Engine/Public/Window.h"
+#include "Engine/Core/Public/Windows/Window.h"
 
 void RenderCamera::SetPosition(glm::vec3 position)
 {

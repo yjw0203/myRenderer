@@ -10,7 +10,7 @@ public:
     const Transform& GetRelativeToParent();
     const Transform& GetTransform();
 private:
-    Meta()
+    Property()
     Transform m_relative{};
 
     SceneRootComponent* m_parent = nullptr;

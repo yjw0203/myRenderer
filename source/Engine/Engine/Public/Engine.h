@@ -10,10 +10,10 @@ public:
     ~Engine();
     void run();
     void shutdown();
+    void mainLoop();
 
 private:
     void initialize();
-    void mainLoop();
     void cleanup();
     void loadModules();
 private:

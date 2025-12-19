@@ -7,15 +7,15 @@ class Meta() RawBone : public MObject
 {
     GENERATED_BODY();
 public:
-    Meta()
+    Property()
     std::string m_name;
-    Meta()
+    Property()
     int         m_index;
-    Meta()
+    Property()
     Transform   m_binding_pose;
-    Meta()
+    Property()
     Matrix4x4   m_inverse_T_matrix;
-    Meta()
+    Property()
     int         m_parent_index;
 };
 
@@ -23,9 +23,9 @@ class Meta() SkeletonAST : public MObject
 {
     GENERATED_BODY();
 public:
-    Meta()
+    Property()
     std::vector<RawBone> m_bones_map;
-    Meta()
+    Property()
     std::vector<int> m_skin_map;
 };
 
@@ -33,13 +33,13 @@ class Meta() AnimationChannel : public MObject
 {
     GENERATED_BODY();
 public:
-    Meta()
+    Property()
     std::string m_name;
-    Meta()
+    Property()
     std::vector<Vector3>    m_position_keys;
-    Meta()
+    Property()
     std::vector<Quaternion> m_rotation_keys;
-    Meta()
+    Property()
     std::vector<Vector3>    m_scaling_keys;
 };
 
@@ -47,11 +47,11 @@ class Meta() AnimationClipAST : public MObject
 {
     GENERATED_BODY();
 public:
-    Meta()
+    Property()
     int                           m_total_frame{ 0 };
-    Meta()
+    Property()
     float                         m_time_per_frame{ 0 };
-    Meta()
+    Property()
     std::vector<AnimationChannel> m_animation_channels;
 };
 
@@ -59,6 +59,6 @@ class Meta() AnimationAST : public MObject
 {
     GENERATED_BODY();
 public:
-    Meta()
+    Property()
     AssetReferece<AnimationClipAST> m_clip;
 };
