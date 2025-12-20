@@ -9,5 +9,5 @@ public:
     virtual void OnPreComputeDesiredSize(float ScaleMultiplier) override;
     void SetSubWidget(OcWidgetHandle widget);
 private:
-    OracleWidgetSlotHandle m_slot{};
+    //OcSlotHandle m_slot{};
 };

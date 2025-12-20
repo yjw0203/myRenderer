@@ -1,66 +1,67 @@
 #include "Engine/Oracle/Public/Layout/OracleWidgetSlot.h"
 
-OracleWidgetSlot::OracleWidgetSlot(OcWidget* parent_widget)
-{
-    m_parent_widget = parent_widget;
-}
-
-OracleWidgetSlot::~OracleWidgetSlot()
-{
-
-}
-
-void OracleWidgetSlot::SetSlotWidget(OcWidgetHandle widget)
+void OcSlot::SetSlotWidget(OcWidgetHandle widget)
 {
     m_widget = widget;
 }
 
-OcWidgetHandle OracleWidgetSlot::GetSlotWidget()
+OcWidgetHandle OcSlot::GetSlotWidget()
 {
     return m_widget;
 }
 
-bool OracleWidgetSlot::IsBounding()
-{
-    return m_widget.get() != nullptr;
-}
-
-OcWidget* OracleWidgetSlot::GetBounding()
-{
-    return m_widget.get();
-}
-
-void OracleWidgetSlot::RemoveSlot(OcWidgetHandle widget)
+void OcSlot::RemoveSlot(OcWidgetHandle widget)
 {
     m_widget = nullptr;
 }
 
-void OracleWidgetSlot::SetOffset(Vector2 offset)
+bool OcSlot::IsBounding()
 {
-    m_offset = offset;
+    return m_widget.get() != nullptr;
 }
 
-Vector2 OracleWidgetSlot::GetOffset()
+Vector2 OcAnchorSlot::ActualPosition(const OracleLayout& Layout)
 {
-    return m_offset;
+    return Layout.m_size * m_anchor.Minimum() + m_left_top;
 }
 
-void OracleWidgetSlot::SetSize(Vector2 size)
+Vector2 OcAnchorSlot::ActualSize(const OracleLayout& Layout)
 {
-    m_size = size;
+    float SizeX = m_right_bottom.x;
+    float SizeY = m_right_bottom.y;
+    if (m_anchor.Maximum().x != m_anchor.Minimum().x)
+    {
+        SizeX = Layout.m_size.x * (m_anchor.Maximum().x - m_anchor.Minimum().x) - m_right_bottom.x - m_left_top.x;
+    }
+    if (m_anchor.Maximum().y != m_anchor.Minimum().y)
+    {
+        SizeY = Layout.m_size.y * (m_anchor.Maximum().y - m_anchor.Minimum().y) - m_right_bottom.y - m_left_top.y;
+    }
+
+    return Vector2(SizeX, SizeY);
 }
 
-Vector2 OracleWidgetSlot::GetSize()
+OcAnchorSlot& OcAnchorSlot::LeftTopRightBottom(Vector4 size)
 {
-    return m_size;
+    m_left_top = Vector2(size.x, size.y);
+    m_right_bottom = Vector2(size.z, size.w);
+    return *this;
 }
 
-void OracleWidgetSlot::SetSizeToContent(bool enable)
+OcAnchorSlot& OcAnchorSlot::LeftTopRightBottom(float left, float top, float right, float bottom)
 {
-    m_size_to_content = enable;
+    m_left_top = Vector2(left, top);
+    m_right_bottom = Vector2(right, bottom);
+    return *this;
 }
 
-bool OracleWidgetSlot::IsSizeToContent()
+OcAnchorSlot& OcAnchorSlot::Anchor(FAnchor anchor)
 {
-    return m_size_to_content;
+    m_anchor = anchor;
+    return *this;
+}
+
+const FAnchor& OcAnchorSlot::Anchor() const
+{
+    return m_anchor;
 }

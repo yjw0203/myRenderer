@@ -22,16 +22,6 @@ Vector2 OcWidget::GetDesiredSize()
     return m_desired_size;
 }
 
-void OcWidget::SetOwnedSlot(OracleWidgetSlotWeakHandle slot)
-{
-    m_owned_slot = slot;
-}
-
-OracleWidgetSlotHandle OcWidget::GetOwnedSlot()
-{
-    return m_owned_slot.lock();
-}
-
 void OcWidget::OnPreComputeDesiredSize(float ScaleMultiplier)
 {
 }

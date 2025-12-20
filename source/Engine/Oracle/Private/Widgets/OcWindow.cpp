@@ -4,12 +4,16 @@ OcWindow::OcWindow()
 {
     m_window = new Window();
     m_render_window = new OracleRenderWindow(m_window);
+
+    m_renderer = new OracleRenderer();
+    m_renderer->Initialize();
 }
 
 OcWindow::~OcWindow()
 {
     delete m_render_window;
     delete m_window;
+    delete m_renderer;
 }
 
 void OcWindow::OnComputeDesiredSize(float ScaleMultiplier)
@@ -43,4 +47,12 @@ Window* OcWindow::GetWindow()
 Vector2 OcWindow::GetSize()
 {
     return Vector2(1200, 1200);
+}
+
+void OcWindow::Render()
+{
+    OcacleDrawElementList DrawElementList;
+    DrawElementList.SetResolution(GetSize());
+    Paint(DrawElementList, OracleLayout());
+    m_renderer->Render(GetRenderWindow(), DrawElementList);
 }

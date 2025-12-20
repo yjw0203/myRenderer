@@ -12,6 +12,7 @@ struct alignas(16) OracleRenderElementData
 class OracleRenderer
 {
 public:
+    static void StaticInitialize();
     void Initialize();
     void Render(OracleRenderWindow* RenderWindow, OcacleDrawElementList& DrawElementList);
 

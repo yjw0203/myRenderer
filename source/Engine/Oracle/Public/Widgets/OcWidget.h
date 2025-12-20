@@ -22,15 +22,13 @@ public:
     void SetDesiredSize(const Vector2& DesireSize);
     Vector2 GetDesiredSize();
 
-    void SetOwnedSlot(OracleWidgetSlotWeakHandle slot);
-    OracleWidgetSlotHandle GetOwnedSlot();
 private:
     Vector2 m_desired_size{};
-
-    OracleWidgetSlotWeakHandle m_owned_slot{};
 
 public:
     OcStyleHandle m_style{};
 };
 
 using OcWidgetHandle = OcPtr<OcWidget>;
+
+#define OcNew(WidgetType) WidgetType::Argument{OcMakeShared<WidgetType>()}

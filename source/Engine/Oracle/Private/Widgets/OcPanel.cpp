@@ -2,23 +2,28 @@
 
 void OcPanel::OnPreComputeDesiredSize(float ScaleMultiplier)
 {
-    for (OracleWidgetSlotHandle& slot : m_slots)
+    for (OcSlotHandle& slot : m_slots)
     {
         if (slot.get())
         {
-            if (slot.get()->IsBounding())
+            if (slot->IsBounding())
             {
-                slot.get()->GetBounding()->ComputeDesiredSize(ScaleMultiplier);
+                slot->GetSlotWidget()->ComputeDesiredSize(ScaleMultiplier);
             }
         }
     }
 }
 
-OracleWidgetSlotHandle OcPanel::AddSubWidget(OcWidgetHandle widget)
+void OcPanel::OnLayoutChildren(const OracleLayout& Layout, OracleLayoutedWidgets& LayoutedWidgets)
 {
-    OracleWidgetSlotHandle slot = OcMakeShared<OracleWidgetSlot>(this);
-    slot.get()->SetSlotWidget(widget);
-    SetOwnedSlot(slot);
-    m_slots.push_back(slot);
-    return slot;
+    for (OcSlotHandle slot_handle : m_slots)
+    {
+        if (slot_handle && slot_handle->IsBounding())
+        {
+            Vector2 offset = slot_handle->ActualPosition(Layout);
+            Vector2 size = slot_handle->ActualSize(Layout);
+
+            LayoutedWidgets.AddWidget(Layout.MakeChild(offset, size), slot_handle->GetSlotWidget());
+        }
+    }
 }

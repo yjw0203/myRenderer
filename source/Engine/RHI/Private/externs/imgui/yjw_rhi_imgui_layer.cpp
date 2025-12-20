@@ -104,6 +104,10 @@ namespace rhi
 
     void RHIImguiLayer::OnSwapchainInit(class RHISwapChain* swapchain)
     {
+        if (m_device != nullptr)
+        {
+            return;
+        }
         ImGui_ImplGlfw_InitForVulkan((GLFWwindow*)swapchain->GetNativeWindow(), true);
         Init(swapchain->GetRHIDevice());
     }

@@ -4,13 +4,11 @@
 
 void OracleUI::Initialize()
 {
-    m_renderer = new OracleRenderer();
-    m_renderer->Initialize();
+    OracleRenderer::StaticInitialize();
 }
 
 void OracleUI::Destory()
 {
-    delete m_renderer;
 }
 
 void OracleUI::PullEvent()
@@ -32,11 +30,7 @@ void OracleUI::Paint()
         if (wd.get())
         {
             wd->ComputeDesiredSize(1.0f);
-
-            OcacleDrawElementList DrawElementList;
-            DrawElementList.SetResolution(wd->GetSize());
-            wd->Paint(DrawElementList, OracleLayout());
-            m_renderer->Render(wd->GetRenderWindow(), DrawElementList);
+            wd->Render();
         }
     }
 }

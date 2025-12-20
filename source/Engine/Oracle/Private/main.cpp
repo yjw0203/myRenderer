@@ -10,33 +10,39 @@ int main()
     OracleUIManager::Get()->Initialize();
 
     OcStyleHandle Style1 = OcMakeShared<OracleStyle>();
-    Style1->m_background_color = LinearColour(1, 0, 0, 1);
+    Style1->m_background_color = LinearColour(0.082, 0.082, 0.082, 1);
     OcStyleHandle Style2 = OcMakeShared<OracleStyle>();
-    Style2->m_background_color = LinearColour(0, 1, 0, 1);
+    Style2->m_background_color = LinearColour(0.141, 0.141, 0.141, 1);
     OcStyleHandle Style3 = OcMakeShared<OracleStyle>();
     Style3->m_resource = OracleRenderResource(RESOURCE_FILE(wizard/Texture/wizard0.png));
 
     OcPtr<OcWindow> window = OcMakeShared<OcWindow>();
     OracleUIManager::Get()->RegisterWindow(window);
-    window->m_style = Style1;
 
-    OcPtr<OcCanvas> canvas = OcMakeShared<OcCanvas>();
-    canvas->m_style = Style2;
+    OcPtr<OcWindow> window2 = OcMakeShared<OcWindow>();
+    OracleUIManager::Get()->RegisterWindow(window2);
 
-    OcPtr<OcCanvas> canvas1 = OcMakeShared<OcCanvas>();
-    canvas1->m_style = Style3;
+    OcWidgetArgument canvas = OcNew(OcCanvas).Style(Style1) 
+        + OcCanvas::Slot()
+        .Anchor(EAnchorPreset::Stretch)
+        .LeftTopRightBottom(200, 200, 300, 300)
+        [
+            OcNew(OcCanvas).Style(Style2)
+                + OcCanvas::Slot()
+                .Anchor(EAnchorPreset::Stretch)
+                .LeftTopRightBottom(10, 10, 200, 200)
+                [
+                    OcNew(OcCanvas).Style(Style3)
+                ]
+        ];
 
-    {
-        OracleWidgetSlotHandle slot = window->AddSubWidget(canvas);
-        slot->SetOffset(Vector2(200, 200));
-        slot->SetSize(Vector2(300, 300));
-    }
-    
-    {
-        OracleWidgetSlotHandle slot = canvas->AddSubWidget(canvas1);
-        slot->SetOffset(Vector2(10, 10));
-        slot->SetSize(Vector2(200, 200));
-    }
+    window->AddSubWidget(canvas.m_widget)
+        .Anchor(EAnchorPreset::Stretch)
+        .LeftTopRightBottom(0, 0, 0, 0);
+        
+    window2->AddSubWidget(canvas.m_widget)
+        .Anchor(EAnchorPreset::Stretch)
+        .LeftTopRightBottom(200, 200, 200, 200);
 
     while (1) 
     {

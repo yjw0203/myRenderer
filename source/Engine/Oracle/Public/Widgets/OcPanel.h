@@ -6,7 +6,18 @@ class OcPanel : public OcWidget
 {
 public:
     virtual void OnPreComputeDesiredSize(float ScaleMultiplier) override;
-    OracleWidgetSlotHandle AddSubWidget(OcWidgetHandle widget);
+    virtual void OnLayoutChildren(const OracleLayout& Layout, OracleLayoutedWidgets& LayoutedWidgets) override;
+
+protected:
+    template<typename SlotType>
+    OcPtr<SlotType> AddSubWidget(OcWidgetHandle widget)
+    {
+        OcPtr<SlotType> slot = OcMakeShared<SlotType>();
+        slot.get()->SetSlotWidget(widget);
+        m_slots.push_back(slot);
+        return slot;
+    }
+
 public:
-    OcArray<OracleWidgetSlotHandle> m_slots;
+    OcArray<OcSlotHandle> m_slots;
 };

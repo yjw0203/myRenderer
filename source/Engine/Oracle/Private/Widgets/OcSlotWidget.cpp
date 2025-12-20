@@ -2,18 +2,20 @@
 
 OcSlotWidget::OcSlotWidget()
 {
-    m_slot = OcMakeShared<OracleWidgetSlot>(this);
+    //m_slot = OcMakeShared<OcSlotHandle>(this);
 }
 
 void OcSlotWidget::OnPreComputeDesiredSize(float ScaleMultiplier)
 {
-    if (m_slot.get()->IsBounding())
+    /*
+    if (m_slot && m_slot->IsBounding())
     {
-        m_slot.get()->GetBounding()->ComputeDesiredSize(ScaleMultiplier);
+        m_slot->GetSlotWidget()->ComputeDesiredSize(ScaleMultiplier);
     }
+    */
 }
 
 void OcSlotWidget::SetSubWidget(OcWidgetHandle widget)
 {
-    m_slot.get()->SetSlotWidget(widget);
+    //m_slot.get()->SetSlotWidget(widget);
 }

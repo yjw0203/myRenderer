@@ -2,29 +2,9 @@
 
 void OcCanvas::OnComputeDesiredSize(float ScaleMultiplier)
 {
-    OracleWidgetSlotHandle slot = GetOwnedSlot();
     Vector2 desired_size = Vector2(0, 0);
-    
-    if (slot.get())
-    {
-        desired_size = slot.get()->GetSize();
-    }
 
     SetDesiredSize(desired_size);
-}
-
-void OcCanvas::OnLayoutChildren(const OracleLayout& Layout, OracleLayoutedWidgets& LayoutedWidgets)
-{
-    for (OracleWidgetSlotHandle slot_handle : m_slots)
-    {
-        if (slot_handle)
-        {
-            Vector2 offset = slot_handle.get()->GetOffset();
-            Vector2 size = slot_handle.get()->GetSize();
-
-            LayoutedWidgets.AddWidget(Layout.MakeChild(offset, size), slot_handle.get()->GetSlotWidget());
-        }
-    }
 }
 
 void OcCanvas::OnPaint(OcacleDrawElementList& DrawElements, const OracleLayout& Layout)
@@ -43,4 +23,15 @@ void OcCanvas::OnPaint(OcacleDrawElementList& DrawElements, const OracleLayout& 
         }
     }
 
+}
+
+OcAnchorSlot& OcCanvas::AddSubWidget(OcWidgetHandle widget)
+{
+    return *OcPanel::AddSubWidget<OcAnchorSlot>(widget);
+}
+
+OcAnchorSlot::Argument OcCanvas::Slot()
+{
+    OcPtr<OcAnchorSlot> slot = OcMakeShared<OcAnchorSlot>();
+    return OcAnchorSlot::Argument{ slot};
 }

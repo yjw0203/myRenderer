@@ -5,9 +5,13 @@
 
 using namespace rpi;
 
-void OracleRenderer::Initialize()
+void OracleRenderer::StaticInitialize()
 {
     RPIInit();
+}
+
+void OracleRenderer::Initialize()
+{
     m_context = RPICreateContext();
 
     m_box_vertex_shader = RPICreateShader(RPIShaderType::vertex, SHADER_FILE(OracleUI.hlsl), "BoxVS");

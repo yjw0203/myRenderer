@@ -4,6 +4,7 @@
 #include "Engine/Oracle/Public/Widgets/OcCanvas.h"
 #include "Engine/Oracle/Public/Render/OracleRenderer.h"
 
+class OracleRenderer;
 class OcWindow : public OcCanvas
 {
 public:
@@ -18,8 +19,14 @@ public:
     Window* GetWindow();
     Vector2 GetSize();
 
+    void Render();
+
+    struct Argument : OcCanvas::Argument
+    {};
+
 private:
     Window* m_window = nullptr;
 
     OracleRenderWindow* m_render_window = nullptr;
+    OracleRenderer* m_renderer = nullptr;
 };
