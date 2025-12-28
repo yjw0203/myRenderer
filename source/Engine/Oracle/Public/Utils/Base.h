@@ -19,3 +19,14 @@ OcPtr<T> OcMakeShared(Args&&... args) {
 
 template<typename T>
 using OcArray = std::vector<T>;
+
+
+#define RegisteOracleType(ClassName)             \
+static int GetStaticTypeID()                     \
+{                                                \
+    return typeid(ClassName).hash_code();        \
+}                                                \
+                                                 \
+virtual int GetTypeID(){                         \
+    return typeid(ClassName).hash_code();        \
+}                                                \

@@ -22,7 +22,6 @@ void OcCanvas::OnPaint(OcacleDrawElementList& DrawElements, const OracleLayout& 
             widget.second->Paint(DrawElements, widget.first);
         }
     }
-
 }
 
 OcAnchorSlot& OcCanvas::AddSubWidget(OcWidgetHandle widget)

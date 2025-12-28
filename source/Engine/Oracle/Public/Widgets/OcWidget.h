@@ -16,7 +16,7 @@ public:
     virtual void OnComputeDesiredSize(float ScaleMultiplier) = 0;
     virtual void OnPostComputeDesiredSize(float ScaleMultiplier);
 
-    virtual void OnLayoutChildren(const OracleLayout& Layout, OracleLayoutedWidgets& LayoutedWidgets) = 0;
+    virtual void OnLayoutChildren(const OracleLayout& Layout, OracleLayoutedWidgets& LayoutedWidgets) {};
     virtual void OnPaint(OcacleDrawElementList& DrawElements, const OracleLayout& Layout) = 0;
 
     void SetDesiredSize(const Vector2& DesireSize);

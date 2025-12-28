@@ -11,7 +11,8 @@ namespace rpi
         ps = 1,
         cs = 2,
         common = 3,
-        entity = 4
+        entity = 4,
+        count = 5
     };
 
     bool RPICheckResourceSetTypeID(int set_id, RPIResourceSetType type);

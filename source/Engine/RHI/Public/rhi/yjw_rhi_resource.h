@@ -28,7 +28,7 @@ namespace rhi
     public:
         RHITexture(const RHITextureDescriptor& desc) : m_descriptor(desc) {}
         const RHITextureDescriptor& GetDesc() { return m_descriptor; }
-        virtual void Update(void* data, int sizeOfByte, int arrayLayer = 0, int mipLevel = 0) = 0;
+        virtual void Update(void* data, int sizeOfByte, RHIOffset3D offset = RHIOffset3D{}, RHIExtent3D extent = RHIExtent3D{}, int arrayLayer = 0, int mipLevel = 0) = 0;
         virtual void MapForReadback(int arrayLayer, int mipLevel, void*& data, int& byte_per_pixel, int& byte_per_raw) = 0;
         virtual void UnMapReadback() = 0;
     private:

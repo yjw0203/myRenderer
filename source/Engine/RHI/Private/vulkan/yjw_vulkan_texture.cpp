@@ -182,7 +182,7 @@ namespace rhi
         return GetDesc().miplevels;
     }
 
-    void VulkanTexture::Update(void* data, int sizeOfByte, int arrayLayer, int mipLevel)
+    void VulkanTexture::Update(void* data, int sizeOfByte, RHIOffset3D offset, RHIExtent3D extent, int arrayLayer, int mipLevel)
     {
         if (GetDesc().memoryType == RHIMemoryType::default_)
         {
@@ -207,11 +207,11 @@ namespace rhi
             copyRegion.imageSubresource.mipLevel = mipLevel;
             copyRegion.imageSubresource.baseArrayLayer = arrayLayer;
             copyRegion.imageSubresource.layerCount = 1;
-            copyRegion.imageOffset = { 0, 0, 0 };
+            copyRegion.imageOffset = { offset.x, offset.y, offset.z};
             copyRegion.imageExtent = {
-                (unsigned int)GetDesc().width >> mipLevel,
-                (unsigned int)GetDesc().height >> mipLevel,
-                1
+                extent.width ? extent.width : (unsigned int)GetDesc().width >> mipLevel,
+                extent.height ? extent.height : (unsigned int)GetDesc().height >> mipLevel,
+                extent.depth ? extent.depth : (unsigned int)1
             };
 
             VkImageLayout currentLayout = m_current_layout;

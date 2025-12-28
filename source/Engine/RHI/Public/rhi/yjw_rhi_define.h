@@ -77,6 +77,7 @@ namespace rhi
     enum class RHIFormat : char
     {
         unknow = 0,
+        R8_unorm,
         R8G8B8A8_unorm,
         R8G8B8A8_snorm,
         R8G8B8A8_srgb,
@@ -175,6 +176,28 @@ namespace rhi
         color_component_b = 0x00000004,
         color_component_a = 0x00000008,
     };
+
+    typedef struct RHIExtent2D {
+        int    width;
+        int    height;
+    } RHIExtent2D;
+
+    typedef struct RHIExtent3D {
+        int    width;
+        int    height;
+        int    depth;
+    } RHIExtent3D;
+
+    typedef struct RHIOffset2D {
+        int    x;
+        int    y;
+    } RHIOffset2D;
+
+    typedef struct RHIOffset3D {
+        int    x;
+        int    y;
+        int    z;
+    } RHIOffset3D;
 
     struct RHIBufferDescriptor
     {

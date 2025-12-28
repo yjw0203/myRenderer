@@ -277,7 +277,7 @@ namespace rpi
             int imageSize = texWidth[i] * texHeight[i] * 4;
             if (pixels[i])
             {
-                texture->Update(pixels[i], imageSize, i, 0);
+                texture->Update(pixels[i], imageSize, {}, {}, i, 0);
             }
             stbi_image_free(pixels[i]);
         }

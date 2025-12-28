@@ -2,6 +2,7 @@
 #include "Engine/Oracle/Public/Render/OracleStyle.h"
 #include "Engine/Oracle/Public/Layout/OracleLayout.h"
 #include "Engine/Oracle/Public/Utils/Utils.h"
+#include <string>
 
 struct OracleGlobalDrawInfo
 {
@@ -12,17 +13,23 @@ struct OracleRenderTransform
 {
     Vector2 local_position{};
     Matrix2x2 transform{};
+    Vector2 GetScale();
+    Vector2 GetTranslate();
 };
 
 class OcacleDrawElementList;
 class OracleDrawElement
 {
 public:
+    RegisteOracleType(OracleDrawElement);
+    virtual ~OracleDrawElement() {}
     OracleRenderTransform m_transform;
+    Vector2 m_resolution{ 1000,1000 };
     void SetLayout(const OracleLayout* Layout, const OracleGlobalDrawInfo& draw_info);
 
 public:
     static void MakeBox(OcacleDrawElementList& ElementList, const OracleStyle& Style, const OracleLayout& Layout);
+    static void MakeText(OcacleDrawElementList& ElementList, const std::string& text, const OracleFontStyle& style, const OracleLayout& Layout);
 };
 
 class OcacleDrawElementList

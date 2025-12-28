@@ -1,0 +1,5 @@
+{
+    "name": "Tutorial_FreeType",
+    "dependencys": [],
+    "build": "exe"
+}

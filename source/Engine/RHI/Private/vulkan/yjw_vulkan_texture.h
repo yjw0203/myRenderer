@@ -16,7 +16,7 @@ namespace rhi
         int GetHeight();
         int GetLayerCount();
         int GetMipCount();
-        virtual void Update(void* data, int sizeOfByte, int arrayLayer = 0, int mipLevel = 0) override;
+        virtual void Update(void* data, int sizeOfByte, RHIOffset3D offset = RHIOffset3D{}, RHIExtent3D extent = RHIExtent3D{}, int arrayLayer = 0, int mipLevel = 0) override;
         virtual void MapForReadback(int arrayLayer, int mipLevel, void*& data, int& byte_per_pixel, int& byte_per_raw) override;
         virtual void UnMapReadback() override;
         void TransitionToOriginState(VkCommandBuffer commandBuffer);

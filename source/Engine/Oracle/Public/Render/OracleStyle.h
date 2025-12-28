@@ -15,4 +15,13 @@ public:
     OracleRenderResource m_resource;
 };
 
+class OracleFontStyle
+{
+public:
+    LinearColour m_colour = LinearColour(1, 0, 0, 1);
+    std::string m_font_path = "C:/Windows/Fonts/simhei.ttf";
+    int m_size = 12;
+};
+
 using OcStyleHandle = OcPtr<OracleStyle>;
+using OcFontStyleHandle = OcPtr<OracleFontStyle>;

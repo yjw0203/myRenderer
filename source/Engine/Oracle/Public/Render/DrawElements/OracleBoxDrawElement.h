@@ -6,6 +6,8 @@
 class OracleBoxDrawElement : public OracleDrawElement, public OracleBackgroundColourAttribute, public OracleImageAttribute
 {
 public:
+    RegisteOracleType(OracleBoxDrawElement);
+
     Margin m_margin;
 
     void SetStyle(const OracleStyle* Style)

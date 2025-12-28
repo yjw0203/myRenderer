@@ -112,6 +112,7 @@ namespace rhi
         switch (format)
         {
         case RHIFormat::unknow: return VkFormat::VK_FORMAT_UNDEFINED;
+        case RHIFormat::R8_unorm: return VkFormat::VK_FORMAT_R8_UNORM;
         case RHIFormat::R8G8B8A8_unorm: return VkFormat::VK_FORMAT_R8G8B8A8_UNORM;
         case RHIFormat::R8G8B8A8_snorm: return VkFormat::VK_FORMAT_R8G8B8A8_SNORM;
         case RHIFormat::R8G8B8A8_srgb: return VkFormat::VK_FORMAT_R8G8B8A8_SRGB;
@@ -137,6 +138,7 @@ namespace rhi
         switch (format)
         {
         case VkFormat::VK_FORMAT_UNDEFINED: return RHIFormat::unknow;
+        case VkFormat::VK_FORMAT_R8_UNORM: return RHIFormat::R8_unorm;
         case VkFormat::VK_FORMAT_R8G8B8A8_UNORM: return RHIFormat::R8G8B8A8_unorm;
         case VkFormat::VK_FORMAT_R8G8B8A8_SNORM: return RHIFormat::R8G8B8A8_snorm;
         case VkFormat::VK_FORMAT_R8G8B8A8_SRGB: return RHIFormat::R8G8B8A8_srgb;

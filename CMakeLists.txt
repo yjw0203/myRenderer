@@ -46,8 +46,11 @@ set(mustache_include ${CMAKE_CURRENT_SOURCE_DIR}/3rd/mustache/include)
 set(pybind_include ${CMAKE_CURRENT_SOURCE_DIR}/3rd/pybind/include)
 set(pybind_tools ${CMAKE_CURRENT_SOURCE_DIR}/3rd/pybind/tools)
 
-set(3rd_party_include ${vulkan_include} ${glfw_include} ${stb_include} ${glm_include} ${shaderc_include} ${rapid_json_include} ${json_include} ${llvm_include} ${mustache_include} ${pybind_include})
-set(3rd_party_lib ${vulkan_libs} ${glfw_lib} ${shaderc_lib} ${llvm_lib})
+set(freetype_include ${CMAKE_CURRENT_SOURCE_DIR}/3rd/freetype-2.13.0/include)
+set(freetype_lib ${CMAKE_CURRENT_SOURCE_DIR}/3rd/freetype-2.13.0/lib/freetype.lib)
+
+set(3rd_party_include ${vulkan_include} ${glfw_include} ${stb_include} ${glm_include} ${shaderc_include} ${rapid_json_include} ${json_include} ${llvm_include} ${mustache_include} ${pybind_include} ${freetype_include})
+set(3rd_party_lib ${vulkan_libs} ${glfw_lib} ${shaderc_lib} ${llvm_lib} ${freetype_lib})
 set(3rd_party_dll ${shaderc_dll} ${llvm_dll})
 
 message("${3rd_party_include}")
